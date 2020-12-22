@@ -1,0 +1,46 @@
+/*! @import */
+
+@import url('https://fonts.googleapis.com/css2?family=New+Rocker&family=Monoton&family=Almendra:wght@700&display=swap');
+@tailwind base;
+@layer base {
+    button:focus {
+        outline: none;
+    }
+    .bg-black {
+        --tw-bg-opacity: 1;
+        background-color: rgba(0, 0, 0, var(--tw-bg-opacity));
+    }
+    .bg-white {
+        --tw-bg-opacity: 1;
+        background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
+    }
+    .text-black {
+        --tw-text-opacity: 1;
+        color: rgba(0, 0, 0, var(--tw-text-opacity));
+    }
+    .text-white {
+        --tw-text-opacity: 1;
+        color: rgba(255, 255, 255, var(--tw-text-opacity));
+    }
+}
+
+@tailwind components;
+@tailwind utilities;
+
+.font-adventure {
+    font-family: 'Monoton', sans-serif;
+}
+
+.font-horror {
+    font-family: 'Almendra', 'Snowburst One', serif;
+}
+
+.font-romance {
+    font-family: 'Ruge Boogie', cursive;
+    text-shadow: 0 0 5px white;
+}
+
+.font-mystery {
+    font-family: 'New Rocker', serif;
+    text-shadow: -1px 0 1px white, 1px 0px 1px black;
+}

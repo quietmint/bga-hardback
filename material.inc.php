@@ -21,5 +21,3 @@
  */
 
 require_once('constants.inc.php');
-
-$this->genres = [ADVENTURE, HORROR, ROMANCE, MYSTERY];
