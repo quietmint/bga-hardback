@@ -26,7 +26,6 @@
 
 @tailwind components;
 @tailwind utilities;
-
 .font-adventure {
     font-family: 'Monoton', sans-serif;
 }
@@ -43,4 +42,17 @@
 .font-mystery {
     font-family: 'New Rocker', serif;
     text-shadow: -1px 0 1px white, 1px 0px 1px black;
+}
+
+.v-enter-active, .v-leave-active, .v-move {
+    transition: transform 500ms ease;
+}
+
+.v-leave-active {
+    position: absolute;
+}
+
+.v-enter-from, .v-leave-to {
+    opacity: 0;
+    transform: translateX(12rem);
 }
