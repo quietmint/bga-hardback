@@ -7,23 +7,36 @@
       </div>
 
       <!-- Effect -->
-      <div :class="effectClass" class="bg-gray-100 bg-opacity-80 rounded-tl-lg rounded-br-lg p-2 flex-grow">This is card ID # {{ id }}</div>
+      <div :class="effectClass" class="bg-gray-100 bg-opacity-60 p-2 flex-grow rounded-l-lg">
+        <p>Origin: {{ origin }}</p>
+
+        <ul>
+          <li v-for="benefit in benefitsList" :key="benefit.id" v-html="benefit.text"></li>
+        </ul>
+        <hr>
+        <ul>
+          <li v-for="benefit in genreBenefitsList" :key="benefit.id" v-html="benefit.text"></li>
+        </ul>
+      </div>
 
       <!-- Icon -->
-      <div class="absolute top-2 left-2 leading-none">
+      <div class="absolute top-1 left-1 leading-none">
         <Icon :icon="icon" :class="iconClass" class="text-3xl" />
       </div>
 
       <!-- Instant Points -->
-      <div v-if="points" class="absolute bottom-7 left-0 w-8 bg-gray-100 bg-opacity-80 text-center font-bold rounded-tr-lg rounded-br-lg">{{ points }}<Icon icon="star" :inline="true" class="inline" /></div>
+      <div v-if="points" class="absolute bottom-0 right-10 bg-gray-50 border border-r-2 border-b-0 border-gray-900 p-1 font-bold rounded-t-md">{{ points }}<Icon icon="star" class="inline" /></div>
 
       <!-- Cost -->
-      <div v-if="cost" class="absolute bottom-2 left-0 w-8 bg-gray-100 bg-opacity-80 text-center font-bold rounded-tr-lg rounded-br-lg">{{ cost }}¢</div>
+      <div v-if="cost" class="absolute bottom-0 right-2 bg-gray-50 border border-r-2 border-b-0 border-gray-900 p-1 font-bold rounded-t-md">{{ cost }}¢</div>
+
+      <!-- ID -->
+      <div class="absolute top-1 right-2 font-bold text-sm">{{ id }}</div>
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Constants from "./constants.js";
 import { Icon, addIcon } from "@iconify/vue";
 import mdiCompass from "@iconify-icons/mdi/compass";
@@ -43,18 +56,20 @@ export default {
     letter: String,
     id: Number,
     benefits: Object,
+    benefitsList: Array,
     genreBenefits: Object,
+    genreBenefitsList: Array,
     order: Number,
-    location: String,
+    origin: String,
     timeless: Boolean,
   },
   computed: {
     cardClass() {
       let c = "";
       if (this.timeless) {
-        c = "flex-row	w-64 h-48 ";
+        c = "flex-row	w-60 h-44 ";
       } else {
-        c = "flex-col w-48 h-64 ";
+        c = "flex-col w-44 h-60 ";
       }
       switch (this.genre) {
         case Constants.ADVENTURE:
@@ -72,14 +87,14 @@ export default {
 
     effectClass() {
       if (this.timeless) {
-        return "ml-0 rounded-lg";
+        return "my-2";
       } else {
-        return "ml-10";
+        return "ml-2 mb-2";
       }
     },
 
     letterClass() {
-      let c = "px-6 py-4 ";
+      let c = "px-4 py-2 ";
       switch (this.genre) {
         case Constants.ADVENTURE:
           return c + "font-adventure text-yellow-300";

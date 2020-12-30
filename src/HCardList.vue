@@ -1,21 +1,22 @@
 <template>
   <div class="my-2 p-1 rounded-lg bg-gray-900 bg-opacity-20">
     <b>{{ locationName }}</b>
-    <draggable class="min-h-64 flex flex-wrap justify-center" group="cards" :list="cards" item-key="id" :animation="500" :move="checkMove" @change="dragChange" tag="transition-group" :component-data="{ tag: 'div' }">
+    <draggable class="min-h-64 flex flex-wrap justify-center" group="cards" :list="cards" item-key="id" :animation="500" :move="move" @change="change" tag="transition-group" :component-data="{ tag: 'div' }">
       <template #item="{ element }">
-        <HCard v-bind="element" />
+        <HCard v-bind="element" @click="clickCard" />
       </template>
     </draggable>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import draggable from "vuedraggable";
 import Constants from "./constants.js";
 import HCard from "./HCard.vue";
 
 export default {
   name: "HCardList",
+  emits: ["drag"],
   components: {
     draggable,
     HCard,
@@ -29,45 +30,44 @@ export default {
       type: String,
       required: true,
     },
+    checkDrag: {
+      type: Function,
+      required: true,
+    },
+    clickCard: {
+      type: Function,
+      required: false,
+    },
   },
   computed: {
-    locationName() {
+    locationName(): String {
       switch (this.location) {
-        case "hand":
-          return "My Hand";
         case "tableau":
           return "Tableau";
         case "timeless":
           return "Timeless Classics";
-      }
-    },
-    checkMove() {
-      let loc = this.location;
-      switch (this.location) {
-        case "hand":
-          return function (evt) {
-            let cardLocation = evt.draggedContext.element.location;
-            let toLocation = evt.relatedContext.component.$parent.location;
-            return toLocation == loc || toLocation == "tableau";
-          };
-        case "tableau":
-          return function (evt) {
-            let cardLocation = evt.draggedContext.element.location;
-            let toLocation = evt.relatedContext.component.$parent.location;
-            return toLocation == loc || toLocation == cardLocation;
-          };
-        case "timeless":
-          return function (evt) {
-            let cardLocation = evt.draggedContext.element.location;
-            let toLocation = evt.relatedContext.component.$parent.location;
-            return toLocation == loc || toLocation == "tableau";
-          };
+        case "offer":
+          return "Offer Row";
+        default:
+          return "My Hand";
       }
     },
   },
   methods: {
-    dragChange(evt) {
-      console.log("change " + this.location, evt);
+    move(evt): Boolean {
+      let card: any = evt.draggedContext.element;
+      let fromLocation: String = this.location;
+      let toLocation: String = evt.relatedContext.component.$parent.location;
+      return this.checkDrag(card, fromLocation, toLocation);
+    },
+    change(evt) {
+      let location: String = this.location;
+      let event = evt.moved ? "order" : evt.added ? "add" : "remove";
+      let e = evt.moved || evt.added || evt.removed;
+      let cardId = e.element.id;
+      let order = e.newIndex != null ? e.newIndex : e.oldIndex;
+      // let cardIds: Array<Number> = this.cards.map((card) => card.id);
+      this.$emit("drag", { location, event, cardId, order });
     },
   },
 };

@@ -10,22 +10,24 @@
 </head>
 
 <body>
-    
-    <div id="overall_player_board_2305327" class="player-board" style="background: #ebd5bd; border-color: rgb(0, 0, 255); width: 234px; height: auto;">					
-        <div class="player_board_inner" id="player_board_inner_0000ff">						
+
+    <div id="overall_player_board_2305327" class="player-board" style="background: #ebd5bd; border-color: rgb(0, 0, 255); width: 234px; height: auto;">
+        <div class="player_board_inner" id="player_board_inner_0000ff">
             <div class="player-name" id="player_name_2305327">
                 <a href="https://studio.boardgamearena.com/player?id=2305327" style="color: #0000ff" target="_blank">quietmint1</a>
                 <a href="/1/hardback?table=216059&amp;testuser=2305327" target="_blank" class="expressswitch">
                 </a>
                 <i id="player_2305327_status" class="fa fa-circle status_offline player_status"></i>
                 <div class="flag" style="background-position: -352px -99px;" title="United States"></div>
-            </div>                        
+            </div>
             <div id="player_board_2305327" class="player_board_content">
                 <div class="player_score">
-                    <span id="player_score_2305327" class="player_score_value">0 stars</span> 
+                    <span id="player_score_2305327" class="player_score_value">0 stars</span>
                 </div>
                 <div id="panel" class="tailwind"></div>
-                <div class="player_table_status" id="player_table_status_2305327" style="display: block; font-size: 12px;"><p class="boardblock doubletime_infos">This is my first game : my time is doubled<br>Thanks for helping me!</p></div>
+                <div class="player_table_status" id="player_table_status_2305327" style="display: block; font-size: 12px;">
+                    <p class="boardblock doubletime_infos">This is my first game : my time is doubled<br>Thanks for helping me!</p>
+                </div>
             </div>
             <div id="player_panel_content_0000ff" class="player_panel_content">
             </div>
@@ -35,171 +37,234 @@
     <div id="app" class="tailwind"></div>
     <script type="module" src="/main.js"></script>
     <script>
-        setTimeout(function() {
+        setTimeout(function () {
             var gamedatas = {
-                "players": {
-                    "2305326": {
-                        "id": 2305326,
-                        "name": "quietmint0",
-                        "score": 0,
-                        "coins": 0,
-                        "ink": 0,
-                        "remover": 0,
-                        "totalCount": 3,
-                        "color": "ff0000",
-                        "color_back": null,
-                        "avatar": "a1c15cbf2a",
-                        "zombie": 0,
-                        "eliminated": 0,
-                        "is_ai": "0",
-                        "beginner": true,
-                        "ack": "ack"
-                    },
-                    "2305327": {
-                        "id": 2305327,
-                        "name": "quietmint1",
-                        "score": 0,
-                        "coins": 0,
-                        "ink": 0,
-                        "remover": 0,
-                        "totalCount": 3,
-                        "color": "0000ff",
-                        "color_back": null,
-                        "avatar": "000000",
-                        "zombie": 0,
-                        "eliminated": 0,
-                        "is_ai": "0",
-                        "beginner": true,
-                        "ack": "ack"
-                    }
+                players: {
+                    "2305326": { id: 2305326, name: "quietmint0", score: 0, coins: 0, ink: 0, remover: 0, totalCount: 8, color: "ff0000", color_back: null, avatar: "a1c15cbf2a", zombie: 0, eliminated: 0, is_ai: "0", beginner: true, ack: "ack" },
+                    "2305327": { id: 2305327, name: "quietmint1", score: 0, coins: 0, ink: 0, remover: 0, totalCount: 4, color: "0000ff", color_back: null, avatar: "000000", zombie: 0, eliminated: 0, is_ai: "0", beginner: true, ack: "ack" }
                 },
-                "hand": [{
-                    "genre": 0,
-                    "letter": "N",
-                    "cost": 0,
-                    "benefits": {
-                        "1": 1
+                refs: {
+                    cards: {
+                        "1": { genre: 1, letter: "A", cost: 5, points: 1, benefits: { "10": 2, "11": 3 }, genreBenefits: { "10": 1 } },
+                        "2": { genre: 1, letter: "A", cost: 7, benefits: { "10": 3 }, genreBenefits: { "10": 2 } },
+                        "3": { genre: 1, letter: "B", cost: 4, points: 4, benefits: { "10": 2 }, genreBenefits: { "10": 2 } },
+                        "4": { genre: 1, letter: "C", cost: 3, benefits: { "1": 1, "11": 2 }, genreBenefits: { "1": 1 } },
+                        "5": { genre: 1, letter: "C", cost: 5, timeless: true, benefits: { "10": 2 }, genreBenefits: { "10": 1 } },
+                        "6": { genre: 1, letter: "D", cost: 4, points: 1, benefits: { "1": 2 }, genreBenefits: { "10": 3 } },
+                        "7": { genre: 1, letter: "E", cost: 3, benefits: { "10": 1, "11": 2 }, genreBenefits: { "10": 1 } },
+                        "8": { genre: 1, letter: "F", cost: 8, points: 1, benefits: { "10": 5 }, genreBenefits: { "10": 2 } },
+                        "9": { genre: 1, letter: "G", cost: 2, benefits: { "10": 1 }, genreBenefits: { "10": 2 } },
+                        "10": { genre: 1, letter: "G", cost: 6, benefits: { "10": 4, "11": 4 }, genreBenefits: { "10": 1 } },
+                        "11": { genre: 1, letter: "H", cost: 3, points: 3, benefits: { "10": 1, "13": 1 }, genreBenefits: { "10": 1 } },
+                        "12": { genre: 1, letter: "I", cost: 3, timeless: true, benefits: { "10": 2 }, genreBenefits: [] },
+                        "13": { genre: 1, letter: "I", cost: 6, benefits: { "10": 3 }, genreBenefits: { "10": 1 } },
+                        "14": { genre: 1, letter: "J", cost: 3, benefits: { "10": 2, "11": 2 }, genreBenefits: { "10": 1 } },
+                        "15": { genre: 1, letter: "J", cost: 5, benefits: { "10": 3, "13": 2 }, genreBenefits: { "10": 2 } },
+                        "16": { genre: 1, letter: "K", cost: 9, points: 2, benefits: { "10": 5 }, genreBenefits: { "10": 3 } },
+                        "17": { genre: 1, letter: "L", cost: 2, points: 1, benefits: { "10": 1 }, genreBenefits: { "10": 1 } },
+                        "18": { genre: 1, letter: "M", cost: 4, points: 3, benefits: { "10": 2 }, genreBenefits: { "10": 1 } },
+                        "19": { genre: 1, letter: "M", cost: 6, points: 3, benefits: { "10": 3 }, genreBenefits: { "10": 2 } },
+                        "20": { genre: 1, letter: "N", cost: 4, points: 1, benefits: { "1": 2 }, genreBenefits: { "1": 1, "10": 1 } },
+                        "21": { genre: 1, letter: "O", cost: 6, benefits: { "10": 2 }, genreBenefits: { "6": true } },
+                        "22": { genre: 1, letter: "P", cost: 4, points: 1, benefits: { "10": 2 }, genreBenefits: { "10": 2 } },
+                        "23": { genre: 1, letter: "P", cost: 8, timeless: true, benefits: { "10": 2 }, genreBenefits: { "10": 2 } },
+                        "24": { genre: 1, letter: "Q", cost: 7, benefits: { "10": 3, "13": 3 }, genreBenefits: { "10": 4 } },
+                        "25": { genre: 1, letter: "R", cost: 3, points: 1, benefits: { "10": 1 }, genreBenefits: { "10": 2 } },
+                        "26": { genre: 1, letter: "S", cost: 5, points: 1, benefits: { "10": 2, "13": 2 }, genreBenefits: { "10": 1 } },
+                        "27": { genre: 1, letter: "T", cost: 4, points: 2, benefits: { "10": 2 }, genreBenefits: { "10": 1 } },
+                        "28": { genre: 1, letter: "U", cost: 4, benefits: { "10": 1, "13": 2 }, genreBenefits: { "10": 3 } },
+                        "29": { genre: 1, letter: "V", cost: 2, benefits: { "10": 1 }, genreBenefits: { "10": 2 } },
+                        "30": { genre: 1, letter: "W", cost: 3, benefits: { "10": 2, "11": 2 }, genreBenefits: { "10": 1 } },
+                        "31": { genre: 1, letter: "W", cost: 5, points: 2, timeless: true, benefits: { "10": 2 }, genreBenefits: [] },
+                        "32": { genre: 1, letter: "X", cost: 4, benefits: { "1": 2, "13": 2 }, genreBenefits: { "1": 2 } },
+                        "33": { genre: 1, letter: "Y", cost: 2, benefits: { "10": 1, "11": 1 }, genreBenefits: { "10": 1 } },
+                        "34": { genre: 1, letter: "Y", cost: 4, points: 3, benefits: { "1": 2, "11": 2 }, genreBenefits: { "1": 1 } },
+                        "35": { genre: 1, letter: "Z", cost: 5, points: 3, benefits: { "10": 4 }, genreBenefits: { "10": 1 } },
+                        "36": { genre: 2, letter: "A", cost: 3, benefits: { "3": 2 }, genreBenefits: [] },
+                        "37": { genre: 2, letter: "B", cost: 6, benefits: { "1": 3 }, genreBenefits: { "1": 2, "4": true } },
+                        "38": { genre: 2, letter: "C", cost: 5, benefits: { "4": true, "10": 2 }, genreBenefits: { "10": 1 } },
+                        "39": { genre: 2, letter: "C", cost: 8, benefits: { "1": 2, "4": true }, genreBenefits: { "1": 3 } },
+                        "40": { genre: 2, letter: "D", cost: 4, timeless: true, benefits: { "3": 1 }, genreBenefits: { "1": 1, "10": 1 } },
+                        "41": { genre: 2, letter: "D", cost: 9, benefits: { "4": true, "10": 3 }, genreBenefits: { "10": 3 } },
+                        "42": { genre: 2, letter: "E", cost: 5, timeless: true, benefits: { "3": 2 }, genreBenefits: { "10": 1 } },
+                        "43": { genre: 2, letter: "E", cost: 8, benefits: { "1": 2, "4": true }, genreBenefits: { "3": 2 } },
+                        "44": { genre: 2, letter: "F", cost: 3, benefits: { "10": 2 }, genreBenefits: { "3": 2, "4": true } },
+                        "45": { genre: 2, letter: "G", cost: 4, benefits: { "10": 2 }, genreBenefits: { "4": true, "10": 2 } },
+                        "46": { genre: 2, letter: "H", cost: 7, benefits: { "1": 2, "10": 1 }, genreBenefits: { "1": 1, "7": true, "10": 2 } },
+                        "47": { genre: 2, letter: "I", cost: 4, benefits: { "10": 2 }, genreBenefits: { "3": 2 } },
+                        "48": { genre: 2, letter: "J", cost: 5, benefits: { "4": true, "10": 3 }, genreBenefits: { "10": 2 } },
+                        "49": { genre: 2, letter: "K", cost: 2, benefits: { "3": 1 }, genreBenefits: { "1": 2 } },
+                        "50": { genre: 2, letter: "L", cost: 3, benefits: { "10": 2 }, genreBenefits: { "4": true } },
+                        "51": { genre: 2, letter: "M", cost: 3, benefits: { "10": 2 }, genreBenefits: { "10": 1 } },
+                        "52": { genre: 2, letter: "N", cost: 5, benefits: { "1": 2, "4": true }, genreBenefits: { "1": 1 } },
+                        "53": { genre: 2, letter: "N", cost: 6, timeless: true, benefits: { "3": 1 }, genreBenefits: { "4": true, "10": 2 } },
+                        "54": { genre: 2, letter: "O", cost: 4, benefits: { "3": 2 }, genreBenefits: { "3": 1 } },
+                        "55": { genre: 2, letter: "P", cost: 3, benefits: { "4": true, "10": 2 }, genreBenefits: [] },
+                        "56": { genre: 2, letter: "Q", cost: 4, benefits: { "1": 3 }, genreBenefits: { "1": 1, "4": true } },
+                        "57": { genre: 2, letter: "R", cost: 4, benefits: { "3": 1 }, genreBenefits: { "1": 2, "4": true } },
+                        "58": { genre: 2, letter: "S", cost: 2, benefits: { "10": 1 }, genreBenefits: { "10": 1 } },
+                        "59": { genre: 2, letter: "S", cost: 7, benefits: { "4": true, "10": 3 }, genreBenefits: { "10": 1 } },
+                        "60": { genre: 2, letter: "T", cost: 4, benefits: { "10": 2 }, genreBenefits: { "4": true, "10": 1 } },
+                        "61": { genre: 2, letter: "U", cost: 2, benefits: { "10": 1 }, genreBenefits: { "10": 2 } },
+                        "62": { genre: 2, letter: "U", cost: 6, benefits: { "10": 4 }, genreBenefits: { "10": 1 } },
+                        "63": { genre: 2, letter: "V", cost: 4, benefits: { "1": 2 }, genreBenefits: { "1": 2, "4": true } },
+                        "64": { genre: 2, letter: "V", cost: 5, timeless: true, benefits: { "1": 1 }, genreBenefits: { "1": 1, "4": true } },
+                        "65": { genre: 2, letter: "W", cost: 4, benefits: { "4": true, "10": 2 }, genreBenefits: { "10": 2 } },
+                        "66": { genre: 2, letter: "W", cost: 5, benefits: { "1": 2, "4": true }, genreBenefits: { "1": 3 } },
+                        "67": { genre: 2, letter: "X", cost: 2, benefits: { "3": 1 }, genreBenefits: { "10": 2 } },
+                        "68": { genre: 2, letter: "X", cost: 6, benefits: { "4": true, "10": 3 }, genreBenefits: { "10": 3 } },
+                        "69": { genre: 2, letter: "Y", cost: 3, benefits: { "1": 2 }, genreBenefits: { "1": 1, "4": true } },
+                        "70": { genre: 2, letter: "Z", cost: 3, benefits: { "3": 2 }, genreBenefits: { "3": 1, "4": true } },
+                        "71": { genre: 3, letter: "A", cost: 4, benefits: { "1": 1, "12": 1 }, genreBenefits: { "1": 1 } },
+                        "72": { genre: 3, letter: "B", cost: 3, benefits: { "1": 2 }, genreBenefits: { "2": true } },
+                        "73": { genre: 3, letter: "B", cost: 5, timeless: true, benefits: { "1": 1 }, genreBenefits: { "1": 1, "12": 1 } },
+                        "74": { genre: 3, letter: "C", cost: 3, benefits: { "10": 2 }, genreBenefits: { "12": 1 } },
+                        "75": { genre: 3, letter: "D", cost: 4, benefits: { "1": 2 }, genreBenefits: { "2": true } },
+                        "76": { genre: 3, letter: "E", cost: 2, benefits: { "1": 1 }, genreBenefits: { "1": 1 } },
+                        "77": { genre: 3, letter: "E", cost: 6, benefits: { "10": 3 }, genreBenefits: { "12": 1 } },
+                        "78": { genre: 3, letter: "F", cost: 4, benefits: { "10": 2, "12": 1 }, genreBenefits: { "10": 1 } },
+                        "79": { genre: 3, letter: "F", cost: 6, benefits: { "1": 2, "2": true }, genreBenefits: { "1": 1, "12": 1 } },
+                        "80": { genre: 3, letter: "G", cost: 3, benefits: { "10": 1, "12": 1 }, genreBenefits: { "10": 1 } },
+                        "81": { genre: 3, letter: "H", cost: 3, benefits: { "1": 1, "12": 1 }, genreBenefits: { "1": 1 } },
+                        "82": { genre: 3, letter: "H", cost: 7, benefits: { "10": 3 }, genreBenefits: { "2": true, "10": 2 } },
+                        "83": { genre: 3, letter: "I", cost: 2, benefits: { "1": 1 }, genreBenefits: { "1": 1 } },
+                        "84": { genre: 3, letter: "J", cost: 6, benefits: { "1": 2, "2": true }, genreBenefits: { "1": 2, "12": 1 } },
+                        "85": { genre: 3, letter: "K", cost: 3, benefits: { "1": 2 }, genreBenefits: { "1": 1, "12": 1 } },
+                        "86": { genre: 3, letter: "K", cost: 5, timeless: true, benefits: { "1": 1 }, genreBenefits: { "1": 1, "12": 1 } },
+                        "87": { genre: 3, letter: "L", cost: 8, benefits: { "10": 3 }, genreBenefits: { "2": true, "10": 2 } },
+                        "88": { genre: 3, letter: "M", cost: 2, benefits: { "1": 1, "12": 1 }, genreBenefits: [] },
+                        "89": { genre: 3, letter: "N", cost: 2, benefits: { "10": 1 }, genreBenefits: { "12": 1 } },
+                        "90": { genre: 3, letter: "N", cost: 5, benefits: { "1": 2, "12": 1 }, genreBenefits: { "1": 1 } },
+                        "91": { genre: 3, letter: "O", cost: 4, benefits: { "1": 2 }, genreBenefits: { "2": true } },
+                        "92": { genre: 3, letter: "O", cost: 8, timeless: true, benefits: { "1": 2, "10": 1 }, genreBenefits: { "1": 1, "10": 1 } },
+                        "93": { genre: 3, letter: "P", cost: 6, benefits: { "2": true, "10": 2 }, genreBenefits: { "10": 1 } },
+                        "94": { genre: 3, letter: "Q", cost: 4, benefits: { "10": 2, "12": 1 }, genreBenefits: { "10": 2 } },
+                        "95": { genre: 3, letter: "R", cost: 5, benefits: { "10": 2 }, genreBenefits: { "9": true, "10": 1 } },
+                        "96": { genre: 3, letter: "R", cost: 5, timeless: true, benefits: { "10": 2 }, genreBenefits: { "12": 1 } },
+                        "97": { genre: 3, letter: "S", cost: 4, benefits: { "10": 1 }, genreBenefits: { "2": true, "10": 1 } },
+                        "98": { genre: 3, letter: "T", cost: 3, benefits: { "1": 1 }, genreBenefits: { "1": 1, "12": 1 } },
+                        "99": { genre: 3, letter: "U", cost: 9, benefits: { "10": 5 }, genreBenefits: { "2": true, "10": 1 } },
+                        "100": { genre: 3, letter: "V", cost: 3, benefits: { "10": 2 }, genreBenefits: { "10": 1, "12": 1 } },
+                        "101": { genre: 3, letter: "W", cost: 4, benefits: { "2": true, "10": 1 }, genreBenefits: { "10": 1 } },
+                        "102": { genre: 3, letter: "X", cost: 7, benefits: { "10": 4, "12": 1 }, genreBenefits: { "10": 2 } },
+                        "103": { genre: 3, letter: "Y", cost: 4, benefits: { "2": true, "10": 1 }, genreBenefits: { "12": 1 } },
+                        "104": { genre: 3, letter: "Z", cost: 4, benefits: { "10": 2, "12": 1 }, genreBenefits: { "10": 2 } },
+                        "105": { genre: 3, letter: "Z", cost: 5, benefits: { "2": true, "10": 2 }, genreBenefits: { "1": 2 } },
+                        "106": { genre: 4, letter: "A", cost: 3, benefits: { "10": 1, "14": true }, genreBenefits: [] },
+                        "107": { genre: 4, letter: "A", cost: 5, timeless: true, benefits: { "1": 2 }, genreBenefits: { "1": 1 } },
+                        "108": { genre: 4, letter: "B", cost: 4, benefits: { "1": 2, "5": true }, genreBenefits: { "1": 2 } },
+                        "109": { genre: 4, letter: "C", cost: 5, benefits: { "10": 2, "14": true }, genreBenefits: { "5": true } },
+                        "110": { genre: 4, letter: "D", cost: 4, benefits: { "10": 1, "14": true }, genreBenefits: { "10": 2 } },
+                        "111": { genre: 4, letter: "E", cost: 4, benefits: { "1": 2 }, genreBenefits: { "14": true } },
+                        "112": { genre: 4, letter: "F", cost: 2, benefits: { "5": true, "10": 1 }, genreBenefits: { "10": 1 } },
+                        "113": { genre: 4, letter: "F", cost: 5, timeless: true, benefits: { "5": true, "10": 1 }, genreBenefits: { "10": 1 } },
+                        "114": { genre: 4, letter: "G", cost: 6, benefits: { "10": 3 }, genreBenefits: { "10": 2, "14": true } },
+                        "115": { genre: 4, letter: "H", cost: 3, benefits: { "5": true, "10": 1 }, genreBenefits: { "10": 2 } },
+                        "116": { genre: 4, letter: "I", cost: 3, benefits: { "10": 2 }, genreBenefits: { "5": true } },
+                        "117": { genre: 4, letter: "I", cost: 5, benefits: { "1": 2, "14": true }, genreBenefits: [] },
+                        "118": { genre: 4, letter: "J", cost: 8, benefits: { "10": 5, "14": true }, genreBenefits: { "10": 2 } },
+                        "119": { genre: 4, letter: "K", cost: 2, benefits: { "10": 1 }, genreBenefits: { "10": 1, "14": true } },
+                        "120": { genre: 4, letter: "K", cost: 4, benefits: { "1": 2, "14": true }, genreBenefits: { "1": 2 } },
+                        "121": { genre: 4, letter: "L", cost: 6, benefits: { "10": 3 }, genreBenefits: { "10": 1, "14": true } },
+                        "122": { genre: 4, letter: "M", cost: 3, benefits: { "1": 1, "14": true }, genreBenefits: { "1": 1 } },
+                        "123": { genre: 4, letter: "M", cost: 4, timeless: true, benefits: { "1": 1 }, genreBenefits: { "1": 1, "5": true } },
+                        "124": { genre: 4, letter: "N", cost: 7, benefits: { "10": 3 }, genreBenefits: { "8": true, "10": 1 } },
+                        "125": { genre: 4, letter: "O", cost: 3, benefits: { "5": true, "10": 1 }, genreBenefits: { "14": true } },
+                        "126": { genre: 4, letter: "P", cost: 2, benefits: { "1": 1 }, genreBenefits: { "1": 1, "5": true } },
+                        "127": { genre: 4, letter: "P", cost: 4, benefits: { "10": 1, "14": true }, genreBenefits: { "10": 2 } },
+                        "128": { genre: 4, letter: "Q", cost: 3, benefits: { "10": 2 }, genreBenefits: { "10": 2, "14": true } },
+                        "129": { genre: 4, letter: "Q", cost: 5, benefits: { "10": 2, "14": true }, genreBenefits: { "10": 3 } },
+                        "130": { genre: 4, letter: "R", cost: 4, benefits: { "1": 1 }, genreBenefits: { "1": 2, "14": true } },
+                        "131": { genre: 4, letter: "R", cost: 6, benefits: { "10": 2, "14": true }, genreBenefits: { "5": true, "10": 1 } },
+                        "132": { genre: 4, letter: "S", cost: 4, benefits: { "1": 1, "5": true }, genreBenefits: { "1": 2 } },
+                        "133": { genre: 4, letter: "T", cost: 6, benefits: { "10": 2, "14": true }, genreBenefits: { "10": 2 } },
+                        "134": { genre: 4, letter: "T", cost: 8, timeless: true, benefits: { "10": 2 }, genreBenefits: { "5": true, "10": 2 } },
+                        "135": { genre: 4, letter: "U", cost: 2, benefits: { "1": 1 }, genreBenefits: { "1": 1, "14": true } },
+                        "136": { genre: 4, letter: "V", cost: 9, benefits: { "10": 4, "14": true }, genreBenefits: { "10": 4 } },
+                        "137": { genre: 4, letter: "W", cost: 4, benefits: { "1": 2 }, genreBenefits: { "1": 2, "14": true } },
+                        "138": { genre: 4, letter: "X", cost: 3, benefits: { "5": true, "10": 3 }, genreBenefits: [] },
+                        "139": { genre: 4, letter: "Y", cost: 7, benefits: { "10": 4 }, genreBenefits: { "10": 2, "14": true } },
+                        "140": { genre: 4, letter: "Z", cost: 5, benefits: { "10": 3 }, genreBenefits: { "10": 2, "14": true } },
+                        "141": { genre: 0, letter: "A", cost: 0, benefits: { "1": 1 }, genreBenefits: [] },
+                        "142": { genre: 0, letter: "B", cost: 0, benefits: { "10": 1 }, genreBenefits: [] },
+                        "143": { genre: 0, letter: "C", cost: 0, benefits: { "10": 1 }, genreBenefits: [] },
+                        "144": { genre: 0, letter: "D", cost: 0, benefits: { "10": 1 }, genreBenefits: [] },
+                        "145": { genre: 0, letter: "E", cost: 0, benefits: { "1": 1 }, genreBenefits: [] },
+                        "146": { genre: 0, letter: "G", cost: 0, benefits: { "10": 1 }, genreBenefits: [] },
+                        "147": { genre: 0, letter: "H", cost: 0, benefits: { "10": 1 }, genreBenefits: [] },
+                        "148": { genre: 0, letter: "I", cost: 0, benefits: { "1": 1 }, genreBenefits: [] },
+                        "149": { genre: 0, letter: "L", cost: 0, benefits: { "1": 1 }, genreBenefits: [] },
+                        "150": { genre: 0, letter: "M", cost: 0, benefits: { "10": 1 }, genreBenefits: [] },
+                        "151": { genre: 0, letter: "N", cost: 0, benefits: { "1": 1 }, genreBenefits: [] },
+                        "152": { genre: 0, letter: "O", cost: 0, benefits: { "10": 1 }, genreBenefits: [] },
+                        "153": { genre: 0, letter: "P", cost: 0, benefits: { "10": 1 }, genreBenefits: [] },
+                        "154": { genre: 0, letter: "R", cost: 0, benefits: { "1": 1 }, genreBenefits: [] },
+                        "155": { genre: 0, letter: "S", cost: 0, benefits: { "1": 1 }, genreBenefits: [] },
+                        "156": { genre: 0, letter: "T", cost: 0, benefits: { "1": 1 }, genreBenefits: [] },
+                        "157": { genre: 0, letter: "U", cost: 0, benefits: { "10": 1 }, genreBenefits: [] },
+                        "158": { genre: 0, letter: "Y", cost: 0, benefits: { "10": 1 }, genreBenefits: [] },
                     },
-                    "genreBenefits": [],
-                    "id": 2,
-                    "order": 4,
-                    "location": 'hand',
-                }, {
-                    "genre": 0,
-                    "letter": "R",
-                    "cost": 0,
-                    "benefits": {
-                        "1": 1
+                    benefits: {
+                        "1": { text: "Gain {{value}}¢" },
+                        "2": { text: "Double an adjacent card" },
+                        "3": { text: "Gain {{value}}¢ or {{value}}*" },
+                        "4": { text: "Gain 1 ink or remover" },
+                        "5": { text: "Jail a card" },
+                        "6": { text: "Gain 2* for each adventure card " },
+                        "7": { text: "Each opponent returns 1 ink or remover" },
+                        "8": { text: "Gain 1* for each wild" },
+                        "9": { text: "Peek at the top 3 cards of your deck" },
+                        "10": { text: "Gain {{value}}*" },
+                        "11": { text: "Trash to gain {{value}}¢" },
+                        "12": { text: "Trash a card from your discard pile to gain {{value}}¢" },
+                        "13": { text: "Trash to gain {{value}}*" },
+                        "14": { text: "Uncover an adjacent wild" }
                     },
-                    "genreBenefits": [],
-                    "id": 5,
-                    "order": 2,"location": 'hand',
-                }, {
-                    "genre": 0,
-                    "letter": "I",
-                    "cost": 0,
-                    "benefits": {
-                        "1": 1
-                    },
-                    "genreBenefits": [],
-                    "id": 7,
-                    "order": 1,"location": 'hand',
-                }, {
-                    "genre": 0,
-                    "letter": "T",
-                    "cost": 0,
-                    "benefits": {
-                        "1": 1
-                    },
-                    "genreBenefits": [],
-                    "id": 1,
-                    "order": 0,"location": 'hand',
-                }, {
-                    "genre": 0,
-                    "letter": "E",
-                    "cost": 0,
-                    "benefits": {
-                        "1": 1
-                    },
-                    "genreBenefits": [],
-                    "id": 6,
-                    "order": 3,"location": 'hand',
-                }],
-                "gamestate": {
-                    "id": "2",
-                    "active_player": "2305327",
-                    "args": null,
-                    "reflexion": {
-                        "total": {
-                            "2305326": "259200",
-                            "2305327": 239949
-                        },
-                        "initial": {
-                            "2305327": 239979
-                        },
-                        "initial_ts": {
-                            "2305327": 1608529046408
-                        }
-                    },
-                    "updateGameProgression": 0,
-                    "name": "playerTurn",
-                    "description": "${actplayer} must spell a word",
-                    "descriptionmyturn": "${you} must spell a word",
-                    "type": "activeplayer",
-                    "possibleactions": ["buildTableau", "confirmWord", "pass"],
-                    "transitions": {
-                        "playCard": 2,
-                        "pass": 2
-                    }
                 },
-                "tablespeed": "17",
-                "game_result_neutralized": "0",
-                "neutralized_player_id": "0",
-                "playerorder": ["2305326", 2305327],
-                "gamestates": {
-                    "1": {
-                        "name": "gameSetup",
-                        "description": "",
-                        "type": "manager",
-                        "action": "stGameSetup",
-                        "transitions": {
-                            "": 2
-                        }
-                    },
-                    "2": {
-                        "name": "playerTurn",
-                        "description": "${actplayer} must spell a word",
-                        "descriptionmyturn": "${you} must spell a word",
-                        "type": "activeplayer",
-                        "possibleactions": ["buildTableau", "confirmWord", "pass"],
-                        "transitions": {
-                            "playCard": 2,
-                            "pass": 2
-                        }
-                    },
-                    "99": {
-                        "name": "gameEnd",
-                        "description": "End of game",
-                        "type": "manager",
-                        "action": "stGameEnd",
-                        "args": "argGameEnd"
-                    }
+                locations: {
+                    hand2305327: [{ genre: 0, letter: "A", cost: 0, benefits: { "1": 1 }, genreBenefits: [], id: 14, order: 0, origin: "hand2305327" }],
+                    tableau: [
+                        { genre: 0, letter: "S", cost: 0, benefits: { "1": 1 }, genreBenefits: [], id: 16, order: 0, origin: "hand2305327" },
+                        { genre: 0, letter: "T", cost: 0, benefits: { "1": 1 }, genreBenefits: [], id: 9, order: 1, origin: "hand2305327" },
+                        { genre: 0, letter: "I", cost: 0, benefits: { "1": 1 }, genreBenefits: [], id: 10, order: 2, origin: "hand2305327" },
+                        { genre: 0, letter: "E", cost: 0, benefits: { "1": 1 }, genreBenefits: [], id: 11, order: 3, origin: "hand2305327" },
+                    ],
+                    timeless: [],
+                    offer: [
+                        { genre: 4, letter: "E", cost: 4, benefits: { "1": 2 }, genreBenefits: { "14": true }, id: 86, order: 0, origin: "offer" },
+                        { genre: 1, letter: "A", cost: 4, benefits: { "1": 1, "12": 1 }, genreBenefits: { "1": 1 }, id: 35, points: 3, order: 1, origin: "offer" },
+                        { genre: 2, letter: "W", cost: 5, benefits: { "1": 2, "4": true }, genreBenefits: { "1": 3 }, id: 148, order: 2, origin: "offer" },
+                        { genre: 3, letter: "W", cost: 4, benefits: { "2": true, "10": 1 }, genreBenefits: { "10": 1 }, id: 55, order: 3, origin: "offer" },
+                        { genre: 2, letter: "X", cost: 2, benefits: { "3": 1 }, genreBenefits: { "10": 2 }, id: 136, order: 4, origin: "offer" },
+                        { genre: 4, letter: "K", cost: 2, benefits: { "10": 1 }, genreBenefits: { "10": 1, "14": true }, id: 24, order: 5, origin: "offer" },
+                        { genre: 1, letter: "F", cost: 3, benefits: { "10": 2 }, genreBenefits: { "3": 2, "4": true }, id: 23, order: 6, timeless: true, origin: "offer" },
+                    ],
                 },
-                "notifications": {
-                    "last_packet_id": "1",
-                    "move_nbr": "1"
-                },
-                "decision": {
-                    "decision_type": "none"
-                }
+                gamestate: { id: "2", active_player: "2305327", args: null, reflexion: { total: { "2305326": "259200", "2305327": 251657 }, initial: { "2305327": 251680 }, initial_ts: { "2305327": 1609281043226 } }, updateGameProgression: 0, name: "playerTurn", description: "${actplayer} must spell a word", descriptionmyturn: "${you} must spell a word", type: "activeplayer", possibleactions: ["drag", "buildTableau", "confirmWord", "pass"], transitions: { playCard: 2, pass: 2 } },
+                tablespeed: "17",
+                game_result_neutralized: "0",
+                neutralized_player_id: "0",
+                playerorder: ["2305327", 2305326],
+                gamestates: { "1": { name: "gameSetup", description: "", type: "manager", action: "stGameSetup", transitions: { "": 2 } }, "2": { name: "playerTurn", description: "${actplayer} must spell a word", descriptionmyturn: "${you} must spell a word", type: "activeplayer", possibleactions: ["drag", "buildTableau", "confirmWord", "pass"], transitions: { playCard: 2, pass: 2 } }, "99": { name: "gameEnd", description: "End of game", type: "manager", action: "stGameEnd", args: "argGameEnd" } },
+                notifications: { last_packet_id: "103", move_nbr: "103" },
+                decision: { decision_type: "none" },
+            };
+
+            var game = {
+                player_id: 2305327,
+                isCurrentPlayerActive: function () { return true; }
             };
 
             console.log('pretend game setup');
-            var game = {};
-            var vue = Vue.createApp(HGame).mount('#app');
-            vue.setup(game, gamedatas);
+            const app = Vue.createApp(HGame);
+            app.config.globalProperties.game = game;
+            var vue = app.mount('#app');
+            vue.gamedatas = gamedatas;
+            //vue.setup(game, gamedatas);
 
-            var panel = Vue.createApp(HPlayerPanel).mount('#panel');
+            const panelApp = Vue.createApp(HPlayerPanel);
+            panelApp.config.globalProperties.game = game;
+            var panel = panelApp.mount('#panel');
             panel.player = {
                 ink: 5,
                 remover: 99

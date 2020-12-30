@@ -1,6 +1,6 @@
 /*! @import */
 
-@import url('https://fonts.googleapis.com/css2?family=New+Rocker&family=Monoton&family=Almendra:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=New+Rocker&family=Monoton&family=Almendra:wght@700&family=Meddon&display=swap');
 @tailwind base;
 @layer base {
     button:focus {
@@ -35,7 +35,7 @@
 }
 
 .font-romance {
-    font-family: 'Ruge Boogie', cursive;
+    font-family: 'Meddon', serif;
     text-shadow: 0 0 5px white;
 }
 
@@ -55,4 +55,8 @@
 .v-enter-from, .v-leave-to {
     opacity: 0;
     transform: translateX(12rem);
+}
+
+.tailwind svg.inline {
+    vertical-align: -0.15rem;
 }

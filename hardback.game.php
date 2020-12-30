@@ -103,15 +103,22 @@ class hardback extends Table
     */
     protected function getAllDatas()
     {
-        $result = [];
+        $playerId = self::getCurrentPlayerId();
+        $handLocation = "hand$playerId";
 
-        $current_player_id = self::getCurrentPlayerId();
-
-        //$sql = "SELECT player_id id, player_score score, coins, ink, remover FROM player";
-        //$result['players'] = self::getCollectionFromDb($sql);
-        $result['players'] = PlayerMgr::getPlayers();
-        $result['hand'] = CardMgr::getPlayerHand($current_player_id);
-
+        $result = [
+            'players' => PlayerMgr::getPlayers(),
+            'refs' => [
+                'cards' => CardMgr::getCardRef(),
+                'benefits' => CardMgr::getBenefitRef(),
+            ],
+            'locations' => [
+                $handLocation => CardMgr::populateCards(CardMgr::getPlayerHand($playerId)),
+                'tableau' => CardMgr::populateCards(CardMgr::getTableau()),
+                'timeless' => CardMgr::populateCards(CardMgr::getTimeless()),
+                'offer' => CardMgr::populateCards(CardMgr::getOffer())
+            ]
+        ];
         return $result;
     }
 
@@ -131,7 +138,8 @@ class hardback extends Table
     }
 
 
-    function setupCards() {
+    function setupCards()
+    {
         CardMgr::setup();
     }
 
@@ -143,6 +151,58 @@ class hardback extends Table
             $letters[] = $card['letter'];
         };
         self::notifyAllPlayers('message', 'Tableau: ' . implode('', $letters), []);
+    }
+
+    function dragOrder($cardId, $order, $location)
+    {
+        $playerId = self::getCurrentPlayerId();
+        $validLocations = ["hand$playerId"];
+        if ($playerId == self::getActivePlayerId()) {
+            $validLocations[] = "tableau";
+        }
+        $card = CardMgr::getCard($cardId);
+        if ($card['location'] != $location) {
+            throw new BgaUserException("Card $cardId is in location {$card['location']} (expected: $location)");
+        }
+        if (!in_array($location, $validLocations)) {
+            throw new BgaUserException("Player $playerId is not allowed to order cards in location $location");
+        }
+        CardMgr::orderCard($cardId, $order);
+        $locations = [
+            $location => CardMgr::populateCards(CardMgr::getCardsInLocation($location))
+        ];
+        self::notifyAllPlayers('cards', "dragOrder notify $location", [
+            'playerId' => self::getCurrentPlayerId(),
+            'locations' => $locations,
+        ]);
+    }
+
+    function dragMove($cardId, $order, $from, $to)
+    {
+        $playerId = self::getCurrentPlayerId();
+        $validLocations = [];
+        if ($playerId == self::getActivePlayerId()) {
+            $validLocations = ["hand$playerId", "tableau", "timeless"];
+        }
+        $card = CardMgr::getCard($cardId);
+        if ($card['location'] != $from) {
+            throw new BgaUserException("Card $cardId is in location {$card['location']} (expected: $from)");
+        }
+        if (!in_array($from, $validLocations)) {
+            throw new BgaUserException("Player $playerId is not allowed to remove cards from location $from");
+        }
+        if (!in_array($to, $validLocations)) {
+            throw new BgaUserException("Player $playerId is not allowed to add cards to location $to");
+        }
+        CardMgr::moveAndOrderCard($cardId, $to, $order);
+        $locations = [
+            $from => CardMgr::populateCards(CardMgr::getCardsInLocation($from)),
+            $to => CardMgr::populateCards(CardMgr::getCardsInLocation($to))
+        ];
+        self::notifyAllPlayers('cards', "dragMove notify $from and $to", [
+            'playerId' => self::getCurrentPlayerId(),
+            'locations' => $locations,
+        ]);
     }
 
     //////////////////////////////////////////////////////////////////////////////

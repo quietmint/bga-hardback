@@ -45,4 +45,27 @@ class action_hardback extends APP_GameAction
     $this->game->buildTableau($cardIds);
     self::ajaxResponse();
   }
+
+  public function dragOrder()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('dragOrder');
+    $location = self::getArg('location', AT_alphanum, true);
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $order = self::getArg('order', AT_posint, true);
+    $this->game->dragOrder($cardId, $order, $location);
+    self::ajaxResponse();
+  }
+
+  public function dragMove()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('dragMove');
+    $from = self::getArg('from', AT_alphanum, true);
+    $to = self::getArg('to', AT_alphanum, true);
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $order = self::getArg('order', AT_posint, true);
+    $this->game->dragMove($cardId, $order, $from, $to);
+    self::ajaxResponse();
+  }
 }
