@@ -11,25 +11,30 @@
 
 <body>
 
-    <div id="overall_player_board_2305327" class="player-board" style="background: #ebd5bd; border-color: rgb(0, 0, 255); width: 234px; height: auto;">
-        <div class="player_board_inner" id="player_board_inner_0000ff">
-            <div class="player-name" id="player_name_2305327">
-                <a href="https://studio.boardgamearena.com/player?id=2305327" style="color: #0000ff" target="_blank">quietmint1</a>
-                <a href="/1/hardback?table=216059&amp;testuser=2305327" target="_blank" class="expressswitch">
-                </a>
-                <i id="player_2305327_status" class="fa fa-circle status_offline player_status"></i>
-                <div class="flag" style="background-position: -352px -99px;" title="United States"></div>
-            </div>
-            <div id="player_board_2305327" class="player_board_content">
-                <div class="player_score">
-                    <span id="player_score_2305327" class="player_score_value">0 stars</span>
+    <div id="player_boards">
+        <div id="overall_player_board_2305327" class="player-board current-player-board" style="width: 234px; height: auto; display: inline-block;">
+            <div class="player_board_inner" id="player_board_inner_982fff">
+                <div class="player-name" id="player_name_2305327">
+                    <a href="https://studio.boardgamearena.com/player?id=2305327" style="color: #982fff" target="_blank">quietmint1</a>
                 </div>
-                <div id="panel" class="tailwind"></div>
-                <div class="player_table_status" id="player_table_status_2305327" style="display: block; font-size: 12px;">
-                    <p class="boardblock doubletime_infos">This is my first game : my time is doubled<br>Thanks for helping me!</p>
+                <div id="player_board_2305327" class="player_board_content">
+                    BGA content here
+                    <div id="player_panel_content_982fff" class="player_panel_content">
+                    </div>
                 </div>
             </div>
-            <div id="player_panel_content_0000ff" class="player_panel_content">
+        </div>
+
+        <div id="overall_player_board_2305326" class="player-board" style="border-color: rgb(255, 0, 0); width: 234px; height: auto; display: inline-block;">
+            <div class="player_board_inner" id="player_board_inner_ff0000">
+                <div class="player-name" id="player_name_2305326">
+                    <a href="https://studio.boardgamearena.com/player?id=2305326" style="color: #ff0000" target="_blank">quietmint0</a>
+                </div>
+                <div id="player_board_2305326" class="player_board_content">
+                    BGA content here
+                    <div id="player_panel_content_ff0000" class="player_panel_content">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -41,7 +46,7 @@
             var gamedatas = {
                 players: {
                     "2305326": { id: 2305326, name: "quietmint0", score: 0, coins: 0, ink: 0, remover: 0, totalCount: 8, color: "ff0000", color_back: null, avatar: "a1c15cbf2a", zombie: 0, eliminated: 0, is_ai: "0", beginner: true, ack: "ack" },
-                    "2305327": { id: 2305327, name: "quietmint1", score: 0, coins: 0, ink: 0, remover: 0, totalCount: 4, color: "0000ff", color_back: null, avatar: "000000", zombie: 0, eliminated: 0, is_ai: "0", beginner: true, ack: "ack" }
+                    "2305327": { id: 2305327, name: "quietmint1", score: 0, coins: 0, ink: 0, remover: 0, totalCount: 6, color: "0000ff", color_back: null, avatar: "000000", zombie: 0, eliminated: 0, is_ai: "0", beginner: true, ack: "ack" },
                 },
                 refs: {
                     cards: {
@@ -205,70 +210,77 @@
                         "158": { genre: 0, letter: "Y", cost: 0, benefits: { "10": 1 }, genreBenefits: [] },
                     },
                     benefits: {
-                        "1": { text: "Gain {{value}}¢" },
-                        "2": { text: "Double an adjacent card" },
-                        "3": { text: "Gain {{value}}¢ or {{value}}*" },
-                        "4": { text: "Gain 1 ink or remover" },
-                        "5": { text: "Jail a card" },
-                        "6": { text: "Gain 2* for each adventure card " },
-                        "7": { text: "Each opponent returns 1 ink or remover" },
-                        "8": { text: "Gain 1* for each wild" },
-                        "9": { text: "Peek at the top 3 cards of your deck" },
-                        "10": { text: "Gain {{value}}*" },
-                        "11": { text: "Trash to gain {{value}}¢" },
-                        "12": { text: "Trash a card from your discard pile to gain {{value}}¢" },
-                        "13": { text: "Trash to gain {{value}}*" },
-                        "14": { text: "Uncover an adjacent wild" }
+                        "1": { text: "Gain %¢" },
+                        "2": { text: "Double adjacent card" },
+                        "3": { text: "Gain %¢ or %", icon: "star" },
+                        "4": { text: "Gain 1", icon: "ink", text2: " or ", icon2: "remover" },
+                        "5": { text: "Jail offer row card" },
+                        "6": { text: "Gain 2", icon: "star", text2: " for each", icon2: "adventure", text3: " card" },
+                        "7": { text: "Each opponent returns 1", icon: "ink", text2: " or ", icon2: "remover" },
+                        "8": { text: "Gain 1", icon: "star", text2: " for each wild card" },
+                        "9": { text: "Peek at top 3 cards of your deck" },
+                        "10": { text: "Gain %", icon: "star" },
+                        "11": { icon: "trash", text2: "Trash to gain %¢" },
+                        "12": { icon: "trash", text2: "Trash from discard to gain %¢" },
+                        "13": { icon: "trash", text2: "Trash to gain %", icon2: "star" },
+                        "14": { text: "Uncover adjacent wild" },
                     },
                 },
                 locations: {
-                    hand2305327: [{ genre: 0, letter: "A", cost: 0, benefits: { "1": 1 }, genreBenefits: [], id: 14, order: 0, origin: "hand2305327" }],
-                    tableau: [
-                        { genre: 0, letter: "S", cost: 0, benefits: { "1": 1 }, genreBenefits: [], id: 16, order: 0, origin: "hand2305327" },
-                        { genre: 0, letter: "T", cost: 0, benefits: { "1": 1 }, genreBenefits: [], id: 9, order: 1, origin: "hand2305327" },
-                        { genre: 0, letter: "I", cost: 0, benefits: { "1": 1 }, genreBenefits: [], id: 10, order: 2, origin: "hand2305327" },
-                        { genre: 0, letter: "E", cost: 0, benefits: { "1": 1 }, genreBenefits: [], id: 11, order: 3, origin: "hand2305327" },
+                    hand_2305327: [
+                        { id: 12, refId: 148, order: 0, origin: "hand_2305327" },
+                        { id: 15, refId: 145, order: 0, origin: "hand_2305327", ink: true },
+                        { id: 16, refId: 149, order: 0, origin: "hand_2305327" },
                     ],
-                    timeless: [],
+                    tableau: [
+                        { id: 9, refId: 156, order: 0, origin: "hand_2305327" },
+                        { id: 10, refId: 141, order: 1, origin: "hand_2305327" },
+                    ],
+                    timeless: [
+                        { id: 805, refId: 5, order: 0, origin: "timeless_2305327" },
+                        { id: 886, refId: 86, order: 0, origin: "timeless_2305327" },
+                        { id: 823, refId: 23, order: 0, origin: "timeless_2305327" },
+                        { id: 831, refId: 31, order: 0, origin: "timeless_2305326" },
+                        { id: 840, refId: 40, order: 0, origin: "timeless_2305326" },
+                        { id: 834, refId: 134, order: 0, origin: "timeless_2305326" },
+                    ],
                     offer: [
-                        { genre: 4, letter: "E", cost: 4, benefits: { "1": 2 }, genreBenefits: { "14": true }, id: 86, order: 0, origin: "offer" },
-                        { genre: 1, letter: "A", cost: 4, benefits: { "1": 1, "12": 1 }, genreBenefits: { "1": 1 }, id: 35, points: 3, order: 1, origin: "offer" },
-                        { genre: 2, letter: "W", cost: 5, benefits: { "1": 2, "4": true }, genreBenefits: { "1": 3 }, id: 148, order: 2, origin: "offer" },
-                        { genre: 3, letter: "W", cost: 4, benefits: { "2": true, "10": 1 }, genreBenefits: { "10": 1 }, id: 55, order: 3, origin: "offer" },
-                        { genre: 2, letter: "X", cost: 2, benefits: { "3": 1 }, genreBenefits: { "10": 2 }, id: 136, order: 4, origin: "offer" },
-                        { genre: 4, letter: "K", cost: 2, benefits: { "10": 1 }, genreBenefits: { "10": 1, "14": true }, id: 24, order: 5, origin: "offer" },
-                        { genre: 1, letter: "F", cost: 3, benefits: { "10": 2 }, genreBenefits: { "3": 2, "4": true }, id: 23, order: 6, timeless: true, origin: "offer" },
+                        { id: 35, refId: 24, order: 0, origin: "offer" },
+                        { id: 72, refId: 46, order: 1, origin: "offer" },
+                        { id: 82, refId: 50, order: 2, origin: "offer" },
+                        { id: 120, refId: 38, order: 3, origin: "offer" },
+                        { id: 150, refId: 81, order: 4, origin: "offer" },
+                        { id: 133, refId: 37, order: 5, origin: "offer" },
+                        { id: 25, refId: 106, order: 6, origin: "offer" },
                     ],
                 },
-                gamestate: { id: "2", active_player: "2305327", args: null, reflexion: { total: { "2305326": "259200", "2305327": 251657 }, initial: { "2305327": 251680 }, initial_ts: { "2305327": 1609281043226 } }, updateGameProgression: 0, name: "playerTurn", description: "${actplayer} must spell a word", descriptionmyturn: "${you} must spell a word", type: "activeplayer", possibleactions: ["drag", "buildTableau", "confirmWord", "pass"], transitions: { playCard: 2, pass: 2 } },
+                gamestate: { id: "2", active_player: "2305327", args: null, reflexion: { total: { "2305326": "259186", "2305327": 258484 }, initial: { "2305327": 258492 }, initial_ts: { "2305327": 1609638582972 } }, updateGameProgression: 0, name: "playerTurn", description: "${actplayer} must spell a word", descriptionmyturn: "${you} must spell a word", type: "activeplayer", possibleactions: ["dragOrder", "dragMove", "sort", "confirmWord", "skipTurn"], transitions: { playCard: 90, skipTurn: 90 } },
                 tablespeed: "17",
                 game_result_neutralized: "0",
                 neutralized_player_id: "0",
                 playerorder: ["2305327", 2305326],
-                gamestates: { "1": { name: "gameSetup", description: "", type: "manager", action: "stGameSetup", transitions: { "": 2 } }, "2": { name: "playerTurn", description: "${actplayer} must spell a word", descriptionmyturn: "${you} must spell a word", type: "activeplayer", possibleactions: ["drag", "buildTableau", "confirmWord", "pass"], transitions: { playCard: 2, pass: 2 } }, "99": { name: "gameEnd", description: "End of game", type: "manager", action: "stGameEnd", args: "argGameEnd" } },
-                notifications: { last_packet_id: "103", move_nbr: "103" },
+                gamestates: { "1": { name: "gameSetup", description: "", type: "manager", action: "stGameSetup", transitions: { "": 2 } }, "2": { name: "playerTurn", description: "${actplayer} must spell a word", descriptionmyturn: "${you} must spell a word", type: "activeplayer", possibleactions: ["dragOrder", "dragMove", "sort", "confirmWord", "skipTurn"], transitions: { playCard: 90, skipTurn: 90 } }, "90": { name: "nextPlayer", description: "", type: "game", action: "stNextPlayer", transitions: { playerTurn: 2, gameEnd: 98 }, updateGameProgression: true }, "98": { name: "gameEndStats", description: "", type: "game", action: "stGameEndStats", transitions: { gameEnd: 99 } }, "99": { name: "gameEnd", description: "End of game", type: "manager", action: "stGameEnd", args: "argGameEnd" } },
+                notifications: { last_packet_id: "206", move_nbr: "121" },
                 decision: { decision_type: "none" },
             };
 
             var game = {
                 player_id: 2305327,
-                isCurrentPlayerActive: function () { return true; }
+                isCurrentPlayerActive: function () { return true; },
+                name: function () { return 'hardback'; },
+                ajaxcall: function (url, parameters, obj_callback, callback, callback_error) {
+                    if (callback) {
+                        callback();
+                    }
+                },
             };
 
             console.log('pretend game setup');
             const app = Vue.createApp(HGame);
             app.config.globalProperties.game = game;
+            app.config.globalProperties.emitter = mitt();
             var vue = app.mount('#app');
             vue.gamedatas = gamedatas;
-            //vue.setup(game, gamedatas);
-
-            const panelApp = Vue.createApp(HPlayerPanel);
-            panelApp.config.globalProperties.game = game;
-            var panel = panelApp.mount('#panel');
-            panel.player = {
-                ink: 5,
-                remover: 99
-            };
         }, 200);
     </script>
 </body>

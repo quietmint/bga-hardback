@@ -1,37 +1,39 @@
 <template>
-  <div class="card-item p-1 select-none cursor-move">
-    <div :class="cardClass" class="relative inline-flex auto-rows-auto rounded-lg">
-      <!-- Letter -->
-      <div :class="letterClass" class="self-center text-center text-8xl">
-        {{ letter }}
-      </div>
+  <div :class="cardClass" class="relative inline-flex auto-rows-auto rounded-lg card-item select-none cursor-move overflow-hidden">
+    <!-- ID -->
+    <div class="absolute bottom-1 left-1 font-bold text-sm">{{ origin }} (#{{ id }})</div>
 
-      <!-- Effect -->
-      <div :class="effectClass" class="bg-gray-100 bg-opacity-60 p-2 flex-grow rounded-l-lg">
-        <p>Origin: {{ origin }}</p>
+    <!-- Icon -->
+    <div class="absolute top-1 left-1 leading-none">
+      <Icon :icon="icon" :class="iconClass" class="text-3xl" />
+    </div>
 
+    <!-- Letter -->
+    <div :class="letterClass" class="self-center text-center text-8xl">
+      {{ letter }}
+    </div>
+
+    <div class="flex flex-col flex-grow" :class="effectClass">
+      <!-- Benefits -->
+      <div class="bg-gray-100 bg-opacity-60 p-1 flex-shrink rounded-l-lg">
         <ul>
-          <li v-for="benefit in benefitsList" :key="benefit.id" v-html="benefit.text"></li>
+          <li v-for="benefit in benefitsList" :key="benefit.id">{{ benefit.text }}<Icon v-if="benefit.icon" :icon="benefit.icon" class="inline" />{{ benefit.text2 }}<Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline" />{{ benefit.text3 }}<Icon v-if="benefit.icon3" :icon="benefit.icon3" class="inline" /></li>
         </ul>
-        <hr>
+      </div>
+
+      <!-- Genre Benefits -->
+      <div v-if="genreBenefitsList.length" class="bg-gray-100 bg-opacity-60 p-1 mt-1 flex-shrink rounded-l-lg">
+        <div class="italic uppercase text-xs text-gray-700 border-b border-gray-700">With other <Icon :icon="icon" class="inline text-lg" /></div>
         <ul>
-          <li v-for="benefit in genreBenefitsList" :key="benefit.id" v-html="benefit.text"></li>
+          <li v-for="benefit in genreBenefitsList" :key="benefit.id">{{ benefit.text }}<Icon v-if="benefit.icon" :icon="benefit.icon" class="inline" />{{ benefit.text2 }}<Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline" />{{ benefit.text3 }}<Icon v-if="benefit.icon3" :icon="benefit.icon3" class="inline" /></li>
         </ul>
       </div>
+    </div>
 
-      <!-- Icon -->
-      <div class="absolute top-1 left-1 leading-none">
-        <Icon :icon="icon" :class="iconClass" class="text-3xl" />
-      </div>
-
-      <!-- Instant Points -->
-      <div v-if="points" class="absolute bottom-0 right-10 bg-gray-50 border border-r-2 border-b-0 border-gray-900 p-1 font-bold rounded-t-md">{{ points }}<Icon icon="star" class="inline" /></div>
-
-      <!-- Cost -->
-      <div v-if="cost" class="absolute bottom-0 right-2 bg-gray-50 border border-r-2 border-b-0 border-gray-900 p-1 font-bold rounded-t-md">{{ cost }}¢</div>
-
-      <!-- ID -->
-      <div class="absolute top-1 right-2 font-bold text-sm">{{ id }}</div>
+    <!-- Price Tag -->
+    <div v-if="cost" class="pricetag absolute bottom-1 right-1 font-bold text-sm shadow-md">
+      {{ cost }}¢
+      <div v-if="points" class="border-t border-gray-500">{{ points }}<Icon icon="star" class="inline" /></div>
     </div>
   </div>
 </template>
@@ -39,10 +41,6 @@
 <script lang="ts">
 import Constants from "./constants.js";
 import { Icon, addIcon } from "@iconify/vue";
-import mdiCompass from "@iconify-icons/mdi/compass";
-import mdiHeart from "@iconify-icons/mdi/heart";
-import mdiMagnify from "@iconify-icons/mdi/magnify";
-import mdiSkull from "@iconify-icons/mdi/skull";
 
 export default {
   name: "HCard",
@@ -62,6 +60,7 @@ export default {
     order: Number,
     origin: String,
     timeless: Boolean,
+    ink: Boolean,
   },
   computed: {
     cardClass() {
@@ -70,6 +69,10 @@ export default {
         c = "flex-row	w-60 h-44 ";
       } else {
         c = "flex-col w-44 h-60 ";
+      }
+
+      if (this.ink) {
+        c += "ring-4 ring-gray-900 ring-inset ";
       }
       switch (this.genre) {
         case Constants.ADVENTURE:
@@ -125,13 +128,13 @@ export default {
     icon() {
       switch (this.genre) {
         case Constants.ADVENTURE:
-          return mdiCompass;
+          return "adventure";
         case Constants.HORROR:
-          return mdiSkull;
+          return "horror";
         case Constants.ROMANCE:
-          return mdiHeart;
+          return "romance";
         case Constants.MYSTERY:
-          return mdiMagnify;
+          return "mystery";
       }
     },
   },

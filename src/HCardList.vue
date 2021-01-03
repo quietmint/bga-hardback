@@ -1,26 +1,25 @@
 <template>
-  <div class="my-2 p-1 rounded-lg bg-gray-900 bg-opacity-20">
-    <b>{{ locationName }}</b>
-    <draggable class="min-h-64 flex flex-wrap justify-center" group="cards" :list="cards" item-key="id" :animation="500" :move="move" @change="change" tag="transition-group" :component-data="{ tag: 'div' }">
-      <template #item="{ element }">
-        <HCard v-bind="element" @click="clickCard" />
-      </template>
-    </draggable>
-  </div>
+  <draggable class="flex flex-wrap justify-center" :class="heightClass" group="cards" :list="cards" item-key="id" :move="move" @change="change" :animation="500" tag="transition-group" :component-data="{ tag: 'div' }">
+    <template #item="{ element }">
+      <div class="m-1" :key="element.id">
+        <HCard v-bind="element" @click="click(element)" />
+        <HFooter :location="location" :card="element" />
+      </div>
+    </template>
+  </draggable>
 </template>
 
 <script lang="ts">
-import draggable from "vuedraggable";
 import Constants from "./constants.js";
+import { Icon, addIcon } from "@iconify/vue";
+import draggable from "vuedraggable";
 import HCard from "./HCard.vue";
+import HFooter from "./HFooter.vue";
 
 export default {
   name: "HCardList",
-  emits: ["drag"],
-  components: {
-    draggable,
-    HCard,
-  },
+  emits: ["click", "drag"],
+  components: { Icon, draggable, HCard, HFooter },
   props: {
     cards: {
       type: Array,
@@ -34,22 +33,16 @@ export default {
       type: Function,
       required: true,
     },
-    clickCard: {
-      type: Function,
-      required: false,
-    },
   },
   computed: {
-    locationName(): String {
+    heightClass(): String {
       switch (this.location) {
         case "tableau":
-          return "Tableau";
+          return "min-h-64";
         case "timeless":
-          return "Timeless Classics";
-        case "offer":
-          return "Offer Row";
+          "min-w-60";
         default:
-          return "My Hand";
+          return "min-h-60";
       }
     },
   },
@@ -60,14 +53,32 @@ export default {
       let toLocation: String = evt.relatedContext.component.$parent.location;
       return this.checkDrag(card, fromLocation, toLocation);
     },
-    change(evt) {
+    change(evt): void {
       let location: String = this.location;
       let event = evt.moved ? "order" : evt.added ? "add" : "remove";
       let e = evt.moved || evt.added || evt.removed;
       let cardId = e.element.id;
       let order = e.newIndex != null ? e.newIndex : e.oldIndex;
-      // let cardIds: Array<Number> = this.cards.map((card) => card.id);
       this.$emit("drag", { location, event, cardId, order });
+    },
+    click(card): void {
+      let location: String = this.location;
+      this.$emit("click", { location, card });
+    },
+
+    footerClass(card): String {
+      if (card.ink) {
+        return "bg-black text-white";
+      } else if (this.location == "tableau") {
+        return "bg-white";
+      }
+    },
+    footerText(card): String {
+      if (card.ink) {
+        return "bg-black text-white";
+      } else if (this.location == "tableau") {
+        return "bg-white";
+      }
     },
   },
 };

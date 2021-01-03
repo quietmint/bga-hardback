@@ -1,12 +1,8 @@
 export default {
+    base: '',
     cors: true,
-    outDir: '../modules/vue',
+    outDir: '../modules/vue/',
     assetsDir: '',
     emitIndex: false,
     sourcemap: true,
-    /*
-    rollupInputOptions: {
-        external: ['vue']
-    }
-    */
 }

@@ -12,16 +12,16 @@ class PlayerMgr extends APP_GameClass
         return self::getObjectListFromDb("SELECT player_id FROM player", true);
     }
 
-    public static function getPlayer($id)
+    public static function getPlayer($playerId)
     {
-        return self::getPlayers([$id])[$id];
+        return self::getPlayers([$playerId])[$playerId];
     }
 
-    public static function getPlayers($ids = null)
+    public static function getPlayers($playerIds = null)
     {
-        $sql = "SELECT player_id id, player_name name, player_score score, coins, ink, remover FROM player";
-        if (is_array($ids)) {
-            $sql .= " WHERE player_id IN ('" . implode("','", $ids) . "')";
+        $sql = "SELECT player_id id, player_name name, player_score score, player_color color, coins, ink, remover FROM player";
+        if (is_array($playerIds)) {
+            $sql .= " WHERE player_id IN ('" . implode("','", $playerIds) . "')";
         }
         //$sql .= " ORDER BY no";
         $players = self::getCollectionFromDb($sql);
@@ -31,8 +31,33 @@ class PlayerMgr extends APP_GameClass
             $player['coins'] = intval($player['coins']);
             $player['ink'] = intval($player['ink']);
             $player['remover'] = intval($player['remover']);
-            $player['totalCount'] = CardMgr::getPlayerTotalCount($player['id']);
+            $player['deckCount'] = CardMgr::getDeckCount($player['id']);
+            $player['discardCount'] = CardMgr::getDiscardCount($player['id']);
         }
         return $players;
+    }
+
+    public static function useCoins($playerId, $amount = 1)
+    {
+        self::DbQuery("UPDATE player SET coins = coins - $amount WHERE coins >= $amount AND player_id = $playerId");
+        if (self::DbAffectedRow() == 0) {
+            throw new BgaUserException("You do not have {$amount}¢");
+        }
+    }
+
+    public static function useInk($playerId, $amount = 1)
+    {
+        self::DbQuery("UPDATE player SET ink = ink - $amount WHERE ink >= $amount AND player_id = $playerId");
+        if (self::DbAffectedRow() == 0) {
+            throw new BgaUserException("You do not have ink");
+        }
+    }
+
+    public static function useRemover($playerId, $amount = 1)
+    {
+        self::DbQuery("UPDATE player SET remover = remover - $amount WHERE remover >= $amount AND player_id = $playerId");
+        if (self::DbAffectedRow() == 0) {
+            throw new BgaUserException("You do not have remover");
+        }
     }
 }

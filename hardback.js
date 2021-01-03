@@ -28,48 +28,43 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         setup: function (gamedatas) {
             console.log("Game setup", gamedatas);
 
-            // Intiailize HGame
+            // Intiailize Vue
             let app = Vue.createApp(HGame);
             app.config.globalProperties.game = this;
-            this.vue.game = app.mount('#app');
-            this.vue.game.gamedatas = gamedatas;
-
-            // Intialize HPlayerBoard for each player
-            for (var player_id in gamedatas.players) {
-                var id = 'player_panel_vue_' + player_id;
-                dojo.place('<div id="' + id + '" class="tailwind"></div>', 'player_board_' + player_id);
-                let app = Vue.createApp(HPlayerPanel);
-                app.config.globalProperties.game = this;
-                this.vue[player_id] = app.mount('#' + id);
-                this.vue[player_id].player = gamedatas.players[player_id];
-            }
+            app.config.globalProperties.emitter = mitt();
+            this.vue = app.mount('#app');
+            this.vue.gamedatas = gamedatas;
 
             // Setup notifications
-            dojo.subscribe('cards', this, 'onNotifyCards');
-            dojo.subscribe('player', this, 'onNotifyPlayer');
+            dojo.subscribe('cards', this, 'onNotify');
+            this.notifqueue.setSynchronous('cards', 500);
+            dojo.subscribe('invalid', this, 'onNotify');
+            dojo.subscribe('panel', this, 'onNotify');
+        },
+
+        /* @Override */
+        format_string_recursive: function (log, args) {
+            if (log && args && !args.processed) {
+                args.processed = true;
+                log = this.vue.onFormatString(log, args);
+            }
+            return this.inherited(arguments);
         },
 
         onEnteringState: function (stateName, args) {
-            this.vue.game.onEnteringState(stateName, args);
+            this.vue.onEnteringState(stateName, args);
         },
 
         onLeavingState: function (stateName) {
-            this.vue.game.onLeavingState(stateName, args);
+            this.vue.onLeavingState(stateName);
         },
 
         onUpdateActionButtons: function (stateName, args) {
-            this.vue.game.onUpdateActionButtons(stateName, args);
+            this.vue.onUpdateActionButtons(stateName, args);
         },
 
-        onNotifyCards: function (notif) {
-            console.log('notify cards', notif);
-            this.vue.game.onNotify(notif);
-        },
-
-        onNotifyPlayer: function (notif) {
-            console.log('notify player', notif);
-            let player = notif.args.player;
-            this.vue[player.id].player = player;
+        onNotify: function (notif) {
+            this.vue.onNotify(notif);
         },
     });
 });

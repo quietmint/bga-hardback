@@ -28,3 +28,10 @@ define('OPTION_DICTIONARY', 100);
 define('TWELVEDICTS', 1);
 define('NWL', 2);
 define('COLLINS', 3);
+
+// Game states
+define('ST_BGA_GAME_SETUP', 1);
+define('ST_PLAYER_TURN', 2);
+define('ST_NEXT_PLAYER', 90);
+define('ST_GAME_END', 98);
+define('ST_BGA_GAME_END', 99);

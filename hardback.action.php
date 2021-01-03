@@ -37,35 +37,37 @@ class action_hardback extends APP_GameAction
     }
   }
 
-  public function buildTableau()
+  public function useInk()
   {
     self::setAjaxMode();
-    $this->game->checkAction('buildTableau');
+    // Don't check, since using ink is allowed out-of-turn
+    $this->game->useInk();
+    self::ajaxResponse();
+  }
+
+  public function useRemover()
+  {
+    self::setAjaxMode();
+    // Don't check, since using remover is allowed out-of-turn
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->useRemover($cardId);
+    self::ajaxResponse();
+  }
+
+  public function confirmWord()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('confirmWord');
     $cardIds = explode(',', self::getArg('cardIds', AT_numberlist, true));
-    $this->game->buildTableau($cardIds);
+    $this->game->confirmWord($cardIds);
     self::ajaxResponse();
   }
 
-  public function dragOrder()
+  public function skipTurn()
   {
     self::setAjaxMode();
-    $this->game->checkAction('dragOrder');
-    $location = self::getArg('location', AT_alphanum, true);
-    $cardId = self::getArg('cardId', AT_posint, true);
-    $order = self::getArg('order', AT_posint, true);
-    $this->game->dragOrder($cardId, $order, $location);
-    self::ajaxResponse();
-  }
-
-  public function dragMove()
-  {
-    self::setAjaxMode();
-    $this->game->checkAction('dragMove');
-    $from = self::getArg('from', AT_alphanum, true);
-    $to = self::getArg('to', AT_alphanum, true);
-    $cardId = self::getArg('cardId', AT_posint, true);
-    $order = self::getArg('order', AT_posint, true);
-    $this->game->dragMove($cardId, $order, $from, $to);
+    $this->game->checkAction('skipTurn');
+    $this->game->skipTurn();
     self::ajaxResponse();
   }
 }

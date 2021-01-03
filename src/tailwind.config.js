@@ -16,6 +16,7 @@ module.exports = {
         },
         extend: {
             minHeight: {
+                '60': '15rem',
                 '64': '16rem'
             },
         },

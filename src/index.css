@@ -22,6 +22,9 @@
         --tw-text-opacity: 1;
         color: rgba(255, 255, 255, var(--tw-text-opacity));
     }
+    .small-caps {
+        font-variant: small-caps;
+    }
 }
 
 @tailwind components;
@@ -42,6 +45,27 @@
 .font-mystery {
     font-family: 'New Rocker', serif;
     text-shadow: -1px 0 1px white, 1px 0px 1px black;
+}
+
+.pricetag {
+    background: white;
+    width: 26px;
+    text-align: center;
+}
+
+.pricetag::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-width: 0 13px 8px 13px;
+    border-color: transparent transparent white transparent;
+}
+
+.container-tableau {
+    background: url(paper.jpg);
 }
 
 .v-enter-active, .v-leave-active, .v-move {

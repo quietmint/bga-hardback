@@ -1,24 +1,77 @@
 <?php
 
+use function PHPSTORM_META\map;
+
 class CardMgr extends APP_GameClass
 {
     private static $cards = null;
 
     private static $refBenefits = [
-        COINS => ['text' => 'Gain %¢'],
-        DOUBLE => ['text' => 'Double adjacent card'],
-        EITHER => ['text' => 'Gain %¢ or %*'],
-        INK => ['text' => 'Gain 1 ink or remover'],
-        JAIL => ['text' => 'Jail offer row card'],
-        SPECIAL_ADVENTURE => ['text' => 'Gain 2* for each adventure card'],
-        SPECIAL_HORROR => ['text' => 'Each opponent returns 1 ink or remover'],
-        SPECIAL_MYSTERY => ['text' => 'Gain 1* for each wild'],
-        SPECIAL_ROMANCE => ['text' => 'Peek at top 3 cards of your deck'],
-        POINTS => ['text' => 'Gain %*'],
-        TRASH_COINS => ['text' => 'Trash to gain %¢'],
-        TRASH_DISCARD => ['text' => 'Trash from discard to gain %¢'],
-        TRASH_POINTS => ['text' => 'Trash to gain %*'],
-        UNCOVER => ['text' => 'Uncover adjacent wild'],
+        COINS => [
+            'text' => '%¢',
+        ],
+        DOUBLE => [
+            'text' => 'Double adjacent card',
+        ],
+        EITHER => [
+            'text' => '%¢ or %',
+            'icon' => 'star',
+        ],
+        INK => [
+            'text' => '1',
+            'icon' => 'ink',
+            'text2' => ' or ',
+            'icon2' => 'remover',
+        ],
+        JAIL => [
+            'text' => 'Jail offer row card',
+        ],
+        SPECIAL_ADVENTURE => [
+            'text' => '2',
+            'icon' => 'star',
+            'text2' => ' for each',
+            'icon2' => 'adventure',
+        ],
+        SPECIAL_HORROR => [
+            'text' => 'Opponents return 1',
+            'icon' => 'ink',
+            'text2' => ' or ',
+            'icon2' => 'remover',
+        ],
+        SPECIAL_MYSTERY => [
+            'text' => '1',
+            'icon' => 'star',
+            'text2' => ' for each wild',
+        ],
+        SPECIAL_ROMANCE => [
+            'text' => 'Peek at top 3 cards of your deck',
+        ],
+        POINTS => [
+            'text' => '%',
+            'icon' => 'star',
+        ],
+        TRASH_COINS => [
+            'icon' => 'trash',
+            'text2' => 'Trash this',
+            'icon2' => 'chevron',
+            'text3' => '%¢',
+        ],
+        TRASH_DISCARD => [
+            'icon' => 'trash',
+            'text2' => 'Trash discard',
+            'icon2' => 'chevron',
+            'text3' => '%¢',
+        ],
+        TRASH_POINTS => [
+            'icon' => 'trash',
+            'text2' => 'Trash this',
+            'icon2' => 'chevron',
+            'text3' => '%',
+            'icon3' => 'star',
+        ],
+        UNCOVER => [
+            'text' => 'Uncover adjacent wild',
+        ],
     ];
 
     private static $refCards = [
@@ -191,35 +244,56 @@ class CardMgr extends APP_GameClass
         self::$cards = self::getNew('module.common.deck');
         self::$cards->init('card');
         self::$cards->autoreshuffle = true;
-        self::$cards->autoreshuffle_custom = ['deckOffer' => 'discardOffer'];
+        self::$cards->autoreshuffle_custom = ['deck' => 'discard'];
         foreach (PlayerMgr::getPlayerIds() as $playerId) {
-            self::$cards->autoreshuffle_custom["deck$playerId"] = "discard$playerId";
+            self::$cards->autoreshuffle_custom[self::getDeckLocation($playerId)] = self::getDiscardLocation($playerId);
         }
     }
 
-    public static function populateCard($dbcard, $minimal = true)
+    public static function populateCard($dbcard, $minimal = false)
     {
         if ($dbcard == null) {
             return null;
         }
         $output = [];
         if (!$minimal) {
-            $type = self::$refCards[intval($dbcard['type_arg'])];
+            $type = self::$refCards[intval($dbcard['card_type_arg'])];
             $output = $type;
-            $output['location'] = $dbcard['location'];
+            $output['location'] = $dbcard['card_location'];
+            $output['genreName'] = 'Starter';
+            if ($output['genre'] == ADVENTURE) {
+                $output['genreName'] = 'Adventure';
+            } else if ($output['genre'] == HORROR) {
+                $output['genreName'] = 'Horror';
+            } else if ($output['genre'] == MYSTERY) {
+                $output['genreName'] = 'Mystery';
+            } else if ($output['genre'] == ROMANCE) {
+                $output['genreName'] = 'Romance';
+            }
+            $output['desc'] = $output['genreName'] . '-' . $output['letter'];
         }
-        $output['id'] = intval($dbcard['id']);
-        $output['refId'] = $dbcard['refId'] ?? intval($dbcard['type_arg']);
-        $output['order'] = $dbcard['order'] ?? intval($dbcard['location_arg']);
-        $output['origin'] = $dbcard['origin'] ?? $dbcard['type'];
+        $output['id'] = intval($dbcard['id'] ?? $dbcard['card_id']);
+        $output['refId'] = intval($dbcard['refId'] ?? $dbcard['card_type_arg']);
+        $output['order'] = intval($dbcard['order'] ?? $dbcard['card_location_arg']);
+        $output['origin'] = $dbcard['origin'] ?? $dbcard['card_type'];
+        if (array_key_exists('ink', $dbcard) && $dbcard['ink'] == 1) {
+            $output['ink']  = true;
+        }
         return $output;
     }
 
-    public static function populateCards($dbcards, $minimal = true)
+    public static function populateCards($dbcards, $minimal = false)
     {
-        return array_map(function ($card) use ($minimal) {
+        $cards = array_map(function ($card) use ($minimal) {
             return self::populateCard($card, $minimal);
         }, $dbcards);
+        /*
+        if ($minimal) {
+            // Minimal always returns an array, never an object
+            $cards = array_values($cards);
+        }
+        */
+        return $cards;
     }
 
     public static function getCardRef()
@@ -230,6 +304,28 @@ class CardMgr extends APP_GameClass
     public static function getBenefitRef()
     {
         return self::$refBenefits;
+    }
+
+    public static function getTimelessRefIds()
+    {
+        $refIds = [];
+        foreach (self::$refCards as $refId => $ref) {
+            if ($ref['timeless']) {
+                $refIds[] = $refId;
+                break;
+            }
+        }
+        return $refIds;
+    }
+
+    private static function getWhereClause($cardIds)
+    {
+        if (is_numeric($cardIds)) {
+            return "card_id = $cardIds";
+        } else if (is_array($cardIds)) {
+            return "card_id IN (" . implode(',', $cardIds) . ")";
+        }
+        return "0 = 1";
     }
 
     /* Change */
@@ -243,9 +339,7 @@ class CardMgr extends APP_GameClass
         $playerIds = PlayerMgr::getPlayerIds();
         self::dump("playerIds", $playerIds);
         foreach ($playerIds as $playerId) {
-            $letters = ['A', 'E', 'I', 'L', 'N', 'R', 'S', 'T'];
-            $letters += array_splice($randomLetters, 0, 2);
-            self::dump("letters for player $playerId", $letters);
+            $letters = array_merge(['A', 'E', 'I', 'L', 'N', 'R', 'S', 'T'], array_splice($randomLetters, 0, 2));
             $create = [];
             foreach ($letters as $letter) {
                 // Find the type ID
@@ -256,11 +350,10 @@ class CardMgr extends APP_GameClass
                     }
                 }
             }
-            self::dump("create cards for player $playerId", $create);
-            self::$cards->createCards($create, "deck$playerId");
-            self::$cards->shuffle("deck$playerId");
-            self::drawCards(5, "deck$playerId", "hand$playerId", 'letter');
-            self::$cards->shuffle("hand$playerId");
+            self::$cards->createCards($create, self::getDeckLocation($playerId));
+            self::$cards->shuffle(self::getDeckLocation($playerId));
+            self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId), 'letter');
+            self::$cards->shuffle(self::getHandLocation($playerId));
         }
 
         // Create genre cards
@@ -271,9 +364,9 @@ class CardMgr extends APP_GameClass
                 $create[] = ['type' => '', 'type_arg' => $refId, 'nbr' => 1];
             }
         }
-        self::$cards->createCards($create, 'deckOffer');
-        self::$cards->shuffle('deckOffer');
-        self::drawCards(7, 'deckOffer', 'offer', 'cost');
+        self::$cards->createCards($create, 'deck');
+        self::$cards->shuffle('deck');
+        self::drawCards(7, 'deck', 'offer', 'cost');
         self::$cards->shuffle('offer');
         self::updateOrigin();
     }
@@ -283,12 +376,30 @@ class CardMgr extends APP_GameClass
         self::DbQuery("UPDATE card SET card_type = card_location");
     }
 
-    public static function drawCards($count, $fromLocation, $toLocation, $sort = 'letter')
+    public static function drawCards($count, $fromLocation, $toLocation, $sort = null)
     {
         $dbcards = self::$cards->pickCardsForLocation($count, $fromLocation, $toLocation);
-        if ($sort == 'letter') {
-        } else if ($sort == 'cost') {
+        $cardIds = array_map(function ($dbcard) {
+            return intval($dbcard['id']);
+        }, $dbcards);
+        if (count($cardIds) > 1) {
+            if ($sort == 'letter') {
+                // TODO
+            } else if ($sort == 'cost') {
+                // TODO
+            }
         }
+        return $cardIds;
+    }
+
+    public static function inkCards($cardIds, $inkValue = 1)
+    {
+        $sql = "UPDATE card SET ink = $inkValue";
+        if ($inkValue == 1) {
+            $sql .= ", card_type = card_location";
+        }
+        $sql .= " WHERE " . self::getWhereClause($cardIds);
+        self::DbQuery($sql);
     }
 
     public static function orderCard($cardId, $order)
@@ -309,7 +420,6 @@ class CardMgr extends APP_GameClass
 
     public static function moveAndOrderCards($cardIds, $location, $order = null)
     {
-
         if ($order = null) {
             $order = self::getCountInLocation($location);
         }
@@ -318,21 +428,50 @@ class CardMgr extends APP_GameClass
         }
     }
 
+    public static function reset($playerId)
+    {
+        // Clear ink and remover
+        self::DbQuery("UPDATE card SET ink = NULL WHERE ink IS NOT NULL AND card_location IN ('tableau', '" . self::getHandLocation($playerId) . "')");
+
+        // Tableau and hand return to current player's discard
+        self::DbQuery("UPDATE card SET card_location = '" . self::getDiscardLocation($playerId) . "' WHERE card_location IN ('tableau', '" . self::getHandLocation($playerId) . "')");
+
+        // Draw new hand for current player
+        self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId), 'letter');
+        self::updateOrigin();
+    }
+
     /* Query (generic) */
 
     public static function getCard($cardId)
     {
-        return self::populateCard(self::$cards->getCard($cardId), false);
+        $cards = self::getCards([$cardId]);
+        return array_shift($cards);
     }
 
     public static function getCards($cardIds)
     {
-        return self::populateCards(self::$cards->getCards($cardIds), false);
+        $sql = "SELECT * FROM card WHERE " . self::getWhereClause($cardIds);
+        $dbcards = self::getCollectionFromDB($sql);
+        $cards = self::populateCards($dbcards);
+        $output = [];
+        foreach ($cardIds as $cardId) {
+            if (array_key_exists($cardId, $cards)) {
+                $output[] = $cards[$cardId];
+            }
+        }
+        return $output;
     }
 
-    public static function getCardsInLocation($location)
+    public static function getCardsInLocation($location, $inkValue = null)
     {
-        return self::populateCards(self::$cards->getCardsInLocation($location, null, "location_arg"), false);
+        $sql = "SELECT * FROM card WHERE card_location = '$location'";
+        if ($inkValue != null) {
+            $sql .= " AND ink = $inkValue";
+        }
+        $sql .= " ORDER BY card_location_arg";
+        $dbcards = self::getObjectListFromDb($sql);
+        return self::populateCards($dbcards);
     }
 
     public static function getCountInLocation($location)
@@ -340,31 +479,46 @@ class CardMgr extends APP_GameClass
         return self::$cards->countCardInLocation($location);
     }
 
+    public static function getHandLocation($playerId)
+    {
+        return "hand_$playerId";
+    }
+
+    public static function getDeckLocation($playerId)
+    {
+        return "deck_$playerId";
+    }
+
+    public static function getDiscardLocation($playerId)
+    {
+        return "discard_$playerId";
+    }
+
     /* Query (specific) */
 
-    public static function getPlayerHand($playerId)
+    public static function getHand($playerId, $inkValue = null)
     {
-        return self::getCardsInLocation("hand$playerId");
+        return self::getCardsInLocation(self::getHandLocation($playerId), $inkValue);
     }
 
-    public static function getPlayerHandCount($playerId)
+    public static function getHandCount($playerId)
     {
-        return self::getCountInLocation("hand$playerId");
+        return self::getCountInLocation(self::getHandLocation($playerId));
     }
 
-    public static function getPlayerDeckCount($playerId)
+    public static function getDeckCount($playerId)
     {
-        return self::getCountInLocation("deck$playerId");
+        return self::getCountInLocation(self::getDeckLocation($playerId));
     }
 
-    public static function getPlayerDiscardCount($playerId)
+    public static function getDiscard($playerId)
     {
-        return self::getCountInLocation("discard$playerId");
+        return self::getCardsInLocation(self::getDiscardLocation($playerId));
     }
 
-    public static function getPlayerTotalCount($playerId)
+    public static function getDiscardCount($playerId)
     {
-        return self::getPlayerHandCount($playerId) + self::getPlayerDeckCount($playerId) + self::getPlayerDiscardCount($playerId);
+        return self::getCountInLocation(self::getDiscardLocation($playerId));
     }
 
     public static function getTableau()
@@ -384,7 +538,7 @@ class CardMgr extends APP_GameClass
 
     public static function getOfferDeckCount()
     {
-        return self::getCountInLocation("deckOffer");
+        return self::getCountInLocation("deck");
     }
 }
 

@@ -32,18 +32,18 @@
    Arguments of game states:
    _ name: the name of the GameState, in order you can recognize it on your own code.
    _ description: the description of the current game state is always displayed in the action status bar on
-                  the top of the game. Most of the time this is useless for game state with "game" type.
+                  the top of the game. Most of the time this is useless for game state with 'game' type.
    _ descriptionmyturn: the description of the current game state when it's your turn.
    _ type: defines the type of game states (activeplayer / multipleactiveplayer / game / manager)
    _ action: name of the method to call when this game state become the current game state. Usually, the
-             action method is prefixed by "st" (ex: "stMyGameStateName").
-   _ possibleactions: array that specify possible player actions on this step. It allows you to use "checkAction"
+             action method is prefixed by 'st' (ex: 'stMyGameStateName').
+   _ possibleactions: array that specify possible player actions on this step. It allows you to use 'checkAction'
                       method on both client side (Javacript: this.checkAction) and server side (PHP: self::checkAction).
    _ transitions: the transitions are the possible paths to go from a game state to another. You must name
-                  transitions in order to use transition names in "nextState" PHP method, and use IDs to
+                  transitions in order to use transition names in 'nextState' PHP method, and use IDs to
                   specify the next game state for each transition.
    _ args: name of the method to call to retrieve arguments for this gamestate. Arguments are sent to the
-           client side to be used on "onEnteringState" or to set arguments in the gamestate description.
+           client side to be used on 'onEnteringState' or to set arguments in the gamestate description.
    _ updateGameProgression: when specified, the game progression is updated (=> call to your getGameProgression
                             method).
 */
@@ -54,31 +54,58 @@
 $machinestates = [
 
     // The initial state. Please do not modify.
-    1 => [
-        "name" => "gameSetup",
-        "description" => "",
-        "type" => "manager",
-        "action" => "stGameSetup",
-        "transitions" => ["" => 2]
+    ST_BGA_GAME_SETUP => [
+        'name' => 'gameSetup',
+        'description' => '',
+        'type' => 'manager',
+        'action' => 'stGameSetup',
+        'transitions' => [
+            '' => ST_PLAYER_TURN,
+        ],
     ],
 
-    2 => [
-        "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must spell a word'),
-        "descriptionmyturn" => clienttranslate('${you} must spell a word'),
-        "type" => "activeplayer",
-        "possibleactions" => ["dragOrder", "dragMove", "buildTableau", "confirmWord", "pass"],
-        "transitions" => ["playCard" => 2, "pass" => 2]
+    ST_PLAYER_TURN => [
+        'name' => 'playerTurn',
+        'description' => clienttranslate('${actplayer} must spell a word'),
+        'descriptionmyturn' => clienttranslate('${you} must spell a word'),
+        'type' => 'activeplayer',
+        'possibleactions' => ['confirmWord', 'skipTurn', 'useInk', 'useRemover'],
+        'transitions' => [
+            'playCard' => ST_NEXT_PLAYER,
+            'skipTurn' => ST_NEXT_PLAYER,
+        ],
+    ],
+
+    ST_NEXT_PLAYER => [
+        'name' => 'nextPlayer',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stNextPlayer',
+        'transitions' => [
+            'playerTurn' => ST_PLAYER_TURN,
+            'gameEnd' => ST_GAME_END,
+        ],
+        'updateGameProgression' => true,
+    ],
+
+    ST_GAME_END => [
+        'name' => 'gameEndStats',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stGameEndStats',
+        'transitions' => [
+            'gameEnd' => ST_BGA_GAME_END,
+        ],
     ],
 
     // Final state.
     // Please do not modify (and do not overload action/args methods).
-    99 => [
-        "name" => "gameEnd",
-        "description" => clienttranslate("End of game"),
-        "type" => "manager",
-        "action" => "stGameEnd",
-        "args" => "argGameEnd"
+    ST_BGA_GAME_END => [
+        'name' => 'gameEnd',
+        'description' => clienttranslate('End of game'),
+        'type' => 'manager',
+        'action' => 'stGameEnd',
+        'args' => 'argGameEnd',
     ]
 
 ];
