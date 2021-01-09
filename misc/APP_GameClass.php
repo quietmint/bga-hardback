@@ -79,7 +79,7 @@ class APP_GameClass
 
     static function getUniqueValueFromDB($sql)
     {
-        return [];
+        return "";
     }
 
     static function getObjectFromDB($sql)

@@ -23,6 +23,13 @@ define('TRASH_DISCARD', 12);
 define('TRASH_POINTS', 13);
 define('UNCOVER', 14);
 
+// Globals
+define('COUNT_STARTER', 10);
+define('COUNT_ADVENTURE', 11);
+define('COUNT_HORROR', 12);
+define('COUNT_ROMANCE', 13);
+define('COUNT_MYSTERY', 14);
+
 // Game options
 define('OPTION_DICTIONARY', 100);
 define('TWELVEDICTS', 1);
@@ -32,6 +39,20 @@ define('COLLINS', 3);
 // Game states
 define('ST_BGA_GAME_SETUP', 1);
 define('ST_PLAYER_TURN', 2);
-define('ST_NEXT_PLAYER', 90);
+
+define('ST_RESOLVE_UNCOVER', 10);
+define('ST_UNCOVER', 11);
+
+define('ST_RESOLVE_DOUBLE', 20);
+define('ST_DOUBLE', 21);
+
+define('ST_RESOLVE_EITHER', 30);
+define('ST_EITHER', 31);
+
+define('ST_RESOLVE_BASIC', 41);
+
+define('ST_CLEANUP', 90);
+define('ST_NEXT_PLAYER', 91);
+
 define('ST_GAME_END', 98);
 define('ST_BGA_GAME_END', 99);

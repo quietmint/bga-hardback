@@ -22,9 +22,6 @@
         --tw-text-opacity: 1;
         color: rgba(255, 255, 255, var(--tw-text-opacity));
     }
-    .small-caps {
-        font-variant: small-caps;
-    }
 }
 
 @tailwind components;
@@ -62,6 +59,11 @@
     height: 0;
     border-width: 0 13px 8px 13px;
     border-color: transparent transparent white transparent;
+}
+
+.hanging {
+    text-indent: -.75rem;
+    margin-left: .75rem;
 }
 
 .container-tableau {

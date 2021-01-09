@@ -1,5 +1,5 @@
 <template>
-  <div :class="cardClass" class="relative inline-flex auto-rows-auto rounded-lg card-item select-none cursor-move overflow-hidden">
+  <div :class="cardClass" class="relative inline-flex justify-center auto-rows-auto rounded-lg card-item select-none cursor-move overflow-hidden">
     <!-- ID -->
     <div class="absolute bottom-1 left-1 font-bold text-sm">{{ origin }} (#{{ id }})</div>
 
@@ -9,29 +9,29 @@
     </div>
 
     <!-- Letter -->
-    <div :class="letterClass" class="self-center text-center text-8xl">
-      {{ letter }}
+    <div :class="letterClass" class="text-center text-8xl">
+      {{ wild || letter }}
     </div>
 
     <div class="flex flex-col flex-grow" :class="effectClass">
-      <!-- Benefits -->
+      <!-- Basic Benefits -->
       <div class="bg-gray-100 bg-opacity-60 p-1 flex-shrink rounded-l-lg">
         <ul>
-          <li v-for="benefit in benefitsList" :key="benefit.id">{{ benefit.text }}<Icon v-if="benefit.icon" :icon="benefit.icon" class="inline" />{{ benefit.text2 }}<Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline" />{{ benefit.text3 }}<Icon v-if="benefit.icon3" :icon="benefit.icon3" class="inline" /></li>
+          <li v-for="benefit in basicBenefitsList" :key="benefit.id" class="hanging">{{ benefit.text }}<Icon v-if="benefit.icon" :icon="benefit.icon" class="inline" />{{ benefit.text2 }}<Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline" />{{ benefit.text3 }}<Icon v-if="benefit.icon3" :icon="benefit.icon3" class="inline" /></li>
         </ul>
       </div>
 
       <!-- Genre Benefits -->
       <div v-if="genreBenefitsList.length" class="bg-gray-100 bg-opacity-60 p-1 mt-1 flex-shrink rounded-l-lg">
-        <div class="italic uppercase text-xs text-gray-700 border-b border-gray-700">With other <Icon :icon="icon" class="inline text-lg" /></div>
+        <div class="italic uppercase text-xs text-gray-700 border-b border-gray-700">With other <Icon :icon="icon" class="inline text-base" /></div>
         <ul>
-          <li v-for="benefit in genreBenefitsList" :key="benefit.id">{{ benefit.text }}<Icon v-if="benefit.icon" :icon="benefit.icon" class="inline" />{{ benefit.text2 }}<Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline" />{{ benefit.text3 }}<Icon v-if="benefit.icon3" :icon="benefit.icon3" class="inline" /></li>
+          <li v-for="benefit in genreBenefitsList" :key="benefit.id" class="hanging">{{ benefit.text }}<Icon v-if="benefit.icon" :icon="benefit.icon" class="inline" />{{ benefit.text2 }}<Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline" />{{ benefit.text3 }}<Icon v-if="benefit.icon3" :icon="benefit.icon3" class="inline" /></li>
         </ul>
       </div>
     </div>
 
     <!-- Price Tag -->
-    <div v-if="cost" class="pricetag absolute bottom-1 right-1 font-bold text-sm shadow-md">
+    <div v-if="cost" class="pricetag absolute bottom-1 right-1 font-bold text-sm leading-tight shadow-md">
       {{ cost }}¢
       <div v-if="points" class="border-t border-gray-500">{{ points }}<Icon icon="star" class="inline" /></div>
     </div>
@@ -54,25 +54,30 @@ export default {
     letter: String,
     id: Number,
     benefits: Object,
-    benefitsList: Array,
+    basicBenefitsList: Array,
     genreBenefits: Object,
     genreBenefitsList: Array,
     order: Number,
     origin: String,
     timeless: Boolean,
     ink: Boolean,
+    wild: String,
   },
   computed: {
     cardClass() {
       let c = "";
       if (this.timeless) {
-        c = "flex-row	w-60 h-44 ";
+        c = "flex-row	w-60 h-44 items-center ";
       } else {
         c = "flex-col w-44 h-60 ";
       }
 
       if (this.ink) {
         c += "ring-4 ring-gray-900 ring-inset ";
+      }
+
+      if (this.wild) {
+        return c + "bg-gradient-to-b from-gray-100 via-purple-200 to-gray-100";
       }
       switch (this.genre) {
         case Constants.ADVENTURE:
@@ -89,7 +94,9 @@ export default {
     },
 
     effectClass() {
-      if (this.timeless) {
+      if (this.wild) {
+        return "hidden";
+      } else if (this.timeless) {
         return "my-2";
       } else {
         return "ml-2 mb-2";
@@ -98,6 +105,9 @@ export default {
 
     letterClass() {
       let c = "px-4 py-2 ";
+      if (this.wild) {
+        return c;
+      }
       switch (this.genre) {
         case Constants.ADVENTURE:
           return c + "font-adventure text-yellow-300";
@@ -113,6 +123,9 @@ export default {
     },
 
     iconClass() {
+      if (this.wild) {
+        return "text-gray-400";
+      }
       switch (this.genre) {
         case Constants.ADVENTURE:
           return "text-yellow-300";
@@ -126,6 +139,9 @@ export default {
     },
 
     icon() {
+      if (this.wild) {
+        return "wild";
+      }
       switch (this.genre) {
         case Constants.ADVENTURE:
           return "adventure";

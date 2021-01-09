@@ -37,27 +37,47 @@ class PlayerMgr extends APP_GameClass
         return $players;
     }
 
+    public static function addCoins($playerId, $amount)
+    {
+        if ($amount != 0) {
+            self::DbQuery("UPDATE player SET coins = coins + $amount WHERE player_id = $playerId");
+        }
+    }
+
+    public static function addPoints($playerId, $amount)
+    {
+        if ($amount != 0) {
+            self::DbQuery("UPDATE player SET player_score = player_score + $amount WHERE player_id = $playerId");
+        }
+    }
+
     public static function useCoins($playerId, $amount = 1)
     {
-        self::DbQuery("UPDATE player SET coins = coins - $amount WHERE coins >= $amount AND player_id = $playerId");
-        if (self::DbAffectedRow() == 0) {
-            throw new BgaUserException("You do not have {$amount}¢");
+        if ($amount != 0) {
+            self::DbQuery("UPDATE player SET coins = coins - $amount WHERE player_id = $playerId AND coins >= $amount");
+            if (self::DbAffectedRow() == 0) {
+                throw new BgaUserException("You do not have {$amount}¢");
+            }
         }
     }
 
     public static function useInk($playerId, $amount = 1)
     {
-        self::DbQuery("UPDATE player SET ink = ink - $amount WHERE ink >= $amount AND player_id = $playerId");
-        if (self::DbAffectedRow() == 0) {
-            throw new BgaUserException("You do not have ink");
+        if ($amount != 0) {
+            self::DbQuery("UPDATE player SET ink = ink - $amount WHERE player_id = $playerId AND ink >= $amount");
+            if (self::DbAffectedRow() == 0) {
+                throw new BgaUserException("You do not have $amount ink");
+            }
         }
     }
 
     public static function useRemover($playerId, $amount = 1)
     {
-        self::DbQuery("UPDATE player SET remover = remover - $amount WHERE remover >= $amount AND player_id = $playerId");
-        if (self::DbAffectedRow() == 0) {
-            throw new BgaUserException("You do not have remover");
+        if ($amount != 0) {
+            self::DbQuery("UPDATE player SET remover = remover - $amount WHERE player_id = $playerId AND remover >= $amount");
+            if (self::DbAffectedRow() == 0) {
+                throw new BgaUserException("You do not have $amount remover");
+            }
         }
     }
 }

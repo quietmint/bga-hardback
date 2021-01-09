@@ -1,6 +1,6 @@
 <template>
   <div v-if="action" :class="footerClass" class="mx-auto w-32 py-1 rounded-b-lg text-center text-xs" @click="click">
-    <Icon v-if="icon" :icon="icon" class="inline text-md" />
+    <Icon v-if="icon" :icon="icon" class="inline text-lg" />
     {{ text }}
   </div>
 </template>
@@ -29,8 +29,8 @@ export default {
         return "ink";
       } else if (this.card.origin == "timeless") {
         return "timeless";
-      } else if (this.location == "tableau") {
-        return "flip";
+      } else if (this.location == "tableau" || this.location.startsWith("hand")) {
+        return this.card.wild ? "flipUnwild" : "flipWild";
       }
     },
     footerClass() {
@@ -39,7 +39,8 @@ export default {
           return "cursor-pointer bg-black text-white";
         case "timeless":
           return "bg-red-700";
-        case "flip":
+        case "flipWild":
+        case "flipUnwild":
           return "cursor-pointer bg-white text-black";
       }
     },
@@ -49,8 +50,9 @@ export default {
           return "remover";
         case "timeless":
           return null;
-        case "flip":
-          return "flip";
+        case "flipWild":
+        case "flipUnwild":
+          return "wild";
       }
     },
     text() {
@@ -59,8 +61,10 @@ export default {
           return "REMOVE INK";
         case "timeless":
           return this.card.origin;
-        case "flip":
-          return "FLIP";
+        case "flipWild":
+          return "MAKE WILD";
+        case "flipUnwild":
+          return "UNDO WILD";
       }
     },
   },
@@ -69,7 +73,6 @@ export default {
       let action: String = this.action;
       let location: String = this.location;
       let card: any = this.card;
-      console.log("emit event clickFooter");
       this.emitter.emit("clickFooter", { action, location, card });
     },
   },

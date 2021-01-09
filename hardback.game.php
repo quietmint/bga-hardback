@@ -20,6 +20,7 @@
 
 require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
 require_once('constants.inc.php');
+require_once('modules/HCard.class.php');
 require_once('modules/PlayerMgr.class.php');
 require_once('modules/CardMgr.class.php');
 require_once('modules/WordMgr.class.php');
@@ -41,6 +42,11 @@ class hardback extends Table
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         self::initGameStateLabels(array(
             'dictionary' => OPTION_DICTIONARY,
+            'count' . STARTER => COUNT_STARTER,
+            'count' . ADVENTURE => COUNT_ADVENTURE,
+            'count' . HORROR => COUNT_HORROR,
+            'count' . ROMANCE => COUNT_ROMANCE,
+            'count' . MYSTERY => COUNT_MYSTERY,
         ));
     }
 
@@ -111,10 +117,10 @@ class hardback extends Table
                 'benefits' => CardMgr::getBenefitRef(),
             ],
             'locations' => [
-                CardMgr::getHandLocation($playerId) => CardMgr::populateCards(CardMgr::getHand($playerId), true),
-                'tableau' => CardMgr::populateCards(CardMgr::getTableau(), true),
-                'timeless' => CardMgr::populateCards(CardMgr::getTimeless(), true),
-                'offer' => CardMgr::populateCards(CardMgr::getOffer(), true)
+                CardMgr::getHandLocation($playerId) => CardMgr::getHand($playerId),
+                'tableau' => CardMgr::getTableau(),
+                'timeless' => CardMgr::getTimeless(),
+                'offer' => CardMgr::getOffer(),
             ]
         ];
     }
@@ -131,7 +137,8 @@ class hardback extends Table
     */
     function getGameProgression()
     {
-        return 0;
+        $max = intval(self::getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_zombie = 0 and player_eliminated = 0"));
+        return min(round($max / .6), 100);
     }
 
     /*
@@ -146,13 +153,13 @@ class hardback extends Table
                 $playerId = intval($parts[1]);
                 self::notifyPlayer($playerId, 'cards', '', [
                     'locations' => [
-                        $location => CardMgr::populateCards($cards, true)
+                        $location => $cards,
                     ],
                 ]);
             } else {
                 self::notifyAllPlayers('cards', '', [
                     'locations' => [
-                        $location => CardMgr::populateCards($cards, true)
+                        $location => $cards,
                     ],
                 ]);
             }
@@ -172,8 +179,8 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer($playerId);
         $this->notifyAllPlayers('ink', '${player_name} uses ink to draw ${genreName} ${letter}', [
             'player_name' => $player['name'],
-            'genreName' => $card['genreName'],
-            'letter' => $card['letter'],
+            'genreName' => $card->getGenreName(),
+            'letter' => $card->getLetter(),
         ]);
     }
 
@@ -182,8 +189,8 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer($playerId);
         $this->notifyAllPlayers('remover', '${player_name} uses remover to avoid ${genreName} ${letter}', [
             'player_name' => $player['name'],
-            'genreName' => $card['genreName'],
-            'letter' => $card['letter'],
+            'genreName' => $card->getGenreName(),
+            'letter' => $card->getLetter(),
         ]);
     }
 
@@ -273,6 +280,199 @@ class hardback extends Table
     }
     */
 
+
+
+    /*
+     * PHASE 1: SPELL A WORD
+     * PHASE 2: DISCARD UNUSED CARDS
+     */
+
+    function confirmWord($cardIds, $wildMask)
+    {
+        // Minimum 2 letters
+        if (count($cardIds) < 2) {
+            throw new BgaUserException("You must use at least 2 letters");
+        }
+
+        $playerId = self::getActivePlayerId();
+        $playerName = self::getActivePlayerName();
+        $cards = CardMgr::getCards($cardIds);
+        CardMgr::applyWildMask($cards, $wildMask);
+
+        // Cards must originate from a valid location
+        $locations = [CardMgr::getHandLocation($playerId), "timeless"];
+        $invalid = array_filter($cards, function ($card) use ($locations) {
+            return !$card->isLocation($locations);
+        });
+        if (!empty($invalid)) {
+            throw new BgaUserException("You cannot use cards unavailable to player $playerId: " .  CardMgr::getString($invalid));
+        }
+
+        // All inked cards must be used and cannot be wild
+        $inked = array_filter(CardMgr::getHand($playerId, true), function ($card) use ($cardIds) {
+            return $card->isWild() || !in_array($card->getId(), $cardIds);
+        });
+        if (!empty($inked)) {
+            throw new BgaUserException("You must use all inked cards: " .  CardMgr::getString($inked));
+        }
+
+        // Word must be valid
+        $word = implode('', array_map(function ($card) {
+            return $card->getLetter();
+        }, $cards));
+        $dictionaryId = $this->gamestate->table_globals[OPTION_DICTIONARY];
+        $valid = WordMgr::isWord($dictionaryId, $word);
+        if (!$valid) {
+            self::notifyAllPlayers('invalid', '${player_name} spell an invalid word, ${word}', [
+                'player_id' => $playerId,
+                'player_name' => $playerName,
+                'word' => $word,
+            ]);
+            // Display the invalid attempt
+            $this->notifyCards([
+                'tableau' => $cards,
+            ]);
+            return;
+        }
+        self::notifyAllPlayers('message', '${player_name} spells ${word}', [
+            'player_name' => $playerName,
+            'word' => $word,
+        ]);
+
+        // Database commit
+        CardMgr::playWord($playerId, $cards);
+
+        // Check for genre benefit activation
+        foreach (CardMgr::getGenreCounts($cards) as $genre => $count) {
+            self::notifyAllPlayers('message', "count genre $genre = $count", []);
+            $this->setGameStateValue("count$genre", $count);
+        }
+
+        // Display the word
+        $this->notifyCards([
+            'tableau' => $cards,
+            CardMgr::getHandLocation($playerId) => [],
+        ]);
+
+        $this->gamestate->nextState('resolve');
+    }
+
+    /*
+     * PHASE 3: RESOLVE CARD BENEFITS
+     */
+
+    function isActive($genre)
+    {
+        return $this->getGameStateValue("count$genre") >= 2;
+    }
+
+    function stResolveUncover()
+    {
+        $tableau = CardMgr::getTableau();
+        $uncover = array_filter($tableau, function ($card) {
+            $active = $this->isActive($card->getGenre());
+            return $card->hasBenefit($active, UNCOVER);
+        });
+        self::notifyAllPlayers('message', "stResolveUncover count = " . count($uncover), []);
+        if (empty($uncover)) {
+            $this->gamestate->nextState('resolve');
+            return;
+        }
+    }
+
+    function argsUncover()
+    {
+    }
+
+    function uncover()
+    {
+    }
+
+    function stResolveEither()
+    {
+        $tableau = CardMgr::getTableau();
+        $choice = array_filter($tableau, function ($card) {
+            $active = $this->isActive($card->getGenre());
+            return $card->hasBenefit($active, EITHER);
+        });
+        self::notifyAllPlayers('message', "stResolveChoice count = " . count($choice), []);
+        if (empty($choice)) {
+            $this->gamestate->nextState('resolve');
+            return;
+        }
+    }
+
+    function argsEither()
+    {
+    }
+
+    function either()
+    {
+    }
+
+    function stResolveBasic()
+    {
+        $tableau = CardMgr::getTableau();
+        $coins = 0;
+        $points = 0;
+        foreach ($tableau as $card) {
+            $active = $this->isActive($card->getGenre());
+            self::notifyAllPlayers('message', "card: $card, id={$card->getId()}, genre={$card->getGenre()}, active=$active", []);
+
+            $b = $card->getBenefits($active);
+            foreach ($b as $bk => $v) {
+                self::notifyAllPlayers('message', "card: $card, benefit: $bk = $v", []);
+            }
+
+            $coinValue = $card->getBenefitValue($active, COINS);
+            if ($coinValue) {
+                $coins += $coinValue;
+            }
+            $pointValue = $card->getBenefitValue($active, POINTS);
+            if ($pointValue) {
+                $points += $pointValue;
+            }
+        }
+
+        $playerId = self::getActivePlayerId();
+        PlayerMgr::addCoins($playerId, $coins);
+        PlayerMgr::addPoints($playerId, $points);
+        $this->notifyPanel($playerId);
+
+        self::notifyAllPlayers('message', "stResolveBasic coins = $coins, points = $points", []);
+        $this->gamestate->nextState('resolve');
+    }
+
+    /*
+     * PHASE 4: PURCHASE NEW CARDS AND INK
+     */
+
+    /*
+     * PHASE 5: DISCARD USED CARDS AND INK
+     * PHASE 6: DISCARD USED TIMELESS CLASSIC CARDS
+     */
+
+    function stCleanup()
+    {
+        $this->gamestate->nextState('nextPlayer');
+    }
+
+    /*
+     * PHASE 7: DRAW YOUR NEXT HAND
+     */
+
+    function skipTurn()
+    {
+        self::notifyAllPlayers('message', '${player_name} is stymied by writer\'s block and skips their turn.', [
+            'player_name' => self::getActivePlayerName(),
+        ]);
+        $this->gamestate->nextState('nextPlayer');
+    }
+
+    /*
+     * PHASE 8: USE INK AND REMOVER
+     */
+
     function useInk()
     {
         $playerId = self::getCurrentPlayerId();
@@ -299,8 +499,8 @@ class hardback extends Table
         $playerId = self::getCurrentPlayerId();
         $active = $playerId == self::getActivePlayerId();
         $card = CardMgr::getCard($cardId);
-        if ($card == null || $card['location'] != CardMgr::getHandLocation($playerId) && $card['location'] != 'tableau') {
-            throw new BgaUserException("You cannot use cards unavailable to player $playerId: {$card['location']}");
+        if ($card == null || !$card->isLocation(CardMgr::getHandLocation($playerId), 'tableau')) {
+            throw new BgaUserException("Card $card is unavailable to player $playerId");
         }
         PlayerMgr::useRemover($playerId);
         CardMgr::inkCards($cardId, 2);
@@ -309,82 +509,13 @@ class hardback extends Table
             $this->notifyRemover($playerId, $card);
         }
         $this->notifyCards([
-            $card['location'] => CardMgr::getCardsInLocation($card['location']),
+            $card->getLocation() => CardMgr::getCardsInLocation($card->getLocation()),
         ]);
     }
 
-    function confirmWord($cardIds)
-    {
-        // Minimum 2 letters
-        if (count($cardIds) < 2) {
-            throw new BgaUserException("You must use at least 2 letters");
-        }
-
-        $playerId = self::getActivePlayerId();
-        $playerName = self::getActivePlayerName();
-        $cards = CardMgr::getCards($cardIds);
-
-        // Cards must originate from a valid location
-        $locations = [CardMgr::getHandLocation($playerId), "timeless"];
-        $invalid = array_filter($cards, function ($card) use ($locations) {
-            return !in_array($card['location'], $locations);
-        });
-        if (!empty($invalid)) {
-            $desc = implode(', ', array_map(function ($card) {
-                return $card['desc'];
-            }, $invalid));
-            throw new BgaUserException("You cannot use cards unavailable to player $playerId: $desc");
-        }
-
-        // All inked cards must be used
-        $inked = array_filter(CardMgr::getHand($playerId, true), function ($card) use ($cardIds) {
-            return !in_array($card['id'], $cardIds);
-        });
-        if (!empty($inked)) {
-            $desc = implode(', ', array_map(function ($card) {
-                return $card['desc'];
-            }, $inked));
-            throw new BgaUserException("You must use all inked cards: $desc");
-        }
-
-        // Word must be valid
-        $word = implode('', array_map(function ($card) {
-            return $card['letter'];
-        }, $cards));
-        $length = strlen($word);
-        $dictionaryId = $this->gamestate->table_globals[OPTION_DICTIONARY];
-        $valid = WordMgr::isWord($dictionaryId, $word);
-
-        if (!$valid) {
-            self::notifyAllPlayers('invalid', '${player_name} attempts to spell an invalid word, ${word}', [
-                'player_id' => $playerId,
-                'player_name' => $playerName,
-                'word' => $word,
-            ]);
-            $this->notifyCards([
-                'tableau' => $cards,
-            ]);
-            return;
-        }
-
-        self::notifyAllPlayers('message', '${player_name} spells ${word}', [
-            'player_name' => $playerName,
-            'word' => $word,
-        ]);
-        $this->notifyCards([
-            'tableau' => $cards,
-        ]);
-
-        $this->gamestate->nextState('skipTurn');
-    }
-
-    function skipTurn()
-    {
-        self::notifyAllPlayers('message', '${player_name} is stymied by writer\'s block and skips their turn.', [
-            'player_name' => self::getActivePlayerName(),
-        ]);
-        $this->gamestate->nextState('skipTurn');
-    }
+    /*
+     * END OF THE GAME
+     */
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Zombie

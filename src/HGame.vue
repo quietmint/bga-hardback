@@ -101,6 +101,10 @@ addIcon("sort09", numericIcon);
 import bookmarkIcon from "@iconify-icons/mdi/bookmark";
 addIcon("genre", bookmarkIcon);
 
+import helpRhombus from "@iconify-icons/mdi/help-rhombus";
+import helpRhombusOutline from "@iconify-icons/mdi/help-rhombus-outline";
+addIcon("wild", helpRhombusOutline);
+
 export default {
   name: "HGame",
   components: { Icon, HCardList, HPlayerPanel },
@@ -168,10 +172,10 @@ export default {
      */
     populateCard(card) {
       let newCard = Object.assign({}, this.gamedatas.refs.cards[card.refId], card);
-      newCard.benefitsList = [];
-      if (newCard.benefits) {
-        for (const id in newCard.benefits) {
-          let value = newCard.benefits[id];
+      newCard.basicBenefitsList = [];
+      if (newCard.basicBenefits) {
+        for (const id in newCard.basicBenefits) {
+          let value = newCard.basicBenefits[id];
           let newBenefit = Object.assign({}, this.gamedatas.refs.benefits[id]);
           newBenefit.id = id;
           if (newBenefit.text) {
@@ -183,7 +187,7 @@ export default {
           if (newBenefit.text3) {
             newBenefit.text3 = newBenefit.text3.replaceAll("%", value);
           }
-          newCard.benefitsList.push(newBenefit);
+          newCard.basicBenefitsList.push(newBenefit);
         }
       }
       newCard.genreBenefitsList = [];
@@ -263,7 +267,6 @@ export default {
     },
 
     populatePlayers(players) {
-      console.log("populatePlayers", players);
       if (players != null) {
         for (const playerId in players) {
           players[playerId] = this.populatePlayer(players[playerId]);
@@ -332,13 +335,11 @@ export default {
 
     onUpdateActionButtons(stateName, args) {
       console.log("Vue onUpdateActionButtons", stateName, args);
-      if (stateName == "playerTurn") {
+      if (stateName == "playerTurn" || stateName == "cleanup") {
         this.game.addActionButton(
           "ink_button",
           "Use Ink to Draw",
           () => {
-            let cardIds = this.cardIds(this.tableauCards);
-            console.log("Ink button");
             this.takeAction("useInk");
           },
           null,
@@ -349,14 +350,14 @@ export default {
         if (this.isCurrentPlayerActive()) {
           this.game.addActionButton("confirmWord_button", "Confirm Word", () => {
             let cardIds = this.cardIds(this.tableauCards);
-            console.log("Confirm Word button");
-            this.takeAction("confirmWord", { cardIds });
+            let wildMask = this.tableauCards.map((card) => card.wild || "_").join("");
+            this.takeAction("confirmWord", { cardIds, wildMask });
           });
+
           this.game.addActionButton(
             "skipTurn_button",
             "Skip Turn",
             () => {
-              console.log("Skip Turn button");
               this.takeAction("skipTurn");
             },
             null,
@@ -379,6 +380,7 @@ export default {
         }
       } else if (notif.type == "panel") {
         this.gamedatas.players[notif.args.player.id] = notif.args.player;
+        this.game.scoreCtrl[notif.args.player.id].toValue(notif.args.player.score);
       } else {
         console.warn("Vue unknown notification type", notif.type);
       }
@@ -437,7 +439,6 @@ export default {
 
     sort(location, order: String) {
       let cards = this.gamedatas.locations[location];
-      console.log("sort", location, order, cards);
       if (order == "shuffle") {
         for (let i = cards.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -492,6 +493,26 @@ export default {
       if (action == "ink") {
         let cardId = card.id;
         this.takeAction("useRemover", { cardId });
+      } else if (action == "flipWild") {
+        let wild = (prompt("What letter does this wild card represent?") || "").trim().toUpperCase();
+        const regex = RegExp("^[A-Z]$");
+        if (regex.test(wild)) {
+          let cardId = card.id;
+          let cards = this.gamedatas.locations[location] || [];
+          cards.forEach((c) => {
+            if (c.id == cardId) {
+              c.wild = wild;
+            }
+          });
+        }
+      } else if (action == "flipUnwild") {
+        let cardId = card.id;
+        let cards = this.gamedatas.locations[location] || [];
+        cards.forEach((c) => {
+          if (c.id == cardId) {
+            c.wild = false;
+          }
+        });
       }
     },
   },

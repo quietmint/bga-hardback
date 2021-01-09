@@ -71,8 +71,76 @@ $machinestates = [
         'type' => 'activeplayer',
         'possibleactions' => ['confirmWord', 'skipTurn', 'useInk', 'useRemover'],
         'transitions' => [
-            'playCard' => ST_NEXT_PLAYER,
-            'skipTurn' => ST_NEXT_PLAYER,
+            'resolve' => ST_RESOLVE_UNCOVER,
+            'nextPlayer' => ST_NEXT_PLAYER,
+        ],
+    ],
+
+    ST_RESOLVE_UNCOVER => [
+        'name' => 'resolveUncover',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stResolveUncover',
+        'transitions' => [
+            'choose' => ST_UNCOVER,
+            'resolve' => ST_RESOLVE_EITHER,
+        ],
+    ],
+
+    ST_UNCOVER => [
+        'name' => 'uncover',
+        'description' => clienttranslate('${actplayer} may uncover a wild card'),
+        'descriptionmyturn' => clienttranslate('${you} may uncover a wild card'),
+        'type' => 'activeplayer',
+        'possibleactions' => ['uncover'],
+        'transitions' => [
+            'choose' => ST_UNCOVER,
+            'resolve' => ST_RESOLVE_EITHER,
+        ],
+    ],
+
+    ST_RESOLVE_EITHER => [
+        'name' => 'resolveEither',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stResolveEither',
+        'transitions' => [
+            'choose' => ST_EITHER,
+            'resolve' => ST_RESOLVE_BASIC,
+        ],
+    ],
+
+    ST_EITHER => [
+        'name' => 'choice',
+        'description' => clienttranslate('${actplayer} must choose a benefit'),
+        'descriptionmyturn' => clienttranslate('${you} must choose a benefit'),
+        'type' => 'activeplayer',
+        'possibleactions' => ['uncover'],
+        'transitions' => [
+            'choose' => ST_EITHER,
+            'resolve' => ST_RESOLVE_BASIC,
+        ],
+    ],
+
+    ST_RESOLVE_BASIC => [
+        'name' => 'resolveBasic',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stResolveBasic',
+        'transitions' => [
+            'resolve' => ST_CLEANUP,
+        ],
+    ],
+
+    ST_CLEANUP => [
+        'name' => 'cleanup',
+        'description' => clienttranslate('${actplayer} must cleanup'),
+        'descriptionmyturn' => clienttranslate('${you} must cleanup'),
+        'type' => 'activeplayer',
+        'possibleactions' => ['skipTurn'],
+        //'action' => 'stCleanup',
+        'transitions' => [
+            'nextPlayer' => ST_NEXT_PLAYER,
         ],
     ],
 

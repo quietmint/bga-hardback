@@ -1,12 +1,10 @@
 <?php
 
-use function PHPSTORM_META\map;
-
 class CardMgr extends APP_GameClass
 {
     private static $cards = null;
 
-    private static $refBenefits = [
+    public static $refBenefits = [
         COINS => [
             'text' => '%¢',
         ],
@@ -74,169 +72,169 @@ class CardMgr extends APP_GameClass
         ],
     ];
 
-    private static $refCards = [
-        1 => ['genre' => ADVENTURE, 'letter' => 'A', 'cost' => 5, 'points' => 1, 'benefits' => [POINTS => 2, TRASH_COINS => 3], 'genreBenefits' => [POINTS => 1]],
-        2 => ['genre' => ADVENTURE, 'letter' => 'A', 'cost' => 7, 'benefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 2]],
-        3 => ['genre' => ADVENTURE, 'letter' => 'B', 'cost' => 4, 'points' => 4, 'benefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 2]],
-        4 => ['genre' => ADVENTURE, 'letter' => 'C', 'cost' => 3, 'benefits' => [COINS => 1, TRASH_COINS => 2], 'genreBenefits' => [COINS => 1]],
-        5 => ['genre' => ADVENTURE, 'letter' => 'C', 'cost' => 5, 'timeless' => true, 'benefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1]],
-        6 => ['genre' => ADVENTURE, 'letter' => 'D', 'cost' => 4, 'points' => 1, 'benefits' => [COINS => 2], 'genreBenefits' => [POINTS => 3]],
-        7 => ['genre' => ADVENTURE, 'letter' => 'E', 'cost' => 3, 'benefits' => [POINTS => 1, TRASH_COINS => 2], 'genreBenefits' => [POINTS => 1]],
-        8 => ['genre' => ADVENTURE, 'letter' => 'F', 'cost' => 8, 'points' => 1, 'benefits' => [POINTS => 5], 'genreBenefits' => [POINTS => 2]],
-        9 => ['genre' => ADVENTURE, 'letter' => 'G', 'cost' => 2, 'benefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 2]],
-        10 => ['genre' => ADVENTURE, 'letter' => 'G', 'cost' => 6, 'benefits' => [POINTS => 4, TRASH_COINS => 4], 'genreBenefits' => [POINTS => 1]],
-        11 => ['genre' => ADVENTURE, 'letter' => 'H', 'cost' => 3, 'points' => 3, 'benefits' => [POINTS => 1, TRASH_POINTS => 1], 'genreBenefits' => [POINTS => 1]],
-        12 => ['genre' => ADVENTURE, 'letter' => 'I', 'cost' => 3, 'timeless' => true, 'benefits' => [POINTS => 2], 'genreBenefits' => []],
-        13 => ['genre' => ADVENTURE, 'letter' => 'I', 'cost' => 6, 'benefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 1]],
-        14 => ['genre' => ADVENTURE, 'letter' => 'J', 'cost' => 3, 'benefits' => [POINTS => 2, TRASH_COINS => 2], 'genreBenefits' => [POINTS => 1]],
-        15 => ['genre' => ADVENTURE, 'letter' => 'J', 'cost' => 5, 'benefits' => [POINTS => 3, TRASH_POINTS => 2], 'genreBenefits' => [POINTS => 2]],
-        16 => ['genre' => ADVENTURE, 'letter' => 'K', 'cost' => 9, 'points' => 2, 'benefits' => [POINTS => 5], 'genreBenefits' => [POINTS => 3]],
-        17 => ['genre' => ADVENTURE, 'letter' => 'L', 'cost' => 2, 'points' => 1, 'benefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 1]],
-        18 => ['genre' => ADVENTURE, 'letter' => 'M', 'cost' => 4, 'points' => 3, 'benefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1]],
-        19 => ['genre' => ADVENTURE, 'letter' => 'M', 'cost' => 6, 'points' => 3, 'benefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 2]],
-        20 => ['genre' => ADVENTURE, 'letter' => 'N', 'cost' => 4, 'points' => 1, 'benefits' => [COINS => 2], 'genreBenefits' => [COINS => 1, POINTS => 1]],
-        21 => ['genre' => ADVENTURE, 'letter' => 'O', 'cost' => 6, 'benefits' => [POINTS => 2], 'genreBenefits' => [SPECIAL_ADVENTURE => true]],
-        22 => ['genre' => ADVENTURE, 'letter' => 'P', 'cost' => 4, 'points' => 1, 'benefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 2]],
-        23 => ['genre' => ADVENTURE, 'letter' => 'P', 'cost' => 8, 'timeless' => true, 'benefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 2]],
-        24 => ['genre' => ADVENTURE, 'letter' => 'Q', 'cost' => 7, 'benefits' => [POINTS => 3, TRASH_POINTS => 3], 'genreBenefits' => [POINTS => 4]],
-        25 => ['genre' => ADVENTURE, 'letter' => 'R', 'cost' => 3, 'points' => 1, 'benefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 2]],
-        26 => ['genre' => ADVENTURE, 'letter' => 'S', 'cost' => 5, 'points' => 1, 'benefits' => [POINTS => 2, TRASH_POINTS => 2], 'genreBenefits' => [POINTS => 1]],
-        27 => ['genre' => ADVENTURE, 'letter' => 'T', 'cost' => 4, 'points' => 2, 'benefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1]],
-        28 => ['genre' => ADVENTURE, 'letter' => 'U', 'cost' => 4, 'benefits' => [POINTS => 1, TRASH_POINTS => 2], 'genreBenefits' => [POINTS => 3]],
-        29 => ['genre' => ADVENTURE, 'letter' => 'V', 'cost' => 2, 'benefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 2]],
-        30 => ['genre' => ADVENTURE, 'letter' => 'W', 'cost' => 3, 'benefits' => [POINTS => 2, TRASH_COINS => 2], 'genreBenefits' => [POINTS => 1]],
-        31 => ['genre' => ADVENTURE, 'letter' => 'W', 'cost' => 5, 'points' => 2, 'timeless' => true, 'benefits' => [POINTS => 2], 'genreBenefits' => []],
-        32 => ['genre' => ADVENTURE, 'letter' => 'X', 'cost' => 4, 'benefits' => [COINS => 2, TRASH_POINTS => 2], 'genreBenefits' => [COINS => 2]],
-        33 => ['genre' => ADVENTURE, 'letter' => 'Y', 'cost' => 2, 'benefits' => [POINTS => 1, TRASH_COINS => 1], 'genreBenefits' => [POINTS => 1]],
-        34 => ['genre' => ADVENTURE, 'letter' => 'Y', 'cost' => 4, 'points' => 3, 'benefits' => [COINS => 2, TRASH_COINS => 2], 'genreBenefits' => [COINS => 1]],
-        35 => ['genre' => ADVENTURE, 'letter' => 'Z', 'cost' => 5, 'points' => 3, 'benefits' => [POINTS => 4], 'genreBenefits' => [POINTS => 1]],
+    public static $refCards = [
+        1 => ['genre' => ADVENTURE, 'letter' => 'A', 'cost' => 5, 'points' => 1, 'basicBenefits' => [POINTS => 2, TRASH_COINS => 3], 'genreBenefits' => [POINTS => 1]],
+        2 => ['genre' => ADVENTURE, 'letter' => 'A', 'cost' => 7, 'basicBenefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 2]],
+        3 => ['genre' => ADVENTURE, 'letter' => 'B', 'cost' => 4, 'points' => 4, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 2]],
+        4 => ['genre' => ADVENTURE, 'letter' => 'C', 'cost' => 3, 'basicBenefits' => [COINS => 1, TRASH_COINS => 2], 'genreBenefits' => [COINS => 1]],
+        5 => ['genre' => ADVENTURE, 'letter' => 'C', 'cost' => 5, 'timeless' => true, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1]],
+        6 => ['genre' => ADVENTURE, 'letter' => 'D', 'cost' => 4, 'points' => 1, 'basicBenefits' => [COINS => 2], 'genreBenefits' => [POINTS => 3]],
+        7 => ['genre' => ADVENTURE, 'letter' => 'E', 'cost' => 3, 'basicBenefits' => [POINTS => 1, TRASH_COINS => 2], 'genreBenefits' => [POINTS => 1]],
+        8 => ['genre' => ADVENTURE, 'letter' => 'F', 'cost' => 8, 'points' => 1, 'basicBenefits' => [POINTS => 5], 'genreBenefits' => [POINTS => 2]],
+        9 => ['genre' => ADVENTURE, 'letter' => 'G', 'cost' => 2, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 2]],
+        10 => ['genre' => ADVENTURE, 'letter' => 'G', 'cost' => 6, 'basicBenefits' => [POINTS => 4, TRASH_COINS => 4], 'genreBenefits' => [POINTS => 1]],
+        11 => ['genre' => ADVENTURE, 'letter' => 'H', 'cost' => 3, 'points' => 3, 'basicBenefits' => [POINTS => 1, TRASH_POINTS => 1], 'genreBenefits' => [POINTS => 1]],
+        12 => ['genre' => ADVENTURE, 'letter' => 'I', 'cost' => 3, 'timeless' => true, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => []],
+        13 => ['genre' => ADVENTURE, 'letter' => 'I', 'cost' => 6, 'basicBenefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 1]],
+        14 => ['genre' => ADVENTURE, 'letter' => 'J', 'cost' => 3, 'basicBenefits' => [POINTS => 2, TRASH_COINS => 2], 'genreBenefits' => [POINTS => 1]],
+        15 => ['genre' => ADVENTURE, 'letter' => 'J', 'cost' => 5, 'basicBenefits' => [POINTS => 3, TRASH_POINTS => 2], 'genreBenefits' => [POINTS => 2]],
+        16 => ['genre' => ADVENTURE, 'letter' => 'K', 'cost' => 9, 'points' => 2, 'basicBenefits' => [POINTS => 5], 'genreBenefits' => [POINTS => 3]],
+        17 => ['genre' => ADVENTURE, 'letter' => 'L', 'cost' => 2, 'points' => 1, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 1]],
+        18 => ['genre' => ADVENTURE, 'letter' => 'M', 'cost' => 4, 'points' => 3, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1]],
+        19 => ['genre' => ADVENTURE, 'letter' => 'M', 'cost' => 6, 'points' => 3, 'basicBenefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 2]],
+        20 => ['genre' => ADVENTURE, 'letter' => 'N', 'cost' => 4, 'points' => 1, 'basicBenefits' => [COINS => 2], 'genreBenefits' => [COINS => 1, POINTS => 1]],
+        21 => ['genre' => ADVENTURE, 'letter' => 'O', 'cost' => 6, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [SPECIAL_ADVENTURE => true]],
+        22 => ['genre' => ADVENTURE, 'letter' => 'P', 'cost' => 4, 'points' => 1, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 2]],
+        23 => ['genre' => ADVENTURE, 'letter' => 'P', 'cost' => 8, 'timeless' => true, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 2]],
+        24 => ['genre' => ADVENTURE, 'letter' => 'Q', 'cost' => 7, 'basicBenefits' => [POINTS => 3, TRASH_POINTS => 3], 'genreBenefits' => [POINTS => 4]],
+        25 => ['genre' => ADVENTURE, 'letter' => 'R', 'cost' => 3, 'points' => 1, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 2]],
+        26 => ['genre' => ADVENTURE, 'letter' => 'S', 'cost' => 5, 'points' => 1, 'basicBenefits' => [POINTS => 2, TRASH_POINTS => 2], 'genreBenefits' => [POINTS => 1]],
+        27 => ['genre' => ADVENTURE, 'letter' => 'T', 'cost' => 4, 'points' => 2, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1]],
+        28 => ['genre' => ADVENTURE, 'letter' => 'U', 'cost' => 4, 'basicBenefits' => [POINTS => 1, TRASH_POINTS => 2], 'genreBenefits' => [POINTS => 3]],
+        29 => ['genre' => ADVENTURE, 'letter' => 'V', 'cost' => 2, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 2]],
+        30 => ['genre' => ADVENTURE, 'letter' => 'W', 'cost' => 3, 'basicBenefits' => [POINTS => 2, TRASH_COINS => 2], 'genreBenefits' => [POINTS => 1]],
+        31 => ['genre' => ADVENTURE, 'letter' => 'W', 'cost' => 5, 'points' => 2, 'timeless' => true, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => []],
+        32 => ['genre' => ADVENTURE, 'letter' => 'X', 'cost' => 4, 'basicBenefits' => [COINS => 2, TRASH_POINTS => 2], 'genreBenefits' => [COINS => 2]],
+        33 => ['genre' => ADVENTURE, 'letter' => 'Y', 'cost' => 2, 'basicBenefits' => [POINTS => 1, TRASH_COINS => 1], 'genreBenefits' => [POINTS => 1]],
+        34 => ['genre' => ADVENTURE, 'letter' => 'Y', 'cost' => 4, 'points' => 3, 'basicBenefits' => [COINS => 2, TRASH_COINS => 2], 'genreBenefits' => [COINS => 1]],
+        35 => ['genre' => ADVENTURE, 'letter' => 'Z', 'cost' => 5, 'points' => 3, 'basicBenefits' => [POINTS => 4], 'genreBenefits' => [POINTS => 1]],
 
-        36 => ['genre' => HORROR, 'letter' => 'A', 'cost' => 3, 'benefits' => [EITHER => 2], 'genreBenefits' => []],
-        37 => ['genre' => HORROR, 'letter' => 'B', 'cost' => 6, 'benefits' => [COINS => 3], 'genreBenefits' => [COINS => 2, INK => true]],
-        38 => ['genre' => HORROR, 'letter' => 'C', 'cost' => 5, 'benefits' => [POINTS => 2, INK => true], 'genreBenefits' => [POINTS => 1]],
-        39 => ['genre' => HORROR, 'letter' => 'C', 'cost' => 8, 'benefits' => [COINS => 2, INK => true], 'genreBenefits' => [COINS => 3]],
-        40 => ['genre' => HORROR, 'letter' => 'D', 'cost' => 4, 'timeless' => true, 'benefits' => [EITHER => 1], 'genreBenefits' => [COINS => 1, POINTS => 1]],
-        41 => ['genre' => HORROR, 'letter' => 'D', 'cost' => 9, 'benefits' => [POINTS => 3, INK => true], 'genreBenefits' => [POINTS => 3]],
-        42 => ['genre' => HORROR, 'letter' => 'E', 'cost' => 5, 'timeless' => true, 'benefits' => [EITHER => 2], 'genreBenefits' => [POINTS => 1]],
-        43 => ['genre' => HORROR, 'letter' => 'E', 'cost' => 8, 'benefits' => [COINS => 2, INK => true], 'genreBenefits' => [EITHER => 2]],
-        44 => ['genre' => HORROR, 'letter' => 'F', 'cost' => 3, 'benefits' => [POINTS => 2], 'genreBenefits' => [EITHER => 2, INK => true]],
-        45 => ['genre' => HORROR, 'letter' => 'G', 'cost' => 4, 'benefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 2, INK => true]],
-        46 => ['genre' => HORROR, 'letter' => 'H', 'cost' => 7, 'benefits' => [COINS => 2, POINTS => 1], 'genreBenefits' => [COINS => 1, POINTS => 2, SPECIAL_HORROR => true]],
-        47 => ['genre' => HORROR, 'letter' => 'I', 'cost' => 4, 'benefits' => [POINTS => 2], 'genreBenefits' => [EITHER => 2]],
-        48 => ['genre' => HORROR, 'letter' => 'J', 'cost' => 5, 'benefits' => [POINTS => 3, INK => true], 'genreBenefits' => [POINTS => 2]],
-        49 => ['genre' => HORROR, 'letter' => 'K', 'cost' => 2, 'benefits' => [EITHER => 1], 'genreBenefits' => [COINS => 2]],
-        50 => ['genre' => HORROR, 'letter' => 'L', 'cost' => 3, 'benefits' => [POINTS => 2], 'genreBenefits' => [INK => true]],
-        51 => ['genre' => HORROR, 'letter' => 'M', 'cost' => 3, 'benefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1]],
-        52 => ['genre' => HORROR, 'letter' => 'N', 'cost' => 5, 'benefits' => [COINS => 2, INK => true], 'genreBenefits' => [COINS => 1]],
-        53 => ['genre' => HORROR, 'letter' => 'N', 'cost' => 6, 'timeless' => true, 'benefits' => [EITHER => 1], 'genreBenefits' => [POINTS => 2, INK => true]],
-        54 => ['genre' => HORROR, 'letter' => 'O', 'cost' => 4, 'benefits' => [EITHER => 2], 'genreBenefits' => [EITHER => 1]],
-        55 => ['genre' => HORROR, 'letter' => 'P', 'cost' => 3, 'benefits' => [POINTS => 2, INK => true], 'genreBenefits' => []],
-        56 => ['genre' => HORROR, 'letter' => 'Q', 'cost' => 4, 'benefits' => [COINS => 3], 'genreBenefits' => [COINS => 1, INK => true]],
-        57 => ['genre' => HORROR, 'letter' => 'R', 'cost' => 4, 'benefits' => [EITHER => 1], 'genreBenefits' => [COINS => 2, INK => true]],
-        58 => ['genre' => HORROR, 'letter' => 'S', 'cost' => 2, 'benefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 1]],
-        59 => ['genre' => HORROR, 'letter' => 'S', 'cost' => 7, 'benefits' => [POINTS => 3, INK => true], 'genreBenefits' => [POINTS => 1]],
-        60 => ['genre' => HORROR, 'letter' => 'T', 'cost' => 4, 'benefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1, INK => true]],
-        61 => ['genre' => HORROR, 'letter' => 'U', 'cost' => 2, 'benefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 2]],
-        62 => ['genre' => HORROR, 'letter' => 'U', 'cost' => 6, 'benefits' => [POINTS => 4], 'genreBenefits' => [POINTS => 1]],
-        63 => ['genre' => HORROR, 'letter' => 'V', 'cost' => 4, 'benefits' => [COINS => 2], 'genreBenefits' => [COINS => 2, INK => true]],
-        64 => ['genre' => HORROR, 'letter' => 'V', 'cost' => 5, 'timeless' => true, 'benefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, INK => true]],
-        65 => ['genre' => HORROR, 'letter' => 'W', 'cost' => 4, 'benefits' => [POINTS => 2, INK => true], 'genreBenefits' => [POINTS => 2]],
-        66 => ['genre' => HORROR, 'letter' => 'W', 'cost' => 5, 'benefits' => [COINS => 2, INK => true], 'genreBenefits' => [COINS => 3]],
-        67 => ['genre' => HORROR, 'letter' => 'X', 'cost' => 2, 'benefits' => [EITHER => 1], 'genreBenefits' => [POINTS => 2]],
-        68 => ['genre' => HORROR, 'letter' => 'X', 'cost' => 6, 'benefits' => [POINTS => 3, INK => true], 'genreBenefits' => [POINTS => 3]],
-        69 => ['genre' => HORROR, 'letter' => 'Y', 'cost' => 3, 'benefits' => [COINS => 2], 'genreBenefits' => [COINS => 1, INK => true]],
-        70 => ['genre' => HORROR, 'letter' => 'Z', 'cost' => 3, 'benefits' => [EITHER => 2], 'genreBenefits' => [EITHER => 1, INK => true]],
+        36 => ['genre' => HORROR, 'letter' => 'A', 'cost' => 3, 'basicBenefits' => [EITHER => 2], 'genreBenefits' => []],
+        37 => ['genre' => HORROR, 'letter' => 'B', 'cost' => 6, 'basicBenefits' => [COINS => 3], 'genreBenefits' => [COINS => 2, INK => true]],
+        38 => ['genre' => HORROR, 'letter' => 'C', 'cost' => 5, 'basicBenefits' => [POINTS => 2, INK => true], 'genreBenefits' => [POINTS => 1]],
+        39 => ['genre' => HORROR, 'letter' => 'C', 'cost' => 8, 'basicBenefits' => [COINS => 2, INK => true], 'genreBenefits' => [COINS => 3]],
+        40 => ['genre' => HORROR, 'letter' => 'D', 'cost' => 4, 'timeless' => true, 'basicBenefits' => [EITHER => 1], 'genreBenefits' => [COINS => 1, POINTS => 1]],
+        41 => ['genre' => HORROR, 'letter' => 'D', 'cost' => 9, 'basicBenefits' => [POINTS => 3, INK => true], 'genreBenefits' => [POINTS => 3]],
+        42 => ['genre' => HORROR, 'letter' => 'E', 'cost' => 5, 'timeless' => true, 'basicBenefits' => [EITHER => 2], 'genreBenefits' => [POINTS => 1]],
+        43 => ['genre' => HORROR, 'letter' => 'E', 'cost' => 8, 'basicBenefits' => [COINS => 2, INK => true], 'genreBenefits' => [EITHER => 2]],
+        44 => ['genre' => HORROR, 'letter' => 'F', 'cost' => 3, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [EITHER => 2, INK => true]],
+        45 => ['genre' => HORROR, 'letter' => 'G', 'cost' => 4, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 2, INK => true]],
+        46 => ['genre' => HORROR, 'letter' => 'H', 'cost' => 7, 'basicBenefits' => [COINS => 2, POINTS => 1], 'genreBenefits' => [COINS => 1, POINTS => 2, SPECIAL_HORROR => true]],
+        47 => ['genre' => HORROR, 'letter' => 'I', 'cost' => 4, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [EITHER => 2]],
+        48 => ['genre' => HORROR, 'letter' => 'J', 'cost' => 5, 'basicBenefits' => [POINTS => 3, INK => true], 'genreBenefits' => [POINTS => 2]],
+        49 => ['genre' => HORROR, 'letter' => 'K', 'cost' => 2, 'basicBenefits' => [EITHER => 1], 'genreBenefits' => [COINS => 2]],
+        50 => ['genre' => HORROR, 'letter' => 'L', 'cost' => 3, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [INK => true]],
+        51 => ['genre' => HORROR, 'letter' => 'M', 'cost' => 3, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1]],
+        52 => ['genre' => HORROR, 'letter' => 'N', 'cost' => 5, 'basicBenefits' => [COINS => 2, INK => true], 'genreBenefits' => [COINS => 1]],
+        53 => ['genre' => HORROR, 'letter' => 'N', 'cost' => 6, 'timeless' => true, 'basicBenefits' => [EITHER => 1], 'genreBenefits' => [POINTS => 2, INK => true]],
+        54 => ['genre' => HORROR, 'letter' => 'O', 'cost' => 4, 'basicBenefits' => [EITHER => 2], 'genreBenefits' => [EITHER => 1]],
+        55 => ['genre' => HORROR, 'letter' => 'P', 'cost' => 3, 'basicBenefits' => [POINTS => 2, INK => true], 'genreBenefits' => []],
+        56 => ['genre' => HORROR, 'letter' => 'Q', 'cost' => 4, 'basicBenefits' => [COINS => 3], 'genreBenefits' => [COINS => 1, INK => true]],
+        57 => ['genre' => HORROR, 'letter' => 'R', 'cost' => 4, 'basicBenefits' => [EITHER => 1], 'genreBenefits' => [COINS => 2, INK => true]],
+        58 => ['genre' => HORROR, 'letter' => 'S', 'cost' => 2, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 1]],
+        59 => ['genre' => HORROR, 'letter' => 'S', 'cost' => 7, 'basicBenefits' => [POINTS => 3, INK => true], 'genreBenefits' => [POINTS => 1]],
+        60 => ['genre' => HORROR, 'letter' => 'T', 'cost' => 4, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1, INK => true]],
+        61 => ['genre' => HORROR, 'letter' => 'U', 'cost' => 2, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 2]],
+        62 => ['genre' => HORROR, 'letter' => 'U', 'cost' => 6, 'basicBenefits' => [POINTS => 4], 'genreBenefits' => [POINTS => 1]],
+        63 => ['genre' => HORROR, 'letter' => 'V', 'cost' => 4, 'basicBenefits' => [COINS => 2], 'genreBenefits' => [COINS => 2, INK => true]],
+        64 => ['genre' => HORROR, 'letter' => 'V', 'cost' => 5, 'timeless' => true, 'basicBenefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, INK => true]],
+        65 => ['genre' => HORROR, 'letter' => 'W', 'cost' => 4, 'basicBenefits' => [POINTS => 2, INK => true], 'genreBenefits' => [POINTS => 2]],
+        66 => ['genre' => HORROR, 'letter' => 'W', 'cost' => 5, 'basicBenefits' => [COINS => 2, INK => true], 'genreBenefits' => [COINS => 3]],
+        67 => ['genre' => HORROR, 'letter' => 'X', 'cost' => 2, 'basicBenefits' => [EITHER => 1], 'genreBenefits' => [POINTS => 2]],
+        68 => ['genre' => HORROR, 'letter' => 'X', 'cost' => 6, 'basicBenefits' => [POINTS => 3, INK => true], 'genreBenefits' => [POINTS => 3]],
+        69 => ['genre' => HORROR, 'letter' => 'Y', 'cost' => 3, 'basicBenefits' => [COINS => 2], 'genreBenefits' => [COINS => 1, INK => true]],
+        70 => ['genre' => HORROR, 'letter' => 'Z', 'cost' => 3, 'basicBenefits' => [EITHER => 2], 'genreBenefits' => [EITHER => 1, INK => true]],
 
-        71 => ['genre' => ROMANCE, 'letter' => 'A', 'cost' => 4, 'benefits' => [COINS => 1, TRASH_DISCARD => 1], 'genreBenefits' => [COINS => 1]],
-        72 => ['genre' => ROMANCE, 'letter' => 'B', 'cost' => 3, 'benefits' => [COINS => 2], 'genreBenefits' => [DOUBLE => true]],
-        73 => ['genre' => ROMANCE, 'letter' => 'B', 'cost' => 5, 'timeless' => true, 'benefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, TRASH_DISCARD => 1]],
-        74 => ['genre' => ROMANCE, 'letter' => 'C', 'cost' => 3, 'benefits' => [POINTS => 2], 'genreBenefits' => [TRASH_DISCARD => 1]],
-        75 => ['genre' => ROMANCE, 'letter' => 'D', 'cost' => 4, 'benefits' => [COINS => 2], 'genreBenefits' => [DOUBLE => true]],
-        76 => ['genre' => ROMANCE, 'letter' => 'E', 'cost' => 2, 'benefits' => [COINS => 1], 'genreBenefits' => [COINS => 1]],
-        77 => ['genre' => ROMANCE, 'letter' => 'E', 'cost' => 6, 'benefits' => [POINTS => 3], 'genreBenefits' => [TRASH_DISCARD => 1]],
-        78 => ['genre' => ROMANCE, 'letter' => 'F', 'cost' => 4, 'benefits' => [POINTS => 2, TRASH_DISCARD => 1], 'genreBenefits' => [POINTS => 1]],
-        79 => ['genre' => ROMANCE, 'letter' => 'F', 'cost' => 6, 'benefits' => [COINS => 2, DOUBLE => true], 'genreBenefits' => [COINS => 1, TRASH_DISCARD => 1]],
-        80 => ['genre' => ROMANCE, 'letter' => 'G', 'cost' => 3, 'benefits' => [POINTS => 1, TRASH_DISCARD => 1], 'genreBenefits' => [POINTS => 1]],
-        81 => ['genre' => ROMANCE, 'letter' => 'H', 'cost' => 3, 'benefits' => [COINS => 1, TRASH_DISCARD => 1], 'genreBenefits' => [COINS => 1]],
-        82 => ['genre' => ROMANCE, 'letter' => 'H', 'cost' => 7, 'benefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 2, DOUBLE => true]],
-        83 => ['genre' => ROMANCE, 'letter' => 'I', 'cost' => 2, 'benefits' => [COINS => 1], 'genreBenefits' => [COINS => 1]],
-        84 => ['genre' => ROMANCE, 'letter' => 'J', 'cost' => 6, 'benefits' => [COINS => 2, DOUBLE => true], 'genreBenefits' => [COINS => 2, TRASH_DISCARD => 1]],
-        85 => ['genre' => ROMANCE, 'letter' => 'K', 'cost' => 3, 'benefits' => [COINS => 2], 'genreBenefits' => [COINS => 1, TRASH_DISCARD => 1]],
-        86 => ['genre' => ROMANCE, 'letter' => 'K', 'cost' => 5, 'timeless' => true, 'benefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, TRASH_DISCARD => 1]],
-        87 => ['genre' => ROMANCE, 'letter' => 'L', 'cost' => 8, 'benefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 2, DOUBLE => true]],
-        88 => ['genre' => ROMANCE, 'letter' => 'M', 'cost' => 2, 'benefits' => [COINS => 1, TRASH_DISCARD => 1], 'genreBenefits' => []],
-        89 => ['genre' => ROMANCE, 'letter' => 'N', 'cost' => 2, 'benefits' => [POINTS => 1], 'genreBenefits' => [TRASH_DISCARD => 1]],
-        90 => ['genre' => ROMANCE, 'letter' => 'N', 'cost' => 5, 'benefits' => [COINS => 2, TRASH_DISCARD => 1], 'genreBenefits' => [COINS => 1]],
-        91 => ['genre' => ROMANCE, 'letter' => 'O', 'cost' => 4, 'benefits' => [COINS => 2], 'genreBenefits' => [DOUBLE => true]],
-        92 => ['genre' => ROMANCE, 'letter' => 'O', 'cost' => 8, 'timeless' => true, 'benefits' => [COINS => 2, POINTS => 1], 'genreBenefits' => [COINS => 1, POINTS => 1]],
-        93 => ['genre' => ROMANCE, 'letter' => 'P', 'cost' => 6, 'benefits' => [POINTS => 2, DOUBLE => true], 'genreBenefits' => [POINTS => 1]],
-        94 => ['genre' => ROMANCE, 'letter' => 'Q', 'cost' => 4, 'benefits' => [POINTS => 2, TRASH_DISCARD => 1], 'genreBenefits' => [POINTS => 2]],
-        95 => ['genre' => ROMANCE, 'letter' => 'R', 'cost' => 5, 'benefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1, SPECIAL_ROMANCE => true]],
-        96 => ['genre' => ROMANCE, 'letter' => 'R', 'cost' => 5, 'timeless' => true, 'benefits' => [POINTS => 2], 'genreBenefits' => [TRASH_DISCARD => 1]],
-        97 => ['genre' => ROMANCE, 'letter' => 'S', 'cost' => 4, 'benefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 1, DOUBLE => true]],
-        98 => ['genre' => ROMANCE, 'letter' => 'T', 'cost' => 3, 'benefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, TRASH_DISCARD => 1]],
-        99 => ['genre' => ROMANCE, 'letter' => 'U', 'cost' => 9, 'benefits' => [POINTS => 5], 'genreBenefits' => [POINTS => 1, DOUBLE => true]],
-        100 => ['genre' => ROMANCE, 'letter' => 'V', 'cost' => 3, 'benefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1, TRASH_DISCARD => 1]],
-        101 => ['genre' => ROMANCE, 'letter' => 'W', 'cost' => 4, 'benefits' => [POINTS => 1, DOUBLE => true], 'genreBenefits' => [POINTS => 1]],
-        102 => ['genre' => ROMANCE, 'letter' => 'X', 'cost' => 7, 'benefits' => [POINTS => 4, TRASH_DISCARD => 1], 'genreBenefits' => [POINTS => 2]],
-        103 => ['genre' => ROMANCE, 'letter' => 'Y', 'cost' => 4, 'benefits' => [POINTS => 1, DOUBLE => true], 'genreBenefits' => [TRASH_DISCARD => 1]],
-        104 => ['genre' => ROMANCE, 'letter' => 'Z', 'cost' => 4, 'benefits' => [POINTS => 2, TRASH_DISCARD => 1], 'genreBenefits' => [POINTS => 2]],
-        105 => ['genre' => ROMANCE, 'letter' => 'Z', 'cost' => 5, 'benefits' => [POINTS => 2, DOUBLE => true], 'genreBenefits' => [COINS => 2]],
+        71 => ['genre' => ROMANCE, 'letter' => 'A', 'cost' => 4, 'basicBenefits' => [COINS => 1, TRASH_DISCARD => 1], 'genreBenefits' => [COINS => 1]],
+        72 => ['genre' => ROMANCE, 'letter' => 'B', 'cost' => 3, 'basicBenefits' => [COINS => 2], 'genreBenefits' => [DOUBLE => true]],
+        73 => ['genre' => ROMANCE, 'letter' => 'B', 'cost' => 5, 'timeless' => true, 'basicBenefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, TRASH_DISCARD => 1]],
+        74 => ['genre' => ROMANCE, 'letter' => 'C', 'cost' => 3, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [TRASH_DISCARD => 1]],
+        75 => ['genre' => ROMANCE, 'letter' => 'D', 'cost' => 4, 'basicBenefits' => [COINS => 2], 'genreBenefits' => [DOUBLE => true]],
+        76 => ['genre' => ROMANCE, 'letter' => 'E', 'cost' => 2, 'basicBenefits' => [COINS => 1], 'genreBenefits' => [COINS => 1]],
+        77 => ['genre' => ROMANCE, 'letter' => 'E', 'cost' => 6, 'basicBenefits' => [POINTS => 3], 'genreBenefits' => [TRASH_DISCARD => 1]],
+        78 => ['genre' => ROMANCE, 'letter' => 'F', 'cost' => 4, 'basicBenefits' => [POINTS => 2, TRASH_DISCARD => 1], 'genreBenefits' => [POINTS => 1]],
+        79 => ['genre' => ROMANCE, 'letter' => 'F', 'cost' => 6, 'basicBenefits' => [COINS => 2, DOUBLE => true], 'genreBenefits' => [COINS => 1, TRASH_DISCARD => 1]],
+        80 => ['genre' => ROMANCE, 'letter' => 'G', 'cost' => 3, 'basicBenefits' => [POINTS => 1, TRASH_DISCARD => 1], 'genreBenefits' => [POINTS => 1]],
+        81 => ['genre' => ROMANCE, 'letter' => 'H', 'cost' => 3, 'basicBenefits' => [COINS => 1, TRASH_DISCARD => 1], 'genreBenefits' => [COINS => 1]],
+        82 => ['genre' => ROMANCE, 'letter' => 'H', 'cost' => 7, 'basicBenefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 2, DOUBLE => true]],
+        83 => ['genre' => ROMANCE, 'letter' => 'I', 'cost' => 2, 'basicBenefits' => [COINS => 1], 'genreBenefits' => [COINS => 1]],
+        84 => ['genre' => ROMANCE, 'letter' => 'J', 'cost' => 6, 'basicBenefits' => [COINS => 2, DOUBLE => true], 'genreBenefits' => [COINS => 2, TRASH_DISCARD => 1]],
+        85 => ['genre' => ROMANCE, 'letter' => 'K', 'cost' => 3, 'basicBenefits' => [COINS => 2], 'genreBenefits' => [COINS => 1, TRASH_DISCARD => 1]],
+        86 => ['genre' => ROMANCE, 'letter' => 'K', 'cost' => 5, 'timeless' => true, 'basicBenefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, TRASH_DISCARD => 1]],
+        87 => ['genre' => ROMANCE, 'letter' => 'L', 'cost' => 8, 'basicBenefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 2, DOUBLE => true]],
+        88 => ['genre' => ROMANCE, 'letter' => 'M', 'cost' => 2, 'basicBenefits' => [COINS => 1, TRASH_DISCARD => 1], 'genreBenefits' => []],
+        89 => ['genre' => ROMANCE, 'letter' => 'N', 'cost' => 2, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => [TRASH_DISCARD => 1]],
+        90 => ['genre' => ROMANCE, 'letter' => 'N', 'cost' => 5, 'basicBenefits' => [COINS => 2, TRASH_DISCARD => 1], 'genreBenefits' => [COINS => 1]],
+        91 => ['genre' => ROMANCE, 'letter' => 'O', 'cost' => 4, 'basicBenefits' => [COINS => 2], 'genreBenefits' => [DOUBLE => true]],
+        92 => ['genre' => ROMANCE, 'letter' => 'O', 'cost' => 8, 'timeless' => true, 'basicBenefits' => [COINS => 2, POINTS => 1], 'genreBenefits' => [COINS => 1, POINTS => 1]],
+        93 => ['genre' => ROMANCE, 'letter' => 'P', 'cost' => 6, 'basicBenefits' => [POINTS => 2, DOUBLE => true], 'genreBenefits' => [POINTS => 1]],
+        94 => ['genre' => ROMANCE, 'letter' => 'Q', 'cost' => 4, 'basicBenefits' => [POINTS => 2, TRASH_DISCARD => 1], 'genreBenefits' => [POINTS => 2]],
+        95 => ['genre' => ROMANCE, 'letter' => 'R', 'cost' => 5, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1, SPECIAL_ROMANCE => true]],
+        96 => ['genre' => ROMANCE, 'letter' => 'R', 'cost' => 5, 'timeless' => true, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [TRASH_DISCARD => 1]],
+        97 => ['genre' => ROMANCE, 'letter' => 'S', 'cost' => 4, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 1, DOUBLE => true]],
+        98 => ['genre' => ROMANCE, 'letter' => 'T', 'cost' => 3, 'basicBenefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, TRASH_DISCARD => 1]],
+        99 => ['genre' => ROMANCE, 'letter' => 'U', 'cost' => 9, 'basicBenefits' => [POINTS => 5], 'genreBenefits' => [POINTS => 1, DOUBLE => true]],
+        100 => ['genre' => ROMANCE, 'letter' => 'V', 'cost' => 3, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1, TRASH_DISCARD => 1]],
+        101 => ['genre' => ROMANCE, 'letter' => 'W', 'cost' => 4, 'basicBenefits' => [POINTS => 1, DOUBLE => true], 'genreBenefits' => [POINTS => 1]],
+        102 => ['genre' => ROMANCE, 'letter' => 'X', 'cost' => 7, 'basicBenefits' => [POINTS => 4, TRASH_DISCARD => 1], 'genreBenefits' => [POINTS => 2]],
+        103 => ['genre' => ROMANCE, 'letter' => 'Y', 'cost' => 4, 'basicBenefits' => [POINTS => 1, DOUBLE => true], 'genreBenefits' => [TRASH_DISCARD => 1]],
+        104 => ['genre' => ROMANCE, 'letter' => 'Z', 'cost' => 4, 'basicBenefits' => [POINTS => 2, TRASH_DISCARD => 1], 'genreBenefits' => [POINTS => 2]],
+        105 => ['genre' => ROMANCE, 'letter' => 'Z', 'cost' => 5, 'basicBenefits' => [POINTS => 2, DOUBLE => true], 'genreBenefits' => [COINS => 2]],
 
-        106 => ['genre' => MYSTERY, 'letter' => 'A', 'cost' => 3, 'benefits' => [POINTS => 1, UNCOVER => true], 'genreBenefits' => []],
-        107 => ['genre' => MYSTERY, 'letter' => 'A', 'cost' => 5, 'timeless' => true, 'benefits' => [COINS => 2], 'genreBenefits' => [COINS => 1]],
-        108 => ['genre' => MYSTERY, 'letter' => 'B', 'cost' => 4, 'benefits' => [COINS => 2, JAIL => true], 'genreBenefits' => [COINS => 2]],
-        109 => ['genre' => MYSTERY, 'letter' => 'C', 'cost' => 5, 'benefits' => [POINTS => 2, UNCOVER => true], 'genreBenefits' => [JAIL => true]],
-        110 => ['genre' => MYSTERY, 'letter' => 'D', 'cost' => 4, 'benefits' => [POINTS => 1, UNCOVER => true], 'genreBenefits' => [POINTS => 2]],
-        111 => ['genre' => MYSTERY, 'letter' => 'E', 'cost' => 4, 'benefits' => [COINS => 2], 'genreBenefits' => [UNCOVER => true]],
-        112 => ['genre' => MYSTERY, 'letter' => 'F', 'cost' => 2, 'benefits' => [POINTS => 1, JAIL => true], 'genreBenefits' => [POINTS => 1]],
-        113 => ['genre' => MYSTERY, 'letter' => 'F', 'cost' => 5, 'timeless' => true, 'benefits' => [POINTS => 1, JAIL => true], 'genreBenefits' => [POINTS => 1]],
-        114 => ['genre' => MYSTERY, 'letter' => 'G', 'cost' => 6, 'benefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 2, UNCOVER => true]],
-        115 => ['genre' => MYSTERY, 'letter' => 'H', 'cost' => 3, 'benefits' => [POINTS => 1, JAIL => true], 'genreBenefits' => [POINTS => 2]],
-        116 => ['genre' => MYSTERY, 'letter' => 'I', 'cost' => 3, 'benefits' => [POINTS => 2], 'genreBenefits' => [JAIL => true]],
-        117 => ['genre' => MYSTERY, 'letter' => 'I', 'cost' => 5, 'benefits' => [COINS => 2, UNCOVER => true], 'genreBenefits' => []],
-        118 => ['genre' => MYSTERY, 'letter' => 'J', 'cost' => 8, 'benefits' => [POINTS => 5, UNCOVER => true], 'genreBenefits' => [POINTS => 2]],
-        119 => ['genre' => MYSTERY, 'letter' => 'K', 'cost' => 2, 'benefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 1, UNCOVER => true]],
-        120 => ['genre' => MYSTERY, 'letter' => 'K', 'cost' => 4, 'benefits' => [COINS => 2, UNCOVER => true], 'genreBenefits' => [COINS => 2]],
-        121 => ['genre' => MYSTERY, 'letter' => 'L', 'cost' => 6, 'benefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 1, UNCOVER => true]],
-        122 => ['genre' => MYSTERY, 'letter' => 'M', 'cost' => 3, 'benefits' => [COINS => 1, UNCOVER => true], 'genreBenefits' => [COINS => 1]],
-        123 => ['genre' => MYSTERY, 'letter' => 'M', 'cost' => 4, 'timeless' => true, 'benefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, JAIL => true]],
-        124 => ['genre' => MYSTERY, 'letter' => 'N', 'cost' => 7, 'benefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 1, SPECIAL_MYSTERY => true]],
-        125 => ['genre' => MYSTERY, 'letter' => 'O', 'cost' => 3, 'benefits' => [POINTS => 1, JAIL => true], 'genreBenefits' => [UNCOVER => true]],
-        126 => ['genre' => MYSTERY, 'letter' => 'P', 'cost' => 2, 'benefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, JAIL => true]],
-        127 => ['genre' => MYSTERY, 'letter' => 'P', 'cost' => 4, 'benefits' => [POINTS => 1, UNCOVER => true], 'genreBenefits' => [POINTS => 2]],
-        128 => ['genre' => MYSTERY, 'letter' => 'Q', 'cost' => 3, 'benefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 2, UNCOVER => true]],
-        129 => ['genre' => MYSTERY, 'letter' => 'Q', 'cost' => 5, 'benefits' => [POINTS => 2, UNCOVER => true], 'genreBenefits' => [POINTS => 3]],
-        130 => ['genre' => MYSTERY, 'letter' => 'R', 'cost' => 4, 'benefits' => [COINS => 1], 'genreBenefits' => [COINS => 2, UNCOVER => true]],
-        131 => ['genre' => MYSTERY, 'letter' => 'R', 'cost' => 6, 'benefits' => [POINTS => 2, UNCOVER => true], 'genreBenefits' => [POINTS => 1, JAIL => true]],
-        132 => ['genre' => MYSTERY, 'letter' => 'S', 'cost' => 4, 'benefits' => [COINS => 1, JAIL => true], 'genreBenefits' => [COINS => 2]],
-        133 => ['genre' => MYSTERY, 'letter' => 'T', 'cost' => 6, 'benefits' => [POINTS => 2, UNCOVER => true], 'genreBenefits' => [POINTS => 2]],
-        134 => ['genre' => MYSTERY, 'letter' => 'T', 'cost' => 8, 'timeless' => true, 'benefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 2, JAIL => true]],
-        135 => ['genre' => MYSTERY, 'letter' => 'U', 'cost' => 2, 'benefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, UNCOVER => true]],
-        136 => ['genre' => MYSTERY, 'letter' => 'V', 'cost' => 9, 'benefits' => [POINTS => 4, UNCOVER => true], 'genreBenefits' => [POINTS => 4]],
-        137 => ['genre' => MYSTERY, 'letter' => 'W', 'cost' => 4, 'benefits' => [COINS => 2], 'genreBenefits' => [COINS => 2, UNCOVER => true]],
-        138 => ['genre' => MYSTERY, 'letter' => 'X', 'cost' => 3, 'benefits' => [POINTS => 3, JAIL => true], 'genreBenefits' => []],
-        139 => ['genre' => MYSTERY, 'letter' => 'Y', 'cost' => 7, 'benefits' => [POINTS => 4], 'genreBenefits' => [POINTS => 2, UNCOVER => true]],
-        140 => ['genre' => MYSTERY, 'letter' => 'Z', 'cost' => 5, 'benefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 2, UNCOVER => true]],
+        106 => ['genre' => MYSTERY, 'letter' => 'A', 'cost' => 3, 'basicBenefits' => [POINTS => 1, UNCOVER => true], 'genreBenefits' => []],
+        107 => ['genre' => MYSTERY, 'letter' => 'A', 'cost' => 5, 'timeless' => true, 'basicBenefits' => [COINS => 2], 'genreBenefits' => [COINS => 1]],
+        108 => ['genre' => MYSTERY, 'letter' => 'B', 'cost' => 4, 'basicBenefits' => [COINS => 2, JAIL => true], 'genreBenefits' => [COINS => 2]],
+        109 => ['genre' => MYSTERY, 'letter' => 'C', 'cost' => 5, 'basicBenefits' => [POINTS => 2, UNCOVER => true], 'genreBenefits' => [JAIL => true]],
+        110 => ['genre' => MYSTERY, 'letter' => 'D', 'cost' => 4, 'basicBenefits' => [POINTS => 1, UNCOVER => true], 'genreBenefits' => [POINTS => 2]],
+        111 => ['genre' => MYSTERY, 'letter' => 'E', 'cost' => 4, 'basicBenefits' => [COINS => 2], 'genreBenefits' => [UNCOVER => true]],
+        112 => ['genre' => MYSTERY, 'letter' => 'F', 'cost' => 2, 'basicBenefits' => [POINTS => 1, JAIL => true], 'genreBenefits' => [POINTS => 1]],
+        113 => ['genre' => MYSTERY, 'letter' => 'F', 'cost' => 5, 'timeless' => true, 'basicBenefits' => [POINTS => 1, JAIL => true], 'genreBenefits' => [POINTS => 1]],
+        114 => ['genre' => MYSTERY, 'letter' => 'G', 'cost' => 6, 'basicBenefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 2, UNCOVER => true]],
+        115 => ['genre' => MYSTERY, 'letter' => 'H', 'cost' => 3, 'basicBenefits' => [POINTS => 1, JAIL => true], 'genreBenefits' => [POINTS => 2]],
+        116 => ['genre' => MYSTERY, 'letter' => 'I', 'cost' => 3, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [JAIL => true]],
+        117 => ['genre' => MYSTERY, 'letter' => 'I', 'cost' => 5, 'basicBenefits' => [COINS => 2, UNCOVER => true], 'genreBenefits' => []],
+        118 => ['genre' => MYSTERY, 'letter' => 'J', 'cost' => 8, 'basicBenefits' => [POINTS => 5, UNCOVER => true], 'genreBenefits' => [POINTS => 2]],
+        119 => ['genre' => MYSTERY, 'letter' => 'K', 'cost' => 2, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 1, UNCOVER => true]],
+        120 => ['genre' => MYSTERY, 'letter' => 'K', 'cost' => 4, 'basicBenefits' => [COINS => 2, UNCOVER => true], 'genreBenefits' => [COINS => 2]],
+        121 => ['genre' => MYSTERY, 'letter' => 'L', 'cost' => 6, 'basicBenefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 1, UNCOVER => true]],
+        122 => ['genre' => MYSTERY, 'letter' => 'M', 'cost' => 3, 'basicBenefits' => [COINS => 1, UNCOVER => true], 'genreBenefits' => [COINS => 1]],
+        123 => ['genre' => MYSTERY, 'letter' => 'M', 'cost' => 4, 'timeless' => true, 'basicBenefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, JAIL => true]],
+        124 => ['genre' => MYSTERY, 'letter' => 'N', 'cost' => 7, 'basicBenefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 1, SPECIAL_MYSTERY => true]],
+        125 => ['genre' => MYSTERY, 'letter' => 'O', 'cost' => 3, 'basicBenefits' => [POINTS => 1, JAIL => true], 'genreBenefits' => [UNCOVER => true]],
+        126 => ['genre' => MYSTERY, 'letter' => 'P', 'cost' => 2, 'basicBenefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, JAIL => true]],
+        127 => ['genre' => MYSTERY, 'letter' => 'P', 'cost' => 4, 'basicBenefits' => [POINTS => 1, UNCOVER => true], 'genreBenefits' => [POINTS => 2]],
+        128 => ['genre' => MYSTERY, 'letter' => 'Q', 'cost' => 3, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 2, UNCOVER => true]],
+        129 => ['genre' => MYSTERY, 'letter' => 'Q', 'cost' => 5, 'basicBenefits' => [POINTS => 2, UNCOVER => true], 'genreBenefits' => [POINTS => 3]],
+        130 => ['genre' => MYSTERY, 'letter' => 'R', 'cost' => 4, 'basicBenefits' => [COINS => 1], 'genreBenefits' => [COINS => 2, UNCOVER => true]],
+        131 => ['genre' => MYSTERY, 'letter' => 'R', 'cost' => 6, 'basicBenefits' => [POINTS => 2, UNCOVER => true], 'genreBenefits' => [POINTS => 1, JAIL => true]],
+        132 => ['genre' => MYSTERY, 'letter' => 'S', 'cost' => 4, 'basicBenefits' => [COINS => 1, JAIL => true], 'genreBenefits' => [COINS => 2]],
+        133 => ['genre' => MYSTERY, 'letter' => 'T', 'cost' => 6, 'basicBenefits' => [POINTS => 2, UNCOVER => true], 'genreBenefits' => [POINTS => 2]],
+        134 => ['genre' => MYSTERY, 'letter' => 'T', 'cost' => 8, 'timeless' => true, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 2, JAIL => true]],
+        135 => ['genre' => MYSTERY, 'letter' => 'U', 'cost' => 2, 'basicBenefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, UNCOVER => true]],
+        136 => ['genre' => MYSTERY, 'letter' => 'V', 'cost' => 9, 'basicBenefits' => [POINTS => 4, UNCOVER => true], 'genreBenefits' => [POINTS => 4]],
+        137 => ['genre' => MYSTERY, 'letter' => 'W', 'cost' => 4, 'basicBenefits' => [COINS => 2], 'genreBenefits' => [COINS => 2, UNCOVER => true]],
+        138 => ['genre' => MYSTERY, 'letter' => 'X', 'cost' => 3, 'basicBenefits' => [POINTS => 3, JAIL => true], 'genreBenefits' => []],
+        139 => ['genre' => MYSTERY, 'letter' => 'Y', 'cost' => 7, 'basicBenefits' => [POINTS => 4], 'genreBenefits' => [POINTS => 2, UNCOVER => true]],
+        140 => ['genre' => MYSTERY, 'letter' => 'Z', 'cost' => 5, 'basicBenefits' => [POINTS => 3], 'genreBenefits' => [POINTS => 2, UNCOVER => true]],
 
-        141 => ['genre' => STARTER, 'letter' => 'A', 'cost' => 0, 'benefits' => [COINS => 1], 'genreBenefits' => []],
-        142 => ['genre' => STARTER, 'letter' => 'B', 'cost' => 0, 'benefits' => [POINTS => 1], 'genreBenefits' => []],
-        143 => ['genre' => STARTER, 'letter' => 'C', 'cost' => 0, 'benefits' => [POINTS => 1], 'genreBenefits' => []],
-        144 => ['genre' => STARTER, 'letter' => 'D', 'cost' => 0, 'benefits' => [POINTS => 1], 'genreBenefits' => []],
-        145 => ['genre' => STARTER, 'letter' => 'E', 'cost' => 0, 'benefits' => [COINS => 1], 'genreBenefits' => []],
-        146 => ['genre' => STARTER, 'letter' => 'G', 'cost' => 0, 'benefits' => [POINTS => 1], 'genreBenefits' => []],
-        147 => ['genre' => STARTER, 'letter' => 'H', 'cost' => 0, 'benefits' => [POINTS => 1], 'genreBenefits' => []],
-        148 => ['genre' => STARTER, 'letter' => 'I', 'cost' => 0, 'benefits' => [COINS => 1], 'genreBenefits' => []],
-        149 => ['genre' => STARTER, 'letter' => 'L', 'cost' => 0, 'benefits' => [COINS => 1], 'genreBenefits' => []],
-        150 => ['genre' => STARTER, 'letter' => 'M', 'cost' => 0, 'benefits' => [POINTS => 1], 'genreBenefits' => []],
-        151 => ['genre' => STARTER, 'letter' => 'N', 'cost' => 0, 'benefits' => [COINS => 1], 'genreBenefits' => []],
-        152 => ['genre' => STARTER, 'letter' => 'O', 'cost' => 0, 'benefits' => [POINTS => 1], 'genreBenefits' => []],
-        153 => ['genre' => STARTER, 'letter' => 'P', 'cost' => 0, 'benefits' => [POINTS => 1], 'genreBenefits' => []],
-        154 => ['genre' => STARTER, 'letter' => 'R', 'cost' => 0, 'benefits' => [COINS => 1], 'genreBenefits' => []],
-        155 => ['genre' => STARTER, 'letter' => 'S', 'cost' => 0, 'benefits' => [COINS => 1], 'genreBenefits' => []],
-        156 => ['genre' => STARTER, 'letter' => 'T', 'cost' => 0, 'benefits' => [COINS => 1], 'genreBenefits' => []],
-        157 => ['genre' => STARTER, 'letter' => 'U', 'cost' => 0, 'benefits' => [POINTS => 1], 'genreBenefits' => []],
-        158 => ['genre' => STARTER, 'letter' => 'Y', 'cost' => 0, 'benefits' => [POINTS => 1], 'genreBenefits' => []],
+        141 => ['genre' => STARTER, 'letter' => 'A', 'cost' => 0, 'basicBenefits' => [COINS => 1], 'genreBenefits' => []],
+        142 => ['genre' => STARTER, 'letter' => 'B', 'cost' => 0, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => []],
+        143 => ['genre' => STARTER, 'letter' => 'C', 'cost' => 0, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => []],
+        144 => ['genre' => STARTER, 'letter' => 'D', 'cost' => 0, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => []],
+        145 => ['genre' => STARTER, 'letter' => 'E', 'cost' => 0, 'basicBenefits' => [COINS => 1], 'genreBenefits' => []],
+        146 => ['genre' => STARTER, 'letter' => 'G', 'cost' => 0, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => []],
+        147 => ['genre' => STARTER, 'letter' => 'H', 'cost' => 0, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => []],
+        148 => ['genre' => STARTER, 'letter' => 'I', 'cost' => 0, 'basicBenefits' => [COINS => 1], 'genreBenefits' => []],
+        149 => ['genre' => STARTER, 'letter' => 'L', 'cost' => 0, 'basicBenefits' => [COINS => 1], 'genreBenefits' => []],
+        150 => ['genre' => STARTER, 'letter' => 'M', 'cost' => 0, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => []],
+        151 => ['genre' => STARTER, 'letter' => 'N', 'cost' => 0, 'basicBenefits' => [COINS => 1], 'genreBenefits' => []],
+        152 => ['genre' => STARTER, 'letter' => 'O', 'cost' => 0, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => []],
+        153 => ['genre' => STARTER, 'letter' => 'P', 'cost' => 0, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => []],
+        154 => ['genre' => STARTER, 'letter' => 'R', 'cost' => 0, 'basicBenefits' => [COINS => 1], 'genreBenefits' => []],
+        155 => ['genre' => STARTER, 'letter' => 'S', 'cost' => 0, 'basicBenefits' => [COINS => 1], 'genreBenefits' => []],
+        156 => ['genre' => STARTER, 'letter' => 'T', 'cost' => 0, 'basicBenefits' => [COINS => 1], 'genreBenefits' => []],
+        157 => ['genre' => STARTER, 'letter' => 'U', 'cost' => 0, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => []],
+        158 => ['genre' => STARTER, 'letter' => 'Y', 'cost' => 0, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => []],
     ];
 
     public static function __constructStatic()
@@ -250,50 +248,27 @@ class CardMgr extends APP_GameClass
         }
     }
 
-    public static function populateCard($dbcard, $minimal = false)
+    private static function populateCards($dbcards)
     {
-        if ($dbcard == null) {
-            return null;
-        }
-        $output = [];
-        if (!$minimal) {
-            $type = self::$refCards[intval($dbcard['card_type_arg'])];
-            $output = $type;
-            $output['location'] = $dbcard['card_location'];
-            $output['genreName'] = 'Starter';
-            if ($output['genre'] == ADVENTURE) {
-                $output['genreName'] = 'Adventure';
-            } else if ($output['genre'] == HORROR) {
-                $output['genreName'] = 'Horror';
-            } else if ($output['genre'] == MYSTERY) {
-                $output['genreName'] = 'Mystery';
-            } else if ($output['genre'] == ROMANCE) {
-                $output['genreName'] = 'Romance';
-            }
-            $output['desc'] = $output['genreName'] . '-' . $output['letter'];
-        }
-        $output['id'] = intval($dbcard['id'] ?? $dbcard['card_id']);
-        $output['refId'] = intval($dbcard['refId'] ?? $dbcard['card_type_arg']);
-        $output['order'] = intval($dbcard['order'] ?? $dbcard['card_location_arg']);
-        $output['origin'] = $dbcard['origin'] ?? $dbcard['card_type'];
-        if (array_key_exists('ink', $dbcard) && $dbcard['ink'] == 1) {
-            $output['ink']  = true;
-        }
-        return $output;
+        return array_map(function ($dbcard) {
+            return new HCard($dbcard);
+        }, $dbcards);
     }
 
-    public static function populateCards($dbcards, $minimal = false)
+    public static function applyWildMask(&$cards, $wildMask)
     {
-        $cards = array_map(function ($card) use ($minimal) {
-            return self::populateCard($card, $minimal);
-        }, $dbcards);
-        /*
-        if ($minimal) {
-            // Minimal always returns an array, never an object
-            $cards = array_values($cards);
+        $wilds = str_split($wildMask);
+        $countCards = count($cards);
+        $countWilds = count($wilds);
+        if (count($cards) != count($wilds)) {
+            throw new BgaVisibleSystemException("Invalid wildcard mask (cards: $countCards, wilds: $countWilds)");
         }
-        */
-        return $cards;
+
+        foreach ($wilds as $index => $wild) {
+            if ($wild && $wild != '_') {
+                $cards[$index]->setWild($wild);
+            }
+        }
     }
 
     public static function getCardRef()
@@ -379,17 +354,15 @@ class CardMgr extends APP_GameClass
     public static function drawCards($count, $fromLocation, $toLocation, $sort = null)
     {
         $dbcards = self::$cards->pickCardsForLocation($count, $fromLocation, $toLocation);
-        $cardIds = array_map(function ($dbcard) {
-            return intval($dbcard['id']);
-        }, $dbcards);
-        if (count($cardIds) > 1) {
+        $ids = self::getIds($dbcards);
+        if (count($ids) > 1) {
             if ($sort == 'letter') {
                 // TODO
             } else if ($sort == 'cost') {
                 // TODO
             }
         }
-        return $cardIds;
+        return $ids;
     }
 
     public static function inkCards($cardIds, $inkValue = 1)
@@ -402,43 +375,66 @@ class CardMgr extends APP_GameClass
         self::DbQuery($sql);
     }
 
-    public static function orderCard($cardId, $order)
-    {
-        self::moveAndOrderCard($cardId, null, $order);
-    }
-
-    public static function moveAndOrderCard($cardId, $location = null, $order)
+    public static function positionCard($cardId, $location = null, $order)
     {
         $card = self::getCard($cardId);
         if ($location == null) {
-            $location = $card['location'];
+            $location = $card->getLocation();
         }
-        self::DbQuery("UPDATE card SET card_location_arg = card_location_arg - 1 WHERE card_location = '{$card['location']}' AND card_location_arg > {$card['order']}");
+        self::DbQuery("UPDATE card SET card_location_arg = card_location_arg - 1 WHERE card_location = '{$card->getLocation()}' AND card_location_arg > {$card->getOrder()}");
         self::DbQuery("UPDATE card SET card_location_arg = card_location_arg + 1 WHERE card_location = '$location' AND card_location_arg >= $order");
         self::DbQuery("UPDATE card SET card_location = '$location', card_location_arg = $order WHERE card_id = $cardId");
     }
 
-    public static function moveAndOrderCards($cardIds, $location, $order = null)
+    public static function positionCards($cardIds, $location, $order = null)
     {
         if ($order = null) {
             $order = self::getCountInLocation($location);
         }
         foreach ($cardIds as $cardId) {
-            self::moveAndOrderCard($cardId, $location, $order++);
+            self::positionCard($cardId, $location, $order++);
         }
     }
 
     public static function reset($playerId)
     {
-        // Clear ink and remover
-        self::DbQuery("UPDATE card SET ink = NULL WHERE ink IS NOT NULL AND card_location IN ('tableau', '" . self::getHandLocation($playerId) . "')");
-
-        // Tableau and hand return to current player's discard
-        self::DbQuery("UPDATE card SET card_location = '" . self::getDiscardLocation($playerId) . "' WHERE card_location IN ('tableau', '" . self::getHandLocation($playerId) . "')");
+        // Clear ink, remover, wild and discard
+        self::DbQuery("UPDATE card SET ink = NULL, wild = NULL, card_location = '" . self::getDiscardLocation($playerId) . "' WHERE card_location IN ('tableau', '" . self::getHandLocation($playerId) . "')");
 
         // Draw new hand for current player
         self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId), 'letter');
         self::updateOrigin();
+    }
+
+    /* Change (specific) */
+
+    public static function playWord($playerId, $cards)
+    {
+        // Clear ink and remover
+        self::DbQuery("UPDATE card SET ink = NULL WHERE ink IS NOT NULL AND card_location = '" . self::getHandLocation($playerId) . "'");
+
+        // Discard unused cards
+        self::DbQuery("UPDATE card SET card_location = '" . self::getDiscardLocation($playerId) . "' WHERE card_location = '" . self::getHandLocation($playerId) . "'");
+
+        // Update tableau
+        $ids = self::getIds($cards);
+        $remainder = array_filter(self::getTableau(), function ($card) use ($ids) {
+            return !in_array($card->getId(), $ids);
+        });
+        if (!empty($remainder)) {
+            throw new BgaVisibleSystemException("Tableau contains unexpected cards: " . self::getString($cards));
+        }
+
+        $order = 0;
+        foreach ($cards as $card) {
+            $sql = "UPDATE card SET card_location = 'tableau', card_location_arg = $order";
+            if ($card->isWild()) {
+                $sql .= ", wild = '{$card->getLetter()}'";
+            }
+            $sql .= " WHERE card_id = {$card->getId()}";
+            self::DbQuery($sql);
+            $order++;
+        }
     }
 
     /* Query (generic) */
@@ -539,6 +535,55 @@ class CardMgr extends APP_GameClass
     public static function getOfferDeckCount()
     {
         return self::getCountInLocation("deck");
+    }
+
+    /* Array utilties */
+
+
+    public static function getIds($cards)
+    {
+        $ids = [];
+        if (is_array($cards) && !empty($cards)) {
+            $ids = array_map(function ($card) {
+                if ($card instanceof HCard) {
+                    return $card->getId();
+                } else if (is_array($card)) {
+                    return intval($card['id']);
+                }
+            }, $cards);
+        }
+        return $ids;
+    }
+
+    public static function getString($cards)
+    {
+        $string = '';
+        if (is_array($cards) && !empty($cards)) {
+            $string = implode(', ', array_map(function ($card) {
+                return (string) $card;
+            }, $cards));
+        }
+        return $string;
+    }
+
+    public static function getGenreCounts($cards)
+    {
+        $counts = [];
+        if (is_array($cards) && !empty($cards)) {
+            $cards = array_filter($cards, function ($card) {
+                return !$card->isWild();
+            });
+            $counts = array_count_values(array_map(function ($card) {
+                return $card->getGenre();
+            }, $cards));
+        }
+        return $counts + [
+            STARTER => 0,
+            ADVENTURE => 0,
+            HORROR => 0,
+            ROMANCE => 0,
+            MYSTERY => 0
+        ];
     }
 }
 
