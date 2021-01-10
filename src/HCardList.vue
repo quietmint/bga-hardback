@@ -65,21 +65,6 @@ export default {
       let location: String = this.location;
       this.$emit("click", { location, card });
     },
-
-    footerClass(card): String {
-      if (card.ink) {
-        return "bg-black text-white";
-      } else if (this.location == "tableau") {
-        return "bg-white";
-      }
-    },
-    footerText(card): String {
-      if (card.ink) {
-        return "bg-black text-white";
-      } else if (this.location == "tableau") {
-        return "bg-white";
-      }
-    },
   },
 };
 </script>

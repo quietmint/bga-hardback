@@ -29,7 +29,7 @@ export default {
         return "ink";
       } else if (this.card.origin == "timeless") {
         return "timeless";
-      } else if (this.location == "tableau" || this.location.startsWith("hand")) {
+      } else if ((this.location == "tableau" && this.game.isCurrentPlayerActive()) || this.location.startsWith("hand")) {
         return this.card.wild ? "flipUnwild" : "flipWild";
       }
     },

@@ -1,5 +1,5 @@
 <template>
-  <div :class="cardClass" class="relative inline-flex justify-center auto-rows-auto rounded-lg card-item select-none cursor-move overflow-hidden">
+  <div :class="cardClass" class="relative inline-flex auto-rows-auto rounded-lg card-item select-none cursor-move overflow-hidden">
     <!-- ID -->
     <div class="absolute bottom-1 left-1 font-bold text-sm">{{ origin }} (#{{ id }})</div>
 

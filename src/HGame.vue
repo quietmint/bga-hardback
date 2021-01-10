@@ -11,38 +11,56 @@
     <div class="flex">
       <div class="flex-grow">
         <div class="container-hand bg-opacity-50 rounded-lg my-2 p-2" :class="currentPlayer.colorBg">
-          <div class="mb-1">
-            <b>My Hand</b> &mdash; Sort:
-            <div class="inline-grid grid-cols-4 rounded-lg bg-gray-50 bg-opacity-50 divide-x border text-sm text-center cursor-pointer" :class="sorterClass">
-              <div class="whitespace-nowrap px-1 mx-1" @click="sort(handLocation, 'shuffle')"><Icon icon="shuffle" class="inline text-lg" /> Shuffle</div>
-              <div class="whitespace-nowrap px-1 mx-1" @click="sort(handLocation, 'letter')"><Icon icon="sortAZ" class="inline text-lg" /> Letter</div>
-              <div class="whitespace-nowrap px-1 mx-1" @click="sort(handLocation, 'cost')"><Icon icon="sort09" class="inline text-lg" /> Cost</div>
-              <div class="whitespace-nowrap px-1 mx-1" @click="sort(handLocation, 'genre')"><Icon icon="genre" class="inline text-lg" /> Genre</div>
+          <div class="flex flex-wrap justify-end mb-1">
+            <b class="flex-grow">My Hand ({{ handCards.length }})</b>
+
+            <div v-if="handCards.length > 1 && isCurrentPlayerActive()" class="flex ml-1 rounded-lg divide-x border text-sm text-center cursor-pointer" :class="buttonGroupClass">
+              <div class="rounded-lg" :class="buttonClass" @click="clickAll(handLocation, handCards)"><Icon icon="clickAll" class="inline text-lg" /> Play All</div>
+            </div>
+
+            <div v-if="handCards.length > 1" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap" :class="buttonGroupClass">
+              <div class="rounded-l-lg" :class="buttonHeaderClass">Order:</div>
+              <div :class="buttonClass" @click="sort(handLocation, 'letter')" title="By Letter"><Icon icon="sortAZ" class="text-lg" /></div>
+              <div :class="buttonClass" @click="sort(handLocation, 'cost')" title="By Cost"><Icon icon="sort09" class="text-lg" /></div>
+              <div :class="buttonClass" @click="sort(handLocation, 'genre')" title="By Genre"><Icon icon="genre" class="text-lg" /></div>
+              <div class="rounded-r-lg" :class="buttonClass" @click="sort(handLocation, 'shuffle')" title="Shuffle"><Icon icon="shuffle" class="text-lg" /></div>
             </div>
           </div>
+
           <HCardList :cards="handCards" :location="handLocation" :checkDrag="checkDragHand" @click="clickCard" @clickFooter="clickFooter" />
         </div>
 
         <div class="container-tableau rounded-lg my-2 p-2">
+          <div class="flex flex-wrap justify-end mb-1">
+            <b class="flex-grow">Word ({{ tableauCards.length }})</b>
+
+            <div v-if="tableauCards.length" class="flex ml-1 rounded-lg divide-x border text-sm text-center cursor-pointer" :class="buttonGroupClass">
+              <div class="rounded-lg" :class="buttonClass" @click="clickAll('tableau', tableauCards)"><Icon icon="close" class="inline text-lg" /> Reset</div>
+            </div>
+          </div>
+
           <HCardList :cards="tableauCards" location="tableau" :checkDrag="checkDragTableau" @click="clickCard" @clickFooter="clickFooter" />
         </div>
 
         <div class="container-offer bg-gray-700 bg-opacity-30 rounded-lg my-2 p-2">
-          <div class="mb-1">
-            <b>Offer Row</b> &mdash; Sort:
-            <div class="inline-grid grid-cols-4 rounded-lg bg-gray-50 bg-opacity-50 divide-x divide-gray-800 border border-gray-800 text-sm text-center cursor-pointer">
-              <div class="whitespace-nowrap px-1 mx-1" @click="sort('offer', 'shuffle')"><Icon icon="shuffle" class="inline text-lg" /> Shuffle</div>
-              <div class="whitespace-nowrap px-1 mx-1" @click="sort('offer', 'letter')"><Icon icon="sortAZ" class="inline text-lg" /> Letter</div>
-              <div class="whitespace-nowrap px-1 mx-1" @click="sort('offer', 'cost')"><Icon icon="sort09" class="inline text-lg" /> Cost</div>
-              <div class="whitespace-nowrap px-1 mx-1" @click="sort('offer', 'genre')"><Icon icon="genre" class="inline text-lg" /> Genre</div>
+          <div class="flex flex-wrap justify-end mb-1">
+            <b class="flex-grow">Offer Row ({{ offerCards.length }})</b>
+
+            <div class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap" :class="buttonGroupClass">
+              <div class="rounded-l-lg font-bold" :class="buttonHeaderClass">Order:</div>
+              <div :class="buttonClass" @click="sort('offer', 'letter')" title="By Letter"><Icon icon="sortAZ" class="text-lg" /></div>
+              <div :class="buttonClass" @click="sort('offer', 'cost')" title="By Cost"><Icon icon="sort09" class="inline text-lg" /></div>
+              <div :class="buttonClass" @click="sort('offer', 'genre')" title="By Genre"><Icon icon="genre" class="text-lg" /></div>
+              <div class="rounded-r-lg" :class="buttonClass" @click="sort('offer', 'shuffle')" title="Shuffle"><Icon icon="shuffle" class="text-lg" /></div>
             </div>
           </div>
+
           <HCardList :cards="offerCards" location="offer" :checkDrag="checkDragTimeless" @click="clickCard" />
         </div>
       </div>
 
       <div class="flex-none w-64 bg-gray-700 bg-opacity-30 rounded-lg ml-2 my-2 p-2">
-        <b>Timeless Classics</b>
+        <b>Timeless Classics ({{ timelessCards.length }})</b>
         <HCardList :cards="timelessCards" location="timeless" :checkDrag="checkDragTimeless" @click="clickCard" />
       </div>
     </div>
@@ -92,14 +110,23 @@ addIcon("star", mdiStar);
 import shuffleVariant from "@iconify-icons/mdi/shuffle-variant";
 addIcon("shuffle", shuffleVariant);
 
-import alphabeticalVariant from "@iconify-icons/mdi/alphabetical-variant";
-addIcon("sortAZ", alphabeticalVariant);
+import sortAlphabeticalVariant from "@iconify-icons/mdi/sort-alphabetical-variant";
+addIcon("sortAZ", sortAlphabeticalVariant);
 
-import numericIcon from "@iconify-icons/mdi/numeric";
-addIcon("sort09", numericIcon);
+//import numericIcon from "@iconify-icons/mdi/numeric";
+import sortNumericVariant from "@iconify-icons/mdi/sort-numeric-variant";
+addIcon("sort09", sortNumericVariant);
 
 import bookmarkIcon from "@iconify-icons/mdi/bookmark";
 addIcon("genre", bookmarkIcon);
+
+import closeIcon from "@iconify-icons/mdi/close";
+addIcon("close", closeIcon);
+
+import cursorDefaultClick from "@iconify-icons/mdi/cursor-default-click";
+import expandAllOutline from '@iconify-icons/mdi/expand-all-outline';
+//import plusBoxMultipleOutline from '@iconify-icons/mdi/plus-box-multiple-outline';
+addIcon("clickAll", expandAllOutline);
 
 import helpRhombus from "@iconify-icons/mdi/help-rhombus";
 import helpRhombusOutline from "@iconify-icons/mdi/help-rhombus-outline";
@@ -161,8 +188,16 @@ export default {
       return this.populateCards(this.gamedatas.locations.offer) || [];
     },
 
-    sorterClass() {
+    buttonGroupClass() {
       return this.currentPlayer.colorDivide + " " + this.currentPlayer.colorBorder;
+    },
+
+    buttonHeaderClass() {
+      return "pl-2 pr-1 py-1 font-bold " + this.currentPlayer.colorHeader;
+    },
+
+    buttonClass() {
+      return "px-2 py-1 cursor-pointer " + this.currentPlayer.colorButton;
     },
   },
 
@@ -233,6 +268,8 @@ export default {
           player.colorBorder = "border-red-800";
           player.colorDivide = "divide-red-800";
           player.colorText = "text-red-700";
+          player.colorButton = "bg-red-100 hover:bg-red-300 active:bg-red-500";
+          player.colorHeader = "bg-red-50 " + player.colorText;
           break;
         case "008000": // green
           player.colorName = "green";
@@ -240,6 +277,8 @@ export default {
           player.colorBorder = "border-green-800";
           player.colorDivide = "divide-green-800";
           player.colorText = "text-green-700";
+          player.colorButton = "bg-green-100 hover:bg-green-300 active:bg-green-500";
+          player.colorHeader = "bg-green-50 " + player.colorText;
           break;
         case "0000ff": // blue
           player.colorName = "blue";
@@ -247,6 +286,8 @@ export default {
           player.colorBorder = "border-blue-800";
           player.colorDivide = "divide-blue-800";
           player.colorText = "text-blue-700";
+          player.buttonGroupClass = "bg-blue-100 hover:bg-blue-300 active:bg-blue-500";
+          player.colorHeader = "bg-blue-50 " + player.colorText;
           break;
         case "ffa500": // yellow
           player.colorName = "yellow";
@@ -254,6 +295,8 @@ export default {
           player.colorBorder = "border-yellow-700";
           player.colorDivide = "divide-yellow-700";
           player.colorText = "text-yellow-600";
+          player.buttonGroupClass = "bg-yellow-100 hover:bg-yellow-300 active:bg-yellow-500";
+          player.colorHeader = "bg-yellow-50 " + player.colorText;
           break;
         case "982fff": // purple
           player.colorName = "purple";
@@ -261,6 +304,8 @@ export default {
           player.colorBorder = "border-purple-800";
           player.colorDivide = "divide-purple-800";
           player.colorText = "text-purple-700";
+          player.colorButton = "bg-purple-100 hover:bg-purple-300 active:bg-purple-500";
+          player.colorHeader = "bg-purple-50 " + player.colorText;
           break;
       }
       return player;
@@ -484,6 +529,15 @@ export default {
           this.gamedatas.locations[location] = this.gamedatas.locations[location].filter((c) => c.id != card.id);
           this.gamedatas.locations[destination].push(card);
         }
+      }
+    },
+
+    clickAll(location, cards) {
+      console.log("clickAll", cards);
+      if (this.isCurrentPlayerActive()) {
+        cards.forEach((card) => {
+          this.clickCard({ location, card });
+        });
       }
     },
 

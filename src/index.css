@@ -37,6 +37,8 @@
 .font-romance {
     font-family: 'Meddon', serif;
     text-shadow: 0 0 5px white;
+    font-size: 4.5rem;
+    line-height: 6rem;
 }
 
 .font-mystery {
@@ -70,6 +72,7 @@
     background: url(paper.jpg);
 }
 
+/*
 .v-enter-active, .v-leave-active, .v-move {
     transition: transform 500ms ease;
 }
@@ -82,6 +85,7 @@
     opacity: 0;
     transform: translateX(12rem);
 }
+*/
 
 .tailwind svg.inline {
     vertical-align: -0.15rem;
