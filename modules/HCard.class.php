@@ -23,7 +23,7 @@ class HCard extends APP_GameClass implements JsonSerializable
 
     public function __toString()
     {
-        return $this->getGenreName() . '-' . $this->getLetter();
+        return $this->getGenreName() . ' ' . $this->getLetter();
     }
 
     public function jsonSerialize()
@@ -34,8 +34,8 @@ class HCard extends APP_GameClass implements JsonSerializable
             'order' => $this->order,
             'origin' => $this->origin,
         ];
-        if ($this->ink) {
-            $array['ink'] = $this->ink;
+        if ($this->ink == 1) {
+            $array['ink'] = true;
         }
         if ($this->wild) {
             $array['wild'] = $this->wild;

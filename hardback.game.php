@@ -21,6 +21,7 @@
 require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
 require_once('constants.inc.php');
 require_once('modules/HCard.class.php');
+require_once('modules/HPlayer.class.php');
 require_once('modules/PlayerMgr.class.php');
 require_once('modules/CardMgr.class.php');
 require_once('modules/WordMgr.class.php');
@@ -110,8 +111,14 @@ class hardback extends Table
     protected function getAllDatas()
     {
         $playerId = self::getCurrentPlayerId();
+
+        // BGA requires 'players' to be an array
+        $playersAsArray = array_map(function ($player) {
+            return $player->jsonSerialize();
+        }, PlayerMgr::getPlayers());
+
         return [
-            'players' => PlayerMgr::getPlayers(),
+            'players' => $playersAsArray,
             'refs' => [
                 'cards' => CardMgr::getCardRef(),
                 'benefits' => CardMgr::getBenefitRef(),
@@ -144,7 +151,6 @@ class hardback extends Table
     /*
      * Utilities
      */
-
     function notifyCards($locations)
     {
         foreach ($locations as $location => $cards) {
@@ -166,34 +172,6 @@ class hardback extends Table
         }
     }
 
-    function notifyPanel($playerId)
-    {
-        $player = PlayerMgr::getPlayer($playerId);
-        self::notifyAllPlayers('panel', '', [
-            'player' => $player,
-        ]);
-    }
-
-    function notifyInk($playerId, $card)
-    {
-        $player = PlayerMgr::getPlayer($playerId);
-        $this->notifyAllPlayers('ink', '${player_name} uses ink to draw ${genreName} ${letter}', [
-            'player_name' => $player['name'],
-            'genreName' => $card->getGenreName(),
-            'letter' => $card->getLetter(),
-        ]);
-    }
-
-    function notifyRemover($playerId, $card)
-    {
-        $player = PlayerMgr::getPlayer($playerId);
-        $this->notifyAllPlayers('remover', '${player_name} uses remover to avoid ${genreName} ${letter}', [
-            'player_name' => $player['name'],
-            'genreName' => $card->getGenreName(),
-            'letter' => $card->getLetter(),
-        ]);
-    }
-
     /*
      * States
      */
@@ -201,24 +179,24 @@ class hardback extends Table
     function stNextPlayer()
     {
         // Reset hand
-        $playerId = self::getActivePlayerId();
-        CardMgr::reset($playerId);
+        $player = PlayerMgr::getPlayer();
+        CardMgr::reset($player->getId());
         $this->notifyCards([
             'tableau' => [],
-            CardMgr::getHandLocation($playerId) => CardMgr::getHand($playerId)
+            $player->getHandLocation() => $player->getHand(),
         ]);
-        $this->notifyPanel($playerId);
+        $player->notifyPanel();
 
         // Activate next player
         $this->activeNextPlayer();
 
         // Notify about ink used out-of-turn
-        $playerId = self::getActivePlayerId();
-        foreach (CardMgr::getHand($playerId, 1) as $card) {
-            $this->notifyInk($playerId, $card);
+        $player = PlayerMgr::getPlayer();
+        foreach ($player->getHand(HAS_INK) as $card) {
+            $player->notifyInk($card);
         }
-        foreach (CardMgr::getHand($playerId, 2) as $card) {
-            $this->notifyRemover($playerId, $card);
+        foreach ($player->getHand(HAS_REMOVER) as $card) {
+            $player->notifyRemover($card);
         }
 
         $this->gamestate->nextState('playerTurn');
@@ -294,22 +272,21 @@ class hardback extends Table
             throw new BgaUserException("You must use at least 2 letters");
         }
 
-        $playerId = self::getActivePlayerId();
-        $playerName = self::getActivePlayerName();
+        $player = PlayerMgr::getPlayer();
         $cards = CardMgr::getCards($cardIds);
         CardMgr::applyWildMask($cards, $wildMask);
 
         // Cards must originate from a valid location
-        $locations = [CardMgr::getHandLocation($playerId), "timeless"];
+        $locations = [$player->getHandLocation(), "timeless"];
         $invalid = array_filter($cards, function ($card) use ($locations) {
             return !$card->isLocation($locations);
         });
         if (!empty($invalid)) {
-            throw new BgaUserException("You cannot use cards unavailable to player $playerId: " .  CardMgr::getString($invalid));
+            throw new BgaUserException("You cannot use cards unavailable to $player: " .  CardMgr::getString($invalid));
         }
 
         // All inked cards must be used and cannot be wild
-        $inked = array_filter(CardMgr::getHand($playerId, true), function ($card) use ($cardIds) {
+        $inked = array_filter($player->getHand(HAS_INK), function ($card) use ($cardIds) {
             return $card->isWild() || !in_array($card->getId(), $cardIds);
         });
         if (!empty($inked)) {
@@ -323,38 +300,37 @@ class hardback extends Table
         $dictionaryId = $this->gamestate->table_globals[OPTION_DICTIONARY];
         $valid = WordMgr::isWord($dictionaryId, $word);
         if (!$valid) {
-            self::notifyAllPlayers('invalid', '${player_name} spell an invalid word, ${word}', [
-                'player_id' => $playerId,
-                'player_name' => $playerName,
+            self::notifyAllPlayers('invalid', '${player_name} spells an invalid word, ${word}', [
+                'player_id' => $player->getId(),
+                'player_name' => $player->getName(),
                 'word' => $word,
             ]);
-            // Display the invalid attempt
+            // Display the invalid attempt (but don't commit)
             $this->notifyCards([
                 'tableau' => $cards,
             ]);
             return;
         }
         self::notifyAllPlayers('message', '${player_name} spells ${word}', [
-            'player_name' => $playerName,
+            'player_name' => $player->getName(),
             'word' => $word,
         ]);
 
         // Database commit
-        CardMgr::playWord($playerId, $cards);
+        CardMgr::playWord($player->getId(), $cards);
 
         // Check for genre benefit activation
         foreach (CardMgr::getGenreCounts($cards) as $genre => $count) {
-            self::notifyAllPlayers('message', "count genre $genre = $count", []);
             $this->setGameStateValue("count$genre", $count);
         }
 
         // Display the word
         $this->notifyCards([
             'tableau' => $cards,
-            CardMgr::getHandLocation($playerId) => [],
+            $player->getHandLocation() => [],
         ]);
 
-        $this->gamestate->nextState('resolve');
+        $this->gamestate->nextState('next');
     }
 
     /*
@@ -375,7 +351,7 @@ class hardback extends Table
         });
         self::notifyAllPlayers('message', "stResolveUncover count = " . count($uncover), []);
         if (empty($uncover)) {
-            $this->gamestate->nextState('resolve');
+            $this->gamestate->nextState('next');
             return;
         }
     }
@@ -397,7 +373,7 @@ class hardback extends Table
         });
         self::notifyAllPlayers('message', "stResolveChoice count = " . count($choice), []);
         if (empty($choice)) {
-            $this->gamestate->nextState('resolve');
+            $this->gamestate->nextState('next');
             return;
         }
     }
@@ -406,46 +382,66 @@ class hardback extends Table
     {
     }
 
-    function either()
+    function either($points)
     {
+        $player = PlayerMgr::getPlayer();
+        $value = 0; // TODO!
+        if ($points) {
+            $player->addPoints($value);
+        } else {
+            $player->addCoins($value);
+        }
     }
 
     function stResolveBasic()
     {
         $tableau = CardMgr::getTableau();
-        $coins = 0;
         $points = 0;
+        $coins = 0;
         foreach ($tableau as $card) {
             $active = $this->isActive($card->getGenre());
-            self::notifyAllPlayers('message', "card: $card, id={$card->getId()}, genre={$card->getGenre()}, active=$active", []);
 
-            $b = $card->getBenefits($active);
-            foreach ($b as $bk => $v) {
-                self::notifyAllPlayers('message', "card: $card, benefit: $bk = $v", []);
+            $pointValue = $card->getBenefitValue($active, POINTS);
+            if ($pointValue) {
+                $points += $pointValue;
             }
 
             $coinValue = $card->getBenefitValue($active, COINS);
             if ($coinValue) {
                 $coins += $coinValue;
             }
-            $pointValue = $card->getBenefitValue($active, POINTS);
-            if ($pointValue) {
-                $points += $pointValue;
-            }
         }
 
-        $playerId = self::getActivePlayerId();
-        PlayerMgr::addCoins($playerId, $coins);
-        PlayerMgr::addPoints($playerId, $points);
-        $this->notifyPanel($playerId);
+        $player = PlayerMgr::getPlayer();
+        $player->addPoints($points);
+        $player->addCoins($coins);
 
-        self::notifyAllPlayers('message', "stResolveBasic coins = $coins, points = $points", []);
-        $this->gamestate->nextState('resolve');
+        $this->gamestate->nextState('next');
     }
 
     /*
      * PHASE 4: PURCHASE NEW CARDS AND INK
      */
+
+    function argFlush()
+    {
+        return [
+            'canFlush' => CardMgr::canFlushOffer(),
+        ];
+    }
+
+    function stFlush()
+    {
+        $canFlush = $this->gamestate->state()['args']['canFlush'];
+        if (!$canFlush) {
+            $this->skip();
+        }
+    }
+
+    function skip()
+    {
+        $this->gamestate->nextState('next');
+    }
 
     /*
      * PHASE 5: DISCARD USED CARDS AND INK
@@ -454,19 +450,19 @@ class hardback extends Table
 
     function stCleanup()
     {
-        $this->gamestate->nextState('nextPlayer');
+        $this->gamestate->nextState('next');
     }
 
     /*
      * PHASE 7: DRAW YOUR NEXT HAND
      */
 
-    function skipTurn()
+    function skipWord()
     {
         self::notifyAllPlayers('message', '${player_name} is stymied by writer\'s block and skips their turn.', [
             'player_name' => self::getActivePlayerName(),
         ]);
-        $this->gamestate->nextState('nextPlayer');
+        $this->gamestate->nextState('skip');
     }
 
     /*
@@ -475,38 +471,33 @@ class hardback extends Table
 
     function useInk()
     {
-        $playerId = self::getCurrentPlayerId();
-        $active = $playerId == self::getActivePlayerId();
-        PlayerMgr::useInk($playerId);
-        $location = CardMgr::getHandLocation($playerId);
-        $cardIds = CardMgr::drawCards(1, CardMgr::getDeckLocation($playerId), $location);
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $player->spendInk();
+        $cardIds = CardMgr::drawCards(1, $player->getDeckLocation(), $player->getHandLocation());
         if (empty($cardIds)) {
             throw new BgaUserException("Your deck is empty");
         }
         CardMgr::inkCards($cardIds);
         $card = CardMgr::getCard($cardIds[0]);
-        $this->notifyPanel($playerId);
-        if ($active) {
-            $this->notifyInk($playerId, $card);
+        if ($player->isActive()) {
+            $player->notifyInk($card);
         }
         $this->notifyCards([
-            $location => CardMgr::getCardsInLocation($location),
+            $player->getHandLocation() => $player->getHand()
         ]);
     }
 
     function useRemover($cardId)
     {
-        $playerId = self::getCurrentPlayerId();
-        $active = $playerId == self::getActivePlayerId();
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
         $card = CardMgr::getCard($cardId);
-        if ($card == null || !$card->isLocation(CardMgr::getHandLocation($playerId), 'tableau')) {
-            throw new BgaUserException("Card $card is unavailable to player $playerId");
+        if ($card == null || !$card->isLocation($player->getHandLocation(), 'tableau')) {
+            throw new BgaUserException("Card $card is unavailable to $player");
         }
-        PlayerMgr::useRemover($playerId);
+        $player->spendRemover();
         CardMgr::inkCards($cardId, 2);
-        $this->notifyPanel($playerId);
-        if ($active) {
-            $this->notifyRemover($playerId, $card);
+        if ($player->isActive()) {
+            $player->notifyRemover($card);
         }
         $this->notifyCards([
             $card->getLocation() => CardMgr::getCardsInLocation($card->getLocation()),

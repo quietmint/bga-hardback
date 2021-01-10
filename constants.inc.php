@@ -23,6 +23,17 @@ define('TRASH_DISCARD', 12);
 define('TRASH_POINTS', 13);
 define('UNCOVER', 14);
 
+// Player colors
+define('RED', 'ff0000');
+define('GREEN', '008000');
+define('BLUE', '0000ff');
+define('YELLOW', 'ffa500');
+define('PURPLE', '982fff');
+
+// Ink values
+define('HAS_INK', 1);
+define('HAS_REMOVER', 2);
+
 // Globals
 define('COUNT_STARTER', 10);
 define('COUNT_ADVENTURE', 11);
@@ -50,6 +61,9 @@ define('ST_RESOLVE_EITHER', 30);
 define('ST_EITHER', 31);
 
 define('ST_RESOLVE_BASIC', 41);
+
+define('ST_FLUSH', 80);
+define('ST_PURCHASE', 81);
 
 define('ST_CLEANUP', 90);
 define('ST_NEXT_PLAYER', 91);

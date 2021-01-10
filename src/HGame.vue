@@ -1,18 +1,21 @@
 <template>
   <div>
     <HPlayerPanel v-for="(player, id) in players" :key="id" :player="player" />
+
+    <!-- Icons for log message replacement -->
     <div class="hidden">
-      <Icon id="iconStarter" icon="genre" style="font-size: 20px; vertical-align: middle" />
-      <Icon id="iconAdventure" icon="adventure" style="font-size: 20px; vertical-align: middle" />
-      <Icon id="iconHorror" icon="horror" style="font-size: 20px; vertical-align: middle" />
-      <Icon id="iconMystery" icon="mystery" style="font-size: 20px; vertical-align: middle" />
-      <Icon id="iconRomance" icon="romance" style="font-size: 20px; vertical-align: middle" />
+      <Icon v-for="icon in logIcons" :key="icon" :id="'logIcon_' + icon" :icon="icon" style="font-size: 20px; vertical-align: middle" />
     </div>
+
     <div class="flex">
       <div class="flex-grow">
         <div class="container-hand bg-opacity-50 rounded-lg my-2 p-2" :class="currentPlayer.colorBg">
           <div class="flex flex-wrap justify-end mb-1">
             <b class="flex-grow">My Hand ({{ handCards.length }})</b>
+
+            <div v-if="currentPlayer.ink && currentPlayer.deckCount" class="flex ml-1 rounded-lg divide-x border text-sm text-center cursor-pointer" :class="buttonGroupClass">
+              <div class="rounded-lg" :class="buttonClass" @click="takeAction('useInk')"><Icon icon="ink" class="inline text-lg" /> Spend Ink to Draw</div>
+            </div>
 
             <div v-if="handCards.length > 1 && isCurrentPlayerActive()" class="flex ml-1 rounded-lg divide-x border text-sm text-center cursor-pointer" :class="buttonGroupClass">
               <div class="rounded-lg" :class="buttonClass" @click="clickAll(handLocation, handCards)"><Icon icon="clickAll" class="inline text-lg" /> Play All</div>
@@ -118,13 +121,14 @@ import sortNumericVariant from "@iconify-icons/mdi/sort-numeric-variant";
 addIcon("sort09", sortNumericVariant);
 
 import bookmarkIcon from "@iconify-icons/mdi/bookmark";
+addIcon("starter", bookmarkIcon);
 addIcon("genre", bookmarkIcon);
 
 import closeIcon from "@iconify-icons/mdi/close";
 addIcon("close", closeIcon);
 
 import cursorDefaultClick from "@iconify-icons/mdi/cursor-default-click";
-import expandAllOutline from '@iconify-icons/mdi/expand-all-outline';
+import expandAllOutline from "@iconify-icons/mdi/expand-all-outline";
 //import plusBoxMultipleOutline from '@iconify-icons/mdi/plus-box-multiple-outline';
 addIcon("clickAll", expandAllOutline);
 
@@ -138,6 +142,7 @@ export default {
 
   data() {
     return {
+      logIcons: ["starter", "adventure", "horror", "mystery", "romance", "star"],
       gamedatas: {
         players: {},
         refs: {
@@ -157,7 +162,12 @@ export default {
 
   computed: {
     state() {
+      console.log("computed state", this.gamedatas.gamestate);
       return this.gamedatas.gamestate;
+    },
+
+    spectator() {
+      return this.game.isSpectator;
     },
 
     currentPlayer() {
@@ -261,8 +271,8 @@ export default {
     },
 
     populatePlayer(player) {
-      switch (player.color) {
-        case "ff0000": // red
+      switch (player.colorName) {
+        case "red":
           player.colorName = "red";
           player.colorBg = "bg-red-700";
           player.colorBorder = "border-red-800";
@@ -271,8 +281,7 @@ export default {
           player.colorButton = "bg-red-100 hover:bg-red-300 active:bg-red-500";
           player.colorHeader = "bg-red-50 " + player.colorText;
           break;
-        case "008000": // green
-          player.colorName = "green";
+        case "green":
           player.colorBg = "bg-green-700";
           player.colorBorder = "border-green-800";
           player.colorDivide = "divide-green-800";
@@ -280,8 +289,7 @@ export default {
           player.colorButton = "bg-green-100 hover:bg-green-300 active:bg-green-500";
           player.colorHeader = "bg-green-50 " + player.colorText;
           break;
-        case "0000ff": // blue
-          player.colorName = "blue";
+        case "blue":
           player.colorBg = "bg-blue-700";
           player.colorBorder = "border-blue-800";
           player.colorDivide = "divide-blue-800";
@@ -289,8 +297,7 @@ export default {
           player.buttonGroupClass = "bg-blue-100 hover:bg-blue-300 active:bg-blue-500";
           player.colorHeader = "bg-blue-50 " + player.colorText;
           break;
-        case "ffa500": // yellow
-          player.colorName = "yellow";
+        case "yellow":
           player.colorBg = "bg-yellow-600";
           player.colorBorder = "border-yellow-700";
           player.colorDivide = "divide-yellow-700";
@@ -298,8 +305,7 @@ export default {
           player.buttonGroupClass = "bg-yellow-100 hover:bg-yellow-300 active:bg-yellow-500";
           player.colorHeader = "bg-yellow-50 " + player.colorText;
           break;
-        case "982fff": // purple
-          player.colorName = "purple";
+        case "purple":
           player.colorBg = "bg-purple-700";
           player.colorBorder = "border-purple-800";
           player.colorDivide = "divide-purple-800";
@@ -355,18 +361,13 @@ export default {
       if (args.letter) {
         args.letter = "<b>" + args.letter + "</b>";
       }
-      if (args.genreName) {
-        args.genreName = this.genreIcon(args.genreName);
+      if (args.icon) {
+        const el = document.getElementById("logIcon_" + args.icon.toLowerCase());
+        console.log("look for icon element", "logIcon_" + args.icon.toLowerCase(), el);
+        if (el) {
+          args.icon = el.outerHTML;
+        }
       }
-      return log;
-    },
-
-    genreIcon(log: String) {
-      log = log.replaceAll("Starter", document.getElementById("iconStarter").outerHTML);
-      log = log.replaceAll("Adventure", document.getElementById("iconAdventure").outerHTML);
-      log = log.replaceAll("Horror", document.getElementById("iconHorror").outerHTML);
-      log = log.replaceAll("Mystery", document.getElementById("iconMystery").outerHTML);
-      log = log.replaceAll("Romance", document.getElementById("iconRomance").outerHTML);
       return log;
     },
 
@@ -380,37 +381,63 @@ export default {
 
     onUpdateActionButtons(stateName, args) {
       console.log("Vue onUpdateActionButtons", stateName, args);
-      if (stateName == "playerTurn" || stateName == "cleanup") {
-        this.game.addActionButton(
-          "ink_button",
-          "Use Ink to Draw",
-          () => {
-            this.takeAction("useInk");
-          },
-          null,
-          false,
-          "gray"
-        );
 
-        if (this.isCurrentPlayerActive()) {
-          this.game.addActionButton("confirmWord_button", "Confirm Word", () => {
+      const actionRef = {
+        confirmWord: {
+          text: "Confirm Word",
+          color: "blue",
+          function() {
             let cardIds = this.cardIds(this.tableauCards);
             let wildMask = this.tableauCards.map((card) => card.wild || "_").join("");
             this.takeAction("confirmWord", { cardIds, wildMask });
-          });
+          },
+        },
+        skipWord: {
+          text: "Skip Turn",
+          color: "red",
+          function() {
+            this.takeAction("skipWord");
+          },
+        },
+        skip: {
+          text: "Skip",
+          color: "gray",
+          function() {
+            this.takeAction("skip");
+          },
+        },
+        flush: {
+          text: "Flush Offer Row",
+          color: "blue",
+          function() {
+            this.takeAction("flush");
+          },
+        },
+      };
 
+      // No actions for inactive players
+      if (!this.isCurrentPlayerActive()) {
+        return;
+      }
+
+      let possible = this.state.possibleactions;
+      console.log("possible", possible, stateName, this.state);
+
+      possible.forEach((p, index) => {
+        const action = actionRef[p];
+        if (action) {
           this.game.addActionButton(
-            "skipTurn_button",
-            "Skip Turn",
+            "action_" + index,
+            action.text,
             () => {
-              this.takeAction("skipTurn");
+              action.function.apply(this);
             },
             null,
             false,
-            "red"
+            action.color
           );
         }
-      }
+      });
     },
 
     onNotify(notif) {

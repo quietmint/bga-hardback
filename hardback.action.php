@@ -37,22 +37,10 @@ class action_hardback extends APP_GameAction
     }
   }
 
-  public function useInk()
-  {
-    self::setAjaxMode();
-    // Don't check, since using ink is allowed out-of-turn
-    $this->game->useInk();
-    self::ajaxResponse();
-  }
-
-  public function useRemover()
-  {
-    self::setAjaxMode();
-    // Don't check, since using remover is allowed out-of-turn
-    $cardId = self::getArg('cardId', AT_posint, true);
-    $this->game->useRemover($cardId);
-    self::ajaxResponse();
-  }
+  /*
+   * PHASE 1: SPELL A WORD
+   * PHASE 2: DISCARD UNUSED CARDS
+   */
 
   public function confirmWord()
   {
@@ -64,11 +52,66 @@ class action_hardback extends APP_GameAction
     self::ajaxResponse();
   }
 
-  public function skipTurn()
+  /*
+   * PHASE 3: RESOLVE CARD BENEFITS
+   */
+
+  public function skip()
   {
     self::setAjaxMode();
-    $this->game->checkAction('skipTurn');
-    $this->game->skipTurn();
+    $this->game->checkAction('skip');
+    $this->game->skip();
+    self::ajaxResponse();
+  }
+
+  public function either()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('either');
+    $points = self::getArg('points', AT_bool, true);
+    $this->game->either($points);
+    self::ajaxResponse();
+  }
+
+  /*
+   * PHASE 4: PURCHASE NEW CARDS AND INK
+   */
+
+  /*
+   * PHASE 5: DISCARD USED CARDS AND INK
+   * PHASE 6: DISCARD USED TIMELESS CLASSIC CARDS
+   */
+
+  /*
+   * PHASE 7: DRAW YOUR NEXT HAND
+   */
+
+  public function skipWord()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('skipWord');
+    $this->game->skipWord();
+    self::ajaxResponse();
+  }
+
+  /*
+   * PHASE 8: USE INK AND REMOVER
+   */
+
+  public function useInk()
+  {
+    self::setAjaxMode();
+    // Don't check action, since ink is allowed out-of-turn
+    $this->game->useInk();
+    self::ajaxResponse();
+  }
+
+  public function useRemover()
+  {
+    self::setAjaxMode();
+    // Don't check action, since remover is allowed out-of-turn
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->useRemover($cardId);
     self::ajaxResponse();
   }
 }

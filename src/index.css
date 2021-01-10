@@ -72,7 +72,6 @@
     background: url(paper.jpg);
 }
 
-/*
 .v-enter-active, .v-leave-active, .v-move {
     transition: transform 500ms ease;
 }
@@ -85,7 +84,6 @@
     opacity: 0;
     transform: translateX(12rem);
 }
-*/
 
 .tailwind svg.inline {
     vertical-align: -0.15rem;

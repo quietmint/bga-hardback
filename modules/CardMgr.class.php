@@ -22,7 +22,7 @@ class CardMgr extends APP_GameClass
             'icon2' => 'remover',
         ],
         JAIL => [
-            'text' => 'Jail offer row card',
+            'text' => 'Jail offer card',
         ],
         SPECIAL_ADVENTURE => [
             'text' => '2',
@@ -472,7 +472,7 @@ class CardMgr extends APP_GameClass
 
     public static function getCountInLocation($location)
     {
-        return self::$cards->countCardInLocation($location);
+        return intval(self::$cards->countCardInLocation($location));
     }
 
     public static function getHandLocation($playerId)
@@ -584,6 +584,25 @@ class CardMgr extends APP_GameClass
             ROMANCE => 0,
             MYSTERY => 0
         ];
+    }
+
+    public static function canFlushOffer()
+    {
+        $offer = self::getOffer();
+
+        $costCondition = count(array_filter($offer, function ($card) {
+            return $card->getCost() >= 6;
+        }));
+        if ($costCondition >= 4) {
+            return true;
+        }
+
+        $genreCondition = max(array_values(self::getGenreCounts($offer)));
+        if ($genreCondition >= 4) {
+            return true;
+        }
+
+        return false;
     }
 }
 

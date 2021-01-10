@@ -69,10 +69,10 @@ $machinestates = [
         'description' => clienttranslate('${actplayer} must spell a word'),
         'descriptionmyturn' => clienttranslate('${you} must spell a word'),
         'type' => 'activeplayer',
-        'possibleactions' => ['confirmWord', 'skipTurn', 'useInk', 'useRemover'],
+        'possibleactions' => ['confirmWord', 'skipWord'],
         'transitions' => [
-            'resolve' => ST_RESOLVE_UNCOVER,
-            'nextPlayer' => ST_NEXT_PLAYER,
+            'next' => ST_RESOLVE_UNCOVER,
+            'skip' => ST_NEXT_PLAYER
         ],
     ],
 
@@ -82,8 +82,8 @@ $machinestates = [
         'type' => 'game',
         'action' => 'stResolveUncover',
         'transitions' => [
-            'choose' => ST_UNCOVER,
-            'resolve' => ST_RESOLVE_EITHER,
+            'again' => ST_UNCOVER,
+            'next' => ST_RESOLVE_EITHER,
         ],
     ],
 
@@ -92,10 +92,10 @@ $machinestates = [
         'description' => clienttranslate('${actplayer} may uncover a wild card'),
         'descriptionmyturn' => clienttranslate('${you} may uncover a wild card'),
         'type' => 'activeplayer',
-        'possibleactions' => ['uncover'],
+        'possibleactions' => ['uncover', 'skip'],
         'transitions' => [
-            'choose' => ST_UNCOVER,
-            'resolve' => ST_RESOLVE_EITHER,
+            'again' => ST_UNCOVER,
+            'next' => ST_RESOLVE_EITHER,
         ],
     ],
 
@@ -105,8 +105,8 @@ $machinestates = [
         'type' => 'game',
         'action' => 'stResolveEither',
         'transitions' => [
-            'choose' => ST_EITHER,
-            'resolve' => ST_RESOLVE_BASIC,
+            'again' => ST_EITHER,
+            'next' => ST_RESOLVE_BASIC,
         ],
     ],
 
@@ -115,10 +115,10 @@ $machinestates = [
         'description' => clienttranslate('${actplayer} must choose a benefit'),
         'descriptionmyturn' => clienttranslate('${you} must choose a benefit'),
         'type' => 'activeplayer',
-        'possibleactions' => ['uncover'],
+        'possibleactions' => ['eitherCoins', 'eitherPoints'],
         'transitions' => [
-            'choose' => ST_EITHER,
-            'resolve' => ST_RESOLVE_BASIC,
+            'again' => ST_EITHER,
+            'next' => ST_RESOLVE_BASIC,
         ],
     ],
 
@@ -128,7 +128,32 @@ $machinestates = [
         'type' => 'game',
         'action' => 'stResolveBasic',
         'transitions' => [
-            'resolve' => ST_CLEANUP,
+            'next' => ST_FLUSH,
+        ],
+    ],
+
+    ST_FLUSH => [
+        'name' => 'flush',
+        'description' => clienttranslate('${actplayer} may flush the offer row'),
+        'descriptionmyturn' => clienttranslate('${you} may flush the offer row'),
+        'type' => 'activeplayer',
+        'args' => 'argFlush',
+        'action' => 'stFlush',
+        'possibleactions' => ['flush', 'skip'],
+        'transitions' => [
+            'next' => ST_PURCHASE,
+        ],
+    ],
+
+    ST_PURCHASE => [
+        'name' => 'purchase',
+        'description' => clienttranslate('${actplayer} may purchase cards and ink'),
+        'descriptionmyturn' => clienttranslate('${you} may purchase cards and ink'),
+        'type' => 'activeplayer',
+        'possibleactions' => ['purchase', 'skip'],
+        'transitions' => [
+            'again' => ST_PURCHASE,
+            'next' => ST_CLEANUP,
         ],
     ],
 
@@ -137,10 +162,10 @@ $machinestates = [
         'description' => clienttranslate('${actplayer} must cleanup'),
         'descriptionmyturn' => clienttranslate('${you} must cleanup'),
         'type' => 'activeplayer',
-        'possibleactions' => ['skipTurn'],
+        'possibleactions' => ['skip'],
         //'action' => 'stCleanup',
         'transitions' => [
-            'nextPlayer' => ST_NEXT_PLAYER,
+            'next' => ST_NEXT_PLAYER,
         ],
     ],
 
