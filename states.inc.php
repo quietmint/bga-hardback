@@ -147,9 +147,11 @@ $machinestates = [
 
     ST_PURCHASE => [
         'name' => 'purchase',
-        'description' => clienttranslate('${actplayer} may purchase cards and ink'),
-        'descriptionmyturn' => clienttranslate('${you} may purchase cards and ink'),
+        'description' => clienttranslate('${actplayer} may purchase cards (${coins}¢ available)'),
+        'descriptionmyturn' => clienttranslate('${you} may purchase cards (${coins}¢ available)'),
         'type' => 'activeplayer',
+        'args' => 'argPurchase',
+        'action' => 'stPurchase',
         'possibleactions' => ['purchase', 'skip'],
         'transitions' => [
             'again' => ST_PURCHASE,
@@ -159,11 +161,10 @@ $machinestates = [
 
     ST_CLEANUP => [
         'name' => 'cleanup',
-        'description' => clienttranslate('${actplayer} must cleanup'),
-        'descriptionmyturn' => clienttranslate('${you} must cleanup'),
-        'type' => 'activeplayer',
+        'description' => '',
+        'type' => 'game',
         'possibleactions' => ['skip'],
-        //'action' => 'stCleanup',
+        'action' => 'stCleanup',
         'transitions' => [
             'next' => ST_NEXT_PLAYER,
         ],

@@ -174,18 +174,18 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     public function notifyInk($card)
     {
-        hardback::$instance->notifyAllPlayers('ink', '${player_name} uses ink to draw ${icon} ${letter}', [
+        hardback::$instance->notifyAllPlayers('ink', '${player_name} uses ink to draw ${icon}${letter}', [
             'player_name' => $this->name,
-            'icon' => $card->getGenreName(),
+            'icon' => $card->getGenreName() . ' ',
             'letter' => $card->getLetter(),
         ]);
     }
 
     public function notifyRemover($card)
     {
-        hardback::$instance->notifyAllPlayers('ink', '${player_name} uses remover to avoid ${icon} ${letter}', [
+        hardback::$instance->notifyAllPlayers('ink', '${player_name} uses remover to avoid ${icon}${letter}', [
             'player_name' => $this->name,
-            'icon' => $card->getGenreName(),
+            'icon' => $card->getGenreName() . ' ',
             'letter' => $card->getLetter(),
         ]);
     }
@@ -215,10 +215,10 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
         $this->notifyPanel();
         if ($notify) {
-            hardback::$instance->notifyAllPlayers('message', '${player_name} earns ${amount} ${icon}.', [
+            hardback::$instance->notifyAllPlayers('message', '${player_name} earns ${amount}${icon}.', [
                 'player_name' => $this->name,
                 'amount' => $amount,
-                'icon' => 'star',
+                'icon' => ' star',
             ]);
         }
     }

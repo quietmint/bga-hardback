@@ -1,5 +1,5 @@
 <template>
-  <div :class="cardClass" class="relative inline-flex auto-rows-auto rounded-lg card-item select-none cursor-move overflow-hidden">
+  <div :class="cardClass" class="relative inline-flex auto-rows-auto rounded-lg card-item select-none cursor-pointer overflow-hidden">
     <!-- ID -->
     <div class="absolute bottom-1 left-1 font-bold text-sm">{{ origin }} (#{{ id }})</div>
 
@@ -48,28 +48,32 @@ export default {
     Icon,
   },
   props: {
-    cost: Number,
-    points: Number,
-    genre: Number,
-    letter: String,
-    id: Number,
-    benefits: Object,
+    basicBenefits: Object,
     basicBenefitsList: Array,
+    cost: Number,
+    genre: Number,
     genreBenefits: Object,
     genreBenefitsList: Array,
+    id: Number,
+    ink: Boolean,
+    invisible: Boolean,
+    letter: String,
+    location: String,
     order: Number,
     origin: String,
+    points: Number,
+    refId: Number,
     timeless: Boolean,
-    ink: Boolean,
     wild: String,
   },
   computed: {
     cardClass() {
       let c = "";
+
       if (this.timeless) {
-        c = "flex-row	w-60 h-44 items-center ";
+        c += "flex-row	w-60 h-44 items-center ";
       } else {
-        c = "flex-col w-44 h-60 ";
+        c += "flex-col w-44 h-60 ";
       }
 
       if (this.ink) {

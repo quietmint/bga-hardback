@@ -14,11 +14,11 @@
             <b class="flex-grow">My Hand ({{ handCards.length }})</b>
 
             <div v-if="currentPlayer.ink && currentPlayer.deckCount" class="flex ml-1 rounded-lg divide-x border text-sm text-center cursor-pointer" :class="buttonGroupClass">
-              <div class="rounded-lg" :class="buttonClass" @click="takeAction('useInk')"><Icon icon="ink" class="inline text-lg" /> Spend Ink to Draw</div>
+              <div class="rounded-lg" :class="buttonClass" @click="takeAction('useInk')"><Icon icon="ink" class="inline text-lg" /> Draw with Ink</div>
             </div>
 
             <div v-if="handCards.length > 1 && isCurrentPlayerActive()" class="flex ml-1 rounded-lg divide-x border text-sm text-center cursor-pointer" :class="buttonGroupClass">
-              <div class="rounded-lg" :class="buttonClass" @click="clickAll(handLocation, handCards)"><Icon icon="clickAll" class="inline text-lg" /> Play All</div>
+              <div class="rounded-lg" :class="buttonClass" @click="clickAll(handCards)"><Icon icon="clickAll" class="inline text-lg" /> Play All</div>
             </div>
 
             <div v-if="handCards.length > 1" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap" :class="buttonGroupClass">
@@ -38,7 +38,7 @@
             <b class="flex-grow">Word ({{ tableauCards.length }})</b>
 
             <div v-if="tableauCards.length" class="flex ml-1 rounded-lg divide-x border text-sm text-center cursor-pointer" :class="buttonGroupClass">
-              <div class="rounded-lg" :class="buttonClass" @click="clickAll('tableau', tableauCards)"><Icon icon="close" class="inline text-lg" /> Reset</div>
+              <div class="rounded-lg" :class="buttonClass" @click="clickAll(tableauCards)"><Icon icon="close" class="inline text-lg" /> Reset</div>
             </div>
           </div>
 
@@ -72,6 +72,7 @@
 
 <script lang="ts">
 import Constants from "./constants.js";
+import { nextTick } from "vue";
 import { firstBy } from "thenby";
 import { Icon, addIcon } from "@iconify/vue";
 import HCardList from "./HCardList.vue";
@@ -143,16 +144,16 @@ export default {
   data() {
     return {
       logIcons: ["starter", "adventure", "horror", "mystery", "romance", "star"],
+      locationOrder: {},
       gamedatas: {
+        gamestate: {},
         players: {},
+        cards: {},
         refs: {
           cards: {},
           benefits: {},
         },
-        locations: {},
-        gamestate: {},
       },
-      dragMoveEvt: null,
     };
   },
 
@@ -183,19 +184,31 @@ export default {
     },
 
     handCards() {
-      return this.populateCards(this.gamedatas.locations[this.handLocation]) || [];
+      let location = this.handLocation;
+      let cards = this.cardsInLocation(location);
+      cards.sort(this.sorter(location));
+      return cards;
     },
 
     tableauCards() {
-      return this.populateCards(this.gamedatas.locations.tableau) || [];
+      let location = "tableau";
+      let cards = this.cardsInLocation(location);
+      cards.sort(this.sorter(location));
+      return cards;
     },
 
     timelessCards() {
-      return this.populateCards(this.gamedatas.locations.timeless) || [];
+      let location = "timeless";
+      let cards = this.cardsInLocation(location);
+      cards.sort(this.sorter(location));
+      return cards;
     },
 
     offerCards() {
-      return this.populateCards(this.gamedatas.locations.offer) || [];
+      let location = "offer";
+      let cards = this.cardsInLocation(location);
+      cards.sort(this.sorter(location));
+      return cards;
     },
 
     buttonGroupClass() {
@@ -215,6 +228,23 @@ export default {
     /*
      * Utility functions
      */
+    cardById(cardId) {
+      return this.populateCard(this.gamedatas.cards[cardId]);
+    },
+
+    cardsInLocation(location): Array<any> {
+      return this.populateCards(
+        Object.values(this.gamedatas.cards).filter((card: any) => {
+          return card.location == location;
+        })
+      );
+    },
+
+    sorter(location) {
+      let order = this.locationOrder[location] || "order";
+      return firstBy(order).thenBy("letter").thenBy("id");
+    },
+
     populateCard(card) {
       let newCard = Object.assign({}, this.gamedatas.refs.cards[card.refId], card);
       newCard.basicBenefitsList = [];
@@ -327,6 +357,48 @@ export default {
     },
 
     /*
+     * Animation
+     */
+    animateCardDestroy(cardId, dst) {
+      const card = this.gamedatas.cards[cardId];
+      const src = card.location + "_card" + card.id;
+      console.log("animateCardToEl", src, dst);
+      const anim = this.game.slideToObject(src, dst);
+      window.dojo.connect(anim, "onEnd", () => {
+        console.log("the animation is done");
+        delete this.gamedatas.cards[card.id];
+      });
+      anim.play();
+    },
+
+    async animateCardMove(cardId, newLocation) {
+      // Compute start position
+      const card = this.gamedatas.cards[cardId];
+      let cardEl = document.getElementById(card.location + "_card" + card.id);
+      const start = cardEl.getBoundingClientRect();
+      console.log("start", start.x, start.y);
+
+      // Move and compute end position
+      card.order = this.cardsInLocation(newLocation).length;
+      card.location = newLocation;
+      await nextTick();
+      cardEl = document.getElementById(card.location + "_card" + card.id);
+      const end = cardEl.getBoundingClientRect();
+      console.log("end", end.x, end.y);
+
+      // Transform back to start
+      cardEl.style.transition = "";
+      cardEl.style.transform = "translate(50%) translate(" + (start.x - end.x) + "px, " + (start.y - end.y) + "px)";
+
+      // Start animation
+      requestAnimationFrame(() => {
+        console.log("requestAnimationFrame");
+        cardEl.style.transition = "transform ease 500ms";
+        cardEl.style.transform = "";
+      });
+    },
+
+    /*
      * BGA framework methods
      */
     takeAction(action, data, callback) {
@@ -362,8 +434,7 @@ export default {
         args.letter = "<b>" + args.letter + "</b>";
       }
       if (args.icon) {
-        const el = document.getElementById("logIcon_" + args.icon.toLowerCase());
-        console.log("look for icon element", "logIcon_" + args.icon.toLowerCase(), el);
+        const el = document.getElementById("logIcon_" + args.icon.toLowerCase().trim());
         if (el) {
           args.icon = el.outerHTML;
         }
@@ -383,6 +454,14 @@ export default {
       console.log("Vue onUpdateActionButtons", stateName, args);
 
       const actionRef = {
+        animate: {
+          text: "Animate",
+          color: "blue",
+          function() {
+            this.animateCardMove(101, "timeless");
+            this.animateCardDestroy(145, "player_board_2305328");
+          },
+        },
         confirmWord: {
           text: "Confirm Word",
           color: "blue",
@@ -420,7 +499,8 @@ export default {
         return;
       }
 
-      let possible = this.state.possibleactions;
+      let possible: string[] = this.state.possibleactions;
+      possible.unshift("animate");
       console.log("possible", possible, stateName, this.state);
 
       possible.forEach((p, index) => {
@@ -443,8 +523,8 @@ export default {
     onNotify(notif) {
       console.log("Vue onNotify", notif);
       if (notif.type == "cards") {
-        for (const location in notif.args.locations) {
-          this.gamedatas.locations[location] = notif.args.locations[location];
+        for (const cardId in notif.args.cards) {
+          this.gamedatas.cards[cardId] = notif.args.cards[cardId];
         }
       } else if (notif.type == "invalid") {
         if (this.game.player_id == notif.args.player_id) {
@@ -510,60 +590,40 @@ export default {
     */
 
     sort(location, order: String) {
-      let cards = this.gamedatas.locations[location];
+      let cards = this.cardsInLocation(location);
       if (order == "shuffle") {
         for (let i = cards.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [cards[i], cards[j]] = [cards[j], cards[i]];
         }
-      } else {
-        let sortLetter = (a, b) => {
-          let cardA = this.populateCard(a);
-          let cardB = this.populateCard(b);
-          return cardA.letter.localeCompare(cardB.letter);
-        };
-        let sortCost = (a, b) => {
-          let cardA = this.populateCard(a);
-          let cardB = this.populateCard(b);
-          return cardA.cost - cardB.cost;
-        };
-        let sortGenre = (a, b) => {
-          let cardA = this.populateCard(a);
-          let cardB = this.populateCard(b);
-          return cardA.genre - cardB.genre;
-        };
-        if (order == "cost") {
-          cards.sort(firstBy(sortCost).thenBy(sortLetter).thenBy("id"));
-        } else if (order == "genre") {
-          cards.sort(firstBy(sortGenre).thenBy(sortLetter).thenBy("id"));
-        } else {
-          cards.sort(firstBy(sortLetter).thenBy("id"));
-        }
+        cards.forEach((card, index) => {
+          this.gamedatas.cards[card.id].shuffle = index;
+        });
       }
+      this.locationOrder[location] = order;
     },
 
     clickCard(evt) {
-      let { location, card } = evt;
-      console.log("clickCard event in parent", location, card.id);
+      let { card } = evt;
+      console.log("clickCard event in parent", card.id);
       if (this.isCurrentPlayerActive()) {
         let destination = null;
-        if (location == this.handLocation || location.startsWith("timeless")) {
+        if (card.location == this.handLocation || card.location.startsWith("timeless")) {
           destination = "tableau";
-        } else if (location == "tableau") {
+        } else if (card.location == "tableau") {
           destination = card.origin;
         }
         if (destination) {
-          this.gamedatas.locations[location] = this.gamedatas.locations[location].filter((c) => c.id != card.id);
-          this.gamedatas.locations[destination].push(card);
+          this.animateCardMove(card.id, destination);
         }
       }
     },
 
-    clickAll(location, cards) {
+    clickAll(cards) {
       console.log("clickAll", cards);
       if (this.isCurrentPlayerActive()) {
         cards.forEach((card) => {
-          this.clickCard({ location, card });
+          this.clickCard({ card });
         });
       }
     },

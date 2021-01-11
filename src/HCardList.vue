@@ -1,12 +1,21 @@
 <template>
-  <draggable class="flex flex-wrap justify-center" :class="heightClass" group="cards" :list="cards" item-key="id" :move="move" @change="change" :animation="500" tag="transition-group" :component-data="{ tag: 'div' }">
+  <!--<draggable class="flex flex-wrap justify-center" :class="heightClass" group="cards" :list="cards" item-key="id" :move="move" @change="change" :animation="500" :delay="100" tag="transition-group" :component-data="{ tag: 'div' }">
     <template #item="{ element }">
-      <div class="m-1" :key="element.id">
+      <div class="m-1 relative" :key="element.id" :id="location + '_card' + element.id" :class="element.invisible ? 'invisible' : ''">
         <HCard v-bind="element" @click="click(element)" />
         <HFooter :location="location" :card="element" />
       </div>
     </template>
-  </draggable>
+  </draggable>-->
+
+  <div class="cardlist flex flex-wrap justify-center" :class="heightClass">
+    <transition-group>
+      <div class="m-1 relative" v-for="card in cards" :key="card.id" :id="location + '_card' + card.id" :class="card.invisible ? 'invisible' : ''">
+        <HCard v-bind="card" @click="click(card)" />
+        <HFooter :location="location" :card="card" />
+      </div>
+    </transition-group>
+  </div>
 </template>
 
 <script lang="ts">
@@ -37,12 +46,12 @@ export default {
   computed: {
     heightClass(): String {
       switch (this.location) {
-        case "tableau":
-          return "min-h-64";
         case "timeless":
-          "min-w-60";
-        default:
+          return "min-w-60";
+        case "offer":
           return "min-h-60";
+        default:
+          return "min-h-66";
       }
     },
   },
@@ -57,13 +66,13 @@ export default {
       let location: String = this.location;
       let event = evt.moved ? "order" : evt.added ? "add" : "remove";
       let e = evt.moved || evt.added || evt.removed;
+      let card = e.element;
       let cardId = e.element.id;
       let order = e.newIndex != null ? e.newIndex : e.oldIndex;
-      this.$emit("drag", { location, event, cardId, order });
+      this.$emit("drag", { card, location, event, cardId, order });
     },
     click(card): void {
-      let location: String = this.location;
-      this.$emit("click", { location, card });
+      this.$emit("click", { card });
     },
   },
 };

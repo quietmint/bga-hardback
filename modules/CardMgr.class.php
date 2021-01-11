@@ -293,14 +293,20 @@ class CardMgr extends APP_GameClass
         return $refIds;
     }
 
-    private static function getWhereClause($cardIds)
+    private static function getWhereClause($cards)
     {
-        if (is_numeric($cardIds)) {
-            return "card_id = $cardIds";
-        } else if (is_array($cardIds)) {
-            return "card_id IN (" . implode(',', $cardIds) . ")";
+        if (!is_array($cards)) {
+            $cards = [$cards];
         }
-        return "0 = 1";
+        $ids = [];
+        foreach ($cards as $c) {
+            if (is_numeric($c)) {
+                $ids[] = $c;
+            } else if ($c instanceof HCard) {
+                $ids[] = $c->getId();
+            }
+        }
+        return "card_id IN (" . implode(',', $ids) . ")";
     }
 
     /* Change */
@@ -365,21 +371,32 @@ class CardMgr extends APP_GameClass
         return $ids;
     }
 
-    public static function inkCards($cardIds, $inkValue = 1)
+    public static function inkCards(&$cards, $inkValue = HAS_INK)
     {
         $sql = "UPDATE card SET ink = $inkValue";
         if ($inkValue == 1) {
             $sql .= ", card_type = card_location";
         }
-        $sql .= " WHERE " . self::getWhereClause($cardIds);
+        $sql .= " WHERE " . self::getWhereClause($cards);
         self::DbQuery($sql);
+        foreach ($cards as &$card) {
+            $card->setInk($inkValue);
+        }
     }
 
-    public static function positionCard($cardId, $location = null, $order)
+    public static function moveCard($cardId, $location)
+    {
+        self::DbQuery("UPDATE card SET card_location = '$location', card_location_arg = -1 WHERE card_id = $cardId");
+    }
+
+    public static function positionCard($cardId, $location = null, $order = null)
     {
         $card = self::getCard($cardId);
         if ($location == null) {
             $location = $card->getLocation();
+        }
+        if ($order == null) {
+            $order = self::getCountInLocation($location);
         }
         self::DbQuery("UPDATE card SET card_location_arg = card_location_arg - 1 WHERE card_location = '{$card->getLocation()}' AND card_location_arg > {$card->getOrder()}");
         self::DbQuery("UPDATE card SET card_location_arg = card_location_arg + 1 WHERE card_location = '$location' AND card_location_arg >= $order");
@@ -459,14 +476,17 @@ class CardMgr extends APP_GameClass
         return $output;
     }
 
-    public static function getCardsInLocation($location, $inkValue = null)
+    public static function getCardsInLocation($locations, $inkValue = null)
     {
-        $sql = "SELECT * FROM card WHERE card_location = '$location'";
+        if (!is_array($locations)) {
+            $locations = [$locations];
+        }
+        $sql = "SELECT * FROM card WHERE card_location IN ('" . implode("', '", $locations) . "')";
         if ($inkValue != null) {
             $sql .= " AND ink = $inkValue";
         }
-        $sql .= " ORDER BY card_location_arg";
-        $dbcards = self::getObjectListFromDb($sql);
+        $sql .= " ORDER BY card_location, card_location_arg";
+        $dbcards = self::getCollectionFromDB($sql);
         return self::populateCards($dbcards);
     }
 

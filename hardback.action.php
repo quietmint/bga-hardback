@@ -77,6 +77,15 @@ class action_hardback extends APP_GameAction
    * PHASE 4: PURCHASE NEW CARDS AND INK
    */
 
+  public function purchase()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('purchase');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->purchase($cardId);
+    self::ajaxResponse();
+  }
+
   /*
    * PHASE 5: DISCARD USED CARDS AND INK
    * PHASE 6: DISCARD USED TIMELESS CLASSIC CARDS

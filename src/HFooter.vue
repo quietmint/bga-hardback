@@ -1,5 +1,5 @@
 <template>
-  <div v-if="action" :class="footerClass" class="mx-auto w-32 py-1 rounded-b-lg text-center text-xs" @click="click">
+  <div v-if="action" :class="footerClass" class="mx-auto w-32 leading-6 rounded-b-lg text-center text-xs" @click="click">
     <Icon v-if="icon" :icon="icon" class="inline text-lg" />
     {{ text }}
   </div>

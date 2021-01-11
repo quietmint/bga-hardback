@@ -30,9 +30,10 @@ class HCard extends APP_GameClass implements JsonSerializable
     {
         $array = [
             'id' => $this->id,
-            'refId' => $this->refId,
+            'location' => $this->location,
             'order' => $this->order,
             'origin' => $this->origin,
+            'refId' => $this->refId,
         ];
         if ($this->ink == 1) {
             $array['ink'] = true;
@@ -94,6 +95,11 @@ class HCard extends APP_GameClass implements JsonSerializable
     public function setWild($wild)
     {
         $this->wild = $wild;
+    }
+
+    public function setInk($inkValue)
+    {
+        $this->ink = $inkValue;
     }
 
     /***** Computed properties *****/

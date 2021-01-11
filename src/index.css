@@ -72,6 +72,19 @@
     background: url(paper.jpg);
 }
 
+.v-leave-active, .v-move {
+    transition: opacity 500ms ease, transform 500ms ease;
+}
+
+.v-leave-from {
+    opacity: 1;
+}
+
+.v-leave-to {
+    opacity: 0;
+}
+
+/*
 .v-enter-active, .v-leave-active, .v-move {
     transition: transform 500ms ease;
 }
@@ -84,6 +97,7 @@
     opacity: 0;
     transform: translateX(12rem);
 }
+*/
 
 .tailwind svg.inline {
     vertical-align: -0.15rem;

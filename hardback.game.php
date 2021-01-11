@@ -119,16 +119,11 @@ class hardback extends Table
 
         return [
             'players' => $playersAsArray,
+            'cards' => CardMgr::getCardsInLocation([CardMgr::getHandLocation($playerId), 'tableau', 'offer', 'timeless']),
             'refs' => [
                 'cards' => CardMgr::getCardRef(),
                 'benefits' => CardMgr::getBenefitRef(),
             ],
-            'locations' => [
-                CardMgr::getHandLocation($playerId) => CardMgr::getHand($playerId),
-                'tableau' => CardMgr::getTableau(),
-                'timeless' => CardMgr::getTimeless(),
-                'offer' => CardMgr::getOffer(),
-            ]
         ];
     }
 
@@ -151,114 +146,30 @@ class hardback extends Table
     /*
      * Utilities
      */
-    function notifyCards($locations)
+    function notifyCards($cards)
     {
-        foreach ($locations as $location => $cards) {
-            $parts = explode('_', $location);
-            if (count($parts) == 2) {
-                $playerId = intval($parts[1]);
+        $view = [];
+        foreach ($cards as $card) {
+            $parts = explode('_', $card->getLocation());
+            $playerId = count($parts) == 2 ? intval($parts[1]) : 'all';
+            if (!array_key_exists($playerId, $view)) {
+                $view[$playerId] = [];
+            }
+            $view[$playerId][$card->getId()] = $card;
+        }
+
+        foreach ($view as $playerId => $cards) {
+            if ($playerId == 'all') {
                 self::notifyPlayer($playerId, 'cards', '', [
-                    'locations' => [
-                        $location => $cards,
-                    ],
+                    'cards' => $cards,
                 ]);
             } else {
-                self::notifyAllPlayers('cards', '', [
-                    'locations' => [
-                        $location => $cards,
-                    ],
+                self::notifyPlayer($playerId, 'cards', '', [
+                    'cards' => $cards,
                 ]);
             }
         }
     }
-
-    /*
-     * States
-     */
-
-    function stNextPlayer()
-    {
-        // Reset hand
-        $player = PlayerMgr::getPlayer();
-        CardMgr::reset($player->getId());
-        $this->notifyCards([
-            'tableau' => [],
-            $player->getHandLocation() => $player->getHand(),
-        ]);
-        $player->notifyPanel();
-
-        // Activate next player
-        $this->activeNextPlayer();
-
-        // Notify about ink used out-of-turn
-        $player = PlayerMgr::getPlayer();
-        foreach ($player->getHand(HAS_INK) as $card) {
-            $player->notifyInk($card);
-        }
-        foreach ($player->getHand(HAS_REMOVER) as $card) {
-            $player->notifyRemover($card);
-        }
-
-        $this->gamestate->nextState('playerTurn');
-    }
-
-    function stGameEndStats()
-    {
-        $this->gamestate->nextState('gameEnd');
-    }
-
-    /*
-    function dragOrder($cardId, $order, $location)
-    {
-        $playerId = self::getCurrentPlayerId();
-        $validLocations = [CardMgr::getHandLocation($playerId)];
-        if ($playerId == self::getActivePlayerId()) {
-            $validLocations[] = "tableau";
-        }
-        $card = CardMgr::getCard($cardId);
-        if ($card['location'] != $location) {
-            throw new BgaUserException("Card $cardId is in location {$card['location']} (expected: $location)");
-        }
-        if (!in_array($location, $validLocations)) {
-            throw new BgaUserException("Player $playerId is not allowed to order cards in location $location");
-        }
-        CardMgr::orderCard($cardId, $order);
-        $this->notifyCards([
-            $location => CardMgr::getCardsInLocation($location),
-        ]);
-    }
-
-    function dragMove($cardId, $order, $from, $to)
-    {
-        $playerId = self::getCurrentPlayerId();
-        $validLocations = [];
-        if ($playerId == self::getActivePlayerId()) {
-            $validLocations = [CardMgr::getHandLocation($playerId), "tableau", "timeless"];
-        }
-        $card = CardMgr::getCard($cardId);
-        if ($card['location'] != $from) {
-            throw new BgaUserException("Card $cardId is in location {$card['location']} (expected: $from)");
-        }
-        if (!in_array($from, $validLocations)) {
-            throw new BgaUserException("Player $playerId is not allowed to remove cards from location $from");
-        }
-        if (!in_array($to, $validLocations)) {
-            throw new BgaUserException("Player $playerId is not allowed to add cards to location $to");
-        }
-        CardMgr::moveAndOrderCard($cardId, $to, $order);
-        $this->notifyCards([
-            $from => CardMgr::getCardsInLocation($from),
-            $to => CardMgr::getCardsInLocation($to),
-        ]);
-    }
-
-    function sort($cardIds, $location)
-    {
-        $playerId = self::getCurrentPlayerId();
-    }
-    */
-
-
 
     /*
      * PHASE 1: SPELL A WORD
@@ -306,9 +217,7 @@ class hardback extends Table
                 'word' => $word,
             ]);
             // Display the invalid attempt (but don't commit)
-            $this->notifyCards([
-                'tableau' => $cards,
-            ]);
+            $this->notifyCards($cards);
             return;
         }
         self::notifyAllPlayers('message', '${player_name} spells ${word}', [
@@ -325,11 +234,7 @@ class hardback extends Table
         }
 
         // Display the word
-        $this->notifyCards([
-            'tableau' => $cards,
-            $player->getHandLocation() => [],
-        ]);
-
+        $this->notifyCards($cards);
         $this->gamestate->nextState('next');
     }
 
@@ -443,6 +348,47 @@ class hardback extends Table
         $this->gamestate->nextState('next');
     }
 
+    function argPurchase()
+    {
+        $player = PlayerMgr::getPlayer();
+        $offer = CardMgr::getOffer();
+        $cheapest = min(array_map(function ($card) {
+            return $card->getCost();
+        }, $offer));
+        return [
+            'canPurchase' => $player->getCoins() > $cheapest,
+            'coins' => $player->getCoins(),
+        ];
+    }
+
+    function stPurchase()
+    {
+        $canPurchase = $this->gamestate->state()['args']['canPurchase'];
+        if (!$canPurchase) {
+            $this->skip();
+        }
+    }
+
+    function purchase($cardId)
+    {
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $card = CardMgr::getCard($cardId);
+        if ($card == null || !$card->isLocation('offer')) {
+            throw new BgaVisibleSystemException("Card $card is unavailable to $player");
+        }
+        $player->spendCoins($card->getCost());
+        $location = $player->getDiscardLocation();
+        CardMgr::positionCard($card->getId(), $location);
+        self::notifyAllPlayers('animate', '${player_name} purchases ${icon}${letter} for ${coins}¢', [
+            'player_name' => $player->getName(),
+            'card_id' => $card->getId(),
+            'location' => $location,
+            'icon' => $card->getGenreName() . ' ',
+            'letter' => $card->getLetter(),
+            'coins' => $card->getCost(),
+        ]);
+    }
+
     /*
      * PHASE 5: DISCARD USED CARDS AND INK
      * PHASE 6: DISCARD USED TIMELESS CLASSIC CARDS
@@ -465,6 +411,29 @@ class hardback extends Table
         $this->gamestate->nextState('skip');
     }
 
+    function stNextPlayer()
+    {
+        // Reset hand
+        $player = PlayerMgr::getPlayer();
+        CardMgr::reset($player->getId());
+        $this->notifyCards($player->getHand());
+        $player->notifyPanel();
+
+        // Activate next player
+        $this->activeNextPlayer();
+
+        // Notify about ink used out-of-turn
+        $player = PlayerMgr::getPlayer();
+        foreach ($player->getHand(HAS_INK) as $card) {
+            $player->notifyInk($card);
+        }
+        foreach ($player->getHand(HAS_REMOVER) as $card) {
+            $player->notifyRemover($card);
+        }
+
+        $this->gamestate->nextState('playerTurn');
+    }
+
     /*
      * PHASE 8: USE INK AND REMOVER
      */
@@ -477,36 +446,37 @@ class hardback extends Table
         if (empty($cardIds)) {
             throw new BgaUserException("Your deck is empty");
         }
-        CardMgr::inkCards($cardIds);
         $card = CardMgr::getCard($cardIds[0]);
+        CardMgr::inkCards($card);
+        $this->notifyCards([$card]);
         if ($player->isActive()) {
             $player->notifyInk($card);
         }
-        $this->notifyCards([
-            $player->getHandLocation() => $player->getHand()
-        ]);
     }
 
     function useRemover($cardId)
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $player->spendRemover();
         $card = CardMgr::getCard($cardId);
         if ($card == null || !$card->isLocation($player->getHandLocation(), 'tableau')) {
             throw new BgaUserException("Card $card is unavailable to $player");
         }
-        $player->spendRemover();
-        CardMgr::inkCards($cardId, 2);
+        CardMgr::inkCards($card, HAS_REMOVER);
+        $this->notifyCards([$card]);
         if ($player->isActive()) {
             $player->notifyRemover($card);
         }
-        $this->notifyCards([
-            $card->getLocation() => CardMgr::getCardsInLocation($card->getLocation()),
-        ]);
     }
 
     /*
      * END OF THE GAME
      */
+
+    function stGameEndStats()
+    {
+        $this->gamestate->nextState('gameEnd');
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Zombie
