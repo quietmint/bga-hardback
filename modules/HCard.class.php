@@ -59,9 +59,19 @@ class HCard extends APP_GameClass implements JsonSerializable
         return $this->ink == 2;
     }
 
+    public function setInk($inkValue)
+    {
+        $this->ink = $inkValue;
+    }
+
     public function getLocation()
     {
         return $this->location;
+    }
+
+    public function setLocation($location)
+    {
+        $this->location = $location;
     }
 
     public function isLocation(...$locations)
@@ -77,9 +87,19 @@ class HCard extends APP_GameClass implements JsonSerializable
         return $this->order;
     }
 
+    public function setOrder()
+    {
+        return $this->order;
+    }
+
     public function getOrigin()
     {
         return $this->origin;
+    }
+
+    public function setOrigin($origin)
+    {
+        $this->origin = $origin;
     }
 
     public function getRefId()
@@ -95,11 +115,6 @@ class HCard extends APP_GameClass implements JsonSerializable
     public function setWild($wild)
     {
         $this->wild = $wild;
-    }
-
-    public function setInk($inkValue)
-    {
-        $this->ink = $inkValue;
     }
 
     /***** Computed properties *****/

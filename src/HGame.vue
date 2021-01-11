@@ -1,11 +1,14 @@
 <template>
   <div>
+    <!-- Player panels (moved using teleport) -->
     <HPlayerPanel v-for="(player, id) in players" :key="id" :player="player" />
 
-    <!-- Icons for log message replacement -->
+    <!-- Log message icons-->
     <div class="hidden">
       <Icon v-for="icon in logIcons" :key="icon" :id="'logIcon_' + icon" :icon="icon" style="font-size: 20px; vertical-align: middle" />
     </div>
+
+    <div>Active: {{ active }} &mdash; State: {{ state.name }}</div>
 
     <div class="flex">
       <div class="flex-grow">
@@ -13,15 +16,15 @@
           <div class="flex flex-wrap justify-end mb-1">
             <b class="flex-grow">My Hand ({{ handCards.length }})</b>
 
-            <div v-if="currentPlayer.ink && currentPlayer.deckCount" class="flex ml-1 rounded-lg divide-x border text-sm text-center cursor-pointer" :class="buttonGroupClass">
+            <div v-if="currentPlayer.ink && (currentPlayer.deckCount || currentPlayer.discardCount)" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
               <div class="rounded-lg" :class="buttonClass" @click="takeAction('useInk')"><Icon icon="ink" class="inline text-lg" /> Draw with Ink</div>
             </div>
 
-            <div v-if="handCards.length > 1 && isCurrentPlayerActive()" class="flex ml-1 rounded-lg divide-x border text-sm text-center cursor-pointer" :class="buttonGroupClass">
+            <div v-if="active && handCards.length > 1" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
               <div class="rounded-lg" :class="buttonClass" @click="clickAll(handCards)"><Icon icon="clickAll" class="inline text-lg" /> Play All</div>
             </div>
 
-            <div v-if="handCards.length > 1" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap" :class="buttonGroupClass">
+            <div v-if="handCards.length > 1" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
               <div class="rounded-l-lg" :class="buttonHeaderClass">Order:</div>
               <div :class="buttonClass" @click="sort(handLocation, 'letter')" title="By Letter"><Icon icon="sortAZ" class="text-lg" /></div>
               <div :class="buttonClass" @click="sort(handLocation, 'cost')" title="By Cost"><Icon icon="sort09" class="text-lg" /></div>
@@ -37,7 +40,7 @@
           <div class="flex flex-wrap justify-end mb-1">
             <b class="flex-grow">Word ({{ tableauCards.length }})</b>
 
-            <div v-if="tableauCards.length" class="flex ml-1 rounded-lg divide-x border text-sm text-center cursor-pointer" :class="buttonGroupClass">
+            <div v-if="active && tableauCards.length" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
               <div class="rounded-lg" :class="buttonClass" @click="clickAll(tableauCards)"><Icon icon="close" class="inline text-lg" /> Reset</div>
             </div>
           </div>
@@ -49,7 +52,7 @@
           <div class="flex flex-wrap justify-end mb-1">
             <b class="flex-grow">Offer Row ({{ offerCards.length }})</b>
 
-            <div class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap" :class="buttonGroupClass">
+            <div class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
               <div class="rounded-l-lg font-bold" :class="buttonHeaderClass">Order:</div>
               <div :class="buttonClass" @click="sort('offer', 'letter')" title="By Letter"><Icon icon="sortAZ" class="text-lg" /></div>
               <div :class="buttonClass" @click="sort('offer', 'cost')" title="By Cost"><Icon icon="sort09" class="inline text-lg" /></div>
@@ -143,17 +146,15 @@ export default {
 
   data() {
     return {
-      logIcons: ["starter", "adventure", "horror", "mystery", "romance", "star"],
-      locationOrder: {},
+      active: false,
       gamedatas: {
-        gamestate: {},
-        players: {},
         cards: {},
-        refs: {
-          cards: {},
-          benefits: {},
-        },
+        players: {},
+        refs: { benefits: {}, cards: {} },
       },
+      locationOrder: {},
+      logIcons: ["starter", "adventure", "horror", "mystery", "romance", "star"],
+      state: {},
     };
   },
 
@@ -162,11 +163,6 @@ export default {
   },
 
   computed: {
-    state() {
-      console.log("computed state", this.gamedatas.gamestate);
-      return this.gamedatas.gamestate;
-    },
-
     spectator() {
       return this.game.isSpectator;
     },
@@ -216,11 +212,11 @@ export default {
     },
 
     buttonHeaderClass() {
-      return "pl-2 pr-1 py-1 font-bold " + this.currentPlayer.colorHeader;
+      return "pl-2 pr-1 font-bold " + this.currentPlayer.colorHeader;
     },
 
     buttonClass() {
-      return "px-2 py-1 cursor-pointer " + this.currentPlayer.colorButton;
+      return "leading-6 px-2 cursor-pointer " + this.currentPlayer.colorButton;
     },
   },
 
@@ -228,9 +224,6 @@ export default {
     /*
      * Utility functions
      */
-    cardById(cardId) {
-      return this.populateCard(this.gamedatas.cards[cardId]);
-    },
 
     cardsInLocation(location): Array<any> {
       return this.populateCards(
@@ -419,10 +412,6 @@ export default {
       return this.game.isCurrentPlayerActive();
     },
 
-    getActivePlayerId() {
-      return this.game.getActivePlayerId();
-    },
-
     /*
      * BGA framework event callbacks
      */
@@ -442,26 +431,13 @@ export default {
       return log;
     },
 
-    onEnteringState(stateName, args) {
-      console.log("Vue onEnteringState", stateName, args);
-    },
-
-    onLeavingState(stateName) {
-      console.log("Vue onLeavingState", stateName);
-    },
-
     onUpdateActionButtons(stateName, args) {
       console.log("Vue onUpdateActionButtons", stateName, args);
+      this.active = this.game.isCurrentPlayerActive();
+      this.state = this.game.gamedatas.gamestate;
+      console.log("new active, state", this.active, this.state.name);
 
       const actionRef = {
-        animate: {
-          text: "Animate",
-          color: "blue",
-          function() {
-            this.animateCardMove(101, "timeless");
-            this.animateCardDestroy(145, "player_board_2305328");
-          },
-        },
         confirmWord: {
           text: "Confirm Word",
           color: "blue",
@@ -500,7 +476,6 @@ export default {
       }
 
       let possible: string[] = this.state.possibleactions;
-      possible.unshift("animate");
       console.log("possible", possible, stateName, this.state);
 
       possible.forEach((p, index) => {
@@ -518,6 +493,17 @@ export default {
           );
         }
       });
+    },
+
+    onEnteringState(stateName, args) {
+      console.log("Vue onEnteringState", stateName, args);
+      this.active = this.game.isCurrentPlayerActive();
+      this.state = this.game.gamedatas.gamestate;
+      console.log("new active, state", this.active, this.state.name);
+    },
+
+    onLeavingState(stateName) {
+      console.log("Vue onLeavingState", stateName);
     },
 
     onNotify(notif) {
@@ -605,16 +591,16 @@ export default {
 
     clickCard(evt) {
       let { card } = evt;
-      console.log("clickCard event in parent", card.id);
-      if (this.isCurrentPlayerActive()) {
+      console.log("clickCard", card.id, this.active, this.state.name);
+      if (this.active) {
         let destination = null;
         if (card.location == this.handLocation || card.location.startsWith("timeless")) {
-          destination = "tableau";
+          this.animateCardMove(card.id, "tableau");
         } else if (card.location == "tableau") {
           destination = card.origin;
-        }
-        if (destination) {
-          this.animateCardMove(card.id, destination);
+          this.animateCardMove(card.id, card.origin);
+        } else if (card.location == "offer" && this.state.name == "purchase") {
+          this.takeAction("purchase", { cardId: card.id });
         }
       }
     },
@@ -632,28 +618,15 @@ export default {
       let { action, location, card } = evt;
       console.log("clickFooter event in parent", action, location, card.id);
       if (action == "ink") {
-        let cardId = card.id;
-        this.takeAction("useRemover", { cardId });
+        this.takeAction("useRemover", { cardId: card.id });
       } else if (action == "flipWild") {
         let wild = (prompt("What letter does this wild card represent?") || "").trim().toUpperCase();
         const regex = RegExp("^[A-Z]$");
         if (regex.test(wild)) {
-          let cardId = card.id;
-          let cards = this.gamedatas.locations[location] || [];
-          cards.forEach((c) => {
-            if (c.id == cardId) {
-              c.wild = wild;
-            }
-          });
+          this.gamedatas.cards[card.id].wild = wild;
         }
       } else if (action == "flipUnwild") {
-        let cardId = card.id;
-        let cards = this.gamedatas.locations[location] || [];
-        cards.forEach((c) => {
-          if (c.id == cardId) {
-            c.wild = false;
-          }
-        });
+        this.gamedatas.cards[card.id].wild = false;
       }
     },
   },

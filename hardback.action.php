@@ -77,6 +77,14 @@ class action_hardback extends APP_GameAction
    * PHASE 4: PURCHASE NEW CARDS AND INK
    */
 
+  public function flush()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('flush');
+    $this->game->flush();
+    self::ajaxResponse();
+  }
+
   public function purchase()
   {
     self::setAjaxMode();

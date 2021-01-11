@@ -1,7 +1,7 @@
 <template>
   <div :class="cardClass" class="relative inline-flex auto-rows-auto rounded-lg card-item select-none cursor-pointer overflow-hidden">
     <!-- ID -->
-    <div class="absolute bottom-1 left-1 font-bold text-sm">{{ origin }} (#{{ id }})</div>
+    <div class="absolute bottom-1 left-1 font-bold text-sm">{{ origin }} (#{{ id }}/{{ order }})</div>
 
     <!-- Icon -->
     <div class="absolute top-1 left-1 leading-none">
