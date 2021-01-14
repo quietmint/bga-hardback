@@ -10,7 +10,7 @@
 
   <div class="cardlist flex flex-wrap justify-center" :class="heightClass">
     <transition-group>
-      <div class="m-1 relative" v-for="card in cards" :key="card.id" :id="location + '_card' + card.id" :class="card.invisible ? 'invisible' : ''">
+      <div class="cardholder m-1 relative" v-for="card in cards" :key="card.id" :id="location + '_card' + card.id" :class="card.invisible ? 'invisible' : ''">
         <HCard v-bind="card" @click="click(card)" />
         <HFooter :location="location" :card="card" />
       </div>
@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import Constants from "./constants.js";
-import { Icon, addIcon } from "@iconify/vue";
+import { Icon } from "@iconify/vue";
 import draggable from "vuedraggable";
 import HCard from "./HCard.vue";
 import HFooter from "./HFooter.vue";

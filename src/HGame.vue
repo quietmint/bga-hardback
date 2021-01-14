@@ -102,8 +102,8 @@ addIcon("remover", mdiFlaskEmptyRemoveOutline);
 import mdiHeart from "@iconify-icons/mdi/heart";
 addIcon("romance", mdiHeart);
 
-import mdiMagnify from "@iconify-icons/mdi/magnify";
-addIcon("mystery", mdiMagnify);
+import magnifyingGlass from '@iconify-icons/ps/magnifying-glass';
+addIcon("mystery", magnifyingGlass);
 
 import mdiRotate3dVariant from "@iconify-icons/mdi/rotate-3d-variant";
 addIcon("flip", mdiRotate3dVariant);
@@ -111,8 +111,8 @@ addIcon("flip", mdiRotate3dVariant);
 import mdiSkull from "@iconify-icons/mdi/skull";
 addIcon("horror", mdiSkull);
 
-import mdiStar from "@iconify-icons/mdi/star-outline";
-addIcon("star", mdiStar);
+import starOutlined from '@iconify-icons/ant-design/star-outlined';
+addIcon("star", starOutlined);
 
 import shuffleVariant from "@iconify-icons/mdi/shuffle-variant";
 addIcon("shuffle", shuffleVariant);
@@ -138,7 +138,11 @@ addIcon("clickAll", expandAllOutline);
 
 import helpRhombus from "@iconify-icons/mdi/help-rhombus";
 import helpRhombusOutline from "@iconify-icons/mdi/help-rhombus-outline";
-addIcon("wild", helpRhombusOutline);
+import helpCircleOutline from '@iconify-icons/mdi/help-circle-outline';
+addIcon("wild", helpCircleOutline);
+
+import refreshIcon from '@iconify-icons/mdi/refresh';
+addIcon("reset", refreshIcon);
 
 export default {
   name: "HGame",
@@ -619,13 +623,13 @@ export default {
       console.log("clickFooter event in parent", action, location, card.id);
       if (action == "ink") {
         this.takeAction("useRemover", { cardId: card.id });
-      } else if (action == "flipWild") {
+      } else if (action == "wild") {
         let wild = (prompt("What letter does this wild card represent?") || "").trim().toUpperCase();
         const regex = RegExp("^[A-Z]$");
         if (regex.test(wild)) {
           this.gamedatas.cards[card.id].wild = wild;
         }
-      } else if (action == "flipUnwild") {
+      } else if (action == "reset") {
         this.gamedatas.cards[card.id].wild = false;
       }
     },

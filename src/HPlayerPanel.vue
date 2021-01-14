@@ -25,7 +25,7 @@
 
 <script>
 import Constants from "./constants.js";
-import { Icon, addIcon } from "@iconify/vue";
+import { Icon } from "@iconify/vue";
 
 export default {
   name: "HPlayerPanel",

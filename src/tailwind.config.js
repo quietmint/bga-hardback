@@ -14,6 +14,9 @@ module.exports = {
             purple: colors.violet,
             pink: colors.pink
         },
+        boxShadow: {
+            DEFAULT: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+        },
         extend: {
             minHeight: {
                 '60': '15rem',

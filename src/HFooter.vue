@@ -1,6 +1,5 @@
 <template>
-  <div v-if="action" :class="footerClass" class="mx-auto w-32 leading-6 rounded-b-lg text-center text-xs" @click="click">
-    <Icon v-if="icon" :icon="icon" class="inline text-lg" />
+  <div v-if="action" :class="footerClass" class="mx-auto w-32 pt-1 h-5 shadow rounded-b-lg text-center text-xs" @click="click">
     {{ text }}
   </div>
 </template>
@@ -30,7 +29,7 @@ export default {
       } else if (this.card.origin == "timeless") {
         return "timeless";
       } else if ((this.location == "tableau" && this.game.isCurrentPlayerActive()) || this.location.startsWith("hand")) {
-        return this.card.wild ? "flipUnwild" : "flipWild";
+        return this.card.wild ? "reset" : "wild";
       }
     },
     footerClass() {
@@ -39,8 +38,8 @@ export default {
           return "cursor-pointer bg-black text-white";
         case "timeless":
           return "bg-red-700";
-        case "flipWild":
-        case "flipUnwild":
+        case "wild":
+        case "reset":
           return "cursor-pointer bg-white text-black";
       }
     },
@@ -50,9 +49,10 @@ export default {
           return "remover";
         case "timeless":
           return null;
-        case "flipWild":
-        case "flipUnwild":
+        case "wild":
           return "wild";
+        case "reset":
+          return "reset";
       }
     },
     text() {
@@ -61,10 +61,10 @@ export default {
           return "REMOVE INK";
         case "timeless":
           return this.card.origin;
-        case "flipWild":
-          return "MAKE WILD";
-        case "flipUnwild":
-          return "UNDO WILD";
+        case "wild":
+          return " WILD";
+        case "reset":
+          return "RESET";
       }
     },
   },
