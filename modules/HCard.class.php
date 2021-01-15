@@ -10,6 +10,9 @@ class HCard extends APP_GameClass implements JsonSerializable
     private $refId;
     private $wild;
 
+    private $next;
+    private $previous;
+
     public function __construct($dbcard)
     {
         $this->id = intval($dbcard['card_id']);
@@ -117,6 +120,29 @@ class HCard extends APP_GameClass implements JsonSerializable
         $this->wild = $wild;
     }
 
+    /***** Temporary properties *****/
+
+    public function getNext()
+    {
+        return $this->next;
+    }
+
+    public function setNext($next)
+    {
+        $this->next = $next;
+    }
+
+
+    public function getPrevious()
+    {
+        return $this->previous;
+    }
+
+    public function setPrevious($previous)
+    {
+        $this->previous = $previous;
+    }
+
     /***** Computed properties *****/
 
     public function getRef()
@@ -155,24 +181,25 @@ class HCard extends APP_GameClass implements JsonSerializable
         return $this->wild ?? CardMgr::$refCards[$this->refId]['letter'];
     }
 
-    public function getBenefits($activeGenre = false)
+    public function getBenefits()
     {
+        $active = CardMgr::isGenreActive($this->getGenre());
         if ($this->wild) {
             return [];
         }
         $basic = CardMgr::$refCards[$this->refId]['basicBenefits'] ?? [];
         $genre = CardMgr::$refCards[$this->refId]['genreBenefits'] ?? [];
-        return ($activeGenre && !empty($genre)) ? array_merge($basic, $genre) : $basic;
+        return ($active && !empty($genre)) ? array_merge($basic, $genre) : $basic;
     }
 
-    public function hasBenefit($activeGenre = false, $benefitId)
+    public function hasBenefit($benefitId)
     {
-        return array_key_exists($benefitId, $this->getBenefits($activeGenre));
+        return array_key_exists($benefitId, $this->getBenefits());
     }
 
-    public function getBenefitValue($activeGenre = false, $benefitId)
+    public function getBenefitValue($benefitId)
     {
-        return $this->getBenefits($activeGenre)[$benefitId] ?? null;
+        return $this->getBenefits()[$benefitId] ?? null;
     }
 
     public function getCost()

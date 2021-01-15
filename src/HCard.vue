@@ -1,6 +1,6 @@
 <template>
-  <div :class="cardClass" class="card shadow relative rounded-lg select-none cursor-pointer overflow-hidden">
-    <div class="cardface front">
+  <div :class="cardClass" class="card shadow relative rounded-lg select-none cursor-pointer">
+    <div class="cardface front rounded-lg">
       <!-- Icon -->
       <Icon v-if="icon" :icon="icon" :class="iconClass" class="absolute text-3xl" />
 
@@ -33,9 +33,9 @@
       <!-- ID -->
       <div class="absolute bottom-1 right-1 text-xs text-red-700">{{ origin }} (#{{ id }}/{{ order }})</div>
     </div>
-    <div class="cardface back">
+    <div class="cardface back rounded-lg">
       <!-- Wild Letter -->
-      <div class="absolute wildletter text-center leading-none top-16 w-full">
+      <div v-if="wild" class="absolute wildletter text-center leading-none top-16 w-full">
         {{ wild }}
       </div>
     </div>

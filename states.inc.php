@@ -71,27 +71,29 @@ $machinestates = [
         'type' => 'activeplayer',
         'possibleactions' => ['confirmWord', 'skipWord'],
         'transitions' => [
-            'next' => ST_RESOLVE_UNCOVER,
+            'next' => ST_UNCOVER,
             'skip' => ST_NEXT_PLAYER
         ],
     ],
 
-    ST_RESOLVE_UNCOVER => [
-        'name' => 'resolveUncover',
-        'description' => '',
-        'type' => 'game',
-        'action' => 'stResolveUncover',
-        'transitions' => [
-            'again' => ST_UNCOVER,
-            'next' => ST_RESOLVE_EITHER,
-        ],
-    ],
+    // ST_RESOLVE_UNCOVER => [
+    //     'name' => 'resolveUncover',
+    //     'description' => '',
+    //     'type' => 'game',
+    //     'action' => 'stResolveUncover',
+    //     'transitions' => [
+    //         'again' => ST_UNCOVER,
+    //         'next' => ST_RESOLVE_EITHER,
+    //     ],
+    // ],
 
     ST_UNCOVER => [
         'name' => 'uncover',
         'description' => clienttranslate('${actplayer} may uncover a wild card'),
         'descriptionmyturn' => clienttranslate('${you} may uncover a wild card'),
         'type' => 'activeplayer',
+        'args' => 'argUncover',
+        'action' => 'stUncover',
         'possibleactions' => ['uncover', 'skip'],
         'transitions' => [
             'again' => ST_UNCOVER,

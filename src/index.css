@@ -38,26 +38,14 @@
     button:focus {
         outline: none;
     }
-    .bg-black {
-        --tw-bg-opacity: 1;
-        background-color: rgba(0, 0, 0, var(--tw-bg-opacity));
-    }
-    .bg-white {
-        --tw-bg-opacity: 1;
-        background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
-    }
-    .text-black {
-        --tw-text-opacity: 1;
-        color: rgba(0, 0, 0, var(--tw-text-opacity));
-    }
-    .text-white {
-        --tw-text-opacity: 1;
-        color: rgba(255, 255, 255, var(--tw-text-opacity));
-    }
 }
 
 @tailwind components;
 @tailwind utilities;
+.cardlist {
+    transition: min-height 500ms ease-out;
+}
+
 .cardholder {
     perspective: 600px;
 }
@@ -92,7 +80,7 @@
     text-shadow: -1px 1px theme('colors.blue.500'), 1px -1px theme('colors.blue.700'), 0 0 4px #0008;
 }
 
-.card-starter {
+.card-starter .front {
     @apply bg-gray-500;
     background-image: url(starter.jpg);
     background-size: cover;
@@ -126,7 +114,7 @@
 }
 
 .card-horror .letter {
-    @apply text-green-400 text-8xl;
+    @apply text-green-400 text-8xl bg-clip-text;
     font-family: 'Germania';
     text-shadow: -2px 2px theme('colors.green.700'), 2px -2px theme('colors.green.200');
 }

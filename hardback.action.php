@@ -64,6 +64,15 @@ class action_hardback extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function uncover()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('uncover');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->uncover($cardId);
+    self::ajaxResponse();
+  }
+
   public function either()
   {
     self::setAjaxMode();

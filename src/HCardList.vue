@@ -12,7 +12,7 @@
     <transition-group>
       <div class="cardholder m-1 relative" v-for="card in cards" :key="card.id" :id="location + '_card' + card.id" :class="card.invisible ? 'invisible' : ''">
         <HCard v-bind="card" @click="click(card)" />
-        <HFooter :location="location" :card="card" />
+        <HFooter :card="card" />
       </div>
     </transition-group>
   </div>
@@ -45,14 +45,14 @@ export default {
   },
   computed: {
     heightClass(): String {
-      switch (this.location) {
-        case "timeless":
-          return "min-w-60";
-        case "offer":
-          return "min-h-60";
-        default:
-          return "min-h-66";
+      if (this.location == "timeless") {
+        return "min-w-60";
+      } else if (this.location == "offer") {
+        return "min-h-60";
+      } else if (this.location.startsWith("hand") && this.cards.length == 0) {
+        return "min-h-0";
       }
+      return "min-h-66";
     },
   },
   methods: {

@@ -8,10 +8,11 @@
       <Icon v-for="icon in logIcons" :key="icon" :id="'logIcon_' + icon" :icon="icon" style="font-size: 20px; vertical-align: middle" />
     </div>
 
-    <div>Active: {{ active }} &mdash; State: {{ state.name }}</div>
+    <div><b>Gamestate:</b> Active: {{ gamestate.active }} &mdash; Name: {{ gamestate.name }}</div>
 
     <div class="flex">
       <div class="flex-grow">
+        <!-- Hand -->
         <div class="container-hand bg-opacity-50 rounded-lg my-2 p-2" :class="currentPlayer.colorBg">
           <div class="flex flex-wrap justify-end mb-1">
             <b class="flex-grow">My Hand ({{ handCards.length }})</b>
@@ -20,7 +21,7 @@
               <div class="rounded-lg" :class="buttonClass" @click="takeAction('useInk')"><Icon icon="ink" class="inline text-lg" /> Draw with Ink</div>
             </div>
 
-            <div v-if="active && handCards.length > 1" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
+            <div v-if="gamestate.active && handCards.length > 1" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
               <div class="rounded-lg" :class="buttonClass" @click="clickAll(handCards)"><Icon icon="clickAll" class="inline text-lg" /> Play All</div>
             </div>
 
@@ -36,11 +37,12 @@
           <HCardList :cards="handCards" :location="handLocation" :checkDrag="checkDragHand" @click="clickCard" @clickFooter="clickFooter" />
         </div>
 
+        <!-- Tableau -->
         <div class="container-tableau rounded-lg my-2 p-2">
           <div class="flex flex-wrap justify-end mb-1">
             <b class="flex-grow">Word ({{ tableauCards.length }})</b>
 
-            <div v-if="active && tableauCards.length" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
+            <div v-if="gamestate.active && tableauCards.length" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
               <div class="rounded-lg" :class="buttonClass" @click="clickAll(tableauCards)"><Icon icon="close" class="inline text-lg" /> Reset</div>
             </div>
           </div>
@@ -48,6 +50,7 @@
           <HCardList :cards="tableauCards" location="tableau" :checkDrag="checkDragTableau" @click="clickCard" @clickFooter="clickFooter" />
         </div>
 
+        <!-- Offer -->
         <div class="container-offer bg-gray-700 bg-opacity-30 rounded-lg my-2 p-2">
           <div class="flex flex-wrap justify-end mb-1">
             <b class="flex-grow">Offer Row ({{ offerCards.length }})</b>
@@ -65,6 +68,7 @@
         </div>
       </div>
 
+      <!-- Timeless -->
       <div class="flex-none w-64 bg-gray-700 bg-opacity-30 rounded-lg ml-2 my-2 p-2">
         <b>Timeless Classics ({{ timelessCards.length }})</b>
         <HCardList :cards="timelessCards" location="timeless" :checkDrag="checkDragTimeless" @click="clickCard" />
@@ -75,7 +79,7 @@
 
 <script lang="ts">
 import Constants from "./constants.js";
-import { nextTick } from "vue";
+import { computed, nextTick } from "vue";
 import { firstBy } from "thenby";
 import { Icon, addIcon } from "@iconify/vue";
 import HCardList from "./HCardList.vue";
@@ -102,7 +106,7 @@ addIcon("remover", mdiFlaskEmptyRemoveOutline);
 import mdiHeart from "@iconify-icons/mdi/heart";
 addIcon("romance", mdiHeart);
 
-import magnifyingGlass from '@iconify-icons/ps/magnifying-glass';
+import magnifyingGlass from "@iconify-icons/ps/magnifying-glass";
 addIcon("mystery", magnifyingGlass);
 
 import mdiRotate3dVariant from "@iconify-icons/mdi/rotate-3d-variant";
@@ -111,7 +115,7 @@ addIcon("flip", mdiRotate3dVariant);
 import mdiSkull from "@iconify-icons/mdi/skull";
 addIcon("horror", mdiSkull);
 
-import starOutlined from '@iconify-icons/ant-design/star-outlined';
+import starOutlined from "@iconify-icons/ant-design/star-outlined";
 addIcon("star", starOutlined);
 
 import shuffleVariant from "@iconify-icons/mdi/shuffle-variant";
@@ -138,10 +142,10 @@ addIcon("clickAll", expandAllOutline);
 
 import helpRhombus from "@iconify-icons/mdi/help-rhombus";
 import helpRhombusOutline from "@iconify-icons/mdi/help-rhombus-outline";
-import helpCircleOutline from '@iconify-icons/mdi/help-circle-outline';
+import helpCircleOutline from "@iconify-icons/mdi/help-circle-outline";
 addIcon("wild", helpCircleOutline);
 
-import refreshIcon from '@iconify-icons/mdi/refresh';
+import refreshIcon from "@iconify-icons/mdi/refresh";
 addIcon("reset", refreshIcon);
 
 export default {
@@ -150,20 +154,25 @@ export default {
 
   data() {
     return {
-      active: false,
       gamedatas: {
         cards: {},
         players: {},
         refs: { benefits: {}, cards: {} },
       },
+      gamestate: {},
       locationOrder: {},
       logIcons: ["starter", "adventure", "horror", "mystery", "romance", "star"],
-      state: {},
     };
   },
 
   mounted() {
     this.emitter.on("clickFooter", this.clickFooter);
+  },
+
+  provide() {
+    return {
+      gamestate: this.gamestate,
+    };
   },
 
   computed: {
@@ -412,10 +421,6 @@ export default {
       this.game.ajaxcall("/" + gameName + "/" + gameName + "/" + action + ".html", data, this, callback);
     },
 
-    isCurrentPlayerActive() {
-      return this.game.isCurrentPlayerActive();
-    },
-
     /*
      * BGA framework event callbacks
      */
@@ -437,9 +442,8 @@ export default {
 
     onUpdateActionButtons(stateName, args) {
       console.log("Vue onUpdateActionButtons", stateName, args);
-      this.active = this.game.isCurrentPlayerActive();
-      this.state = this.game.gamedatas.gamestate;
-      console.log("new active, state", this.active, this.state.name);
+      Object.assign(this.gamestate, this.game.gamedatas.gamestate, { active: this.game.isCurrentPlayerActive() });
+      console.log("new active, state", this.gamestate);
 
       const actionRef = {
         confirmWord: {
@@ -475,12 +479,12 @@ export default {
       };
 
       // No actions for inactive players
-      if (!this.isCurrentPlayerActive()) {
+      if (!this.gamestate.active) {
         return;
       }
 
-      let possible: string[] = this.state.possibleactions;
-      console.log("possible", possible, stateName, this.state);
+      let possible: string[] = this.gamestate.possibleactions;
+      console.log("possible", possible, stateName, this.gamestate);
 
       possible.forEach((p, index) => {
         const action = actionRef[p];
@@ -501,9 +505,8 @@ export default {
 
     onEnteringState(stateName, args) {
       console.log("Vue onEnteringState", stateName, args);
-      this.active = this.game.isCurrentPlayerActive();
-      this.state = this.game.gamedatas.gamestate;
-      console.log("new active, state", this.active, this.state.name);
+      Object.assign(this.gamestate, this.game.gamedatas.gamestate, { active: this.game.isCurrentPlayerActive() });
+      console.log("new active, state", this.gamestate);
     },
 
     onLeavingState(stateName) {
@@ -538,7 +541,7 @@ export default {
         return;
       }
       // Active player can also move cards to the tableau
-      if (this.isCurrentPlayerActive() && toLocation == "tableau") {
+      if (this.gamestate.active && toLocation == "tableau") {
         return;
       }
       return false;
@@ -546,12 +549,12 @@ export default {
 
     checkDragTimeless(card: any, fromLocation: String, toLocation: String) {
       // Active player can move cards to the tableau
-      return this.isCurrentPlayerActive() && toLocation == "tableau";
+      return this.gamestate.active && toLocation == "tableau";
     },
 
     checkDragTableau(card: any, fromLocation: String, toLocation: String) {
       // Active player can reorder the tableau and return cards to their origin
-      return this.isCurrentPlayerActive() && (toLocation == fromLocation || toLocation == card.origin);
+      return this.gamestate.active && (toLocation == fromLocation || toLocation == card.origin);
     },
 
     /*
@@ -593,35 +596,37 @@ export default {
       this.locationOrder[location] = order;
     },
 
-    clickCard(evt) {
-      let { card } = evt;
-      console.log("clickCard", card.id, this.active, this.state.name);
-      if (this.active) {
-        let destination = null;
-        if (card.location == this.handLocation || card.location.startsWith("timeless")) {
-          this.animateCardMove(card.id, "tableau");
-        } else if (card.location == "tableau") {
-          destination = card.origin;
-          this.animateCardMove(card.id, card.origin);
-        } else if (card.location == "offer" && this.state.name == "purchase") {
-          this.takeAction("purchase", { cardId: card.id });
-        }
-      }
-    },
-
     clickAll(cards) {
       console.log("clickAll", cards);
-      if (this.isCurrentPlayerActive()) {
+      if (this.gamestate.active) {
         cards.forEach((card) => {
           this.clickCard({ card });
         });
       }
     },
 
+    clickCard(evt) {
+      let { card } = evt;
+      console.log("clickCard", card.id, this.gamestate);
+      if (this.gamestate.active) {
+        let destination = null;
+        if (card.location == this.handLocation || card.location.startsWith("timeless")) {
+          this.animateCardMove(card.id, "tableau");
+        } else if (card.location == "tableau") {
+          destination = card.origin;
+          this.animateCardMove(card.id, card.origin);
+        } else if (card.location == "offer" && this.gamestate.name == "purchase") {
+          this.takeAction("purchase", { cardId: card.id });
+        }
+      }
+    },
+
     clickFooter(evt) {
-      let { action, location, card } = evt;
-      console.log("clickFooter event in parent", action, location, card.id);
-      if (action == "ink") {
+      let { action, card } = evt;
+      console.log("clickFooter event in parent", action, card.id);
+      if (action == "uncover") {
+        this.takeAction("uncover", { cardId: card.id });
+      } else if (action == "ink") {
         this.takeAction("useRemover", { cardId: card.id });
       } else if (action == "wild") {
         let wild = (prompt("What letter does this wild card represent?") || "").trim().toUpperCase();

@@ -229,10 +229,6 @@ class hardback extends Table
         // Database commit
         CardMgr::playWord($player->getId(), $cards);
 
-        // Compute genre benefit activation
-        foreach (CardMgr::getGenreCounts($cards) as $genre => $count) {
-            $this->setGameStateValue("count$genre", $count);
-        }
         $this->gamestate->nextState('next');
     }
 
@@ -240,39 +236,84 @@ class hardback extends Table
      * PHASE 3: RESOLVE CARD BENEFITS
      */
 
-    function isActive($genre)
+    function argUncover()
     {
-        return $this->getGameStateValue("count$genre") >= 2;
+        $possible = [];
+        $tableau = CardMgr::getTableau();
+        foreach ($tableau as $card) {
+            if ($card->hasBenefit(UNCOVER)) {
+                self::notifyAllPlayers('message', "$card has UNCOVER benefit, prev = {$card->getPrevious()}, next = {$card->getNext()}", []);
+                if ($card->getPrevious() != null && $card->getPrevious()->isWild()) {
+                    $id = $card->getPrevious()->getId();
+                    if (!array_key_exists($id, $possible)) {
+                        $possible[$id] = [];
+                    }
+                    $possible[$id][] = $card->getId();
+                }
+                if ($card->getNext() != null && $card->getNext()->isWild()) {
+                    $id = $card->getNext()->getId();
+                    if (!array_key_exists($id, $possible)) {
+                        $possible[$id] = [];
+                    }
+                    $possible[$id][] = $card->getId();
+                }
+            }
+        }
+        self::notifyAllPlayers('message', 'computed argUncover', []);
+        return [
+            'possible' => $possible,
+        ];
     }
 
-    function stResolveUncover()
+    function stUncover()
     {
-        $tableau = CardMgr::getTableau();
-        $uncover = array_filter($tableau, function ($card) {
-            $active = $this->isActive($card->getGenre());
-            return $card->hasBenefit($active, UNCOVER);
-        });
-        self::notifyAllPlayers('message', "stResolveUncover count = " . count($uncover), []);
-        if (empty($uncover)) {
+        $possible = $this->gamestate->state()['args']['possible']; //$this->argUncover()['possible'];
+        self::notifyAllPlayers('message', "stUncover possible = " . json_encode($possible), []);
+        if (empty($possible)) {
             $this->gamestate->nextState('next');
             return;
         }
+
+        // Apply the first automatic action we find and start again
+        foreach ($possible as $cardId => $sourceIds) {
+            if (count($sourceIds) == 1) {
+                self::notifyAllPlayers('message', "stUncover automatically uncover $cardId", []);
+                $this->uncover($cardId);
+                //$this->gamestate->nextState('again');
+                return;
+            }
+        }
     }
 
-    function argsUncover()
+    function uncover($cardId)
     {
-    }
+        $player = PlayerMgr::getPlayer();
+        $possible = $this->gamestate->state()['args']['possible'];
+        if (!$possible) {
+            throw new BgaVisibleSystemException("No cards to uncover");
+        }
+        $sourceIds = $possible[$cardId] ?? null;
+        if (!$sourceIds || empty($sourceIds)) {
+            throw new BgaVisibleSystemException("No way to uncover card $cardId");
+        }
+        $sourceId = reset($sourceIds);
+        $cards = CardMgr::getCards([$cardId, $sourceId]);
+        $card = $cards[$cardId];
+        $source = $cards[$sourceId];
+        if (!$card->isWild()) {
+            throw new BgaVisibleSystemException("Card $card is already uncovered");
+        }
 
-    function uncover()
-    {
+        CardMgr::uncover($card, $source);
+
+        self::notifyAllPlayers('message', "action to uncover card=$card, source=$source", []);
     }
 
     function stResolveEither()
     {
         $tableau = CardMgr::getTableau();
         $choice = array_filter($tableau, function ($card) {
-            $active = $this->isActive($card->getGenre());
-            return $card->hasBenefit($active, EITHER);
+            return $card->hasBenefit(EITHER);
         });
         self::notifyAllPlayers('message', "stResolveChoice count = " . count($choice), []);
         if (empty($choice)) {
@@ -302,14 +343,12 @@ class hardback extends Table
         $points = 0;
         $coins = 0;
         foreach ($tableau as $card) {
-            $active = $this->isActive($card->getGenre());
-
-            $pointValue = $card->getBenefitValue($active, POINTS);
+            $pointValue = $card->getBenefitValue(POINTS);
             if ($pointValue) {
                 $points += $pointValue;
             }
 
-            $coinValue = $card->getBenefitValue($active, COINS);
+            $coinValue = $card->getBenefitValue(COINS);
             if ($coinValue) {
                 $coins += $coinValue;
             }

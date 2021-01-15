@@ -250,9 +250,24 @@ class CardMgr extends APP_GameClass
 
     private static function populateCards($dbcards)
     {
-        return array_map(function ($dbcard) {
+        $cards = array_map(function ($dbcard) {
             return new HCard($dbcard);
         }, $dbcards);
+        $count = count($cards);
+        $keys = array_keys($cards);
+        $i = 0;
+        foreach ($cards as &$card) {
+            if ($i > 0) {
+                $prev = $keys[$i - 1];
+                $card->setPrevious($cards[$prev]);
+            }
+            if ($i < $count - 1) {
+                $next = $keys[$i + 1];
+                $card->setNext($cards[$next]);
+            }
+            $i++;
+        }
+        return $cards;
     }
 
     public static function getCardRef()
@@ -594,8 +609,18 @@ class CardMgr extends APP_GameClass
             $order++;
         }
 
+        // Compute active genres
+        foreach (self::getGenreCounts($cards) as $genre => $count) {
+            hardback::$instance->setGameStateValue("count$genre", $count);
+        }
+
         // Notify
         hardback::$instance->notifyCards(self::getCards($updatedIds));
+    }
+
+    public static function isGenreActive($genre)
+    {
+        return hardback::$instance->getGameStateValue("count$genre") >= 2;
     }
 
     public static function moveCards($cards, $location)
@@ -672,6 +697,11 @@ class CardMgr extends APP_GameClass
 
         // Notify
         hardback::$instance->notifyCards($cards);
+    }
+
+    public static function uncover($card, $source) {
+        self::DbQuery("UPDATE card SET wild = NULL WHERE card_id = {$source->getId()}");
+        self::DbQuery("UPDATE card SET wild = NULL WHERE card_id = {$card->getId()}");
     }
 }
 
