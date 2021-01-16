@@ -1,29 +1,27 @@
 <template>
   <div :class="cardClass" class="card shadow relative rounded-lg select-none cursor-pointer">
     <div class="cardface front rounded-lg">
-      <!-- Icon -->
-      <Icon v-if="icon" :icon="icon" :class="iconClass" class="absolute text-3xl" />
-
-      <!-- Cost -->
-      <div v-if="cost" :class="costClass" class="absolute w-6 text-center font-bold text-base leading-tight">
-        {{ cost }}¢
-        <div v-if="points">{{ points }}<Icon icon="star" class="inline" /></div>
+      <!-- Bookmark -->
+      <div :class="bookmarkClass" class="bookmark absolute flex items-center text-center font-bold leading-none">
+        <Icon v-if="genreName != 'starter'" :icon="genreName" class="icon" />
+        <div v-if="cost" class="pt-1">{{ cost }}¢</div>
+        <div v-if="points" class="pt-1">{{ points }}<Icon icon="star" class="inline star" /></div>
       </div>
 
       <!-- Letter -->
-      <div :class="letterClass" class="absolute letter text-center leading-none">
+      <div :class="letterClass" class="absolute letter text-center leading-none" :title="'Letter: ' + letter + ' (' + genreName + ')'">
         {{ letter }}
       </div>
 
       <div :class="benefitClass" class="absolute">
         <!-- Basic Benefits -->
-        <ul>
+        <ul title="Basic benefits always activate">
           <li v-for="benefit in basicBenefitsList" :key="benefit.id" class="hanging">{{ benefit.text }}<Icon v-if="benefit.icon" :icon="benefit.icon" class="inline" />{{ benefit.text2 }}<Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline" />{{ benefit.text3 }}<Icon v-if="benefit.icon3" :icon="benefit.icon3" class="inline" /></li>
         </ul>
 
         <!-- Genre Benefits -->
-        <div v-if="genreBenefitsList.length" class="flex items-center border-t border-gray-900">
-          <Icon :icon="icon" class="text-xl flex-none" />
+        <div v-if="genreBenefitsList.length" :class="genreClass" class="flex items-center border-t border-gray-900" :title="'Genre benefits activate if you play multiple ' + genreName + ' cards'">
+          <Icon :icon="genreName" class="text-2xl flex-none" />
           <ul class="border-l border-gray-900 ml-1 py-1 pl-1">
             <li v-for="benefit in genreBenefitsList" :key="benefit.id" class="hanging">{{ benefit.text }}<Icon v-if="benefit.icon" :icon="benefit.icon" class="inline" />{{ benefit.text2 }}<Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline" />{{ benefit.text3 }}<Icon v-if="benefit.icon3" :icon="benefit.icon3" class="inline" /></li>
           </ul>
@@ -56,6 +54,7 @@ export default {
     basicBenefitsList: Array,
     cost: Number,
     genre: Number,
+    genreName: String,
     genreBenefits: Object,
     genreBenefitsList: Array,
     id: Number,
@@ -72,49 +71,18 @@ export default {
   },
   computed: {
     cardClass() {
-      let c = "";
-
-      if (this.timeless) {
-        c += "timeless w-60 h-44 ";
-      } else {
-        c += "w-44 h-60 ";
-      }
-
+      let c = "card-" + this.genreName + " ";
+      c += this.timeless ? "timeless w-60 h-44 " : "w-44 h-60 ";
       if (this.ink) {
         c += "ring-8 ring-gray-900 ";
       } else if (this.wild) {
         c += "wild ";
       }
-
-      switch (this.genre) {
-        case Constants.STARTER:
-          return c + "card-starter";
-        case Constants.ADVENTURE:
-          return c + "card-adventure";
-        case Constants.HORROR:
-          return c + "card-horror";
-        case Constants.ROMANCE:
-          return c + "card-romance";
-        case Constants.MYSTERY:
-          return c + "card-mystery";
-      }
+      return c;
     },
 
-    icon() {
-      switch (this.genre) {
-        case Constants.ADVENTURE:
-          return "adventure";
-        case Constants.HORROR:
-          return "horror";
-        case Constants.ROMANCE:
-          return "romance";
-        case Constants.MYSTERY:
-          return "mystery";
-      }
-    },
-
-    iconClass() {
-      let c = this.timeless ? "bottom-2 left-1 " : "top-1 left-2 ";
+    bookmarkClass() {
+      let c = this.timeless ? "flex-row bottom-2 left-0 w-20 h-7 " : "flex-col top-1 left-2 w-7 h-20 ";
       switch (this.genre) {
         case Constants.ADVENTURE:
           return c + "text-yellow-900";
@@ -129,23 +97,24 @@ export default {
       }
     },
 
-    costClass() {
-      return this.timeless ? "bottom-3 right-0" : "top-9 left-2";
-    },
-
     letterClass() {
-      if (this.timeless) {
-        return "top-1 w-28";
-      } else {
-        return "top-8 w-full";
-      }
+      return "letter-" + this.letter + (this.timeless ? " top-0 w-28" : " top-8 w-full");
     },
 
     benefitClass() {
-      if (this.timeless) {
-        return "top-7 right-1 w-28 h-24";
-      } else {
-        return "bottom-0 left-0 right-0 h-24 px-2 pb-1";
+      return this.timeless ? "top-8 bottom-0 right-1 w-28 pl-1" : "bottom-0 left-0 right-0 h-24 px-2 pb-1";
+    },
+
+    genreClass() {
+      switch (this.genre) {
+        case Constants.ADVENTURE:
+          return "text-yellow-900";
+        case Constants.HORROR:
+          return "text-green-700";
+        case Constants.ROMANCE:
+          return "text-red-700";
+        case Constants.MYSTERY:
+          return "text-blue-700";
       }
     },
   },

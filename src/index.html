@@ -7,6 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="stylesheet" href="./index.css">
+    <style>
+        body {
+            font-family: "Roboto", Arial, sans-serif;
+            font-size: 16px;
+        }
+    </style>
 </head>
 
 <body>
@@ -56,13 +62,6 @@
                     "5": { id: 5, location: "hand_2305326", order: 0, origin: "hand_2305326", refId: 151 },
                     "8": { id: 8, location: "hand_2305326", order: 0, origin: "hand_2305326", refId: 149 },
                     "9": { id: 9, location: "hand_2305326", order: 0, origin: "hand_2305326", refId: 153 },
-                    "37": { id: 37, location: "offer", order: 0, origin: "offer", refId: 73 },
-                    "101": { id: 101, location: "offer", order: 2, origin: "offer", refId: 127 },
-                    "123": { id: 123, location: "offer", order: 5, origin: "offer", refId: 131 },
-                    "132": { id: 132, location: "offer", order: 1, origin: "offer", refId: 108 },
-                    "145": { id: 145, location: "offer", order: 4, origin: "offer", refId: 20 },
-                    "153": { id: 153, location: "offer", order: 6, origin: "offer", refId: 1 },
-                    "157": { id: 157, location: "offer", order: 3, origin: "offer", refId: 54 },
                 },
                 refs: {
                     cards: {
@@ -225,7 +224,22 @@
                         "157": { genre: 0, letter: "U", cost: 0, basicBenefits: { "10": 1 }, genreBenefits: [] },
                         "158": { genre: 0, letter: "Y", cost: 0, basicBenefits: { "10": 1 }, genreBenefits: [] },
                     },
-                    benefits: { "1": { text: "%¢" }, "2": { text: "Double adjacent card" }, "3": { text: "%¢ or %", icon: "star" }, "4": { text: "1", icon: "ink", text2: " or ", icon2: "remover" }, "5": { text: "Jail offer card" }, "6": { text: "2", icon: "star", text2: " for each", icon2: "adventure" }, "7": { text: "Opponents return 1", icon: "ink", text2: " or ", icon2: "remover" }, "8": { text: "1", icon: "star", text2: " for each wild" }, "9": { text: "Peek at top 3 cards of your deck" }, "10": { text: "%", icon: "star" }, "11": { icon: "trash", text2: "Trash this", icon2: "chevron", text3: "%¢" }, "12": { icon: "trash", text2: "Trash discard", icon2: "chevron", text3: "%¢" }, "13": { icon: "trash", text2: "Trash this", icon2: "chevron", text3: "%", icon3: "star" }, "14": { text: "Uncover adjacent wild" } },
+                    benefits: {
+                        "1": { text: "%¢" },
+                        "2": { text: "Double adjacent" },
+                        "3": { text: "%¢ or %", icon: "star" },
+                        "4": { text: "1 ink or remover" },
+                        "5": { text: "Jail offer card" },
+                        "6": { text: "2", icon: "star", text2: " for each ", icon2: "adventure" },
+                        "7": { text: "Opponents return 1 ink or remover" },
+                        "8": { text: "1", icon: "star", text2: " for each wild" },
+                        "9": { text: "Draw 3 cards and return or discard each" },
+                        "10": { text: "%", icon: "star" },
+                        "11": { text: "Trash this for %¢" },
+                        "12": { text: "Trash discard for %¢" },
+                        "13": { text: "Trash this for %", icon2: "star" },
+                        "14": { text: " Uncover adjacent" }
+                    },
                 },
                 gamestate: { id: "2", active_player: "2305326", args: null, reflexion: { total: { "2305326": 254703, "2305327": "256381", "2305328": "253810" }, initial: { "2305326": 254721 }, initial_ts: { "2305326": 1610316405243 } }, updateGameProgression: 8, name: "playerTurn", description: "${actplayer} must spell a word", descriptionmyturn: "${you} must spell a word", type: "activeplayer", possibleactions: ["animate", "confirmWord", "skipWord"], transitions: { next: 10, skip: 91 } },
                 tablespeed: "17",
@@ -251,6 +265,15 @@
                 decision: { decision_type: "none" },
             };
 
+            for (const k in gamedatas.refs.cards) {
+                const ref = gamedatas.refs.cards[k];
+                if (ref.genre != 0) {
+                    const kk = '9' + k;
+                    const obj = { id: kk, location: "offer", order: 0, origin: "offer", refId: k };
+                    gamedatas.cards[kk] = obj;
+                }
+            }
+
             var game = {
                 player_id: 2305326,
                 isCurrentPlayerActive: function () { return true; },
@@ -269,7 +292,7 @@
             app.config.globalProperties.emitter = mitt();
             var vue = app.mount('#app');
             vue.gamedatas = gamedatas;
-        }, 200);
+        }, 1000);
     </script>
 </body>
 

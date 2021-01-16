@@ -99,10 +99,24 @@
     background-repeat: no-repeat;
 }
 
+.card-adventure.timeless {
+    background-image: url(adventure-timeless.jpg);
+}
+
 .card-adventure .letter {
     @apply text-yellow-300 text-8xl;
     font-family: 'Regina Black Hilite', sans-serif;
     text-shadow: -1px 1px theme('colors.red.400'), 1px -1px theme('colors.yellow.900');
+}
+
+.card-adventure .letter.letter-Q {
+    font-size: 5.25rem;
+    margin-top: -0.25rem;
+}
+
+.card-adventure .letter.letter-W {
+    font-size: 5.25rem;
+    line-height: 6rem;
 }
 
 .card-horror {
@@ -112,10 +126,30 @@
     background-repeat: no-repeat;
 }
 
+.card-horror.timeless {
+    background-image: url(horror-timeless.jpg);
+}
+
 .card-horror .letter {
-    @apply text-green-400 text-8xl bg-clip-text;
+    @apply text-green-400 text-8xl;
     font-family: 'Germania';
     text-shadow: -2px 2px theme('colors.green.700'), 2px -2px theme('colors.green.200');
+}
+
+.card-horror .letter.letter-Q {
+    margin-top: -0.5rem;
+}
+
+.card-horror .letter.letter-T {
+    margin-top: -0.25rem;
+}
+
+.card-horror .letter.letter-W {
+    margin-top: 0.5rem;
+}
+
+.card-horror.timeless .letter {
+    @apply pt-3;
 }
 
 .card-romance {
@@ -125,10 +159,27 @@
     background-repeat: no-repeat;
 }
 
+.card-romance.timeless {
+    background-image: url(romance-timeless.jpg);
+}
+
 .card-romance .letter {
-    @apply text-yellow-300 text-9xl pt-1;
+    @apply text-yellow-300 text-9xl;
     font-family: 'Jaggard Two', serif;
     text-shadow: -1px 1px theme('colors.red.200'), 1px -1px theme('colors.red.900'), 0 0 white;
+}
+
+.card-romance .letter.letter-Q {
+    font-size: 7rem;
+    margin-top: -0.5rem;
+}
+
+.card-romance .letter.letter-W {
+    transform: scaleX(.7);
+}
+
+.card-romance.timeless .letter {
+    @apply pt-2;
 }
 
 .card-mystery {
@@ -138,20 +189,59 @@
     background-repeat: no-repeat;
 }
 
+.card-mystery.timeless {
+    background-image: url(mystery-timeless.jpg);
+}
+
 .card-mystery .letter {
     @apply text-blue-800 text-8xl;
     font-family: 'New Rocker', serif;
     text-shadow: -1px 1px theme('colors.blue.100'), 1px -1px theme('colors.gray.900');
 }
 
-.timeless {
-    background-size: cover;
-    background-repeat: no-repeat;
+.card-mystery .letter.letter-J, .card-mystery .letter.letter-L, .card-mystery .letter.letter-Q {
+    font-size: 5.75rem;
+    margin-top: -0.5rem;
+}
+
+.card-mystery .letter.letter-N {
+    font-size: 5.75rem;
+}
+
+.card-mystery.timeless .letter {
+    @apply pt-1;
+}
+
+.bookmark {
+    transform: rotate(2deg);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, .5);
+}
+
+.bookmark .icon {
+    font-size: 1.75rem;
+    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .5));
+}
+
+.card-adventure .bookmark {
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, .5);
+}
+
+.card-adventure .bookmark .icon {
+    filter: drop-shadow(1px 1px 1px rgba(255, 255, 255, .5));
+}
+
+.bookmark .star {
+    margin-left: -2px;
+}
+
+.timeless .bookmark div {
+    @apply pl-1;
 }
 
 .hanging {
-    text-indent: -.75rem;
-    margin-left: .75rem;
+    text-indent: -1rem;
+    margin-left: 1rem;
+    overflow-wrap: break-word;
 }
 
 .container-tableau {}

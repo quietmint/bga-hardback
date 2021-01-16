@@ -16,10 +16,7 @@ class CardMgr extends APP_GameClass
             'icon' => 'star',
         ],
         INK => [
-            'text' => '1',
-            'icon' => 'ink',
-            'text2' => ' or ',
-            'icon2' => 'remover',
+            'text' => '1 ink or remover',
         ],
         JAIL => [
             'text' => 'Jail offer card',
@@ -27,14 +24,11 @@ class CardMgr extends APP_GameClass
         SPECIAL_ADVENTURE => [
             'text' => '2',
             'icon' => 'star',
-            'text2' => ' for each',
+            'text2' => ' for each ',
             'icon2' => 'adventure',
         ],
         SPECIAL_HORROR => [
-            'text' => 'Opponents return 1',
-            'icon' => 'ink',
-            'text2' => ' or ',
-            'icon2' => 'remover',
+            'text' => 'Opponents return 1 ink/remover',
         ],
         SPECIAL_MYSTERY => [
             'text' => '1',
@@ -42,29 +36,20 @@ class CardMgr extends APP_GameClass
             'text2' => ' for each wild',
         ],
         SPECIAL_ROMANCE => [
-            'text' => 'Peek at top 3 cards of your deck',
+            'text' => 'Draw 3 cards. Return or discard each.',
         ],
         POINTS => [
             'text' => '%',
             'icon' => 'star',
         ],
         TRASH_COINS => [
-            'icon' => 'trash',
-            'text2' => 'Trash this',
-            'icon2' => 'chevron',
-            'text3' => '%¢',
+            'text' => 'Trash this for %¢',
         ],
         TRASH_DISCARD => [
-            'icon' => 'trash',
-            'text2' => 'Trash discard',
-            'icon2' => 'chevron',
-            'text3' => '%¢',
+            'text' => 'Trash discard for %¢',
         ],
         TRASH_POINTS => [
-            'icon' => 'trash',
-            'text2' => 'Trash this',
-            'icon2' => 'chevron',
-            'text3' => '%',
+            'text' => 'Trash this for %',
             'icon3' => 'star',
         ],
         UNCOVER_ADJ => [

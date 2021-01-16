@@ -9,19 +9,19 @@ define('MYSTERY', 4);
 
 // Benefits
 define('COINS', 1);
-define('DOUBLE_ADJ', 2);
+define('POINTS', 2);
 define('EITHER', 3);
 define('INK', 4);
-define('JAIL', 5);
-define('SPECIAL_ADVENTURE', 6); // 2 coins for each adventure
-define('SPECIAL_HORROR', 7); // opponents return ink
-define('SPECIAL_MYSTERY', 8); // 1 star for each wild
-define('SPECIAL_ROMANCE', 9); // peek top 3 cards
-define('POINTS', 10);
-define('TRASH_COINS', 11);
-define('TRASH_DISCARD', 12);
-define('TRASH_POINTS', 13);
-define('UNCOVER_ADJ', 14);
+define('UNCOVER_ADJ', 5);
+define('DOUBLE_ADJ', 6);
+define('JAIL', 7);
+define('TRASH_COINS', 8);
+define('TRASH_POINTS', 9);
+define('TRASH_DISCARD', 10);
+define('SPECIAL_ADVENTURE', 20); // 2 coins for each adventure
+define('SPECIAL_HORROR', 21); // opponents return ink
+define('SPECIAL_MYSTERY', 22); // 1 star for each wild
+define('SPECIAL_ROMANCE', 23); // peek top 3 cards
 
 // Player colors
 define('RED', 'ff0000');

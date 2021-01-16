@@ -88,14 +88,8 @@ import HPlayerPanel from "./HPlayerPanel.vue";
 import mdiCards from "@iconify-icons/mdi/cards";
 addIcon("cards", mdiCards);
 
-import mdiChevronDoubleRight from "@iconify-icons/mdi/chevron-double-right";
-addIcon("chevron", mdiChevronDoubleRight);
-
 import mdiCompass from "@iconify-icons/mdi/compass";
 addIcon("adventure", mdiCompass);
-
-import mdiDeleteEmptyOutline from "@iconify-icons/mdi/delete-empty-outline";
-addIcon("trash", mdiDeleteEmptyOutline);
 
 import mdiFlaskEmptyPlus from "@iconify-icons/mdi/flask-empty-plus";
 addIcon("ink", mdiFlaskEmptyPlus);
@@ -106,11 +100,8 @@ addIcon("remover", mdiFlaskEmptyRemoveOutline);
 import mdiHeart from "@iconify-icons/mdi/heart";
 addIcon("romance", mdiHeart);
 
-import magnifyingGlass from "@iconify-icons/ps/magnifying-glass";
+import magnifyingGlass from "@iconify-icons/foundation/magnifying-glass";
 addIcon("mystery", magnifyingGlass);
-
-import mdiRotate3dVariant from "@iconify-icons/mdi/rotate-3d-variant";
-addIcon("flip", mdiRotate3dVariant);
 
 import mdiSkull from "@iconify-icons/mdi/skull";
 addIcon("horror", mdiSkull);
@@ -130,7 +121,6 @@ addIcon("sort09", sortNumericVariant);
 
 import bookmarkIcon from "@iconify-icons/mdi/bookmark";
 addIcon("starter", bookmarkIcon);
-addIcon("genre", bookmarkIcon);
 
 import closeIcon from "@iconify-icons/mdi/close";
 addIcon("close", closeIcon);
@@ -139,14 +129,6 @@ import cursorDefaultClick from "@iconify-icons/mdi/cursor-default-click";
 import expandAllOutline from "@iconify-icons/mdi/expand-all-outline";
 //import plusBoxMultipleOutline from '@iconify-icons/mdi/plus-box-multiple-outline';
 addIcon("clickAll", expandAllOutline);
-
-import helpRhombus from "@iconify-icons/mdi/help-rhombus";
-import helpRhombusOutline from "@iconify-icons/mdi/help-rhombus-outline";
-import helpCircleOutline from "@iconify-icons/mdi/help-circle-outline";
-addIcon("wild", helpCircleOutline);
-
-import refreshIcon from "@iconify-icons/mdi/refresh";
-addIcon("reset", refreshIcon);
 
 export default {
   name: "HGame",
@@ -276,6 +258,7 @@ export default {
           }
           newCard.basicBenefitsList.push(newBenefit);
         }
+        newCard.basicBenefitsList.sort(firstBy("id"));
       }
       newCard.genreBenefitsList = [];
       if (newCard.genreBenefits) {
@@ -294,6 +277,18 @@ export default {
           }
           newCard.genreBenefitsList.push(newBenefit);
         }
+        newCard.genreBenefitsList.sort(firstBy("id"));
+      }
+      if (newCard.genre == Constants.ADVENTURE) {
+        newCard.genreName = "adventure";
+      } else if (newCard.genre == Constants.HORROR) {
+        newCard.genreName = "horror";
+      } else if (newCard.genre == Constants.ROMANCE) {
+        newCard.genreName = "romance";
+      } else if (newCard.genre == Constants.MYSTERY) {
+        newCard.genreName = "mystery";
+      } else if (newCard.genre == Constants.STARTER) {
+        newCard.genreName = "starter";
       }
       return newCard;
     },
