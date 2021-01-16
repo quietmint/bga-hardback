@@ -9,7 +9,7 @@ define('MYSTERY', 4);
 
 // Benefits
 define('COINS', 1);
-define('DOUBLE', 2);
+define('DOUBLE_ADJ', 2);
 define('EITHER', 3);
 define('INK', 4);
 define('JAIL', 5);
@@ -21,7 +21,7 @@ define('POINTS', 10);
 define('TRASH_COINS', 11);
 define('TRASH_DISCARD', 12);
 define('TRASH_POINTS', 13);
-define('UNCOVER', 14);
+define('UNCOVER_ADJ', 14);
 
 // Player colors
 define('RED', 'ff0000');
@@ -51,16 +51,11 @@ define('COLLINS', 3);
 define('ST_BGA_GAME_SETUP', 1);
 define('ST_PLAYER_TURN', 2);
 
-define('ST_RESOLVE_UNCOVER', 10);
-define('ST_UNCOVER', 11);
-
-define('ST_RESOLVE_DOUBLE', 20);
-define('ST_DOUBLE', 21);
-
-define('ST_RESOLVE_EITHER', 30);
-define('ST_EITHER', 31);
-
-define('ST_RESOLVE_BASIC', 41);
+define('ST_UNCOVER', 10);
+define('ST_DOUBLE', 11);
+define('ST_EITHER', 12);
+define('ST_BASIC', 16);
+define('ST_TRASH', 17);
 
 define('ST_FLUSH', 80);
 define('ST_PURCHASE', 81);

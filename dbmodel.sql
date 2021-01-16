@@ -29,6 +29,12 @@ CREATE TABLE IF NOT EXISTS `card` (
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
+CREATE TABLE IF NOT EXISTS `resolve` (
+  `card_id` int(10) unsigned NOT NULL,
+  `benefit_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`card_id`, `benefit_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
 ALTER TABLE `player` ADD `coins` INT NOT NULL DEFAULT 0;
 ALTER TABLE `player` ADD `ink` INT NOT NULL DEFAULT 0;
 ALTER TABLE `player` ADD `remover` INT NOT NULL DEFAULT 0;

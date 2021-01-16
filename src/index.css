@@ -42,16 +42,15 @@
 
 @tailwind components;
 @tailwind utilities;
-.cardlist {
-    transition: min-height 500ms ease-out;
-}
+.cardlist {}
 
 .cardholder {
     perspective: 600px;
+    transition: transform 500ms ease-out;
 }
 
 .card {
-    transition: 1s ease-out;
+    transition: transform 500ms ease-out;
     transform-style: preserve-3d;
 }
 

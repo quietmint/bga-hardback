@@ -73,12 +73,39 @@ class action_hardback extends APP_GameAction
     self::ajaxResponse();
   }
 
-  public function either()
+  public function double()
   {
     self::setAjaxMode();
-    $this->game->checkAction('either');
-    $points = self::getArg('points', AT_bool, true);
-    $this->game->either($points);
+    $this->game->checkAction('double');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->double($cardId);
+    self::ajaxResponse();
+  }
+
+  public function eitherCoins()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('eitherCoins');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->either($cardId, COINS);
+    self::ajaxResponse();
+  }
+
+  public function eitherPoints()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('eitherPoints');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->either($cardId, POINTS);
+    self::ajaxResponse();
+  }
+
+  public function trash()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('trash');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->trash($cardId);
     self::ajaxResponse();
   }
 

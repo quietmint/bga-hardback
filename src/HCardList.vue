@@ -49,8 +49,6 @@ export default {
         return "min-w-60";
       } else if (this.location == "offer") {
         return "min-h-60";
-      } else if (this.location.startsWith("hand") && this.cards.length == 0) {
-        return "min-h-0";
       }
       return "min-h-66";
     },

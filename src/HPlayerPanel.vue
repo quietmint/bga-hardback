@@ -15,7 +15,7 @@
           {{ deckCount }}
         </div>
         <div class="rounded-lg bg-gray-50 bg-opacity-50" title="Cards in discard">
-          <Icon class="text-4xl mx-auto" icon="trash" />
+          <Icon class="text-4xl mx-auto" icon="shuffle" />
           {{ discardCount }}
         </div>
       </div>

@@ -1,6 +1,8 @@
 <template>
-  <div v-if="action" :class="footerClass" class="mx-auto w-32 pt-1 h-5 shadow rounded-b-lg text-center text-xs" @click="click">
-    {{ text }}
+  <div v-if="footer" class="flex justify-evenly text-center text-xs font-bold">
+    <div :class="footer.class" class="px-4 pt-1 h-5 shadow rounded-b-lg" @click="click">
+      {{ footer.text }}
+    </div>
   </div>
 </template>
 
@@ -20,58 +22,71 @@ export default {
     },
   },
   computed: {
-    action() {
-      console.log("compute action", this.card.id, this.gamestate.name, this.gamestate.active);
-      if (this.card.location == "tableau") {
-        if (this.gamestate.active && this.gamestate.name == "playerTurn") {
-          return this.card.ink ? "ink" : this.card.wild ? "reset" : "wild";
-        }
-        if (this.gamestate.active && this.gamestate.name == "uncover" && this.gamestate.args.possible.hasOwnProperty(this.card.id)) {
-          return "uncover";
+    footer() {
+      const footerRef = {
+        ink: {
+          action: "useRemover",
+          text: "REMOVE INK",
+          class: "cursor-pointer bg-black text-white hover:bg-gray-100 hover:text-black",
+        },
+        wild: {
+          action: "wild",
+          text: "WILD",
+          class: "cursor-pointer bg-blue-700 text-white hover:bg-blue-100 hover:text-blue-700",
+        },
+        reset: {
+          action: "reset",
+          text: "RESET",
+          class: "cursor-pointer bg-blue-700 text-white hover:bg-blue-100 hover:text-blue-700",
+        },
+        uncover: {
+          action: "uncover",
+          text: "UNCOVER",
+          class: "cursor-pointer bg-blue-700 text-white hover:bg-blue-100 hover:text-blue-700",
+        },
+        double: {
+          action: "double",
+          text: "DOUBLE",
+          class: "cursor-pointer bg-blue-700 text-white hover:bg-blue-100 hover:text-blue-700",
+        },
+        trash: {
+          action: "trash",
+          text: "TRASH FOREVER",
+          class: "cursor-pointer bg-red-700 text-white hover:bg-red-100 hover:text-red-700",
+        },
+      };
+
+      if (this.card.location == "tableau" && this.gamestate.active) {
+        if (this.gamestate.name == "playerTurn") {
+          return this.card.ink ? footerRef.ink : this.card.wild ? footerRef.reset : footerRef.wild;
+        } else if (this.gamestate.name == "uncover" && this.gamestate.args.possible.hasOwnProperty(this.card.id)) {
+          return footerRef.uncover;
+        } else if (this.gamestate.name == "double" && this.gamestate.args.possible.hasOwnProperty(this.card.id)) {
+          return footerRef.double;
+        } else if (this.gamestate.name == "trash" && this.gamestate.args.possible.includes(this.card.id)) {
+          return footerRef.trash;
         }
       }
 
       if (this.card.origin == "timeless") {
-        return "timeless";
+        return {
+          text: this.card.origin,
+          class: "bg-grey-600 text-white",
+        };
       }
 
       if (this.card.location.startsWith("hand")) {
-        return this.card.ink ? "ink" : this.card.wild ? "reset" : "wild";
-      }
-    },
-    footerClass() {
-      switch (this.action) {
-        case "uncover":
-          return "cursor-pointer bg-blue-500 text-white";
-        case "ink":
-          return "cursor-pointer bg-black text-white";
-        case "wild":
-        case "reset":
-          return "cursor-pointer bg-white text-black";
-        case "timeless":
-          return "bg-red-700";
-      }
-    },
-    text() {
-      switch (this.action) {
-        case "uncover":
-          return "UNCOVER";
-        case "ink":
-          return "REMOVE INK";
-        case "wild":
-          return " WILD";
-        case "reset":
-          return "RESET";
-        case "timeless":
-          return this.card.origin;
+        return this.card.ink ? footerRef.ink : this.card.wild ? footerRef.reset : footerRef.wild;
       }
     },
   },
   methods: {
     click(evt): void {
-      let action: String = this.action;
-      let card: any = this.card;
-      this.emitter.emit("clickFooter", { action, card });
+      if (this.footer && this.footer.action) {
+        let action: String = this.footer.action;
+        let card: any = this.card;
+        this.emitter.emit("clickFooter", { action, card });
+      }
     },
   },
 };
