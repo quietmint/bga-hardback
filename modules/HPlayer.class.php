@@ -158,6 +158,11 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         return CardMgr::getDiscardLocation($this->id);
     }
 
+    public function getTimelessLocation(): string
+    {
+        return CardMgr::getTimelessLocation($this->id);
+    }
+
     /***** Player Functions *****/
 
     public function isActive(): bool
@@ -200,10 +205,9 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->notifyPanel();
 
         if ($notify) {
-            hardback::$instance->notifyAllPlayers('message', '${player_name} earns ${amount}${icon}', [
+            hardback::$instance->notifyAllPlayers('message', '${player_name} earns ${amount}¢', [
                 'player_name' => $this->name,
                 'amount' => $amount,
-                'icon' => '¢',
             ]);
         }
     }
@@ -237,10 +241,9 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->notifyPanel();
 
         if ($notify) {
-            hardback::$instance->notifyAllPlayers('message', '${player_name} earns ${amount}${icon}.', [
+            hardback::$instance->notifyAllPlayers('message', '${player_name} earns ${amount} ink', [
                 'player_name' => $this->name,
                 'amount' => $amount,
-                'icon' => ' ink',
             ]);
         }
     }
@@ -255,10 +258,9 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->remover += $amount;
         $this->notifyPanel();
 
-        hardback::$instance->notifyAllPlayers('message', '${player_name} earns ${amount}${icon}.', [
+        hardback::$instance->notifyAllPlayers('message', '${player_name} earns ${amount} remover', [
             'player_name' => $this->name,
             'amount' => $amount,
-            'icon' => ' ink',
         ]);
     }
 

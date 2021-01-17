@@ -11,7 +11,11 @@ class CardMgr extends APP_GameClass
         DOUBLE_ADJ => [
             'text' => 'Double adjacent card',
         ],
-        EITHER => [
+        EITHER_BASIC => [
+            'text' => '%¢ or %',
+            'icon' => 'star',
+        ],
+        EITHER_GENRE => [
             'text' => '%¢ or %',
             'icon' => 'star',
         ],
@@ -94,28 +98,28 @@ class CardMgr extends APP_GameClass
         34 => ['genre' => ADVENTURE, 'letter' => 'Y', 'cost' => 4, 'points' => 3, 'basicBenefits' => [COINS => 2, TRASH_COINS => 2], 'genreBenefits' => [COINS => 1]],
         35 => ['genre' => ADVENTURE, 'letter' => 'Z', 'cost' => 5, 'points' => 3, 'basicBenefits' => [POINTS => 4], 'genreBenefits' => [POINTS => 1]],
 
-        36 => ['genre' => HORROR, 'letter' => 'A', 'cost' => 3, 'basicBenefits' => [EITHER => 2], 'genreBenefits' => []],
+        36 => ['genre' => HORROR, 'letter' => 'A', 'cost' => 3, 'basicBenefits' => [EITHER_BASIC => 2], 'genreBenefits' => []],
         37 => ['genre' => HORROR, 'letter' => 'B', 'cost' => 6, 'basicBenefits' => [COINS => 3], 'genreBenefits' => [COINS => 2, INK => true]],
         38 => ['genre' => HORROR, 'letter' => 'C', 'cost' => 5, 'basicBenefits' => [POINTS => 2, INK => true], 'genreBenefits' => [POINTS => 1]],
         39 => ['genre' => HORROR, 'letter' => 'C', 'cost' => 8, 'basicBenefits' => [COINS => 2, INK => true], 'genreBenefits' => [COINS => 3]],
-        40 => ['genre' => HORROR, 'letter' => 'D', 'cost' => 4, 'timeless' => true, 'basicBenefits' => [EITHER => 1], 'genreBenefits' => [COINS => 1, POINTS => 1]],
+        40 => ['genre' => HORROR, 'letter' => 'D', 'cost' => 4, 'timeless' => true, 'basicBenefits' => [EITHER_BASIC => 1], 'genreBenefits' => [COINS => 1, POINTS => 1]],
         41 => ['genre' => HORROR, 'letter' => 'D', 'cost' => 9, 'basicBenefits' => [POINTS => 3, INK => true], 'genreBenefits' => [POINTS => 3]],
-        42 => ['genre' => HORROR, 'letter' => 'E', 'cost' => 5, 'timeless' => true, 'basicBenefits' => [EITHER => 2], 'genreBenefits' => [POINTS => 1]],
-        43 => ['genre' => HORROR, 'letter' => 'E', 'cost' => 8, 'basicBenefits' => [COINS => 2, INK => true], 'genreBenefits' => [EITHER => 2]],
-        44 => ['genre' => HORROR, 'letter' => 'F', 'cost' => 3, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [EITHER => 2, INK => true]],
+        42 => ['genre' => HORROR, 'letter' => 'E', 'cost' => 5, 'timeless' => true, 'basicBenefits' => [EITHER_BASIC => 2], 'genreBenefits' => [POINTS => 1]],
+        43 => ['genre' => HORROR, 'letter' => 'E', 'cost' => 8, 'basicBenefits' => [COINS => 2, INK => true], 'genreBenefits' => [EITHER_GENRE => 2]],
+        44 => ['genre' => HORROR, 'letter' => 'F', 'cost' => 3, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [EITHER_GENRE => 2, INK => true]],
         45 => ['genre' => HORROR, 'letter' => 'G', 'cost' => 4, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 2, INK => true]],
         46 => ['genre' => HORROR, 'letter' => 'H', 'cost' => 7, 'basicBenefits' => [COINS => 2, POINTS => 1], 'genreBenefits' => [COINS => 1, POINTS => 2, SPECIAL_HORROR => true]],
-        47 => ['genre' => HORROR, 'letter' => 'I', 'cost' => 4, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [EITHER => 2]],
+        47 => ['genre' => HORROR, 'letter' => 'I', 'cost' => 4, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [EITHER_GENRE => 2]],
         48 => ['genre' => HORROR, 'letter' => 'J', 'cost' => 5, 'basicBenefits' => [POINTS => 3, INK => true], 'genreBenefits' => [POINTS => 2]],
-        49 => ['genre' => HORROR, 'letter' => 'K', 'cost' => 2, 'basicBenefits' => [EITHER => 1], 'genreBenefits' => [COINS => 2]],
+        49 => ['genre' => HORROR, 'letter' => 'K', 'cost' => 2, 'basicBenefits' => [EITHER_BASIC => 1], 'genreBenefits' => [COINS => 2]],
         50 => ['genre' => HORROR, 'letter' => 'L', 'cost' => 3, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [INK => true]],
         51 => ['genre' => HORROR, 'letter' => 'M', 'cost' => 3, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1]],
         52 => ['genre' => HORROR, 'letter' => 'N', 'cost' => 5, 'basicBenefits' => [COINS => 2, INK => true], 'genreBenefits' => [COINS => 1]],
-        53 => ['genre' => HORROR, 'letter' => 'N', 'cost' => 6, 'timeless' => true, 'basicBenefits' => [EITHER => 1], 'genreBenefits' => [POINTS => 2, INK => true]],
-        54 => ['genre' => HORROR, 'letter' => 'O', 'cost' => 4, 'basicBenefits' => [EITHER => 2], 'genreBenefits' => [EITHER => 1]],
+        53 => ['genre' => HORROR, 'letter' => 'N', 'cost' => 6, 'timeless' => true, 'basicBenefits' => [EITHER_BASIC => 1], 'genreBenefits' => [POINTS => 2, INK => true]],
+        54 => ['genre' => HORROR, 'letter' => 'O', 'cost' => 4, 'basicBenefits' => [EITHER_BASIC => 2], 'genreBenefits' => [EITHER_GENRE => 1]],
         55 => ['genre' => HORROR, 'letter' => 'P', 'cost' => 3, 'basicBenefits' => [POINTS => 2, INK => true], 'genreBenefits' => []],
         56 => ['genre' => HORROR, 'letter' => 'Q', 'cost' => 4, 'basicBenefits' => [COINS => 3], 'genreBenefits' => [COINS => 1, INK => true]],
-        57 => ['genre' => HORROR, 'letter' => 'R', 'cost' => 4, 'basicBenefits' => [EITHER => 1], 'genreBenefits' => [COINS => 2, INK => true]],
+        57 => ['genre' => HORROR, 'letter' => 'R', 'cost' => 4, 'basicBenefits' => [EITHER_BASIC => 1], 'genreBenefits' => [COINS => 2, INK => true]],
         58 => ['genre' => HORROR, 'letter' => 'S', 'cost' => 2, 'basicBenefits' => [POINTS => 1], 'genreBenefits' => [POINTS => 1]],
         59 => ['genre' => HORROR, 'letter' => 'S', 'cost' => 7, 'basicBenefits' => [POINTS => 3, INK => true], 'genreBenefits' => [POINTS => 1]],
         60 => ['genre' => HORROR, 'letter' => 'T', 'cost' => 4, 'basicBenefits' => [POINTS => 2], 'genreBenefits' => [POINTS => 1, INK => true]],
@@ -125,10 +129,10 @@ class CardMgr extends APP_GameClass
         64 => ['genre' => HORROR, 'letter' => 'V', 'cost' => 5, 'timeless' => true, 'basicBenefits' => [COINS => 1], 'genreBenefits' => [COINS => 1, INK => true]],
         65 => ['genre' => HORROR, 'letter' => 'W', 'cost' => 4, 'basicBenefits' => [POINTS => 2, INK => true], 'genreBenefits' => [POINTS => 2]],
         66 => ['genre' => HORROR, 'letter' => 'W', 'cost' => 5, 'basicBenefits' => [COINS => 2, INK => true], 'genreBenefits' => [COINS => 3]],
-        67 => ['genre' => HORROR, 'letter' => 'X', 'cost' => 2, 'basicBenefits' => [EITHER => 1], 'genreBenefits' => [POINTS => 2]],
+        67 => ['genre' => HORROR, 'letter' => 'X', 'cost' => 2, 'basicBenefits' => [EITHER_BASIC => 1], 'genreBenefits' => [POINTS => 2]],
         68 => ['genre' => HORROR, 'letter' => 'X', 'cost' => 6, 'basicBenefits' => [POINTS => 3, INK => true], 'genreBenefits' => [POINTS => 3]],
         69 => ['genre' => HORROR, 'letter' => 'Y', 'cost' => 3, 'basicBenefits' => [COINS => 2], 'genreBenefits' => [COINS => 1, INK => true]],
-        70 => ['genre' => HORROR, 'letter' => 'Z', 'cost' => 3, 'basicBenefits' => [EITHER => 2], 'genreBenefits' => [EITHER => 1, INK => true]],
+        70 => ['genre' => HORROR, 'letter' => 'Z', 'cost' => 3, 'basicBenefits' => [EITHER_BASIC => 2], 'genreBenefits' => [EITHER_GENRE => 1, INK => true]],
 
         71 => ['genre' => ROMANCE, 'letter' => 'A', 'cost' => 4, 'basicBenefits' => [COINS => 1, TRASH_DISCARD => 1], 'genreBenefits' => [COINS => 1]],
         72 => ['genre' => ROMANCE, 'letter' => 'B', 'cost' => 3, 'basicBenefits' => [COINS => 2], 'genreBenefits' => [DOUBLE_ADJ => true]],
@@ -265,18 +269,6 @@ class CardMgr extends APP_GameClass
         return self::$refBenefits;
     }
 
-    public static function getTimelessRefIds(): array
-    {
-        $refIds = [];
-        foreach (self::$refCards as $refId => $ref) {
-            if ($ref['timeless']) {
-                $refIds[] = $refId;
-                break;
-            }
-        }
-        return $refIds;
-    }
-
     /* Change */
 
     public static function setup(): void
@@ -405,6 +397,9 @@ class CardMgr extends APP_GameClass
     public static function getCards($cardIds, string $wildMask = null): array
     {
         $cardIds = self::getIds($cardIds);
+        if (empty($cardIds)) {
+            return [];
+        }
         $sql = "SELECT card.*, JSON_ARRAYAGG(resolve.benefit_id) AS resolve FROM card LEFT OUTER JOIN resolve USING (card_id) WHERE card_id IN (" . implode(',', $cardIds) . ") GROUP BY card.card_id";
         $dbcards = self::getCollectionFromDB($sql);
         $cards = self::populateCards($dbcards);
@@ -433,18 +428,35 @@ class CardMgr extends APP_GameClass
         return $output;
     }
 
-    public static function getCardsInLocation($locations, int $inkValue = null): array
+    private static function getLocationWhereClause($locations): string
     {
+        $parts = [];
+        $in = [];
         if (!is_array($locations)) {
             $locations = [$locations];
         }
-        $sql = "SELECT card.*, JSON_ARRAYAGG(resolve.benefit_id) AS resolve FROM card LEFT OUTER JOIN resolve USING (card_id) WHERE card_location IN ('" . implode("', '", $locations) . "') ";
+        foreach ($locations as $location) {
+            if (substr($location, -1) == '%') {
+                $parts[] = "card_location LIKE '" . $locations[0] . "'";
+            } else {
+                $in[] = $location;
+            }
+        }
+        if (!empty($in)) {
+            $parts[] = "card_location IN ('" . implode("', '", $in) . "')";
+        }
+        return "(" . implode(" OR ", $parts) . ")";
+    }
+
+    public static function getCardsInLocation($locations, int $inkValue = null): array
+    {
+        $sql = "SELECT card_id FROM card WHERE " . self::getLocationWhereClause($locations);
         if ($inkValue != null) {
             $sql .= " AND ink = $inkValue";
         }
-        $sql .= " GROUP BY card.card_id ORDER BY card_location, card_location_arg";
-        $dbcards = self::getCollectionFromDB($sql);
-        return self::populateCards($dbcards);
+        $sql .= " ORDER BY card_location, card_location_arg";
+        $cardIds = self::getObjectListFromDB($sql, true);
+        return self::getCards($cardIds);
     }
 
     public static function getCountInLocation(string $location): int
@@ -471,6 +483,11 @@ class CardMgr extends APP_GameClass
     public static function getDiscardLocation(int $playerId): string
     {
         return "discard_$playerId";
+    }
+
+    public static function getTimelessLocation(int $playerId): string
+    {
+        return "timeless_$playerId";
     }
 
     /* Query (specific) */
@@ -502,26 +519,25 @@ class CardMgr extends APP_GameClass
 
     public static function getTableau(): array
     {
-        return self::getCardsInLocation("tableau");
+        return self::getCardsInLocation('tableau');
     }
 
     public static function getTimeless(): array
     {
-        return self::getCardsInLocation("timeless");
+        return self::getCardsInLocation('timeless%');
     }
 
     public static function getOffer(): array
     {
-        return self::getCardsInLocation("offer");
+        return self::getCardsInLocation('offer');
     }
 
     public static function getOfferDeckCount(): int
     {
-        return self::getCountInLocation("deck");
+        return self::getCountInLocation('deck');
     }
 
     /* Array utilties */
-
 
     public static function getIds($cards): array
     {
@@ -654,7 +670,7 @@ class CardMgr extends APP_GameClass
             $keepIds = [];
             foreach ($timeless as $card) {
                 // Discard if owned by another player
-                if ($card->isOrigin('timeless') && $card->getOrder() != $playerId) {
+                if ($card->isOrigin('timeless') && !$card->isOrigin(self::getTimelessLocation($playerId))) {
                     $discardIds[] = $card->getId();
                 } else {
                     $keepIds[] = $card->getId();
@@ -662,15 +678,18 @@ class CardMgr extends APP_GameClass
             }
             if (!empty($discardIds)) {
                 // Return to owner's discard
-                self::DbQuery("UPDATE card SET ink = NULL, card_type = CONCAT('discard_', card_location_arg), card_location = CONCAT('discard_', card_location_arg), card_location_arg = -1 WHERE card_id IN (" . implode(',', $discardIds) . ")");
+                self::DbQuery("UPDATE card SET factor = NULL, ink = NULL, card_type = CONCAT('discard_', card_location_arg), card_location = CONCAT('discard_', card_location_arg), card_location_arg = -1 WHERE card_id IN (" . implode(',', $discardIds) . ")");
             }
             if (!empty($keepIds)) {
-                self::DbQuery("UPDATE card SET ink = NULL, card_type = 'timeless', card_location = 'timeless', card_location_arg = $playerId WHERE card_id IN (" . implode(',', $keepIds) . ")");
+                self::DbQuery("UPDATE card SET factor = NULL, ink = NULL, card_type = '" . self::getTimelessLocation($playerId) . "', card_location = '" . self::getTimelessLocation($playerId) . "', card_location_arg = -1 WHERE card_id IN (" . implode(',', $keepIds) . ")");
             }
         }
 
         // Discard hand and tableau
-        self::DbQuery("UPDATE card SET ink = NULL, wild = NULL, card_type = '" . self::getDiscardLocation($playerId) . "', card_location = '" . self::getDiscardLocation($playerId) . "', card_location_arg = -1 WHERE card_id IN (" . implode(',', $updatedIds) . ")");
+        self::DbQuery("UPDATE card SET factor = NULL, ink = NULL, wild = NULL, card_type = '" . self::getDiscardLocation($playerId) . "', card_location = '" . self::getDiscardLocation($playerId) . "', card_location_arg = -1 WHERE card_id IN (" . implode(',', $updatedIds) . ")");
+
+        // Clear used benefits
+        self::DbQuery("TRUNCATE resolve");
 
         // Draw new hand
         $newCards = self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId), 'letter');
@@ -702,14 +721,13 @@ class CardMgr extends APP_GameClass
     {
         $updatedIds = self::getIds(self::getCardsInLocation('offer'));
 
-        // Discard offer
+        // Discard offer and notify
         self::DbQuery("UPDATE card SET card_location = 'discard', card_location_arg = -1, card_type = 'discard' WHERE card_id IN (" . implode(',', $updatedIds) . ")");
+        self::notifyCards(self::getCards($updatedIds));
 
-        // Draw new offer
+        // Draw new offer and notify
         $newCards = self::drawCards(7, 'deck', 'offer', 'letter');
-
-        // Notify
-        self::notifyCards(self::getCards($updatedIds) + $newCards);
+        self::notifyCards($newCards);
     }
 
     public static function inkCards(array &$cards, int $inkValue = HAS_INK): void

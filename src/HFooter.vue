@@ -1,6 +1,6 @@
 <template>
-  <div v-if="footer" class="flex justify-evenly text-center text-xs font-bold">
-    <div :class="footer.class" class="px-4 pt-1 h-5 shadow rounded-b-lg" @click="click">
+  <div v-if="footer" class="flex justify-evenly text-center text-sm font-bold">
+    <div :class="footer.class" class="px-3 pb-1 hover:pt-1 shadow rounded-b-lg transition-all z-0" @click="click">
       {{ footer.text }}
     </div>
   </div>
@@ -48,6 +48,11 @@ export default {
           action: "double",
           text: "DOUBLE",
           class: "cursor-pointer bg-blue-700 text-white hover:bg-blue-100 hover:text-blue-700",
+        },
+        trash: {
+          action: "trash",
+          text: "TRASH FOREVER",
+          class: "cursor-pointer bg-red-700 text-white hover:bg-red-100 hover:text-red-700",
         },
         trash: {
           action: "trash",

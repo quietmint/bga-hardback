@@ -3,6 +3,7 @@
 class HCard extends APP_GameClass implements JsonSerializable
 {
     private $id;
+    private $factor;
     private $ink;
     private $location;
     private $order;
@@ -17,6 +18,7 @@ class HCard extends APP_GameClass implements JsonSerializable
     public function __construct($dbcard)
     {
         $this->id = intval($dbcard['card_id']);
+        $this->factor = intval($dbcard['factor']);
         $this->ink = intval($dbcard['ink']);
         $this->location = $dbcard['card_location'];
         $this->order = intval($dbcard['card_location_arg']);
@@ -35,6 +37,7 @@ class HCard extends APP_GameClass implements JsonSerializable
     {
         return [
             'id' => $this->id,
+            'factor' => $this->factor,
             'ink' => $this->hasInk(),
             'location' => $this->location,
             'order' => $this->order,
@@ -47,6 +50,16 @@ class HCard extends APP_GameClass implements JsonSerializable
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getFactor(): int
+    {
+        return $this->factor;
+    }
+
+    public function setFactor(int $factor): void
+    {
+        $this->factor = $factor;
     }
 
     public function hasInk(): bool
@@ -79,7 +92,12 @@ class HCard extends APP_GameClass implements JsonSerializable
         if (count($locations) == 1 && is_array($locations[0])) {
             $locations = $locations[0];
         }
-        return in_array($this->location, $locations);
+        foreach ($locations as $location) {
+            if (strpos($this->location, $location) === 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function getOrder(): int
@@ -107,7 +125,12 @@ class HCard extends APP_GameClass implements JsonSerializable
         if (count($origins) == 1 && is_array($origins[0])) {
             $origins = $origins[0];
         }
-        return in_array($this->origin, $origins);
+        foreach ($origins as $origin) {
+            if (strpos($this->origin, $origin) === 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function getRefId(): int
@@ -186,8 +209,10 @@ class HCard extends APP_GameClass implements JsonSerializable
         if ($this->wild) {
             return [];
         }
+        // Always include basic benefits
         $benefits = CardMgr::$refCards[$this->refId]['basicBenefits'] ?? [];
         if (CardMgr::isGenreActive($this->getGenre())) {
+            // Add values from genre benefits if active
             $genre = CardMgr::$refCards[$this->refId]['genreBenefits'] ?? [];
             foreach ($genre as $k => $v) {
                 if (isset($benefits[$k])) {
@@ -197,6 +222,7 @@ class HCard extends APP_GameClass implements JsonSerializable
                 }
             }
         }
+        // Ignore used benefits
         $benefits = array_filter($benefits, function ($benefit) {
             return !in_array($benefit, $this->resolve);
         }, ARRAY_FILTER_USE_KEY);
@@ -216,6 +242,11 @@ class HCard extends APP_GameClass implements JsonSerializable
     public function getCost(): int
     {
         return CardMgr::$refCards[$this->refId]['cost'] ?? 0;
+    }
+
+    public function getPoints(): int
+    {
+        return CardMgr::$refCards[$this->refId]['points'] ?? 0;
     }
 
     public function isTimeless(): bool

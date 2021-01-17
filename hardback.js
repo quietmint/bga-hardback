@@ -37,8 +37,10 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
             // Setup notifications
             dojo.subscribe('cards', this, 'onNotify');
-            this.notifqueue.setSynchronous('cards', 500);
+            this.notifqueue.setSynchronous('cards',);
             dojo.subscribe('invalid', this, 'onNotify');
+            dojo.subscribe('pause', this, 'onNotify');
+            this.notifqueue.setSynchronous('pause');
             dojo.subscribe('panel', this, 'onNotify');
         },
 

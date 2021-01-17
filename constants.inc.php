@@ -10,14 +10,15 @@ define('MYSTERY', 4);
 // Benefits
 define('COINS', 1);
 define('POINTS', 2);
-define('EITHER', 3);
-define('INK', 4);
-define('UNCOVER_ADJ', 5);
-define('DOUBLE_ADJ', 6);
-define('JAIL', 7);
-define('TRASH_COINS', 8);
-define('TRASH_POINTS', 9);
-define('TRASH_DISCARD', 10);
+define('EITHER_BASIC', 3);
+define('EITHER_GENRE', 4);
+define('INK', 5);
+define('UNCOVER_ADJ', 6);
+define('DOUBLE_ADJ', 7);
+define('JAIL', 8);
+define('TRASH_COINS', 10);
+define('TRASH_POINTS', 11);
+define('TRASH_DISCARD', 12);
 define('SPECIAL_ADVENTURE', 20); // 2 coins for each adventure
 define('SPECIAL_HORROR', 21); // opponents return ink
 define('SPECIAL_MYSTERY', 22); // 1 star for each wild
@@ -53,7 +54,8 @@ define('ST_PLAYER_TURN', 2);
 
 define('ST_UNCOVER', 10);
 define('ST_DOUBLE', 11);
-define('ST_EITHER', 12);
+define('ST_EITHER_BASIC', 12);
+define('ST_EITHER_GENRE', 13);
 define('ST_BASIC', 16);
 define('ST_TRASH', 17);
 

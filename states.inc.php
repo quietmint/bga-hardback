@@ -100,20 +100,34 @@ $machinestates = [
         'possibleactions' => ['double', 'skip'],
         'transitions' => [
             'again' => ST_DOUBLE,
-            'next' => ST_EITHER,
+            'next' => ST_EITHER_BASIC,
         ],
     ],
 
-    ST_EITHER => [
-        'name' => 'either',
+    ST_EITHER_BASIC => [
+        'name' => 'eitherBasic',
         'description' => clienttranslate('${actplayer} must choose a benefit'),
         'descriptionmyturn' => clienttranslate('${you} must choose a benefit'),
         'type' => 'activeplayer',
-        'args' => 'argEither',
+        'args' => 'argEitherBasic',
         'action' => 'stEither',
-        'possibleactions' => ['eitherCoins', 'eitherPoints', 'eitherInk', 'eitherRemover'],
+        'possibleactions' => ['eitherCoins', 'eitherPoints'],
         'transitions' => [
-            'again' => ST_EITHER,
+            'again' => ST_EITHER_BASIC,
+            'next' => ST_EITHER_GENRE,
+        ],
+    ],
+
+    ST_EITHER_GENRE => [
+        'name' => 'eitherGenre',
+        'description' => clienttranslate('${actplayer} must choose a benefit'),
+        'descriptionmyturn' => clienttranslate('${you} must choose a benefit'),
+        'type' => 'activeplayer',
+        'args' => 'argEitherGenre',
+        'action' => 'stEither',
+        'possibleactions' => ['eitherCoins', 'eitherPoints'],
+        'transitions' => [
+            'again' => ST_EITHER_GENRE,
             'next' => ST_BASIC,
         ],
     ],

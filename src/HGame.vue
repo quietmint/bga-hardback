@@ -69,10 +69,12 @@
       </div>
 
       <!-- Timeless -->
+      <!--
       <div class="flex-none w-64 bg-gray-700 bg-opacity-30 rounded-lg ml-2 my-2 p-2">
         <b>Timeless Classics ({{ timelessCards.length }})</b>
         <HCardList :cards="timelessCards" location="timeless" :checkDrag="checkDragTimeless" @click="clickCard" />
       </div>
+      -->
     </div>
   </div>
 </template>
@@ -366,7 +368,7 @@ export default {
     /*
      * Animation
      */
-    async animateCard(card, changes) {
+    async animateCard(card, changes): Promise<number> {
       if (changes) {
         card = Object.assign({}, card, changes);
       }
@@ -375,22 +377,26 @@ export default {
       if (oldCard != null && oldCard.location == card.location) {
         // Same location, no animation
         this.gamedatas.cards[card.id] = card;
-        return;
+        return card.id;
       }
 
+      // Compute start position
       let cardEl = null;
       let start = null;
-
-      // Compute start position
       if (oldCard != null) {
         cardEl = document.getElementById(oldCard.location + "_card" + oldCard.id);
         if (cardEl) {
           start = cardEl.getBoundingClientRect();
         }
       }
+
       let visibleLocations = [this.handLocation, "tableau", "offer", "timeless"];
 
-      if (start && !visibleLocations.includes(card.location)) {
+      if (!start && !visibleLocations.includes(card.location)) {
+        // Invisible card movement, no animation
+        this.gamedatas.cards[card.id] = card;
+        return card.id;
+      } else if (start && !visibleLocations.includes(card.location)) {
         // Compute end position
         let end = null;
         if (card.location.includes("_")) {
@@ -401,9 +407,9 @@ export default {
           }
         }
         if (end == null) {
-          // Leave top
+          // Exit stage left
           console.warn("destroy animation unknown end??", card.id, card.location);
-          end = { x: start.x, y: -start.height, width: start.width, height: start.height };
+          end = { x: -start.width, y: start.y, width: start.width, height: start.height };
         }
 
         // Compute forward transform
@@ -414,13 +420,22 @@ export default {
         // Animate leave
         cardEl.style.transition = "none";
         cardEl.style.transform = "";
-        requestAnimationFrame(() => {
-          console.log("Animate card leave", cardEl.id, tr);
-          cardEl.style.transition = "";
-          cardEl.style.transform = tr;
-          cardEl.addEventListener("transitionend", () => {
-            console.log("Animate card leave destroy", cardEl.id);
-            this.gamedatas.cards[card.id] = card;
+        return new Promise((resolve, reject) => {
+          requestAnimationFrame(() => {
+            console.log("Animate card leave", cardEl.id, tr);
+            cardEl.style.transition = "";
+            cardEl.style.transform = tr;
+            const t0 = performance.now();
+            cardEl.addEventListener(
+              "transitionend",
+              () => {
+                const t1 = performance.now();
+                console.log("Animate card leave destroy, took " + (t1 - t0) + " ms", cardEl.id);
+                this.gamedatas.cards[card.id] = card;
+                resolve(card.id);
+              },
+              { once: true }
+            );
           });
         });
       } else if (visibleLocations.includes(card.location)) {
@@ -428,34 +443,44 @@ export default {
         this.gamedatas.cards[card.id] = card;
         await nextTick();
         cardEl = document.getElementById(card.location + "_card" + card.id);
-        if (cardEl) {
-          let end = cardEl.getBoundingClientRect();
-          if (start == null) {
-            // Enter top
-            start = { x: end.x, y: -end.height, width: end.width, height: end.height };
-          }
+        if (!cardEl) {
+          console.warn("No enter animation because new card is missing???", card.location + "_card" + card.id);
+          return card.id;
+        }
+        let end = cardEl.getBoundingClientRect();
+        if (start == null) {
+          // Enter from above
+          start = { x: end.x, y: -end.height, width: end.width, height: end.height };
+        }
 
-          // Compute reverse transform
-          const startX = start.x - end.x;
-          const startY = start.y - end.y;
-          const tr = "translate(" + startX + "px, " + startY + "px)"; // translate(50%)
+        // Compute reverse transform
+        const startX = start.x - end.x;
+        const startY = start.y - end.y;
+        const tr = "translate(" + startX + "px, " + startY + "px)"; // translate(50%)
 
-          // Transform back to start
-          cardEl.style.transition = "none";
-          cardEl.style.transform = tr;
-          console.log("Animate card enter/move", cardEl.id, tr);
+        // Transform back to start
+        cardEl.style.transition = "none";
+        cardEl.style.transform = tr;
+        console.log("Animate card enter/move", cardEl.id, tr);
 
-          // Animate enter/move
+        // Animate enter/move
+        return new Promise((resolve, reject) => {
           requestAnimationFrame(() => {
             cardEl.style.transition = "";
             cardEl.style.transform = "";
+            const t0 = performance.now();
+            cardEl.addEventListener(
+              "transitionend",
+              () => {
+                const t1 = performance.now();
+                console.log("Animate card enter/move done, took " + (t1 - t0) + " ms", cardEl.id);
+                this.gamedatas.cards[card.id] = card;
+                resolve(card.id);
+              },
+              { once: true }
+            );
           });
-        } else {
-          console.warn("No enter animation because new card is missing???", card.location + "_card" + card.id);
-        }
-      } else {
-        // Invisible card movement, no animation
-        this.gamedatas.cards[card.id] = card;
+        });
       }
     },
 
@@ -574,18 +599,23 @@ export default {
       console.log("Vue onNotify", notif);
       if (notif.type == "cards") {
         console.log("packet of changed cards", Object.keys(notif.args.cards));
+        let promises = [];
         for (const cardId in notif.args.cards) {
-          this.animateCard(notif.args.cards[cardId]);
+          promises.push(this.animateCard(notif.args.cards[cardId]));
         }
+        Promise.allSettled(promises).then((results) => {
+          console.log("packet allSettled", results);
+          this.game.notifqueue.setSynchronousDuration(0);
+        });
       } else if (notif.type == "invalid") {
         if (this.game.player_id == notif.args.player_id) {
           this.game.showMessage(notif.args.word + " is not a valid word", "error");
         }
+      } else if (notif.type == "pause") {
+        this.game.notifqueue.setSynchronousDuration(notif.args.duration);
       } else if (notif.type == "panel") {
         this.gamedatas.players[notif.args.player.id] = notif.args.player;
         this.game.scoreCtrl[notif.args.player.id].toValue(notif.args.player.score);
-      } else {
-        console.warn("Vue unknown notification type", notif.type);
       }
     },
 

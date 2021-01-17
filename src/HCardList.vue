@@ -11,7 +11,7 @@
   <div class="cardlist flex flex-wrap justify-center" :class="heightClass">
     <transition-group>
       <div class="cardholder m-1 relative" v-for="card in cards" :key="card.id" :id="location + '_card' + card.id" :class="card.invisible ? 'invisible' : ''">
-        <HCard v-bind="card" @click="click(card)" />
+        <HCard :card="card" @click="click(card)" />
         <HFooter :card="card" />
       </div>
     </transition-group>
