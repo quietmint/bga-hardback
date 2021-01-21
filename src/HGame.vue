@@ -5,76 +5,63 @@
 
     <!-- Log message icons-->
     <div class="hidden">
-      <Icon v-for="icon in logIcons" :key="icon" :id="'logIcon_' + icon" :icon="icon" style="font-size: 20px; vertical-align: middle" />
+      <Icon v-for="icon in logIcons" :key="icon" :id="'hicon_' + icon" :icon="icon" class="hicon" />
     </div>
 
     <div><b>Gamestate:</b> Active: {{ gamestate.active }} &mdash; Name: {{ gamestate.name }}</div>
 
-    <div class="flex">
-      <div class="flex-grow">
-        <!-- Hand -->
-        <div class="container-hand bg-opacity-50 rounded-lg my-2 p-2" :class="currentPlayer.colorBg">
-          <div class="flex flex-wrap justify-end mb-1">
-            <b class="flex-grow">My Hand ({{ handCards.length }})</b>
-
-            <div v-if="currentPlayer.ink && (currentPlayer.deckCount || currentPlayer.discardCount)" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
-              <div class="rounded-lg" :class="buttonClass" @click="takeAction('useInk')"><Icon icon="ink" class="inline text-lg" /> Draw with Ink</div>
-            </div>
-
-            <div v-if="gamestate.active && handCards.length > 1" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
-              <div class="rounded-lg" :class="buttonClass" @click="clickAll(handCards)"><Icon icon="clickAll" class="inline text-lg" /> Play All</div>
-            </div>
-
-            <div v-if="handCards.length > 1" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
-              <div class="rounded-l-lg" :class="buttonHeaderClass">Order:</div>
-              <div :class="buttonClass" @click="sort(handLocation, 'letter')" title="By Letter"><Icon icon="sortAZ" class="text-lg" /></div>
-              <div :class="buttonClass" @click="sort(handLocation, 'cost')" title="By Cost">¢</div>
-              <div :class="buttonClass" @click="sort(handLocation, 'genre')" title="By Genre"><Icon icon="genre" class="text-lg" /></div>
-              <div class="rounded-r-lg" :class="buttonClass" @click="sort(handLocation, 'shuffle')" title="Shuffle"><Icon icon="shuffle" class="text-lg" /></div>
-            </div>
-          </div>
-
-          <HCardList :cards="handCards" :location="handLocation" :checkDrag="checkDragHand" @click="clickCard" @clickFooter="clickFooter" />
+    <!-- Hand -->
+    <div class="container-hand bg-opacity-50 rounded-lg my-2 p-2" :class="myself.colorBg">
+      <div class="flex flex-wrap justify-end mb-1">
+        <b class="flex-grow">My Hand ({{ handCards.length }})</b>
+        <div v-if="myself.ink && (myself.deckCount || myself.discardCount)" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
+          <div class="rounded-lg" :class="buttonClass" @click="takeAction('useInk')"><Icon icon="ink" class="inline text-lg" /> Draw with Ink</div>
         </div>
-
-        <!-- Tableau -->
-        <div class="container-tableau rounded-lg my-2 p-2">
-          <div class="flex flex-wrap justify-end mb-1">
-            <b class="flex-grow">Word ({{ tableauCards.length }})</b>
-
-            <div v-if="gamestate.active && tableauCards.length" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
-              <div class="rounded-lg" :class="buttonClass" @click="clickAll(tableauCards)"><Icon icon="close" class="inline text-lg" /> Reset</div>
-            </div>
-          </div>
-
-          <HCardList :cards="tableauCards" location="tableau" :checkDrag="checkDragTableau" @click="clickCard" @clickFooter="clickFooter" />
+        <div v-if="gamestate.active && handCards.length > 1" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
+          <div class="rounded-lg" :class="buttonClass" @click="clickAll(handCards)"><Icon icon="clickAll" class="inline text-lg" /> Play All</div>
         </div>
-
-        <!-- Offer -->
-        <div class="container-offer bg-gray-700 bg-opacity-30 rounded-lg my-2 p-2">
-          <div class="flex flex-wrap justify-end mb-1">
-            <b class="flex-grow">Offer Row ({{ offerCards.length }})</b>
-
-            <div class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
-              <div class="rounded-l-lg font-bold" :class="buttonHeaderClass">Order:</div>
-              <div :class="buttonClass" @click="sort('offer', 'letter')" title="By Letter"><Icon icon="sortAZ" class="text-lg" /></div>
-              <div :class="buttonClass" @click="sort('offer', 'cost')" title="By Cost"><Icon icon="sort09" class="inline text-lg" /></div>
-              <div :class="buttonClass" @click="sort('offer', 'genre')" title="By Genre"><Icon icon="genre" class="text-lg" /></div>
-              <div class="rounded-r-lg" :class="buttonClass" @click="sort('offer', 'shuffle')" title="Shuffle"><Icon icon="shuffle" class="text-lg" /></div>
-            </div>
-          </div>
-
-          <HCardList :cards="offerCards" location="offer" :checkDrag="checkDragTimeless" @click="clickCard" />
+        <div v-if="handCards.length > 1" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
+          <div class="rounded-l-lg" :class="buttonHeaderClass">Order:</div>
+          <div :class="buttonClass" @click="sort(handLocation, 'letter')" title="By Letter"><Icon icon="sortAZ" class="text-lg" /></div>
+          <div :class="buttonClass" @click="sort(handLocation, 'genre')" title="By Genre"><Icon icon="starter" class="text-lg" /></div>
+          <div class="rounded-r-lg" :class="buttonClass" @click="sort(handLocation, 'shuffle')" title="Shuffle"><Icon icon="shuffle" class="text-lg" /></div>
         </div>
       </div>
+      <HCardList :cards="handCards" :location="handLocation" :checkDrag="checkDragHand" />
+    </div>
 
-      <!-- Timeless -->
-      <!--
-      <div class="flex-none w-64 bg-gray-700 bg-opacity-30 rounded-lg ml-2 my-2 p-2">
-        <b>Timeless Classics ({{ timelessCards.length }})</b>
-        <HCardList :cards="timelessCards" location="timeless" :checkDrag="checkDragTimeless" @click="clickCard" />
+    <!-- Tableau -->
+    <div class="container-tableau rounded-lg my-2 p-2">
+      <div class="flex flex-wrap justify-end mb-1">
+        <b class="flex-grow">Word ({{ tableauCards.length }})</b>
+        <div v-if="gamestate.active && tableauCards.length" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
+          <div class="rounded-lg" :class="buttonClass" @click="clickAll(tableauCards)"><Icon icon="close" class="inline text-lg" /> Reset</div>
+        </div>
       </div>
-      -->
+      <HCardList :cards="tableauCards" location="tableau" :checkDrag="checkDragTableau" />
+    </div>
+
+    <!-- Timeless Classics -->
+    <div class="container-timeless rounded-lg my-2 p-2">
+      <div class="flex flex-wrap justify-end mb-1">
+        <b class="flex-grow">Timeless Classics ({{ timelessCards.length }})</b>
+      </div>
+      <HCardList :cards="timelessCards" location="timeless" :checkDrag="checkDragTimeless" />
+    </div>
+
+    <!-- Offer -->
+    <div class="container-offer bg-gray-700 bg-opacity-30 rounded-lg my-2 p-2">
+      <div class="flex flex-wrap justify-end mb-1">
+        <b class="flex-grow">Offer Row ({{ offerCards.length }})</b>
+        <div class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
+          <div class="rounded-l-lg font-bold" :class="buttonHeaderClass">Order:</div>
+          <div :class="buttonClass" @click="sort('offer', 'order')" title="By Recency"><Icon icon="clock" class="text-lg" /></div>
+          <div :class="buttonClass" @click="sort('offer', 'letter')" title="By Letter"><Icon icon="sortAZ" class="text-lg" /></div>
+          <div :class="buttonClass" @click="sort('offer', 'cost')" title="By Cost"><Icon icon="sort09" class="inline text-lg" /></div>
+          <div class="rounded-r-lg" :class="buttonClass" @click="sort('offer', 'genre')" title="By Genre"><Icon icon="starter" class="text-lg" /></div>
+        </div>
+      </div>
+      <HCardList :cards="offerCards" location="offer" :checkDrag="checkDragTimeless" />
     </div>
   </div>
 </template>
@@ -87,8 +74,14 @@ import { Icon, addIcon } from "@iconify/vue";
 import HCardList from "./HCardList.vue";
 import HPlayerPanel from "./HPlayerPanel.vue";
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const repaint = () => new Promise((resolve) => requestAnimationFrame(resolve));
+
 import mdiCards from "@iconify-icons/mdi/cards";
 addIcon("cards", mdiCards);
+
+import bookmarkIcon from "@iconify-icons/mdi/bookmark";
+addIcon("starter", bookmarkIcon);
 
 import mdiCompass from "@iconify-icons/mdi/compass";
 addIcon("adventure", mdiCompass);
@@ -121,8 +114,8 @@ addIcon("sortAZ", sortAlphabeticalVariant);
 import sortNumericVariant from "@iconify-icons/mdi/sort-numeric-variant";
 addIcon("sort09", sortNumericVariant);
 
-import bookmarkIcon from "@iconify-icons/mdi/bookmark";
-addIcon("starter", bookmarkIcon);
+import clockOutline from "@iconify-icons/mdi/clock-outline";
+addIcon("clock", clockOutline);
 
 import closeIcon from "@iconify-icons/mdi/close";
 addIcon("close", closeIcon);
@@ -131,6 +124,12 @@ import cursorDefaultClick from "@iconify-icons/mdi/cursor-default-click";
 import expandAllOutline from "@iconify-icons/mdi/expand-all-outline";
 //import plusBoxMultipleOutline from '@iconify-icons/mdi/plus-box-multiple-outline';
 addIcon("clickAll", expandAllOutline);
+
+import lockIcon from "@iconify-icons/mdi/lock";
+addIcon("jail", lockIcon);
+
+import cachedIcon from "@iconify-icons/mdi/cached";
+addIcon("timeless", cachedIcon);
 
 export default {
   name: "HGame",
@@ -150,6 +149,7 @@ export default {
   },
 
   mounted() {
+    this.emitter.on("clickCard", this.clickCard);
     this.emitter.on("clickFooter", this.clickFooter);
   },
 
@@ -164,7 +164,7 @@ export default {
       return this.game.isSpectator;
     },
 
-    currentPlayer() {
+    myself() {
       return this.players[this.game.player_id] || {};
     },
 
@@ -201,19 +201,23 @@ export default {
       let location = "offer";
       let cards = this.cardsInLocation(location);
       cards.sort(this.sorter(location));
+      location = "jail";
+      let jail = this.cardsInLocation(location);
+      jail.sort(this.sorter(location));
+      Array.prototype.push.apply(cards, jail);
       return cards;
     },
 
     buttonGroupClass() {
-      return this.currentPlayer.colorDivide + " " + this.currentPlayer.colorBorder;
+      return this.myself.colorDivide + " " + this.myself.colorBorder;
     },
 
     buttonHeaderClass() {
-      return "pl-2 pr-1 font-bold " + this.currentPlayer.colorHeader;
+      return "pl-2 pr-1 font-bold " + this.myself.colorHeader;
     },
 
     buttonClass() {
-      return "leading-6 px-2 cursor-pointer " + this.currentPlayer.colorButton;
+      return "leading-6 px-2 cursor-pointer " + this.myself.colorButton;
     },
   },
 
@@ -222,21 +226,21 @@ export default {
      * Utility functions
      */
 
-    cardsInLocation(location: string): Array<any> {
+    cardsInLocation(location: string): any[] {
       return this.populateCards(
         Object.values(this.gamedatas.cards).filter((card: any) => {
-          return card.location == location;
+          return card.location.startsWith(location);
         })
       );
     },
 
     nextOrderInLocation(location: string): number {
       const cards = this.cardsInLocation(location);
-      const max = cards.map((card) => card.order).reduce((acc, cur) => Math.max(acc, cur), -1);
+      const max: number = cards.map((card: any) => card.order).reduce((acc: number, cur: number) => Math.max(acc, cur), -1);
       return max + 1;
     },
 
-    sorter(location) {
+    sorter(location: string) {
       let order = this.locationOrder[location] || "order";
       return firstBy(order).thenBy("letter").thenBy("id");
     },
@@ -244,19 +248,20 @@ export default {
     populateCard(card) {
       let newCard = Object.assign({}, this.gamedatas.refs.cards[card.refId], card);
       newCard.basicBenefitsList = [];
+      newCard.factor = newCard.factor || 1;
       if (newCard.basicBenefits) {
         for (const id in newCard.basicBenefits) {
           let value = newCard.basicBenefits[id];
+          if (newCard.factor > 1) {
+            value = `<b class="text-red-500">${value * newCard.factor}</b>`;
+          }
           let newBenefit = Object.assign({}, this.gamedatas.refs.benefits[id]);
-          newBenefit.id = id;
+          newBenefit.id = parseInt(id);
           if (newBenefit.text) {
             newBenefit.text = newBenefit.text.replaceAll("%", value);
           }
           if (newBenefit.text2) {
             newBenefit.text2 = newBenefit.text2.replaceAll("%", value);
-          }
-          if (newBenefit.text3) {
-            newBenefit.text3 = newBenefit.text3.replaceAll("%", value);
           }
           newCard.basicBenefitsList.push(newBenefit);
         }
@@ -266,16 +271,16 @@ export default {
       if (newCard.genreBenefits) {
         for (const id in newCard.genreBenefits) {
           let value = newCard.genreBenefits[id];
+          if (newCard.factor > 1) {
+            value = `<b class="text-red-500">${value * newCard.factor}</b>`;
+          }
           let newBenefit = Object.assign({}, this.gamedatas.refs.benefits[id]);
-          newBenefit.id = id;
+          newBenefit.id = parseInt(id);
           if (newBenefit.text) {
             newBenefit.text = newBenefit.text.replaceAll("%", value);
           }
           if (newBenefit.text2) {
             newBenefit.text2 = newBenefit.text2.replaceAll("%", value);
-          }
-          if (newBenefit.text3) {
-            newBenefit.text3 = newBenefit.text3.replaceAll("%", value);
           }
           newCard.genreBenefitsList.push(newBenefit);
         }
@@ -292,17 +297,23 @@ export default {
       } else if (newCard.genre == Constants.STARTER) {
         newCard.genreName = "starter";
       }
+      if (newCard.location == "jail") {
+        newCard.player = this.players[newCard.order];
+      } else if (newCard.origin.startsWith("timeless")) {
+        const playerId = newCard.origin.split("_")[1];
+        newCard.player = this.players[playerId];
+      }
       return newCard;
     },
 
-    populateCards(cards) {
+    populateCards(cards): any[] {
       if (!Array.isArray(cards)) {
         return null;
       }
       return cards.map(this.populateCard);
     },
 
-    cardIds(cards): Array<Number> {
+    cardIds(cards): number[] {
       if (!Array.isArray(cards)) {
         return null;
       }
@@ -310,10 +321,12 @@ export default {
     },
 
     populatePlayer(player) {
+      player.colorBgText = "text-white";
       switch (player.colorName) {
         case "red":
-          player.colorName = "red";
+          player.colorRing = "ring-red-700";
           player.colorBg = "bg-red-700";
+          player.colorBgText = "text-red-100";
           player.colorBorder = "border-red-800";
           player.colorDivide = "divide-red-800";
           player.colorText = "text-red-700";
@@ -321,6 +334,7 @@ export default {
           player.colorHeader = "bg-red-50 " + player.colorText;
           break;
         case "green":
+          player.colorRing = "ring-green-700";
           player.colorBg = "bg-green-700";
           player.colorBorder = "border-green-800";
           player.colorDivide = "divide-green-800";
@@ -329,6 +343,7 @@ export default {
           player.colorHeader = "bg-green-50 " + player.colorText;
           break;
         case "blue":
+          player.colorRing = "ring-blue-700";
           player.colorBg = "bg-blue-700";
           player.colorBorder = "border-blue-800";
           player.colorDivide = "divide-blue-800";
@@ -337,7 +352,9 @@ export default {
           player.colorHeader = "bg-blue-50 " + player.colorText;
           break;
         case "yellow":
-          player.colorBg = "bg-yellow-600";
+          player.colorBgText = "text-black";
+          player.colorRing = "ring-yellow-500";
+          player.colorBg = "bg-yellow-500";
           player.colorBorder = "border-yellow-700";
           player.colorDivide = "divide-yellow-700";
           player.colorText = "text-yellow-600";
@@ -345,6 +362,7 @@ export default {
           player.colorHeader = "bg-yellow-50 " + player.colorText;
           break;
         case "purple":
+          player.colorRing = "ring-purple-700";
           player.colorBg = "bg-purple-700";
           player.colorBorder = "border-purple-800";
           player.colorDivide = "divide-purple-800";
@@ -368,128 +386,174 @@ export default {
     /*
      * Animation
      */
-    async animateCard(card, changes): Promise<number> {
+    async animateCard(card: any, delay: number, changes: any): Promise<number> {
+      const getRect = (el: Element) => {
+        if (!el) {
+          return null;
+        }
+        const bounds = el.getBoundingClientRect();
+        return {
+          top: bounds.top + window.scrollX,
+          left: bounds.left + window.scrollY,
+          width: bounds.width,
+          height: bounds.height,
+        };
+      };
+
       if (changes) {
         card = Object.assign({}, card, changes);
       }
 
       const oldCard = this.gamedatas.cards[card.id];
-      if (oldCard != null && oldCard.location == card.location) {
+      if (oldCard != null && (oldCard.location == card.location || (oldCard.location == "offer" && card.location == "jail"))) {
         // Same location, no animation
         this.gamedatas.cards[card.id] = card;
+        // Delay for Vue to animate the reorder
+        if (oldCard.order != card.order || (oldCard.location == "offer" && card.location == "jail")) {
+          await sleep(600);
+        }
         return card.id;
       }
 
       // Compute start position
       let cardEl = null;
+      let gapEl = null;
       let start = null;
+      let end = null;
       if (oldCard != null) {
-        cardEl = document.getElementById(oldCard.location + "_card" + oldCard.id);
-        if (cardEl) {
-          start = cardEl.getBoundingClientRect();
-        }
+        cardEl = document.getElementById("card" + oldCard.id);
+        start = getRect(cardEl);
       }
 
-      let visibleLocations = [this.handLocation, "tableau", "offer", "timeless"];
-
-      if (!start && !visibleLocations.includes(card.location)) {
+      let visible = [this.handLocation, "tableau", "offer", "jail", "timeless"].includes(card.location) || card.location.startsWith("timeless");
+      if (!start && !visible) {
         // Invisible card movement, no animation
         this.gamedatas.cards[card.id] = card;
         return card.id;
-      } else if (start && !visibleLocations.includes(card.location)) {
+      }
+
+      // Optional delay
+      if (delay) {
+        await sleep(delay);
+      }
+
+      let mode = null;
+      if (start && !visible) {
         // Compute end position
-        let end = null;
+        mode = "leave";
         if (card.location.includes("_")) {
           let playerId = card.location.split("_")[1];
-          let boardEl = document.getElementById("player_board_" + playerId);
-          if (boardEl) {
-            end = boardEl.getBoundingClientRect();
-          }
+          let parentEl = document.getElementById("player_board_" + playerId);
+          end = getRect(parentEl);
         }
         if (end == null) {
           // Exit stage left
-          console.warn("destroy animation unknown end??", card.id, card.location);
-          end = { x: -start.width, y: start.y, width: start.width, height: start.height };
+          end = { top: start.top, left: -start.width, width: start.width, height: start.height };
         }
 
-        // Compute forward transform
-        const destX = end.x - start.x + (end.width - start.width) / 2;
-        const destY = end.y - start.y + (end.height - start.width) / 2;
-        const tr = "translate(" + destX + "px, " + destY + "px)";
+        // Insert a gap
+        let rootEl = document.getElementById("happ");
+        console.log("gap start", start);
+        gapEl = document.createElement("div");
+        gapEl.id = "gap" + card.id;
+        gapEl.className = "gap";
+        gapEl.style.width = start.width + "px";
+        gapEl.style.height = start.height + "px";
+        cardEl.parentNode.insertBefore(gapEl, cardEl);
 
-        // Animate leave
-        cardEl.style.transition = "none";
-        cardEl.style.transform = "";
-        return new Promise((resolve, reject) => {
-          requestAnimationFrame(() => {
-            console.log("Animate card leave", cardEl.id, tr);
-            cardEl.style.transition = "";
-            cardEl.style.transform = tr;
-            const t0 = performance.now();
-            cardEl.addEventListener(
-              "transitionend",
-              () => {
-                const t1 = performance.now();
-                console.log("Animate card leave destroy, took " + (t1 - t0) + " ms", cardEl.id);
-                this.gamedatas.cards[card.id] = card;
-                resolve(card.id);
-              },
-              { once: true }
-            );
-          });
-        });
-      } else if (visibleLocations.includes(card.location)) {
-        // Compute end position
-        this.gamedatas.cards[card.id] = card;
-        await nextTick();
-        cardEl = document.getElementById(card.location + "_card" + card.id);
-        if (!cardEl) {
-          console.warn("No enter animation because new card is missing???", card.location + "_card" + card.id);
-          return card.id;
-        }
-        let end = cardEl.getBoundingClientRect();
-        if (start == null) {
-          // Enter from above
-          start = { x: end.x, y: -end.height, width: end.width, height: end.height };
-        }
+        // Move card to end
+        const top = end.top + (end.height - start.height) / 2;
+        const left = end.left + (end.width - start.width) / 2;
+        rootEl.appendChild(cardEl);
+        cardEl.style.position = "absolute";
+        cardEl.style.top = top + "px";
+        cardEl.style.left = left + "px";
+        await repaint();
 
         // Compute reverse transform
-        const startX = start.x - end.x;
-        const startY = start.y - end.y;
-        const tr = "translate(" + startX + "px, " + startY + "px)"; // translate(50%)
+        end = getRect(cardEl);
+      } else {
+        // Move card to end and compute end position
+        mode = "enter";
+        this.gamedatas.cards[card.id] = card;
+        await nextTick();
+        cardEl = document.getElementById("card" + card.id);
+        if (!cardEl) {
+          console.warn(`Animate card ${card.id} ${mode} element disappeared`);
+          return card.id;
+        }
+        end = getRect(cardEl);
+        if (start == null) {
+          // Enter from above
+          start = { top: -end.height, left: end.left, width: end.width, height: end.height };
+        }
+      }
 
-        // Transform back to start
-        cardEl.style.transition = "none";
-        cardEl.style.transform = tr;
-        console.log("Animate card enter/move", cardEl.id, tr);
+      // Apply reverse transform
+      let diffX = start.left - end.left;
+      let diffY = start.top - end.top;
+      cardEl.style.transition = "none";
+      cardEl.style.transform = "translate(" + diffX + "px, " + diffY + "px)";
+      await repaint();
 
-        // Animate enter/move
-        return new Promise((resolve, reject) => {
-          requestAnimationFrame(() => {
-            cardEl.style.transition = "";
-            cardEl.style.transform = "";
-            const t0 = performance.now();
-            cardEl.addEventListener(
-              "transitionend",
-              () => {
-                const t1 = performance.now();
-                console.log("Animate card enter/move done, took " + (t1 - t0) + " ms", cardEl.id);
-                this.gamedatas.cards[card.id] = card;
-                resolve(card.id);
-              },
-              { once: true }
-            );
-          });
+      // Resolve when the transition ends
+      let promise: Promise<number> = new Promise((resolve, reject) => {
+        // Just in case transitionend never fires
+        const timeout = setTimeout(() => {
+          console.warn(`Animate card ${card.id} ${mode} missing transitionend`);
+          if (gapEl) {
+            gapEl.remove();
+          }
+          resolve(card.id);
+        }, 2000);
+
+        cardEl.style.transition = "";
+        cardEl.style.transform = "";
+        const t0 = performance.now();
+        cardEl.addEventListener(
+          "transitionend",
+          () => {
+            const t1 = performance.now();
+            clearTimeout(timeout);
+            console.log(`Animate card ${card.id} ${mode} took ${Math.round(t1 - t0)}ms`);
+            resolve(card.id);
+          },
+          { once: true }
+        );
+
+        if (gapEl) {
+          gapEl.style.width = "";
+          gapEl.addEventListener(
+            "transitionend",
+            () => {
+              const t1 = performance.now();
+              clearTimeout(timeout);
+              console.log(`Animate card ${card.id} ${mode} destroy gap`);
+              gapEl.remove();
+            },
+            { once: true }
+          );
+        }
+      });
+
+      if (mode == "leave") {
+        promise = promise.finally(() => {
+          this.gamedatas.cards[card.id] = card;
         });
       }
+      return promise;
     },
 
     /*
      * BGA framework methods
      */
-    takeAction(action, data, callback) {
+    takeAction(action: string, data: any, callback): void {
       data = data || {};
-      data.lock = true;
+      if (data.lock === false) {
+        delete data.lock;
+      } else {
+        data.lock = true;
+      }
       for (const key in data) {
         if (Array.isArray(data[key])) {
           data[key] = data[key].join(",");
@@ -504,30 +568,44 @@ export default {
     /*
      * BGA framework event callbacks
      */
-    onFormatString(log: String, args) {
+    onFormatString(log: string, args: any): string {
+      if (args.award) {
+        args.award = `<b>${args.award}</b>-letter word<div class="haward length${args.award}"></div>`;
+      }
       if (args.word) {
-        args.word = "<b>" + args.word + "</b>";
+        let q = args.word.toLowerCase();
+        let links = [
+          `<a target="hdefine" href="https://ahdictionary.com/word/search.html?q=${q}">American Heritage</a>`, //
+          `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`, //
+          `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`, //
+          `<a target="hdefine" href="https://www.merriam-webster.com/dictionary/${q}">Merriam-Webster</a>`, //
+          `<a target="hdefine" href="https://www.lexico.com/en/definition/${q}">Oxford Lexico</a>`, //
+          `<a target="hdefine" href="https://en.wiktionary.org/wiki/${q}">Wiktionary</a>`, //
+          `<a target="hdefine" href="http://wordnetweb.princeton.edu/perl/webwn?s=${q}">WordNet</a>`, //
+        ];
+        args.word = `<b>${args.word}</b><div class="hdefine">Dictionary definitions:<ul><li>${links.join("</li><li>")}</li></ul></div>`;
+      }
+      if (args.invalid) {
+        args.invalid = `<b>${args.invalid}</b>`;
+      }
+      if (args.genre) {
+        const el = document.getElementById("hicon_" + args.genre.toLowerCase().trim());
+        args.genre = `<span class="hgenre ${args.genre}">${el ? el.outerHTML : args.genre}`;
       }
       if (args.letter) {
-        args.letter = "<b>" + args.letter + "</b>";
+        args.letter = `${args.letter}</span>`;
       }
       if (args.icon) {
-        const el = document.getElementById("logIcon_" + args.icon.toLowerCase().trim());
+        const el = document.getElementById("hicon_" + args.icon.toLowerCase().trim());
         if (el) {
           args.icon = el.outerHTML;
-        }
-      }
-      if (args.icon2) {
-        const el = document.getElementById("logIcon_" + args.icon2.toLowerCase().trim());
-        if (el) {
-          args.icon2 = el.outerHTML;
         }
       }
       return log;
     },
 
-    onUpdateActionButtons(stateName, args) {
-      console.log("Vue onUpdateActionButtons", stateName, args);
+    onUpdateActionButtons(stateName: string, args: any): void {
+      console.log("State", stateName, args);
       Object.assign(this.gamestate, this.game.gamedatas.gamestate, { active: this.game.isCurrentPlayerActive() });
 
       const actionRef = {
@@ -561,6 +639,16 @@ export default {
             this.takeAction("flush");
           },
         },
+        convert: {
+          text: "Spend 3 ink for 1¢",
+          color: "gray",
+          function() {
+            this.takeAction("convert");
+          },
+          condition() {
+            return this.myself.ink >= 3;
+          },
+        },
       };
 
       // No actions for inactive players
@@ -571,7 +659,8 @@ export default {
       let possible: string[] = this.gamestate.possibleactions;
       possible.forEach((p, index) => {
         const action = actionRef[p];
-        if (action) {
+        let visible: boolean = action != null && (action.condition == null || action.condition.apply(this));
+        if (visible) {
           this.game.addActionButton(
             "action_" + index,
             action.text,
@@ -586,30 +675,27 @@ export default {
       });
     },
 
-    onEnteringState(stateName, args) {
-      console.log("Vue onEnteringState", stateName, args);
+    onEnteringState(stateName: string, args: any): void {
       Object.assign(this.gamestate, this.game.gamedatas.gamestate, { active: this.game.isCurrentPlayerActive() });
     },
 
-    onLeavingState(stateName) {
-      console.log("Vue onLeavingState", stateName);
-    },
+    onLeavingState(stateName: string): void {},
 
-    onNotify(notif) {
-      console.log("Vue onNotify", notif);
+    onNotify(notif: any): void {
+      console.log("Notify", notif.type, notif.args);
       if (notif.type == "cards") {
-        console.log("packet of changed cards", Object.keys(notif.args.cards));
-        let promises = [];
-        for (const cardId in notif.args.cards) {
-          promises.push(this.animateCard(notif.args.cards[cardId]));
-        }
+        let cards = Object.values(notif.args.cards);
+        cards.sort(firstBy("location").thenBy("order").thenBy("id"));
+        console.log("packet of changed cards", cards);
+        let delay = 0;
+        const promises = cards.map((card) => this.animateCard(card, (delay += 0)));
         Promise.allSettled(promises).then((results) => {
           console.log("packet allSettled", results);
           this.game.notifqueue.setSynchronousDuration(0);
         });
       } else if (notif.type == "invalid") {
         if (this.game.player_id == notif.args.player_id) {
-          this.game.showMessage(notif.args.word + " is not a valid word", "error");
+          this.game.showMessage(notif.args.invalid + " is not a valid word", "error");
         }
       } else if (notif.type == "pause") {
         this.game.notifqueue.setSynchronousDuration(notif.args.duration);
@@ -623,7 +709,7 @@ export default {
      * Other functions
      */
 
-    checkDragHand(card: any, fromLocation: String, toLocation: String) {
+    checkDragHand(card: any, fromLocation: String, toLocation: String): boolean {
       // Anyone can reorder their own hand
       if (toLocation == fromLocation) {
         return;
@@ -635,12 +721,12 @@ export default {
       return false;
     },
 
-    checkDragTimeless(card: any, fromLocation: String, toLocation: String) {
+    checkDragTimeless(card: any, fromLocation: String, toLocation: String): boolean {
       // Active player can move cards to the tableau
       return this.gamestate.active && toLocation == "tableau";
     },
 
-    checkDragTableau(card: any, fromLocation: String, toLocation: String) {
+    checkDragTableau(card: any, fromLocation: String, toLocation: String): boolean {
       // Active player can reorder the tableau and return cards to their origin
       return this.gamestate.active && (toLocation == fromLocation || toLocation == card.origin);
     },
@@ -670,7 +756,7 @@ export default {
     },
     */
 
-    sort(location, order: String) {
+    sort(location: string, order: string) {
       let cards = this.cardsInLocation(location);
       if (order == "shuffle") {
         for (let i = cards.length - 1; i > 0; i--) {
@@ -684,7 +770,7 @@ export default {
       this.locationOrder[location] = order;
     },
 
-    clickAll(cards) {
+    clickAll(cards): void {
       console.log("clickAll", cards);
       if (this.gamestate.active) {
         cards.forEach((card) => {
@@ -693,40 +779,40 @@ export default {
       }
     },
 
-    clickCard(evt) {
-      let { card } = evt;
-      console.log("clickCard", card.id, this.gamestate);
-      if (this.gamestate.active) {
-        let destination = null;
-        if (card.location == this.handLocation || card.location.startsWith("timeless")) {
-          this.animateCard(card, {
-            location: "tableau",
-            order: this.nextOrderInLocation("tableau"),
-          });
-        } else if (card.location == "tableau") {
-          this.animateCard(card, {
-            location: card.origin,
-            order: this.nextOrderInLocation(card.origin),
-          });
-        } else if (card.location == "offer" && this.gamestate.name == "purchase") {
-          this.takeAction("purchase", { cardId: card.id });
+    clickCard(evt): void {
+      let { action, card } = evt;
+      console.log("clickCard event in parent", action, card.id);
+      if (action.action == "move") {
+        this.animateCard(card, 0, {
+          location: action.destination,
+          order: this.nextOrderInLocation(action.destination),
+        });
+      } else {
+        let args = { cardId: card.id };
+        if (action.actionArgs) {
+          Object.assign(args, action.actionArgs);
         }
+        this.takeAction(action.action, args);
       }
     },
 
-    clickFooter(evt) {
+    clickFooter(evt): void {
       let { action, card } = evt;
       console.log("clickFooter event in parent", action, card.id);
-      if (action == "wild") {
+      if (action.action == "wild") {
         let wild = (prompt("What letter does this wild card represent?") || "").trim().toUpperCase();
         const regex = RegExp("^[A-Z]$");
         if (regex.test(wild)) {
           this.gamedatas.cards[card.id].wild = wild;
         }
-      } else if (action == "reset") {
+      } else if (action.action == "reset") {
         this.gamedatas.cards[card.id].wild = false;
       } else {
-        this.takeAction(action, { cardId: card.id });
+        let args = { cardId: card.id };
+        if (action.actionArgs) {
+          Object.assign(args, action.actionArgs);
+        }
+        this.takeAction(action.action, args);
       }
     },
   },

@@ -149,15 +149,33 @@ class Table extends APP_GameClass
     {
     }
 
-    static function getGameStateValue($value_label)
+    function getGameStateValue($value_label)
+    {
+        return 0;
+    }
+
+    function setGameStateValue($value_label, $value_value)
     {
     }
 
-    static function setGameStateValue($value_label, $value_value)
+    function incGameStateValue($value_label, $increment)
     {
     }
 
-    static function incGameStateValue($value_label, $increment)
+    /* Statistics */
+    static function initStat(string $table_or_player, $name, $value, int $player_id = null)
+    {
+    }
+
+    function setStat(int $value, string $name, int $player_id = null)
+    {
+    }
+
+    function incStat(int $delta, string $name, int $player_id = null)
+    {
+    }
+
+    function getStat(string $name, int $player_id = null)
     {
     }
 

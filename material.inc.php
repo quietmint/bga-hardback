@@ -23,3 +23,12 @@
 require_once('constants.inc.php');
 
 $this->genres = [STARTER, ADVENTURE, HORROR, ROMANCE, MYSTERY];
+
+$this->awards = [
+    7 => 5,
+    8 => 6,
+    9 => 7,
+    10 => 9,
+    11 => 12,
+    12 => 15,
+];

@@ -120,7 +120,7 @@ class HCard extends APP_GameClass implements JsonSerializable
         $this->origin = $origin;
     }
 
-    public function isOrigin(array ...$origins): bool
+    public function isOrigin(...$origins): bool
     {
         if (count($origins) == 1 && is_array($origins[0])) {
             $origins = $origins[0];
@@ -173,6 +173,53 @@ class HCard extends APP_GameClass implements JsonSerializable
 
     /***** Computed properties *****/
 
+    public function getBenefits(): array
+    {
+        if ($this->wild) {
+            return [];
+        }
+        // Always include basic benefits
+        $benefits = CardMgr::$refCards[$this->refId]['basicBenefits'] ?? [];
+        if (CardMgr::isGenreActive($this->getGenre())) {
+            // Add values from genre benefits if active
+            $genre = CardMgr::$refCards[$this->refId]['genreBenefits'] ?? [];
+            foreach ($genre as $k => $v) {
+                if (isset($benefits[$k])) {
+                    $benefits[$k] += $v;
+                } else {
+                    $benefits[$k] = $v;
+                }
+            }
+        }
+
+        // Ignore used benefits
+        $benefits = array_filter($benefits, function ($benefit) {
+            return !in_array($benefit, $this->resolve);
+        }, ARRAY_FILTER_USE_KEY);
+
+        // Apply doubling
+        if ($this->factor > 1) {
+            $benefits = array_map(function ($benefit) {
+                if (is_numeric($benefit)) {
+                    return $benefit * $this->factor;
+                }
+                return $benefit;
+            }, $benefits);
+        }
+
+        return $benefits;
+    }
+
+    public function hasBenefit(int $benefitId): bool
+    {
+        return array_key_exists($benefitId, $this->getBenefits());
+    }
+
+    public function getBenefitValue(int $benefitId)
+    {
+        return $this->getBenefits()[$benefitId] ?? null;
+    }
+
     public function getGenre(): int
     {
         return CardMgr::$refCards[$this->refId]['genre'];
@@ -204,41 +251,6 @@ class HCard extends APP_GameClass implements JsonSerializable
         return $this->wild ?? CardMgr::$refCards[$this->refId]['letter'];
     }
 
-    public function getBenefits(): array
-    {
-        if ($this->wild) {
-            return [];
-        }
-        // Always include basic benefits
-        $benefits = CardMgr::$refCards[$this->refId]['basicBenefits'] ?? [];
-        if (CardMgr::isGenreActive($this->getGenre())) {
-            // Add values from genre benefits if active
-            $genre = CardMgr::$refCards[$this->refId]['genreBenefits'] ?? [];
-            foreach ($genre as $k => $v) {
-                if (isset($benefits[$k])) {
-                    $benefits[$k] += $v;
-                } else {
-                    $benefits[$k] = $v;
-                }
-            }
-        }
-        // Ignore used benefits
-        $benefits = array_filter($benefits, function ($benefit) {
-            return !in_array($benefit, $this->resolve);
-        }, ARRAY_FILTER_USE_KEY);
-        return $benefits;
-    }
-
-    public function hasBenefit(int $benefitId): bool
-    {
-        return array_key_exists($benefitId, $this->getBenefits());
-    }
-
-    public function getBenefitValue(int $benefitId)
-    {
-        return $this->getBenefits()[$benefitId] ?? null;
-    }
-
     public function getCost(): int
     {
         return CardMgr::$refCards[$this->refId]['cost'] ?? 0;
@@ -252,5 +264,13 @@ class HCard extends APP_GameClass implements JsonSerializable
     public function isTimeless(): bool
     {
         return CardMgr::$refCards[$this->refId]['timeless'] ?? false;
+    }
+
+    public function getOwner(): ?int
+    {
+        if ($this->isOrigin('timeless')) {
+            return intval(substr($this->origin, strrpos($this->origin, '_') + 1));
+        }
+        return null;
     }
 }

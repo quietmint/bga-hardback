@@ -100,34 +100,6 @@ $machinestates = [
         'possibleactions' => ['double', 'skip'],
         'transitions' => [
             'again' => ST_DOUBLE,
-            'next' => ST_EITHER_BASIC,
-        ],
-    ],
-
-    ST_EITHER_BASIC => [
-        'name' => 'eitherBasic',
-        'description' => clienttranslate('${actplayer} must choose a benefit'),
-        'descriptionmyturn' => clienttranslate('${you} must choose a benefit'),
-        'type' => 'activeplayer',
-        'args' => 'argEitherBasic',
-        'action' => 'stEither',
-        'possibleactions' => ['eitherCoins', 'eitherPoints'],
-        'transitions' => [
-            'again' => ST_EITHER_BASIC,
-            'next' => ST_EITHER_GENRE,
-        ],
-    ],
-
-    ST_EITHER_GENRE => [
-        'name' => 'eitherGenre',
-        'description' => clienttranslate('${actplayer} must choose a benefit'),
-        'descriptionmyturn' => clienttranslate('${you} must choose a benefit'),
-        'type' => 'activeplayer',
-        'args' => 'argEitherGenre',
-        'action' => 'stEither',
-        'possibleactions' => ['eitherCoins', 'eitherPoints'],
-        'transitions' => [
-            'again' => ST_EITHER_GENRE,
             'next' => ST_BASIC,
         ],
     ],
@@ -152,6 +124,34 @@ $machinestates = [
         'possibleactions' => ['trash', 'skip'],
         'transitions' => [
             'again' => ST_TRASH,
+            'next' => ST_EITHER,
+        ],
+    ],
+
+    ST_EITHER => [
+        'name' => 'either',
+        'description' => clienttranslate('${actplayer} must choose a benefit'),
+        'descriptionmyturn' => clienttranslate('${you} must choose a benefit (${coins}¢ and ${points}${icon} earned so far)'),
+        'type' => 'activeplayer',
+        'args' => 'argEither',
+        'action' => 'stEither',
+        'possibleactions' => ['either'],
+        'transitions' => [
+            'again' => ST_EITHER,
+            'next' => ST_JAIL,
+        ],
+    ],
+
+    ST_JAIL => [
+        'name' => 'jail',
+        'description' => clienttranslate('${actplayer} may jail or trash an offer row card'),
+        'descriptionmyturn' => clienttranslate('${you} may jail or trash an offer row card'),
+        'type' => 'activeplayer',
+        'args' => 'argJail',
+        'action' => 'stJail',
+        'possibleactions' => ['jail', 'skip'],
+        'transitions' => [
+            'again' => ST_JAIL,
             'next' => ST_FLUSH,
         ],
     ],
@@ -171,14 +171,24 @@ $machinestates = [
 
     ST_PURCHASE => [
         'name' => 'purchase',
-        'description' => clienttranslate('${actplayer} may purchase cards (${coins}${icon} available)'),
-        'descriptionmyturn' => clienttranslate('${you} may purchase cards (${coins}${icon} available)'),
+        'description' => clienttranslate('${actplayer} may purchase cards (${coins}¢ available)'),
+        'descriptionmyturn' => clienttranslate('${you} may purchase cards (${coins}¢ available)'),
         'type' => 'activeplayer',
         'args' => 'argPurchase',
         'action' => 'stPurchase',
-        'possibleactions' => ['purchase', 'skip'],
+        'possibleactions' => ['purchase', 'convert', 'skip'],
         'transitions' => [
             'again' => ST_PURCHASE,
+            'next' => ST_CLEANUP,
+        ],
+    ],
+
+    ST_CLEANUP => [
+        'name' => 'cleanup',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stCleanup',
+        'transitions' => [
             'next' => ST_NEXT_PLAYER,
         ],
     ],

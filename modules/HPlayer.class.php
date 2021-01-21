@@ -42,6 +42,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
             'deckCount' => $this->getDeckCount(),
             'discardCount' => $this->getDiscardCount(),
             'eliminated' => $this->eliminated,
+            'genreCounts' => $this->getGenreCounts(),
             'ink' => $this->ink,
             'name' => $this->name,
             'remover' => $this->remover,
@@ -163,6 +164,11 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         return CardMgr::getTimelessLocation($this->id);
     }
 
+    public function getGenreCounts(): array
+    {
+        return CardMgr::getGenreCounts(CardMgr::getCardsOwnedByPlayer($this->id), true);
+    }
+
     /***** Player Functions *****/
 
     public function isActive(): bool
@@ -179,23 +185,24 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     public function notifyInk(HCard $card): void
     {
-        hardback::$instance->notifyAllPlayers('ink', '${player_name} uses ink to draw ${icon}${letter}', [
+        hardback::$instance->notifyAllPlayers('ink', '${player_name} spends ink to draw ${genre}${letter}', [
             'player_name' => $this->name,
-            'icon' => $card->getGenreName() . ' ',
+            'genre' => $card->getGenreName() . ' ',
             'letter' => $card->getLetter(),
         ]);
     }
 
     public function notifyRemover(HCard $card): void
     {
-        hardback::$instance->notifyAllPlayers('ink', '${player_name} uses remover to avoid ${icon}${letter}', [
+
+        hardback::$instance->notifyAllPlayers('ink', '${player_name} spends remover to avoid ${genre}${letter}', [
             'player_name' => $this->name,
-            'icon' => $card->getGenreName() . ' ',
+            'genre' => $card->getGenreName() . ' ',
             'letter' => $card->getLetter(),
         ]);
     }
 
-    public function addCoins(int $amount, $notify = true): void
+    public function addCoins(int $amount): void
     {
         if ($amount <= 0) {
             return;
@@ -203,65 +210,36 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         self::DbQuery("UPDATE player SET coins = coins + $amount WHERE player_id = {$this->id}");
         $this->coins += $amount;
         $this->notifyPanel();
-
-        if ($notify) {
-            hardback::$instance->notifyAllPlayers('message', '${player_name} earns ${amount}¢', [
-                'player_name' => $this->name,
-                'amount' => $amount,
-            ]);
-        }
     }
 
-    public function addPoints(int $amount, bool $notify = true): void
+    public function addPoints(int $amount): void
     {
-        if ($amount <= 0) {
+        if ($amount == 0) {
             return;
         }
         self::DbQuery("UPDATE player SET player_score = player_score + $amount WHERE player_id = {$this->id}");
         $this->score += $amount;
         $this->notifyPanel();
-
-        if ($notify) {
-            hardback::$instance->notifyAllPlayers('message', '${player_name} earns ${amount}${icon}', [
-                'player_name' => $this->name,
-                'amount' => $amount,
-                'icon' => ' star',
-            ]);
-        }
     }
 
-    public function addInk(int $amount, bool $notify = true): void
+    public function addInk(int $amount = 1): void
     {
         if ($amount <= 0) {
             return;
         }
-
         self::DbQuery("UPDATE player SET ink = ink + $amount WHERE player_id = {$this->id}");
         $this->ink += $amount;
         $this->notifyPanel();
-
-        if ($notify) {
-            hardback::$instance->notifyAllPlayers('message', '${player_name} earns ${amount} ink', [
-                'player_name' => $this->name,
-                'amount' => $amount,
-            ]);
-        }
     }
 
-    public function addRemover(int $amount): void
+    public function addRemover(int $amount = 1): void
     {
         if ($amount <= 0) {
             return;
         }
-
         self::DbQuery("UPDATE player SET remover = remover + $amount WHERE player_id = {$this->id}");
         $this->remover += $amount;
         $this->notifyPanel();
-
-        hardback::$instance->notifyAllPlayers('message', '${player_name} earns ${amount} remover', [
-            'player_name' => $this->name,
-            'amount' => $amount,
-        ]);
     }
 
     public function spendCoins(int $amount): void

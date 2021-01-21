@@ -9,11 +9,15 @@
   </draggable>-->
 
   <div class="cardlist flex flex-wrap justify-center" :class="heightClass">
-    <transition-group>
+    <transition-group :css="false">
+      <HCard v-for="card in cards" :key="card.id" :card="card" />
+
+      <!--
       <div class="cardholder m-1 relative" v-for="card in cards" :key="card.id" :id="location + '_card' + card.id" :class="card.invisible ? 'invisible' : ''">
         <HCard :card="card" @click="click(card)" />
         <HFooter :card="card" />
       </div>
+      -->
     </transition-group>
   </div>
 </template>
@@ -23,12 +27,11 @@ import Constants from "./constants.js";
 import { Icon } from "@iconify/vue";
 import draggable from "vuedraggable";
 import HCard from "./HCard.vue";
-import HFooter from "./HFooter.vue";
 
 export default {
   name: "HCardList",
-  emits: ["click", "drag"],
-  components: { Icon, draggable, HCard, HFooter },
+  emits: ["drag"],
+  components: { Icon, draggable, HCard },
   props: {
     cards: {
       type: Array,
@@ -68,9 +71,6 @@ export default {
       let cardId = e.element.id;
       let order = e.newIndex != null ? e.newIndex : e.oldIndex;
       this.$emit("drag", { card, location, event, cardId, order });
-    },
-    click(card): void {
-      this.$emit("click", { card });
     },
   },
 };

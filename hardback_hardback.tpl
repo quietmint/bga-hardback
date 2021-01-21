@@ -1,6 +1,6 @@
 {OVERALL_GAME_HEADER}
 
-<div id="app" class="tailwind"></div>
+<div id="happ" class="tailwind"></div>
 
 <script type="text/javascript">
 const rand = Date.now();

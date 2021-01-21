@@ -21,6 +21,9 @@ module.exports = {
             DEFAULT: '2px 2px 4px rgba(0, 0, 0, 0.5)',
         },
         extend: {
+            ringWidth: {
+                'DEFAULT': '6px',
+            },
             minHeight: {
                 '60': '15rem',
                 '64': '16rem',

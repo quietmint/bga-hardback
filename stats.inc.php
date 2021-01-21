@@ -19,16 +19,16 @@
     In this file, you are describing game statistics, that will be displayed at the end of the
     game.
     
-    !! After modifying this file, you must use "Reload  statistics configuration" in BGA Studio backoffice
-    ("Control Panel" / "Manage Game" / "Your Game")
+    !! After modifying this file, you must use 'Reload  statistics configuration' in BGA Studio backoffice
+    ('Control Panel' / 'Manage Game' / 'Your Game')
     
     There are 2 types of statistics:
     _ table statistics, that are not associated to a specific player (ie: 1 value for each game).
     _ player statistics, that are associated to each players (ie: 1 value for each player in the game).
 
-    Statistics types can be "int" for integer, "float" for floating point values, and "bool" for boolean
+    Statistics types can be 'int' for integer, 'float' for floating point values, and 'bool' for boolean
     
-    Once you defined your statistics there, you can start using "initStat", "setStat" and "incStat" method
+    Once you defined your statistics there, you can start using 'initStat', 'setStat' and 'incStat' method
     in your game logic, using statistics names defined below.
     
     !! It is not a good idea to modify this file when a game is running !!
@@ -47,51 +47,47 @@
     
 */
 
+require_once('constants.inc.php');
+
 $stats_type = [
-    // Statistics global to table
-    "table" => [
-
-        "turns_number" => array(
-            "id" => 10,
-            "name" => totranslate("Number of turns"),
-            "type" => "int"
-        ),
-
-        /*
-        Examples:
-
-
-        "table_teststat1" => array(   "id"=> 10,
-                                "name" => totranslate("table test stat 1"), 
-                                "type" => "int" ),
-                                
-        "table_teststat2" => array(   "id"=> 11,
-                                "name" => totranslate("table test stat 2"), 
-                                "type" => "float" )
-*/
+    'table' => [
+        'turns' => [
+            'id' => STAT_TURNS,
+            'name' => 'Number of turns',
+            'type' => 'int'
+        ],
+        'longestWord' => [
+            'id' => STAT_LONGEST_WORD,
+            'name' => 'Longest word',
+            'type' => 'int'
+        ],
     ],
 
-    // Statistics existing for each player
-    "player" => [
-
-        "turns_number" => array(
-            "id" => 10,
-            "name" => totranslate("Number of turns"),
-            "type" => "int"
-        ),
-
-        /*
-        Examples:    
-        
-        
-        "player_teststat1" => array(   "id"=> 10,
-                                "name" => totranslate("player test stat 1"), 
-                                "type" => "int" ),
-                                
-        "player_teststat2" => array(   "id"=> 11,
-                                "name" => totranslate("player test stat 2"), 
-                                "type" => "float" )
-
-*/
-    ]
+    'player' => [
+        'longestWord' => [
+            'id' => STAT_LONGEST_WORD,
+            'name' => 'Longest word',
+            'type' => 'int'
+        ],
+        'invalidWords' => [
+            'id' => STAT_INVALID_WORDS,
+            'name' => 'Misspelled words',
+            'type' => 'int'
+        ],
+        'useInk' => [
+            'id' => STAT_USE_INK,
+            'name' => 'Ink used',
+            'type' => 'int'
+        ],
+        'useRemover' => [
+            'id' => STAT_USE_REMOVER,
+            'name' => 'Remover used',
+            'type' => 'int'
+        ],
+        'coins' => [
+            'id' => STAT_COINS,
+            'name' => 'Coins earned',
+            'type' => 'int'
+        ],
+    ],
 ];

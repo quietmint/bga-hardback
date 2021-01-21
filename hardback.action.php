@@ -41,6 +41,16 @@ class action_hardback extends APP_GameAction
    * PHASE 1: SPELL A WORD
    * PHASE 2: DISCARD UNUSED CARDS
    */
+  public function preview()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('confirmWord');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $location = self::getArg('location', AT_alphanum, true);
+    $order = self::getArg('cardId', AT_posint, true);
+    hardback::$instance->notifyAllPlayers('preview', "card $cardId, location $location, order $order", []);
+    self::ajaxResponse();
+  }
 
   public function confirmWord()
   {
@@ -82,21 +92,14 @@ class action_hardback extends APP_GameAction
     self::ajaxResponse();
   }
 
-  public function eitherCoins()
+  public function either()
   {
     self::setAjaxMode();
-    $this->game->checkAction('eitherCoins');
+    $this->game->checkAction('either');
     $cardId = self::getArg('cardId', AT_posint, true);
-    $this->game->either($cardId, COINS);
-    self::ajaxResponse();
-  }
-
-  public function eitherPoints()
-  {
-    self::setAjaxMode();
-    $this->game->checkAction('eitherPoints');
-    $cardId = self::getArg('cardId', AT_posint, true);
-    $this->game->either($cardId, POINTS);
+    $benefit = self::getArg('benefit', AT_posint, true);
+    $choice = self::getArg('choice', AT_alphanum, true);
+    $this->game->either($cardId, $benefit, $choice);
     self::ajaxResponse();
   }
 
@@ -109,6 +112,16 @@ class action_hardback extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function jail()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('jail');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $choice = self::getArg('choice', AT_alphanum, true);
+    $this->game->jail($cardId, $choice);
+    self::ajaxResponse();
+  }
+
   /*
    * PHASE 4: PURCHASE NEW CARDS AND INK
    */
@@ -118,6 +131,14 @@ class action_hardback extends APP_GameAction
     self::setAjaxMode();
     $this->game->checkAction('flush');
     $this->game->flush();
+    self::ajaxResponse();
+  }
+
+  public function convert()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('convert');
+    $this->game->convert();
     self::ajaxResponse();
   }
 

@@ -3,15 +3,15 @@
 @import url('https://fonts.googleapis.com/css2?family=New+Rocker&display=swap');
 @font-face {
     font-family: 'Regina Black Hilite';
-    src: url('subset-ReginaBlack-Hilite.woff2') format('woff2'), url('subset-ReginaBlack-Hilite.woff') format('woff');
-    font-weight: 500;
+    src: url('adventure.woff2') format('woff2'), url('adventure.woff') format('woff');
+    font-weight: normal;
     font-style: normal;
     font-display: swap;
 }
 
 @font-face {
     font-family: 'Didot LT Std';
-    src: url('subset-DidotLTStd-Bold.woff2') format('woff2'), url('subset-DidotLTStd-Bold.woff') format('woff');
+    src: url('starter.woff2') format('woff2'), url('starter.woff') format('woff');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -19,7 +19,7 @@
 
 @font-face {
     font-family: 'Germania';
-    src: url('subset-Germania.woff2') format('woff2'), url('subset-Germania.woff') format('woff');
+    src: url('horror.woff2') format('woff2'), url('horror.woff') format('woff');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -27,7 +27,7 @@
 
 @font-face {
     font-family: 'Jaggard Two';
-    src: url('subset-JaggardTwo.woff2') format('woff2'), url('subset-JaggardTwo.woff') format('woff');
+    src: url('romance.woff2') format('woff2'), url('romance.woff') format('woff');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -42,15 +42,24 @@
 
 @tailwind components;
 @tailwind utilities;
+.genreCounts div {
+    transition: width .6s cubic-bezier(.7, 1.2, 1, 1);
+}
+
 .cardlist {}
 
 .cardholder {
     perspective: 600px;
-    transition: transform 500ms ease-out;
+    transition: transform .6s cubic-bezier(.7, 1.2, 1, 1);
+}
+
+.gap {
+    transition: width .6s cubic-bezier(.7, 1.2, 1, 1);
+    width: 0;
 }
 
 .card {
-    transition: transform 500ms ease-out;
+    transition: transform .6s cubic-bezier(.7, 1.2, 1, 1);
     transform-style: preserve-3d;
 }
 
@@ -74,9 +83,10 @@
 }
 
 .wildletter {
-    @apply text-blue-100 text-9xl;
+    @apply text-blue-100;
+    font-size: 10rem;
     font-family: 'Didot LT Std', serif;
-    text-shadow: -1px 1px theme('colors.blue.500'), 1px -1px theme('colors.blue.700'), 0 0 4px #0008;
+    text-shadow: -2px 2px theme('colors.blue.400'), 1px -1px theme('colors.blue.700'), 0 0 4px #0008;
 }
 
 .card-starter .front {
@@ -133,7 +143,7 @@
 .card-horror .letter {
     @apply text-green-400 text-8xl;
     font-family: 'Germania';
-    text-shadow: -2px 2px theme('colors.green.700'), 2px -2px theme('colors.green.200');
+    text-shadow: -2px 2px theme('colors.green.700'), 1px -1px theme('colors.green.200');
 }
 
 .card-horror .letter.letter-Q {
@@ -243,35 +253,6 @@
     margin-left: 1rem;
     overflow-wrap: break-word;
 }
-
-.container-tableau {}
-
-.v-leave-active, .v-move {
-    transition: opacity 500ms ease, transform 500ms ease;
-}
-
-.v-leave-from {
-    opacity: 1;
-}
-
-.v-leave-to {
-    opacity: 0;
-}
-
-/*
-.v-enter-active, .v-leave-active, .v-move {
-    transition: transform 500ms ease;
-}
-
-.v-leave-active {
-    position: absolute;
-}
-
-.v-enter-from, .v-leave-to {
-    opacity: 0;
-    transform: translateX(12rem);
-}
-*/
 
 .tailwind svg.inline {
     vertical-align: -0.15rem;
