@@ -36,7 +36,7 @@
 
       <!-- Wild -->
       <div class="cardface back rounded-lg">
-        <div v-if="card.wild" class="absolute wildletter text-center leading-none top-12 pt-1 w-full">
+        <div v-if="card.wild" class="absolute wildletter text-center leading-none top-11 w-full">
           {{ card.wild }}
         </div>
       </div>
