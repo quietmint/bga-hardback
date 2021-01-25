@@ -82,14 +82,12 @@ class hardback extends Table
         $default_colors = $gameinfos['player_colors'];
 
         // Create players
-        // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
-        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
-        $values = array();
+        $values = [];
         foreach ($players as $player_id => $player) {
             $color = array_shift($default_colors);
             $values[] = "('" . $player_id . "','$color','" . $player['player_canal'] . "','" . addslashes($player['player_name']) . "','" . addslashes($player['player_avatar']) . "')";
         }
-        $sql .= implode(',', $values);
+        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES " . implode(',', $values);
         self::DbQuery($sql);
         self::reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
         self::reloadPlayersBasicInfos();
@@ -148,6 +146,13 @@ class hardback extends Table
         return [
             'players' => $playersAsArray,
             'cards' => CardMgr::getCardsInLocation([CardMgr::getHandLocation($playerId), CardMgr::getDiscardLocation($playerId), 'tableau', 'offer', 'jail', 'timeless%']),
+            'options' => [
+                'awards' => $this->gamestate->table_globals[OPTION_AWARDS] > 0,
+                'adverts' => $this->gamestate->table_globals[OPTION_ADVERTS] > 0,
+                'events' => $this->gamestate->table_globals[OPTION_EVENTS] > 0,
+                'powers' => $this->gamestate->table_globals[OPTION_POWERS] > 0,
+                'coop' => $this->gamestate->table_globals[OPTION_COOP] > 0,
+            ],
             'refs' => [
                 'cards' => CardMgr::getCardRef(),
                 'benefits' => CardMgr::getBenefitRef(),

@@ -87,6 +87,8 @@ class HPlayer extends APP_GameClass implements JsonSerializable
                 return 'yellow';
             case PURPLE:
                 return 'purple';
+            case BLACK:
+                return 'black';
         }
     }
 

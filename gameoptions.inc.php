@@ -32,18 +32,16 @@ $game_options = [
         'default' => TWELVEDICTS,
         'values' => [
             TWELVEDICTS => [
-                'name' => 'Common English (65,000 words)',
-                'description' => 'Words appearing in at least three advanced-level dictionaries for learners of English',
+                'name' => "Learner's Dictionary (65,000 words)",
+                'description' => '65,000 words appearing in at least three advanced-level dictionaries for learners of English',
             ],
             NWL => [
                 'name' => 'North American Scrabble (115,000 words)',
-                'tmdisplay' => 'North American Scrabble Dictionary',
-                'description' => 'Words allowed in North American Scrabble tournaments',
+                'description' => '115,000 words allowed in North American Scrabble tournaments',
             ],
             COLLINS => [
                 'name' => 'Collins Scrabble (280,000 words)',
-                'tmdisplay' => 'Collins Scrabble Dictionary',
-                'description' => 'Words allowed in British Scrabble tournaments',
+                'description' => '280,000 words allowed in British Scrabble tournaments',
             ],
         ]
     ],
@@ -58,7 +56,7 @@ $game_options = [
             YES => [
                 'name' => 'Yes',
                 'tmdisplay' => 'Literary Awards',
-                'description' => 'Bonus for the player who spells the longest word',
+                'description' => 'Bonus points for the longest word',
             ]
         ]
     ],
@@ -73,7 +71,7 @@ $game_options = [
             YES => [
                 'name' => 'Yes',
                 'tmdisplay' => 'Adverts',
-                'description' => 'Players can purchase Prestige points with coins',
+                'description' => 'Purchase points with coins',
             ]
         ]
     ],
@@ -88,7 +86,7 @@ $game_options = [
             YES => [
                 'name' => 'Yes',
                 'tmdisplay' => 'Events',
-                'description' => 'Words restrictions and rule changes provide additional challenge',
+                'description' => 'Word restrictions and rule changes provide additional challenge',
                 'nobeginner' => true,
             ]
         ]
@@ -102,21 +100,21 @@ $game_options = [
                 'name' => 'No',
             ],
             YES => [
-                'name' => 'Passive or Agressive',
+                'name' => 'Yes',
                 'tmdisplay' => 'Powers',
-                'description' => 'Players receive a unique power to either to out-wit or penalize opponents (all players receive the same type)',
+                'description' => 'Unique powers can either out-wit or penalize opponents (everyone receives the same type)',
                 'nobeginner' => true,
             ],
             PASSIVE => [
-                'name' => 'Passive',
+                'name' => 'Passive Powers',
                 'tmdisplay' => 'Passive Powers',
-                'description' => 'Players receive a unique power to out-wit opponents',
+                'description' => 'Unique powers can out-wit opponents',
                 'nobeginner' => true,
             ],
             AGRESSIVE => [
-                'name' => 'Agressive',
+                'name' => 'Agressive Powers',
                 'tmdisplay' => 'Agressive Powers',
-                'description' => 'Players receive a unique power to penalize opponents',
+                'description' => 'Unique powers can penalize opponents',
                 'nobeginner' => true,
             ],
         ]
@@ -128,18 +126,18 @@ $game_options = [
         'values' => [
             NO => [
                 'name' => 'No',
-                'description' => 'Players compete to be the finest novelist of the age',
-            ],
-            YES => [
-                'name' => 'Cooperative',
-                'tmdisplay' => 'Cooperative',
-                'description' => 'Players win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre',
-                'nobeginner' => true,
+                'description' => 'Compete to be the finest novelist of the age',
             ],
             COOP_EASY => [
-                'name' => 'Cooperative without signature genre (easier)',
+                'name' => 'Cooperative (Easier)',
                 'tmdisplay' => 'Cooperative (Easier)',
-                'description' => 'Players win or lose as a team against archrival Penny Dreadful, who receives no advantage',
+                'description' => 'Win or lose as a team against archrival Penny Dreadful',
+            ],
+            COOP_HARD => [
+                'name' => 'Cooperative (Harder)',
+                'tmdisplay' => 'Cooperative (Harder)',
+                'description' => 'Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre',
+                'nobeginner' => true,
             ],
         ]
     ],

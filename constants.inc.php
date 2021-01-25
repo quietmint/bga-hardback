@@ -31,6 +31,7 @@ define('GREEN', '008000');
 define('BLUE', '0000ff');
 define('YELLOW', 'ffa500');
 define('PURPLE', '982fff');
+define('BLACK', '000000');
 
 // Ink values
 define('HAS_INK', 1);
@@ -81,8 +82,9 @@ define('PASSIVE', 2);
 define('AGRESSIVE', 3);
 
 define('OPTION_COOP', 110);
-// 0 = no, 1 = yes
-define('COOP_EASY', 2);
+// 0 = no
+define('COOP_EASY', 1);
+define('COOP_HARD', 2);
 
 // Game states
 define('ST_BGA_GAME_SETUP', 1);
