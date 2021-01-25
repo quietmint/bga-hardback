@@ -72,7 +72,8 @@ $machinestates = [
         'possibleactions' => ['confirmWord', 'skipWord'],
         'transitions' => [
             'next' => ST_UNCOVER,
-            'skip' => ST_NEXT_PLAYER
+            'skip' => ST_NEXT_PLAYER,
+            'zombie' => ST_NEXT_PLAYER,
         ],
     ],
 
@@ -82,11 +83,12 @@ $machinestates = [
         'descriptionmyturn' => clienttranslate('${you} may uncover a wild card'),
         'type' => 'activeplayer',
         'args' => 'argUncover',
-        'action' => 'stUncover',
+        'action' => 'stAutoSkip',
         'possibleactions' => ['uncover', 'skip'],
         'transitions' => [
             'again' => ST_UNCOVER,
             'next' => ST_DOUBLE,
+            'zombie' => ST_CLEANUP,
         ],
     ],
 
@@ -96,11 +98,12 @@ $machinestates = [
         'descriptionmyturn' => clienttranslate('${you} may double an adjacent card'),
         'type' => 'activeplayer',
         'args' => 'argDouble',
-        'action' => 'stDouble',
+        'action' => 'stAutoSkip',
         'possibleactions' => ['double', 'skip'],
         'transitions' => [
             'again' => ST_DOUBLE,
             'next' => ST_BASIC,
+            'zombie' => ST_CLEANUP,
         ],
     ],
 
@@ -117,14 +120,30 @@ $machinestates = [
     ST_TRASH => [
         'name' => 'trash',
         'description' => clienttranslate('${actplayer} may trash a card'),
-        'descriptionmyturn' => clienttranslate('${you} may trash a card'),
+        'descriptionmyturn' => clienttranslate('${you} may trash a card (${coins}¢ and ${points}${icon} earned so far)'),
         'type' => 'activeplayer',
         'args' => 'argTrash',
-        'action' => 'stTrash',
+        'action' => 'stAutoSkip',
         'possibleactions' => ['trash', 'skip'],
         'transitions' => [
             'again' => ST_TRASH,
+            'next' => ST_TRASH_DISCARD,
+            'zombie' => ST_CLEANUP,
+        ],
+    ],
+
+    ST_TRASH_DISCARD => [
+        'name' => 'trashDiscard',
+        'description' => clienttranslate('${actplayer} may trash a card'),
+        'descriptionmyturn' => clienttranslate('${you} may trash a card (${coins}¢ and ${points}${icon} earned so far)'),
+        'type' => 'activeplayer',
+        'args' => 'argTrashDiscard',
+        'action' => 'stAutoSkip',
+        'possibleactions' => ['trashDiscard', 'skip'],
+        'transitions' => [
+            'again' => ST_TRASH_DISCARD,
             'next' => ST_EITHER,
+            'zombie' => ST_CLEANUP,
         ],
     ],
 
@@ -134,11 +153,12 @@ $machinestates = [
         'descriptionmyturn' => clienttranslate('${you} must choose a benefit (${coins}¢ and ${points}${icon} earned so far)'),
         'type' => 'activeplayer',
         'args' => 'argEither',
-        'action' => 'stEither',
+        'action' => 'stAutoSkip',
         'possibleactions' => ['either'],
         'transitions' => [
             'again' => ST_EITHER,
             'next' => ST_JAIL,
+            'zombie' => ST_CLEANUP,
         ],
     ],
 
@@ -148,11 +168,12 @@ $machinestates = [
         'descriptionmyturn' => clienttranslate('${you} may jail or trash an offer row card'),
         'type' => 'activeplayer',
         'args' => 'argJail',
-        'action' => 'stJail',
+        'action' => 'stAutoSkip',
         'possibleactions' => ['jail', 'skip'],
         'transitions' => [
             'again' => ST_JAIL,
             'next' => ST_FLUSH,
+            'zombie' => ST_CLEANUP,
         ],
     ],
 
@@ -166,20 +187,22 @@ $machinestates = [
         'possibleactions' => ['flush', 'skip'],
         'transitions' => [
             'next' => ST_PURCHASE,
+            'zombie' => ST_CLEANUP,
         ],
     ],
 
     ST_PURCHASE => [
         'name' => 'purchase',
-        'description' => clienttranslate('${actplayer} may purchase cards (${coins}¢ available)'),
-        'descriptionmyturn' => clienttranslate('${you} may purchase cards (${coins}¢ available)'),
+        'description' => clienttranslate('${actplayer} may purchase (${coins}¢ available)'),
+        'descriptionmyturn' => clienttranslate('${you} may purchase (${coins}¢ available)'),
         'type' => 'activeplayer',
         'args' => 'argPurchase',
-        'action' => 'stPurchase',
-        'possibleactions' => ['purchase', 'convert', 'skip'],
+        'action' => 'stAutoSkip',
+        'possibleactions' => ['purchase', 'doctor', 'convert', 'skip'],
         'transitions' => [
             'again' => ST_PURCHASE,
             'next' => ST_CLEANUP,
+            'zombie' => ST_CLEANUP,
         ],
     ],
 
@@ -200,19 +223,9 @@ $machinestates = [
         'action' => 'stNextPlayer',
         'transitions' => [
             'playerTurn' => ST_PLAYER_TURN,
-            'gameEnd' => ST_GAME_END,
-        ],
-        'updateGameProgression' => true,
-    ],
-
-    ST_GAME_END => [
-        'name' => 'gameEndStats',
-        'description' => '',
-        'type' => 'game',
-        'action' => 'stGameEndStats',
-        'transitions' => [
             'gameEnd' => ST_BGA_GAME_END,
         ],
+        'updateGameProgression' => true,
     ],
 
     // Final state.

@@ -22,7 +22,7 @@ class PlayerMgr extends APP_GameClass
 
     public static function getPlayers($playerIds = [])
     {
-        $sql = "SELECT player_id, player_no, player_name, player_color, player_eliminated, player_zombie, player_score, coins, ink, remover FROM player";
+        $sql = "SELECT player_id, player_no, player_name, player_color, player_eliminated, player_zombie, player_score, coins, ink, remover, advert FROM player";
         if (!empty($playerIds)) {
             $sql .= " WHERE player_id IN (" . implode(", ", $playerIds) . ")";
         }

@@ -17,13 +17,13 @@ class HCard extends APP_GameClass implements JsonSerializable
 
     public function __construct($dbcard)
     {
-        $this->id = intval($dbcard['card_id']);
+        $this->id = intval($dbcard['id']);
         $this->factor = intval($dbcard['factor']);
         $this->ink = intval($dbcard['ink']);
-        $this->location = $dbcard['card_location'];
-        $this->order = intval($dbcard['card_location_arg']);
-        $this->origin = $dbcard['card_type'];
-        $this->refId = intval($dbcard['card_type_arg']);
+        $this->location = $dbcard['location'];
+        $this->order = intval($dbcard['order']);
+        $this->origin = $dbcard['origin'];
+        $this->refId = intval($dbcard['refId']);
         $this->resolve = json_decode($dbcard['resolve']);
         $this->wild = $dbcard['wild'];
     }
@@ -173,51 +173,50 @@ class HCard extends APP_GameClass implements JsonSerializable
 
     /***** Computed properties *****/
 
-    public function getBenefits(): array
+    public function getBenefits(int $benefitId = null): array
     {
-        if ($this->wild) {
-            return [];
-        }
-        // Always include basic benefits
-        $benefits = CardMgr::$refCards[$this->refId]['basicBenefits'] ?? [];
-        if (CardMgr::isGenreActive($this->getGenre())) {
-            // Add values from genre benefits if active
-            $genre = CardMgr::$refCards[$this->refId]['genreBenefits'] ?? [];
-            foreach ($genre as $k => $v) {
-                if (isset($benefits[$k])) {
-                    $benefits[$k] += $v;
-                } else {
-                    $benefits[$k] = $v;
+        $benefits = [];
+        if (!$this->wild && !in_array(ALL_BENEFITS, $this->resolve)) {
+            // Basic benefits
+            $basicBenefits = CardMgr::$refCards[$this->refId]['basicBenefits'] ?? [];
+            foreach ($basicBenefits as $k => $v) {
+                // Filter by ID and already-resolved benefits
+                if (($benefitId == null || $benefitId == $k) && !in_array($k, $this->resolve)) {
+                    if ($this->factor > 1 && is_numeric($v)) {
+                        $v *= $this->factor;
+                    }
+                    $benefits[] = [
+                        'id' => $k,
+                        'value' => $v,
+                        'activation' => FROM_BASIC,
+                    ];
+                }
+            }
+
+            if (CardMgr::isGenreActive($this->getGenre())) {
+                // Genre benefits if active
+                $genreBenefits = CardMgr::$refCards[$this->refId]['genreBenefits'] ?? [];
+                foreach ($genreBenefits as $k => $v) {
+                    // Filter by ID and already-resolved benefits
+                    if (($benefitId == null || $benefitId == $k) && !in_array($k, $this->resolve)) {
+                        if ($this->factor > 1 && is_numeric($v)) {
+                            $v *= $this->factor;
+                        }
+                        $benefits[] = [
+                            'id' => $k,
+                            'value' => $v,
+                            'activation' => FROM_GENRE,
+                        ];
+                    }
                 }
             }
         }
-
-        // Ignore used benefits
-        $benefits = array_filter($benefits, function ($benefit) {
-            return !in_array($benefit, $this->resolve);
-        }, ARRAY_FILTER_USE_KEY);
-
-        // Apply doubling
-        if ($this->factor > 1) {
-            $benefits = array_map(function ($benefit) {
-                if (is_numeric($benefit)) {
-                    return $benefit * $this->factor;
-                }
-                return $benefit;
-            }, $benefits);
-        }
-
         return $benefits;
     }
 
     public function hasBenefit(int $benefitId): bool
     {
-        return array_key_exists($benefitId, $this->getBenefits());
-    }
-
-    public function getBenefitValue(int $benefitId)
-    {
-        return $this->getBenefits()[$benefitId] ?? null;
+        return !empty($this->getBenefits($benefitId));
     }
 
     public function getGenre(): int

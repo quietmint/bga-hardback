@@ -1,232 +1,297 @@
 /*! @import */
 
-@import url('https://fonts.googleapis.com/css2?family=Almendra+Display&family=Big+Shoulders+Inline+Text:wght@900&family=Bodoni+Moda:wght@700&family=New+Rocker&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Almendra+Display&family=Big+Shoulders+Inline+Text:wght@900&family=Bodoni+Moda:wght@700&family=New+Rocker&display=swap");
 @font-face {
-    font-family: 'Deutsch Gothic';
-    src: url('Deutsch-Gothic.woff2') format('woff2'), url('Deutsch-Gothic.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
+  font-family: "Deutsch Gothic";
+  src: url("Deutsch-Gothic.woff2") format("woff2"),
+    url("Deutsch-Gothic.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
 @tailwind base;
 @layer base {
-    button:focus {
-        outline: none;
-    }
+  button:focus {
+    outline: none;
+  }
 }
 
 @tailwind components;
 @tailwind utilities;
-.genreCounts div {
-    transition: width .6s cubic-bezier(.7, 1.2, 1, 1);
+
+.cardgrid {
+  display: grid;
+  grid-template: "title actions sorter" auto "cardlist cardlist sorter" auto / 1fr auto auto;
 }
 
-.cardlist {}
+.cardgrid.no-sorter {
+  grid-template: "title actions" auto "cardlist cardlist" auto / 1fr auto;
+}
+
+.chevron {
+  transition: transform 0.3s ease-out;
+}
+
+.cardgrid.collapsed .chevron {
+  transform: rotate(-90deg);
+}
+
+.title {
+  grid-area: title;
+}
+
+.cardlist {
+  grid-area: cardlist;
+}
+
+.actions {
+  @apply flex leading-7 text-13 text-center font-bold rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer divide-x divide-white;
+  grid-area: actions;
+}
+
+.sorter {
+  @apply ml-2 leading-7 text-13 text-center font-bold rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer divide-y divide-white;
+  height: min-content;
+  grid-area: sorter;
+}
+
+.button {
+  @apply leading-7 px-3 transition-all cursor-pointer font-bold;
+}
+
+.button.black {
+  @apply bg-black text-white hover:bg-gray-100 hover:text-black;
+}
+
+.button.blue {
+  @apply bg-blue-700 text-white hover:bg-blue-100 hover:text-blue-700;
+}
+
+.button.red {
+  @apply bg-red-700 text-white hover:bg-red-100 hover:text-red-700;
+}
+
+.genreCounts div {
+  transition: width 0.6s cubic-bezier(0.7, 1.2, 1, 1);
+}
 
 .cardholder {
-    perspective: 600px;
-    transition: transform .6s cubic-bezier(.7, 1.2, 1, 1);
+  transition: transform 0.6s cubic-bezier(0.7, 1.2, 1, 1);
+  perspective: 600px;
+  z-index: 1;
 }
 
 .gap {
-    transition: width .6s cubic-bezier(.7, 1.2, 1, 1);
-    width: 0;
+  transition: width 0.6s cubic-bezier(0.7, 1.2, 1, 1);
+  width: 0;
 }
 
 .card {
-    transition: transform .6s cubic-bezier(.7, 1.2, 1, 1);
-    transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.7, 1.2, 1, 1);
+  transform-style: preserve-3d;
 }
 
 .card.wild {
-    transform: rotateY(180deg);
+  transform: rotateY(180deg);
 }
 
 .cardface {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
 }
 
 .cardface.back {
-    @apply bg-gray-700;
-    background-image: url(wild.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    transform: rotateY(180deg);
+  @apply bg-gray-700;
+  background-image: url(wild.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  transform: rotateY(180deg);
 }
 
 .wildletter {
-    @apply text-blue-100;
-    font-size: 9.5rem;
-    font-family: 'Bodoni Moda', serif;
-    text-shadow: -2px 2px theme('colors.blue.400'), 1px -1px theme('colors.blue.700'), 0 0 4px #0008;
+  @apply text-blue-100;
+  font-size: 9.5rem;
+  font-family: "Bodoni Moda", serif;
+  text-shadow: -2px 2px theme("colors.blue.400"),
+    1px -1px theme("colors.blue.700"), 0 0 4px #0008;
 }
 
 .card-starter .front {
-    @apply bg-gray-500;
-    background-image: url(starter.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
+  @apply bg-gray-500;
+  background-image: url(starter.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .card-starter .letter {
-    @apply text-yellow-500 text-8xl;
-    font-family: 'Bodoni Moda', serif;
-    text-shadow: -1px 1px white, 1px -1px black, 0 0 4px black;
+  @apply text-yellow-500;
+  font-size: 6rem;
+  font-family: "Bodoni Moda", serif;
+  text-shadow: -1px 1px white, 1px -1px black, 0 0 4px black;
 }
 
 .card-adventure {
-    @apply bg-yellow-700;
-    background-image: url(adventure.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
+  @apply bg-yellow-700;
+  background-image: url(adventure.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .card-adventure.timeless {
-    background-image: url(adventure-timeless.jpg);
+  background-image: url(adventure-timeless.jpg);
 }
 
 .card-adventure .letter {
-    @apply text-yellow-400 text-8xl;
-    margin-left: -3px;
-    font-family: 'Big Shoulders Inline Text', serif;
-    text-shadow: -2px 0px 8px theme('colors.red.500'), 6px 3px theme('colors.yellow.900');
+  @apply text-yellow-400;
+  font-size: 6rem;
+  margin-left: -3px;
+  font-family: "Big Shoulders Inline Text", serif;
+  text-shadow: -2px 0px 8px theme("colors.red.500"),
+    6px 3px theme("colors.yellow.900");
 }
 
 .card-adventure .letter.letter-Q {
-    font-size: 5.1rem;
+  font-size: 5.1rem;
 }
 
-.card-adventure .letter.letter-M, .card-adventure .letter.letter-N, .card-adventure .letter.letter-W {
-    font-size: 5.7rem;
-    line-height: 6rem;
+.card-adventure .letter.letter-M,
+.card-adventure .letter.letter-N,
+.card-adventure .letter.letter-W {
+  font-size: 5.7rem;
+  line-height: 6rem;
 }
 
 .card-horror {
-    @apply bg-green-900;
-    background-image: url(horror.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
+  @apply bg-green-900;
+  background-image: url(horror.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .card-horror.timeless {
-    background-image: url(horror-timeless.jpg);
+  background-image: url(horror-timeless.jpg);
 }
 
 .card-horror .letter {
-    @apply text-green-400 text-8xl;
-    font-family: 'Deutsch Gothic', serif;
-    text-shadow: -2px 2px theme('colors.green.700'), 1px -1px theme('colors.green.200');
+  @apply text-green-400;
+  font-size: 6rem;
+  font-family: "Deutsch Gothic", serif;
+  text-shadow: -2px 2px theme("colors.green.700"),
+    1px -1px theme("colors.green.200");
 }
 
 .card-horror .letter.letter-Q {
-    margin-top: -0.5rem;
+  margin-top: -0.5rem;
 }
 
 .card-horror .letter.letter-T {
-    margin-top: -0.25rem;
+  margin-top: -0.25rem;
 }
 
 .card-horror .letter.letter-W {
-    margin-top: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .card-horror.timeless .letter {
-    @apply pt-3;
+  @apply pt-3;
 }
 
 .card-romance {
-    @apply bg-red-800;
-    background-image: url(romance.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
+  @apply bg-red-800;
+  background-image: url(romance.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .card-romance.timeless {
-    background-image: url(romance-timeless.jpg);
+  background-image: url(romance-timeless.jpg);
 }
 
 .card-romance .letter {
-    @apply text-yellow-300;
-    font-size: 7rem;
-    margin-top: -0.3rem;
-    font-family: 'Almendra Display', serif;
-    text-shadow: 1px 0px theme('colors.red.300'), 1px 1px theme('colors.red.500');
+  @apply text-yellow-300;
+  font-size: 7rem;
+  margin-top: -0.3rem;
+  font-family: "Almendra Display", serif;
+  text-shadow: 1px 0px theme("colors.red.300"), 1px 1px theme("colors.red.500");
 }
 
 .card-romance .letter.letter-Q {
-    margin-top: -0.9rem;
+  margin-top: -0.9rem;
 }
 
 .card-romance.timeless .letter {
-    @apply pt-2;
+  @apply pt-2;
 }
 
 .card-mystery {
-    @apply bg-blue-500;
-    background-image: url(mystery.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
+  @apply bg-blue-500;
+  background-image: url(mystery.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .card-mystery.timeless {
-    background-image: url(mystery-timeless.jpg);
+  background-image: url(mystery-timeless.jpg);
 }
 
 .card-mystery .letter {
-    @apply text-blue-800 text-8xl;
-    font-family: 'New Rocker', serif;
-    text-shadow: -1px 1px theme('colors.blue.100'), 1px -1px theme('colors.gray.900');
+  @apply text-blue-800;
+  font-size: 6rem;
+  font-family: "New Rocker", serif;
+  text-shadow: -1px 1px theme("colors.blue.100"),
+    1px -1px theme("colors.gray.900");
 }
 
-.card-mystery .letter.letter-J, .card-mystery .letter.letter-L, .card-mystery .letter.letter-Q {
-    font-size: 5.75rem;
-    margin-top: -0.5rem;
+.card-mystery .letter.letter-J,
+.card-mystery .letter.letter-L,
+.card-mystery .letter.letter-Q {
+  font-size: 5.75rem;
+  margin-top: -0.5rem;
 }
 
 .card-mystery .letter.letter-N {
-    font-size: 5.75rem;
+  font-size: 5.75rem;
 }
 
 .card-mystery.timeless .letter {
-    @apply pt-1;
+  @apply pt-1;
 }
 
 .bookmark {
-    transform: rotate(2deg);
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, .5);
+  transform: rotate(2deg);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 
 .bookmark .icon {
-    font-size: 1.75rem;
-    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .5));
+  font-size: 1.75rem;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
 }
 
 .card-adventure .bookmark {
-    text-shadow: 1px 1px 1px rgba(255, 255, 255, .5);
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
 }
 
 .card-adventure .bookmark .icon {
-    filter: drop-shadow(1px 1px 1px rgba(255, 255, 255, .5));
+  filter: drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.5));
 }
 
 .bookmark .star {
-    margin-left: -2px;
+  margin-left: -2px;
 }
 
 .timeless .bookmark div {
-    @apply pl-1;
+  @apply pl-1;
 }
 
 .hanging {
-    text-indent: -1rem;
-    margin-left: 1rem;
-    overflow-wrap: break-word;
+  text-indent: -1rem;
+  margin-left: 1rem;
+  overflow-wrap: break-word;
 }
 
 .tailwind svg.inline {
-    vertical-align: -0.15rem;
+  vertical-align: -0.15rem;
 }

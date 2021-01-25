@@ -3,6 +3,7 @@
 class HPlayer extends APP_GameClass implements JsonSerializable
 {
     private $id;
+    private $advert;
     private $coins;
     private $color;
     private $eliminated;
@@ -16,6 +17,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     public function __construct($dbplayer)
     {
         $this->id = intval($dbplayer['player_id']);
+        $this->advert = intval($dbplayer['advert']);
         $this->coins = intval($dbplayer['coins']);
         $this->color = $dbplayer['player_color'];
         $this->eliminated = intval($dbplayer['player_eliminated']);
@@ -36,6 +38,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     {
         return [
             'id' => $this->id,
+            'advert' => $this->advert,
             'coins' => $this->coins,
             'color' => $this->color,
             'colorName' => $this->getColorName(),
@@ -54,6 +57,11 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getAdvert(): int
+    {
+        return $this->advert;
     }
 
     public function getCoins(): int
@@ -202,47 +210,56 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         ]);
     }
 
-    public function addCoins(int $amount): void
+    public function addCoins(int $amount, bool $notifyPanel = true): void
     {
         if ($amount <= 0) {
             return;
         }
         self::DbQuery("UPDATE player SET coins = coins + $amount WHERE player_id = {$this->id}");
         $this->coins += $amount;
-        $this->notifyPanel();
+        if ($notifyPanel) {
+            $this->notifyPanel();
+        }
     }
 
-    public function addPoints(int $amount): void
+    public function addPoints(int $amount, string $stat, bool $notifyPanel = true): void
     {
         if ($amount == 0) {
             return;
         }
+        hardback::$instance->incStat($amount, $stat, $this->id);
         self::DbQuery("UPDATE player SET player_score = player_score + $amount WHERE player_id = {$this->id}");
         $this->score += $amount;
-        $this->notifyPanel();
+        if ($notifyPanel) {
+            $this->notifyPanel();
+        }
     }
 
-    public function addInk(int $amount = 1): void
+    public function addInk(int $amount = 1, bool $notifyPanel = true): void
     {
         if ($amount <= 0) {
             return;
         }
         self::DbQuery("UPDATE player SET ink = ink + $amount WHERE player_id = {$this->id}");
         $this->ink += $amount;
-        $this->notifyPanel();
+        if ($notifyPanel) {
+            $this->notifyPanel();
+        }
     }
 
-    public function addRemover(int $amount = 1): void
+    public function addRemover(int $amount = 1, bool $notifyPanel = true): void
     {
         if ($amount <= 0) {
             return;
         }
         self::DbQuery("UPDATE player SET remover = remover + $amount WHERE player_id = {$this->id}");
         $this->remover += $amount;
-        $this->notifyPanel();
+        if ($notifyPanel) {
+            $this->notifyPanel();
+        }
     }
 
-    public function spendCoins(int $amount): void
+    public function spendCoins(int $amount, bool $notifyPanel = true): void
     {
         if ($amount <= 0) {
             return;
@@ -252,10 +269,12 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if (self::DbAffectedRow() == 0) {
             throw new BgaUserException("You do not have {$amount}¢");
         }
-        $this->notifyPanel();
+        if ($notifyPanel) {
+            $this->notifyPanel();
+        }
     }
 
-    public function spendInk(int $amount = 1): void
+    public function spendInk(int $amount = 1, bool $notifyPanel = true): void
     {
         if ($amount <= 0) {
             return;
@@ -265,10 +284,12 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if (self::DbAffectedRow() == 0) {
             throw new BgaUserException("You do not have $amount ink");
         }
-        $this->notifyPanel();
+        if ($notifyPanel) {
+            $this->notifyPanel();
+        }
     }
 
-    public function spendRemover(int $amount = 1): void
+    public function spendRemover(int $amount = 1, bool $notifyPanel = true): void
     {
         if ($amount <= 0) {
             return;
@@ -278,6 +299,16 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if (self::DbAffectedRow() == 0) {
             throw new BgaUserException("You do not have $amount remover");
         }
-        $this->notifyPanel();
+        if ($notifyPanel) {
+            $this->notifyPanel();
+        }
+    }
+
+    public function buyAdvert(int $points, int $coins): void
+    {
+        self::DbQuery("UPDATE player SET advert = $points WHERE player_id = {$this->id}");
+        $this->advert = $points;
+        $this->spendCoins($coins, false);
+        $this->addPoints($points, 'pointsAdvert');
     }
 }

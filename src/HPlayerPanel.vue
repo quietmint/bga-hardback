@@ -2,28 +2,33 @@
   <teleport :to="teleportTo">
     <div class="tailwind">
       <!-- Ink, remover, card counts -->
-      <div :class="colorClass" class="grid grid-cols-4 gap-1 mt-1 text-sm text-center">
-        <div class="rounded-lg bg-gray-50 bg-opacity-50" title="Ink">
-          <Icon class="text-4xl mx-auto" icon="ink" />
+      <div :class="colorClass" class="grid grid-cols-4 gap-1 mt-1 text-14 text-center">
+        <div class="rounded-lg bg-white bg-opacity-50" title="Ink">
+          <Icon class="text-32 mx-auto" icon="ink" />
           {{ ink }}
         </div>
-        <div class="rounded-lg bg-gray-50 bg-opacity-50" title="Remover">
-          <Icon class="text-4xl mx-auto" icon="remover" />
+        <div class="rounded-lg bg-white bg-opacity-50" title="Remover">
+          <Icon class="text-32 mx-auto" icon="remover" />
           {{ remover }}
         </div>
-        <div class="rounded-lg bg-gray-50 bg-opacity-50" title="Cards in deck">
-          <Icon class="text-4xl mx-auto" icon="cards" />
+        <div class="rounded-lg bg-white bg-opacity-50" title="Cards in deck">
+          <Icon class="text-32 mx-auto" icon="cards" />
           {{ deckCount }}
         </div>
-        <div class="rounded-lg bg-gray-50 bg-opacity-50" title="Cards in discard">
-          <Icon class="text-4xl mx-auto" icon="shuffle" />
+        <div class="rounded-lg bg-white bg-opacity-50" title="Cards in discard">
+          <Icon class="text-32 mx-auto" icon="shuffle" />
           {{ discardCount }}
         </div>
       </div>
 
+      <!-- Advert tracker -->
+      <div class="flex justify-between mt-1">
+        <div v-for="a in advertTracker" :key="a.level" :class="a.class" :title="a.title">{{ a.level }}<Icon class="inline text-18" icon="star" /></div>
+      </div>
+
       <!-- Genre counts -->
-      <div class="genreCounts flex rounded-lg overflow-hidden a mt-1 text-center text-md">
-        <div v-for="g in genreCounts" :key="g.genre" :title="g.count + ' ' + g.genre + ' cards'" :style="{ width: g.percent + '%' }" :class="g.color"><Icon class="inline" :icon="g.genre" /></div>
+      <div class="genreCounts mt-1 flex flex-grow rounded-lg overflow-hidden text-center">
+        <div v-for="g in genreCounts" :key="g.genre" :style="{ width: g.percent + '%' }" :class="g.class" :title="g.title"><Icon class="inline h-5" :icon="g.genre" /></div>
       </div>
     </div>
   </teleport>
@@ -35,75 +40,94 @@ import { Icon } from "@iconify/vue";
 
 export default {
   name: "HPlayerPanel",
-  components: {
-    Icon,
-  },
+  components: { Icon },
+
   props: {
     player: {
       type: Object,
       required: true,
     },
   },
+
   data() {
     return { Constants };
   },
+
   computed: {
     teleportTo() {
       return "#player_board_" + this.player.id;
     },
+
     colorClass() {
       return this.player.colorText;
     },
+
     coins() {
       return this.player.coins || 0;
     },
+
     ink() {
       return this.player.ink || 0;
     },
+
     remover() {
       return this.player.remover || 0;
     },
+
     deckCount() {
       return this.player.deckCount || 0;
     },
+
     discardCount() {
       return this.player.discardCount || 0;
     },
+
+    advertTracker() {
+      const level = this.player.advert || 0;
+      return [3, 6, 10, 15, 20].map((x: number) => {
+        const purchased = level >= x;
+        return {
+          level: x,
+          class: `p-1 rounded-lg whitespace-nowrap ${purchased ? "bg-white bg-opacity-50 font-bold" : "bg-white opacity-25"}`,
+          title: `${x}-point advert ${purchased ? "purchased" : "not purchased"}`,
+        };
+      });
+    },
+
     genreCounts() {
       const counts = this.player.genreCounts || [7, 0, 0, 0, 0];
       const total = counts.reduce((acc, cur) => acc + cur);
       return [
         {
           genre: "starter",
-          color: "bg-gray-600 text-gray-100",
+          class: "bg-gray-600 text-gray-100",
           count: counts[Constants.STARTER],
-          percent: (counts[Constants.STARTER] / total) * 100,
         },
         {
           genre: "adventure",
-          color: "bg-yellow-400 text-yellow-900",
+          class: "bg-yellow-400 text-yellow-900",
           count: counts[Constants.ADVENTURE],
-          percent: (counts[Constants.ADVENTURE] / total) * 100,
         },
         {
           genre: "horror",
-          color: "bg-green-700 text-green-100",
+          class: "bg-green-700 text-green-100",
           count: counts[Constants.HORROR],
-          percent: (counts[Constants.HORROR] / total) * 100,
         },
         {
           genre: "mystery",
-          color: "bg-blue-600 text-blue-100",
+          class: "bg-blue-600 text-blue-100",
           count: counts[Constants.MYSTERY],
-          percent: (counts[Constants.MYSTERY] / total) * 100,
         },
         {
           genre: "romance",
-          color: "bg-red-700 text-red-100",
+          class: "bg-red-700 text-red-100",
           count: counts[Constants.ROMANCE],
-          percent: (counts[Constants.ROMANCE] / total) * 100,
         },
-      ];
+      ].map((x: any) => {
+        x.title = `Deck contains ${x.count}/${total} ${x.genre} cards`;
+        x.percent = (x.count / total) * 100;
+        return x;
+      });
     },
   },
 };

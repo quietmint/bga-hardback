@@ -92,23 +92,32 @@ class action_hardback extends APP_GameAction
     self::ajaxResponse();
   }
 
-  public function either()
-  {
-    self::setAjaxMode();
-    $this->game->checkAction('either');
-    $cardId = self::getArg('cardId', AT_posint, true);
-    $benefit = self::getArg('benefit', AT_posint, true);
-    $choice = self::getArg('choice', AT_alphanum, true);
-    $this->game->either($cardId, $benefit, $choice);
-    self::ajaxResponse();
-  }
-
   public function trash()
   {
     self::setAjaxMode();
     $this->game->checkAction('trash');
     $cardId = self::getArg('cardId', AT_posint, true);
     $this->game->trash($cardId);
+    self::ajaxResponse();
+  }
+
+  public function trashDiscard()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('trashDiscard');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->trashDiscard($cardId);
+    self::ajaxResponse();
+  }
+
+  public function either()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('either');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $benefitId = self::getArg('benefitId', AT_posint, true);
+    $choice = self::getArg('choice', AT_alphanum, true);
+    $this->game->either($cardId, $benefitId, $choice);
     self::ajaxResponse();
   }
 
@@ -134,6 +143,15 @@ class action_hardback extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function purchase()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('purchase');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->purchase($cardId);
+    self::ajaxResponse();
+  }
+
   public function convert()
   {
     self::setAjaxMode();
@@ -142,12 +160,12 @@ class action_hardback extends APP_GameAction
     self::ajaxResponse();
   }
 
-  public function purchase()
+  // "advert.html" is blocked by browser Adblock plugin
+  public function doctor()
   {
     self::setAjaxMode();
-    $this->game->checkAction('purchase');
-    $cardId = self::getArg('cardId', AT_posint, true);
-    $this->game->purchase($cardId);
+    $this->game->checkAction('doctor');
+    $this->game->advert();
     self::ajaxResponse();
   }
 

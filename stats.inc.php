@@ -53,41 +53,71 @@ $stats_type = [
     'table' => [
         'turns' => [
             'id' => STAT_TURNS,
-            'name' => 'Number of turns',
-            'type' => 'int'
+            'name' => 'Turns',
+            'type' => 'int',
         ],
         'longestWord' => [
             'id' => STAT_LONGEST_WORD,
             'name' => 'Longest word',
-            'type' => 'int'
+            'type' => 'int',
         ],
     ],
 
     'player' => [
+        'words' => [
+            'id' => STAT_WORDS,
+            'name' => 'Words',
+            'type' => 'int',
+        ],
         'longestWord' => [
             'id' => STAT_LONGEST_WORD,
             'name' => 'Longest word',
-            'type' => 'int'
+            'type' => 'int',
         ],
         'invalidWords' => [
             'id' => STAT_INVALID_WORDS,
             'name' => 'Misspelled words',
-            'type' => 'int'
+            'type' => 'int',
         ],
         'useInk' => [
             'id' => STAT_USE_INK,
             'name' => 'Ink used',
-            'type' => 'int'
+            'type' => 'int',
         ],
         'useRemover' => [
             'id' => STAT_USE_REMOVER,
             'name' => 'Remover used',
-            'type' => 'int'
+            'type' => 'int',
         ],
         'coins' => [
             'id' => STAT_COINS,
             'name' => 'Coins earned',
-            'type' => 'int'
+            'type' => 'int',
+        ],
+        'pointsBasic' => [
+            'id' => STAT_POINTS_BASIC,
+            'name' => 'Points from basic benefits',
+            'type' => 'int',
+        ],
+        'pointsGenre' => [
+            'id' => STAT_POINTS_GENRE,
+            'name' => 'Points from genre benefits',
+            'type' => 'int',
+        ],
+        'pointsPurchase' => [
+            'id' => STAT_POINTS_PURCHASE,
+            'name' => 'Points from card purchases',
+            'type' => 'int',
+        ],
+        'pointsAward' => [
+            'id' => STAT_POINTS_AWARD,
+            'name' => 'Points from literary awards',
+            'type' => 'int',
+        ],
+        'pointsAdvert' => [
+            'id' => STAT_POINTS_ADVERT,
+            'name' => 'Points from adverts',
+            'type' => 'int',
         ],
     ],
 ];

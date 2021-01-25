@@ -1,7 +1,7 @@
 <template>
   <div :id="'card' + this.card.id" :class="this.card.invisible ? 'invisible' : ''" class="cardholder relative">
     <!-- Card -->
-    <div @click="clickCard()" :class="cardClass" class="card shadow relative rounded-lg select-none mt-1 mx-1">
+    <div @click="clickCard()" :class="cardClass" class="card shadow relative rounded-lg select-none mt-2 mx-1">
       <div class="cardface front rounded-lg">
         <!-- Bookmark -->
         <div :class="bookmarkClass" class="bookmark absolute flex items-center text-center font-bold leading-none">
@@ -18,20 +18,20 @@
         <div :class="benefitClass" class="absolute">
           <!-- Basic Benefits -->
           <ul title="Basic benefits always activate">
-            <li v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.text"></span><Icon v-if="benefit.icon" :icon="benefit.icon" class="inline text-lg" /><span v-html="benefit.text2"></span><Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline text-lg" /></li>
+            <li v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.text"></span><Icon v-if="benefit.icon" :icon="benefit.icon" class="inline text-18" /><span v-html="benefit.text2"></span><Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline text-18" /></li>
           </ul>
 
           <!-- Genre Benefits -->
-          <div v-if="card.genreBenefitsList.length" :class="textClass" class="flex items-center border-t border-gray-900" :title="'Genre benefits activate if you play multiple ' + card.genreName + ' cards'">
-            <Icon :icon="card.genreName" class="text-2xl flex-none" />
-            <ul class="border-l border-gray-900 ml-1 py-1 pl-1">
-              <li v-for="benefit in card.genreBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.text"></span><Icon v-if="benefit.icon" :icon="benefit.icon" class="inline text-lg" /><span v-html="benefit.text2"></span><Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline text-lg" /></li>
+          <div v-if="card.genreBenefitsList.length" :class="textClass" class="flex items-center border-t border-black" :title="'Genre benefits activate if you play multiple ' + card.genreName + ' cards'">
+            <Icon :icon="card.genreName" class="text-24 flex-none" />
+            <ul class="border-l border-black ml-1 py-1 pl-1">
+              <li v-for="benefit in card.genreBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.text"></span><Icon v-if="benefit.icon" :icon="benefit.icon" class="inline text-18" /><span v-html="benefit.text2"></span><Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline text-18" /></li>
             </ul>
           </div>
         </div>
 
         <!-- ID -->
-        <div class="absolute bottom-1 right-1 text-xs text-gray-400">{{ card.origin }} (#{{ card.id }}/{{ card.order }})</div>
+        <div class="absolute bottom-1 right-1 text-12 text-gray-400">{{ card.origin }} (#{{ card.id }}/{{ card.order }})</div>
       </div>
 
       <!-- Wild -->
@@ -43,8 +43,8 @@
     </div>
 
     <!-- Footer -->
-    <div v-if="footerActions && footerActions.length > 0" class="flex items-start justify-evenly text-center text-sm">
-      <div v-for="action in footerActions" :key="action" @click="clickFooter(action)" :class="action.class" class="px-3 rounded-b-lg transition-all z-0" :title="action.title">{{ action.text }}<Icon v-if="action.icon" :icon="action.icon" class="inline" /></div>
+    <div v-if="footerActions && footerActions.length > 0" class="flex items-start justify-evenly text-center text-13 s mb-1">
+      <div v-for="action in footerActions" :key="action" @click="clickFooter(action)" :class="action.class" class="px-3 rounded-b-lg transition-all z-10" :title="action.title">{{ action.text }}<Icon v-if="action.icon" :icon="action.icon" class="inline" /></div>
     </div>
   </div>
 </template>
@@ -53,10 +53,9 @@
 import Constants from "./constants.js";
 import { Icon } from "@iconify/vue";
 
-const actionButton = "hover:py-1 cursor-pointer font-bold shadow";
-const actionBlack = actionButton + " bg-black text-white hover:bg-gray-100 hover:text-black";
-const actionBlue = actionButton + " bg-blue-700 text-white hover:bg-blue-100 hover:text-blue-700";
-const actionRed = actionButton + " bg-red-700 text-white hover:bg-red-100 hover:text-red-700";
+const actionBlack = "button black shadow";
+const actionBlue = "button blue shadow";
+const actionRed = "button red shadow";
 const actionRef = {
   ink: {
     action: "useRemover",
@@ -88,6 +87,11 @@ const actionRef = {
     text: "TRASH",
     class: actionRed,
   },
+  trashDiscard: {
+    action: "trashDiscard",
+    // dynamic text
+    class: actionRed,
+  },
   jailJail: {
     action: "jail",
     actionArgs: {
@@ -107,24 +111,26 @@ const actionRef = {
   eitherCoins: {
     action: "either",
     actionArgs: {
-      benefit: null,
+      benefitId: null,
       choice: "coins",
     },
+    // dynamic text
     class: actionBlue,
   },
   eitherPoints: {
     action: "either",
     actionArgs: {
-      benefit: null,
+      benefitId: null,
       choice: "points",
     },
+    // dynamic text
     icon: "star",
     class: actionBlue,
   },
   eitherInk: {
     action: "either",
     actionArgs: {
-      benefit: Constants.EITHER_INK,
+      benefitId: Constants.EITHER_INK,
       choice: "ink",
     },
     text: "Ink",
@@ -133,7 +139,7 @@ const actionRef = {
   eitherRemover: {
     action: "either",
     actionArgs: {
-      benefit: Constants.EITHER_INK,
+      benefitId: Constants.EITHER_INK,
       choice: "remover",
     },
     text: "Remover",
@@ -150,24 +156,32 @@ export default {
   name: "HCard",
   emits: ["clickCard", "clickFooter"],
   inject: ["gamestate"],
-  components: {
-    Icon,
+  components: { Icon },
+
+  mounted() {
+    this.emitter.on("clickAll", this.clickAll);
   },
+
+  beforeUnmount() {
+    this.emitter.off("clickAll", this.clickAll);
+  },
+
   props: {
     card: {
       type: Object,
       required: true,
     },
   },
+
   computed: {
     cardClass(): string {
       let c = "card-" + this.card.genreName + " ";
       c += this.clickAction ? "cursor-pointer " : "cursor-not-allowed ";
       c += this.card.timeless ? "timeless w-60 h-44 " : "w-44 h-60 ";
       if (this.card.ink) {
-        c += "ring ring-gray-900 ";
+        c += "mx-2 ring ring-black ";
       } else if (this.card.location == "jail" || this.card.origin.startsWith("timeless")) {
-        c += "ring " + this.card.player.colorRing;
+        c += "mx-2 ring " + this.card.player.colorRing;
       } else if (this.card.wild) {
         c += "wild ";
       }
@@ -231,32 +245,31 @@ export default {
     },
 
     footerActions(): any[] {
-      const handActions = this.card.ink ? [actionRef.ink] : this.card.wild ? [actionRef.reset] : [actionRef.wild];
-
-      if (this.card.location.startsWith("hand")) {
-        return handActions;
-      }
-
-      if (this.card.location == "tableau" && this.gamestate.active) {
-        if (this.gamestate.name == "playerTurn" && !this.card.origin.startsWith("timeless")) {
-          return handActions;
-        } else if (this.gamestate.name == "uncover" && this.gamestate.args.cardIds.includes(this.card.id)) {
+      if (this.gamestate.active) {
+        if (this.gamestate.name == "uncover" && this.gamestate.args.cardIds.includes(this.card.id)) {
           return [actionRef.uncover];
         } else if (this.gamestate.name == "double" && this.gamestate.args.cardIds.includes(this.card.id)) {
           return [actionRef.double];
         } else if (this.gamestate.name == "trash" && this.gamestate.args.cardIds.includes(this.card.id)) {
           return [actionRef.trash];
+        } else if (this.gamestate.name == "trashDiscard" && this.card.location.startsWith("discard")) {
+          const trashDiscard = Object.assign({ text: `TRASH FOR ${this.gamestate.args.amount}¢` }, actionRef.trashDiscard);
+          return [trashDiscard];
         } else if (this.gamestate.name.startsWith("either") && this.gamestate.args.possible.hasOwnProperty(this.card.id)) {
           const p = this.gamestate.args.possible[this.card.id];
           if (p.benefit == Constants.EITHER_INK) {
             return [actionRef.eitherInk, actionRef.eitherRemover];
           } else {
-            let eitherCoins = Object.assign({ text: p.amount + "¢" }, actionRef.eitherCoins);
-            eitherCoins.actionArgs.benefit = p.benefit;
+            let eitherCoins = Object.assign({ text: `${p.amount}¢` }, actionRef.eitherCoins);
+            eitherCoins.actionArgs.benefitId = p.benefit;
             let eitherPoints = Object.assign({ text: p.amount }, actionRef.eitherPoints);
-            eitherPoints.actionArgs.benefit = p.benefit;
+            eitherPoints.actionArgs.benefitId = p.benefit;
             return [eitherCoins, eitherPoints];
           }
+        } else if (this.gamestate.name == "jail" && this.card.location == "offer") {
+          return [actionRef.jailJail, actionRef.jailTrash];
+        } else if (this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
+          return [actionRef.purchase];
         }
       }
 
@@ -264,20 +277,12 @@ export default {
         return [
           {
             action: null,
-            text: this.card.player.name + " ",
+            text: `${this.card.player.name} `,
             icon: "timeless",
-            title: "This timeless classic card provides benefits for " + this.card.player.name + " each turn",
-            class: this.card.player.colorBg + " " + this.card.player.colorBgText,
+            title: `Timeless Classic: ${this.card.player.name} receives benefits each turn. Others may play this card to discard it but will not receive benefits.`,
+            class: `leading-6 ${this.card.player.colorBg} ${this.card.player.colorBgText}`,
           },
         ];
-      }
-
-      if (this.card.location == "offer" && this.gamestate.active) {
-        if (this.gamestate.name == "jail") {
-          return [actionRef.jailJail, actionRef.jailTrash];
-        } else if (this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
-          return [actionRef.purchase];
-        }
       }
 
       if (this.card.location == "jail") {
@@ -287,17 +292,29 @@ export default {
           return [
             {
               action: null,
-              text: this.card.player.name + " ",
+              text: `${this.card.player.name} `,
               icon: "jail",
-              title: "This jailed card may only be purchased by " + this.card.player.name,
-              class: this.card.player.colorBg + " " + this.card.player.colorBgText,
+              title: `Jailed: Only ${this.card.player.name} may purchase`,
+              class: `leading-6 ${this.card.player.colorBg} ${this.card.player.colorBgText}`,
             },
           ];
         }
       }
+
+      if (this.card.location.startsWith("hand") || (this.card.location == "tableau" && this.gamestate.active && this.gamestate.name == "playerTurn")) {
+        return this.card.ink ? [actionRef.ink] : this.card.wild ? [actionRef.reset] : [actionRef.wild];
+      }
     },
   },
+
   methods: {
+    clickAll(evt): void {
+      console.log("clickAll", evt, this.card.id);
+      if (this.card.location === evt.location) {
+        this.clickCard();
+      }
+    },
+
     clickCard(): void {
       let action: any = this.clickAction;
       if (action) {
@@ -305,6 +322,7 @@ export default {
         this.emitter.emit("clickCard", { action, card });
       }
     },
+
     clickFooter(action): void {
       if (action.action) {
         let card: any = this.card;

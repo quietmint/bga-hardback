@@ -10,120 +10,131 @@
 
     <div><b>Gamestate:</b> Active: {{ gamestate.active }} &mdash; Name: {{ gamestate.name }}</div>
 
-    <!-- Hand -->
-    <div class="container-hand bg-opacity-50 rounded-lg my-2 p-2" :class="myself.colorBg">
-      <div class="flex flex-wrap justify-end mb-1">
-        <b class="flex-grow">My Hand ({{ handCards.length }})</b>
-        <div v-if="myself.ink && (myself.deckCount || myself.discardCount)" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
-          <div class="rounded-lg" :class="buttonClass" @click="takeAction('useInk')"><Icon icon="ink" class="inline text-lg" /> Draw with Ink</div>
-        </div>
-        <div v-if="gamestate.active && handCards.length > 1" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
-          <div class="rounded-lg" :class="buttonClass" @click="clickAll(handCards)"><Icon icon="clickAll" class="inline text-lg" /> Play All</div>
-        </div>
-        <div v-if="handCards.length > 1" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
-          <div class="rounded-l-lg" :class="buttonHeaderClass">Order:</div>
-          <div :class="buttonClass" @click="sort(handLocation, 'letter')" title="By Letter"><Icon icon="sortAZ" class="text-lg" /></div>
-          <div :class="buttonClass" @click="sort(handLocation, 'genre')" title="By Genre"><Icon icon="starter" class="text-lg" /></div>
-          <div class="rounded-r-lg" :class="buttonClass" @click="sort(handLocation, 'shuffle')" title="Shuffle"><Icon icon="shuffle" class="text-lg" /></div>
-        </div>
+    <!-- Discard -->
+    <div class="container-discard cardgrid bg-opacity-50 rounded-lg my-2 p-2" :class="(visibleLocations[discardLocation] ? '' : 'collapsed ') + myself.colorBg">
+      <!-- Title -->
+      <b class="title"><Icon @click="chevron(discardLocation)" icon="chevron" class="chevron inline text-24" /> My Discard Pile ({{ discardCards.length }})</b>
+
+      <!-- Cards -->
+      <HCardList v-if="visibleLocations[discardLocation]" :cards="discardCards" :location="discardLocation" />
+
+      <!-- Sorter -->
+      <div v-if="visibleLocations[discardLocation]" class="sorter">
+        <div @click="sort(discardLocation, 'letter')" class="button blue" title="Sort cards by letter">A-Z</div>
+        <div @click="sort(discardLocation, 'cost')" class="button blue" title="Sort cards by cost">¢</div>
+        <div @click="sort(discardLocation, 'genre')" class="button blue" title="Sort cards by genre"><Icon icon="starter" class="inline text-18 h-7" /></div>
+        <div @click="sort(discardLocation, 'shuffle')" class="button blue" title="Shuffle cards"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
       </div>
-      <HCardList :cards="handCards" :location="handLocation" :checkDrag="checkDragHand" />
+    </div>
+
+    <!-- Hand -->
+    <div class="container-hand cardgrid bg-opacity-50 rounded-lg my-2 p-2" :class="(visibleLocations[handLocation] ? '' : 'collapsed ') + myself.colorBg">
+      <!-- Title -->
+      <b class="title"><Icon @click="chevron(handLocation)" icon="chevron" class="chevron inline text-24" /> My Hand ({{ handCards.length }})</b>
+
+      <!-- Cards -->
+      <HCardList v-if="visibleLocations[handLocation]" :cards="handCards" :location="handLocation" :checkDrag="checkDragHand" />
+
+      <!-- Actions -->
+      <div v-if="visibleLocations[handLocation]" class="actions">
+        <div v-if="myself.ink && (myself.deckCount || myself.discardCount)" @click="takeAction('useInk')" class="button blue">DRAW WITH INK</div>
+        <div v-if="handWildCards.length" @click="resetAll()" class="button blue">RESET ALL</div>
+        <div v-if="gamestate.active && handCards.length > 1" @click="clickAll(handLocation)" class="button blue">PLAY ALL</div>
+      </div>
+
+      <!-- Sorter -->
+      <div v-if="visibleLocations[handLocation]" class="sorter">
+        <div @click="sort(handLocation, 'letter')" class="button blue" title="Sort cards by letter">A-Z</div>
+        <div @click="sort(handLocation, 'genre')" class="button blue" title="Sort cards by genre"><Icon icon="starter" class="inline text-18 h-7" /></div>
+        <div @click="sort(handLocation, 'shuffle')" class="button blue" title="Shuffle cards"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
+      </div>
     </div>
 
     <!-- Tableau -->
-    <div class="container-tableau rounded-lg my-2 p-2">
-      <div class="flex flex-wrap justify-end mb-1">
-        <b class="flex-grow">Word ({{ tableauCards.length }})</b>
-        <div v-if="gamestate.active && tableauCards.length" class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
-          <div class="rounded-lg" :class="buttonClass" @click="clickAll(tableauCards)"><Icon icon="close" class="inline text-lg" /> Reset</div>
-        </div>
-      </div>
+    <div class="container-tableau cardgrid no-sorter my-2 p-2">
+      <!-- Title -->
+      <b class="title">Current Word ({{ tableauCards.length }})</b>
+
+      <!-- Cards -->
       <HCardList :cards="tableauCards" location="tableau" :checkDrag="checkDragTableau" />
+
+      <!-- Actions -->
+      <div v-if="gamestate.active && gamestate.name == 'playerTurn' && tableauCards.length" class="actions">
+        <div @click="clickAll('tableau')" class="button blue">CLEAR ALL</div>
+      </div>
     </div>
 
     <!-- Timeless Classics -->
-    <div class="container-timeless rounded-lg my-2 p-2">
-      <div class="flex flex-wrap justify-end mb-1">
-        <b class="flex-grow">Timeless Classics ({{ timelessCards.length }})</b>
-      </div>
+    <div v-if="timelessCards.length" class="container-timeless cardgrid no-sorter my-2 p-2 border-t border-dashed border-black">
+      <!-- Title -->
+      <b class="title">Timeless Classics ({{ timelessCards.length }})</b>
+
+      <!-- Cards -->
       <HCardList :cards="timelessCards" location="timeless" :checkDrag="checkDragTimeless" />
     </div>
 
     <!-- Offer -->
-    <div class="container-offer bg-gray-700 bg-opacity-30 rounded-lg my-2 p-2">
-      <div class="flex flex-wrap justify-end mb-1">
-        <b class="flex-grow">Offer Row ({{ offerCards.length }})</b>
-        <div class="flex ml-1 rounded-lg divide-x border text-sm text-center whitespace-nowrap leading-6" :class="buttonGroupClass">
-          <div class="rounded-l-lg font-bold" :class="buttonHeaderClass">Order:</div>
-          <div :class="buttonClass" @click="sort('offer', 'order')" title="By Recency"><Icon icon="clock" class="text-lg" /></div>
-          <div :class="buttonClass" @click="sort('offer', 'letter')" title="By Letter"><Icon icon="sortAZ" class="text-lg" /></div>
-          <div :class="buttonClass" @click="sort('offer', 'cost')" title="By Cost"><Icon icon="sort09" class="inline text-lg" /></div>
-          <div class="rounded-r-lg" :class="buttonClass" @click="sort('offer', 'genre')" title="By Genre"><Icon icon="starter" class="text-lg" /></div>
-        </div>
-      </div>
+    <div class="container-offer cardgrid bg-gray-700 bg-opacity-30 rounded-lg my-2 p-2">
+      <!-- Title -->
+      <b class="title">Offer Row ({{ offerCards.length }})</b>
+
+      <!-- Cards -->
       <HCardList :cards="offerCards" location="offer" :checkDrag="checkDragTimeless" />
+
+      <!-- Sorter -->
+      <div class="sorter">
+        <div @click="sort('offer', 'letter')" class="button blue" title="Sort cards by letter">A-Z</div>
+        <div @click="sort('offer', 'cost')" class="button blue" title="Sort cards by cost">¢</div>
+        <div @click="sort('offer', 'genre')" class="button blue" title="Sort cards by genre"><Icon icon="starter" class="inline text-18 h-7" /></div>
+        <div @click="sort('offer', 'order')" class="button blue" title="Sort cards by draw order"><Icon icon="clock" class="inline text-18 h-7" /></div>
+        <div @click="sort('offer', 'shuffle')" class="button blue" title="Shuffle cards"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Constants from "./constants.js";
-import { computed, nextTick } from "vue";
+import { nextTick } from "vue";
 import { firstBy } from "thenby";
 import { Icon, addIcon } from "@iconify/vue";
 import HCardList from "./HCardList.vue";
 import HPlayerPanel from "./HPlayerPanel.vue";
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const repaint = () => new Promise((resolve) => requestAnimationFrame(resolve));
+const getRect = (el: Element) => {
+  if (!el) {
+    return null;
+  }
+  const bounds = el.getBoundingClientRect();
+  return {
+    top: bounds.top + window.scrollX,
+    left: bounds.left + window.scrollY,
+    width: bounds.width,
+    height: bounds.height,
+  };
+};
 
-import mdiCards from "@iconify-icons/mdi/cards";
-addIcon("cards", mdiCards);
-
+// Genre icons
 import bookmarkIcon from "@iconify-icons/mdi/bookmark";
 addIcon("starter", bookmarkIcon);
 
 import mdiCompass from "@iconify-icons/mdi/compass";
 addIcon("adventure", mdiCompass);
 
-import mdiFlaskEmptyPlus from "@iconify-icons/mdi/flask-empty-plus";
-addIcon("ink", mdiFlaskEmptyPlus);
-
-import mdiFlaskEmptyRemoveOutline from "@iconify-icons/mdi/flask-empty-remove-outline";
-addIcon("remover", mdiFlaskEmptyRemoveOutline);
-
-import mdiHeart from "@iconify-icons/mdi/heart";
-addIcon("romance", mdiHeart);
+import mdiSkull from "@iconify-icons/mdi/skull";
+addIcon("horror", mdiSkull);
 
 import magnifyingGlass from "@iconify-icons/foundation/magnifying-glass";
 addIcon("mystery", magnifyingGlass);
 
-import mdiSkull from "@iconify-icons/mdi/skull";
-addIcon("horror", mdiSkull);
+import mdiHeart from "@iconify-icons/mdi/heart";
+addIcon("romance", mdiHeart);
 
+// Card icons
 import starOutlined from "@iconify-icons/ant-design/star-outlined";
 addIcon("star", starOutlined);
-
-import shuffleVariant from "@iconify-icons/mdi/shuffle-variant";
-addIcon("shuffle", shuffleVariant);
-
-import sortAlphabeticalVariant from "@iconify-icons/mdi/sort-alphabetical-variant";
-addIcon("sortAZ", sortAlphabeticalVariant);
-
-//import numericIcon from "@iconify-icons/mdi/numeric";
-import sortNumericVariant from "@iconify-icons/mdi/sort-numeric-variant";
-addIcon("sort09", sortNumericVariant);
-
-import clockOutline from "@iconify-icons/mdi/clock-outline";
-addIcon("clock", clockOutline);
-
-import closeIcon from "@iconify-icons/mdi/close";
-addIcon("close", closeIcon);
-
-import cursorDefaultClick from "@iconify-icons/mdi/cursor-default-click";
-import expandAllOutline from "@iconify-icons/mdi/expand-all-outline";
-//import plusBoxMultipleOutline from '@iconify-icons/mdi/plus-box-multiple-outline';
-addIcon("clickAll", expandAllOutline);
 
 import lockIcon from "@iconify-icons/mdi/lock";
 addIcon("jail", lockIcon);
@@ -131,8 +142,29 @@ addIcon("jail", lockIcon);
 import cachedIcon from "@iconify-icons/mdi/cached";
 addIcon("timeless", cachedIcon);
 
+// Sorter icons
+import shuffleVariant from "@iconify-icons/mdi/shuffle-variant";
+addIcon("shuffle", shuffleVariant);
+
+import clockOutline from "@iconify-icons/mdi/clock-outline";
+addIcon("clock", clockOutline);
+
+import chevronDown from "@iconify-icons/mdi/chevron-down";
+addIcon("chevron", chevronDown);
+
+// Player panel icons
+import mdiFlaskEmptyPlus from "@iconify-icons/mdi/flask-empty-plus";
+addIcon("ink", mdiFlaskEmptyPlus);
+
+import mdiFlaskEmptyRemoveOutline from "@iconify-icons/mdi/flask-empty-remove-outline";
+addIcon("remover", mdiFlaskEmptyRemoveOutline);
+
+import mdiCards from "@iconify-icons/mdi/cards";
+addIcon("cards", mdiCards);
+
 export default {
   name: "HGame",
+  emits: ["clickAll"],
   components: { Icon, HCardList, HPlayerPanel },
 
   data() {
@@ -143,14 +175,31 @@ export default {
         refs: { benefits: {}, cards: {} },
       },
       gamestate: {},
-      locationOrder: {},
+      locationOrder: {
+        timeless: "location",
+        tableau: "order",
+        offer: "order",
+      },
       logIcons: ["starter", "adventure", "horror", "mystery", "romance", "star"],
+      visibleLocations: {
+        tableau: true,
+        timeless: true,
+        offer: true,
+        jail: true,
+      },
     };
   },
 
   mounted() {
     this.emitter.on("clickCard", this.clickCard);
     this.emitter.on("clickFooter", this.clickFooter);
+    this.visibleLocations[this.discardLocation] = false;
+    this.visibleLocations[this.handLocation] = true;
+  },
+
+  beforeUnmount() {
+    this.emitter.off("clickCard", this.clickCard);
+    this.emitter.off("clickFooter", this.clickFooter);
   },
 
   provide() {
@@ -183,6 +232,21 @@ export default {
       return cards;
     },
 
+    handWildCards() {
+      return this.handCards.filter((card) => card.wild);
+    },
+
+    discardLocation() {
+      return "discard_" + this.game.player_id;
+    },
+
+    discardCards() {
+      let location = this.discardLocation;
+      let cards = this.cardsInLocation(location);
+      cards.sort(this.sorter(location));
+      return cards;
+    },
+
     tableauCards() {
       let location = "tableau";
       let cards = this.cardsInLocation(location);
@@ -207,18 +271,6 @@ export default {
       Array.prototype.push.apply(cards, jail);
       return cards;
     },
-
-    buttonGroupClass() {
-      return this.myself.colorDivide + " " + this.myself.colorBorder;
-    },
-
-    buttonHeaderClass() {
-      return "pl-2 pr-1 font-bold " + this.myself.colorHeader;
-    },
-
-    buttonClass() {
-      return "leading-6 px-2 cursor-pointer " + this.myself.colorButton;
-    },
   },
 
   methods: {
@@ -241,8 +293,12 @@ export default {
     },
 
     sorter(location: string) {
-      let order = this.locationOrder[location] || "order";
-      return firstBy(order).thenBy("letter").thenBy("id");
+      let order = this.locationOrder[location];
+      if (order) {
+        return firstBy(order).thenBy("letter").thenBy("id");
+      } else {
+        return firstBy("letter").thenBy("id");
+      }
     },
 
     populateCard(card) {
@@ -253,7 +309,7 @@ export default {
         for (const id in newCard.basicBenefits) {
           let value = newCard.basicBenefits[id];
           if (newCard.factor > 1) {
-            value = `<b class="text-red-500">${value * newCard.factor}</b>`;
+            value = `<span class="font-bold px-1 bg-yellow-400">${value * newCard.factor}</span>`;
           }
           let newBenefit = Object.assign({}, this.gamedatas.refs.benefits[id]);
           newBenefit.id = parseInt(id);
@@ -272,7 +328,7 @@ export default {
         for (const id in newCard.genreBenefits) {
           let value = newCard.genreBenefits[id];
           if (newCard.factor > 1) {
-            value = `<b class="text-red-500">${value * newCard.factor}</b>`;
+            value = `<span class="font-bold px-1 bg-yellow-400">${value * newCard.factor}</span>`;
           }
           let newBenefit = Object.assign({}, this.gamedatas.refs.benefits[id]);
           newBenefit.id = parseInt(id);
@@ -327,48 +383,28 @@ export default {
           player.colorRing = "ring-red-700";
           player.colorBg = "bg-red-700";
           player.colorBgText = "text-red-100";
-          player.colorBorder = "border-red-800";
-          player.colorDivide = "divide-red-800";
-          player.colorText = "text-red-700";
-          player.colorButton = "bg-red-100 hover:bg-red-300 active:bg-red-500";
-          player.colorHeader = "bg-red-50 " + player.colorText;
+          player.colorText = "text-red-600";
           break;
         case "green":
           player.colorRing = "ring-green-700";
           player.colorBg = "bg-green-700";
-          player.colorBorder = "border-green-800";
-          player.colorDivide = "divide-green-800";
-          player.colorText = "text-green-700";
-          player.colorButton = "bg-green-100 hover:bg-green-300 active:bg-green-500";
-          player.colorHeader = "bg-green-50 " + player.colorText;
+          player.colorText = "text-green-600";
           break;
         case "blue":
           player.colorRing = "ring-blue-700";
           player.colorBg = "bg-blue-700";
-          player.colorBorder = "border-blue-800";
-          player.colorDivide = "divide-blue-800";
-          player.colorText = "text-blue-700";
-          player.buttonGroupClass = "bg-blue-100 hover:bg-blue-300 active:bg-blue-500";
-          player.colorHeader = "bg-blue-50 " + player.colorText;
+          player.colorText = "text-blue-600";
           break;
         case "yellow":
           player.colorBgText = "text-black";
           player.colorRing = "ring-yellow-500";
           player.colorBg = "bg-yellow-500";
-          player.colorBorder = "border-yellow-700";
-          player.colorDivide = "divide-yellow-700";
           player.colorText = "text-yellow-600";
-          player.buttonGroupClass = "bg-yellow-100 hover:bg-yellow-300 active:bg-yellow-500";
-          player.colorHeader = "bg-yellow-50 " + player.colorText;
           break;
         case "purple":
           player.colorRing = "ring-purple-700";
           player.colorBg = "bg-purple-700";
-          player.colorBorder = "border-purple-800";
-          player.colorDivide = "divide-purple-800";
-          player.colorText = "text-purple-700";
-          player.colorButton = "bg-purple-100 hover:bg-purple-300 active:bg-purple-500";
-          player.colorHeader = "bg-purple-50 " + player.colorText;
+          player.colorText = "text-purple-600";
           break;
       }
       return player;
@@ -387,21 +423,14 @@ export default {
      * Animation
      */
     async animateCard(card: any, delay: number, changes: any): Promise<number> {
-      const getRect = (el: Element) => {
-        if (!el) {
-          return null;
-        }
-        const bounds = el.getBoundingClientRect();
-        return {
-          top: bounds.top + window.scrollX,
-          left: bounds.left + window.scrollY,
-          width: bounds.width,
-          height: bounds.height,
-        };
-      };
-
       if (changes) {
         card = Object.assign({}, card, changes);
+      }
+
+      if (this.game.instantaneousMode) {
+        // Instant replay, no animation
+        this.gamedatas.cards[card.id] = card;
+        return card.id;
       }
 
       const oldCard = this.gamedatas.cards[card.id];
@@ -425,7 +454,8 @@ export default {
         start = getRect(cardEl);
       }
 
-      let visible = [this.handLocation, "tableau", "offer", "jail", "timeless"].includes(card.location) || card.location.startsWith("timeless");
+      let visible = this.visibleLocations[card.location] || card.location.startsWith("timeless");
+      console.log(`Animate card ${card.id} new location ${card.location} is visible? ${visible}`);
       if (!start && !visible) {
         // Invisible card movement, no animation
         this.gamedatas.cards[card.id] = card;
@@ -441,19 +471,18 @@ export default {
       if (start && !visible) {
         // Compute end position
         mode = "leave";
-        if (card.location.includes("_")) {
+        if (card.location.startsWith("discard_")) {
           let playerId = card.location.split("_")[1];
           let parentEl = document.getElementById("player_board_" + playerId);
           end = getRect(parentEl);
         }
         if (end == null) {
-          // Exit stage left
-          end = { top: start.top, left: -start.width, width: start.width, height: start.height };
+          // Exit below
+          end = { top: window.innerHeight + start.height, left: start.left, width: start.width, height: start.height };
         }
 
         // Insert a gap
         let rootEl = document.getElementById("happ");
-        console.log("gap start", start);
         gapEl = document.createElement("div");
         gapEl.id = "gap" + card.id;
         gapEl.className = "gap";
@@ -484,7 +513,7 @@ export default {
         }
         end = getRect(cardEl);
         if (start == null) {
-          // Enter from above
+          // Enter above
           start = { top: -end.height, left: end.left, width: end.width, height: end.height };
         }
       }
@@ -530,6 +559,7 @@ export default {
               clearTimeout(timeout);
               console.log(`Animate card ${card.id} ${mode} destroy gap`);
               gapEl.remove();
+              gapEl = null;
             },
             { once: true }
           );
@@ -576,6 +606,7 @@ export default {
         let q = args.word.toLowerCase();
         let links = [
           `<a target="hdefine" href="https://ahdictionary.com/word/search.html?q=${q}">American Heritage</a>`, //
+          `<a target="hdefine" href="https://dictionary.cambridge.org/dictionary/english/${q}">Cambridge</a>`, //
           `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`, //
           `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`, //
           `<a target="hdefine" href="https://www.merriam-webster.com/dictionary/${q}">Merriam-Webster</a>`, //
@@ -639,6 +670,18 @@ export default {
             this.takeAction("flush");
           },
         },
+        doctor: {
+          text() {
+            return this.game.format_string_recursive("Spend ${coins}¢ for ${points}${icon}", this.gamestate.args.advert);
+          },
+          color: "blue",
+          function() {
+            this.takeAction("doctor");
+          },
+          condition() {
+            return this.gamestate.args && this.gamestate.args.advert && this.myself.coins >= this.gamestate.args.advert.coins;
+          },
+        },
         convert: {
           text: "Spend 3 ink for 1¢",
           color: "gray",
@@ -661,9 +704,13 @@ export default {
         const action = actionRef[p];
         let visible: boolean = action != null && (action.condition == null || action.condition.apply(this));
         if (visible) {
+          let text = action.text;
+          if (typeof text == "function") {
+            text = text.apply(this);
+          }
           this.game.addActionButton(
             "action_" + index,
-            action.text,
+            text,
             () => {
               action.function.apply(this);
             },
@@ -676,21 +723,29 @@ export default {
     },
 
     onEnteringState(stateName: string, args: any): void {
-      Object.assign(this.gamestate, this.game.gamedatas.gamestate, { active: this.game.isCurrentPlayerActive() });
+      console.log("enter state ", stateName);
+      if (stateName == "trashDiscard" && !args.skip) {
+        //this.visibleLocations[this.discardLocation] = true;
+      }
     },
 
-    onLeavingState(stateName: string): void {},
+    onLeavingState(stateName: string): void {
+      console.log("leave state ", stateName);
+      if (stateName == "trashDiscard") {
+        //this.visibleLocations[this.discardLocation] = false;
+      }
+    },
 
     onNotify(notif: any): void {
       console.log("Notify", notif.type, notif.args);
       if (notif.type == "cards") {
         let cards = Object.values(notif.args.cards);
         cards.sort(firstBy("location").thenBy("order").thenBy("id"));
-        console.log("packet of changed cards", cards);
+        console.log("packet of changed cards: " + cards.map((c: any) => c.id).join(", "));
         let delay = 0;
         const promises = cards.map((card) => this.animateCard(card, (delay += 0)));
         Promise.allSettled(promises).then((results) => {
-          console.log("packet allSettled", results);
+          console.log("packet allSettled: ", results.join(", "));
           this.game.notifqueue.setSynchronousDuration(0);
         });
       } else if (notif.type == "invalid") {
@@ -770,13 +825,18 @@ export default {
       this.locationOrder[location] = order;
     },
 
-    clickAll(cards): void {
-      console.log("clickAll", cards);
-      if (this.gamestate.active) {
-        cards.forEach((card) => {
-          this.clickCard({ card });
-        });
-      }
+    chevron(location: string) {
+      this.visibleLocations[location] = !this.visibleLocations[location];
+    },
+
+    clickAll(location): void {
+      this.emitter.emit("clickAll", { location });
+    },
+
+    resetAll(): void {
+      this.handWildCards.forEach((card) => {
+        this.clickFooter({ card: card, action: { action: "reset" } });
+      });
     },
 
     clickCard(evt): void {

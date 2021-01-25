@@ -108,12 +108,19 @@ class hardback extends Table
         // Init game statistics
         self::initStat('table', 'turns', 0);
         self::initStat('table', 'longestWord', 0);
+        self::initStat('player', 'words', 0);
         self::initStat('player', 'longestWord', 0);
         self::initStat('player', 'invalidWords', 0);
         self::initStat('player', 'useInk', 0);
         self::initStat('player', 'useRemover', 0);
         self::initStat('player', 'coins', 0);
+        self::initStat('player', 'pointsBasic', 0);
+        self::initStat('player', 'pointsGenre', 0);
+        self::initStat('player', 'pointsPurchase', 0);
+        self::initStat('player', 'pointsAward', 0);
+        self::initStat('player', 'pointsAdvert', 0);
 
+        // Deal the cards
         CardMgr::setup();
 
         // Activate first player
@@ -179,21 +186,21 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         $cards = CardMgr::getCards($cardIds, $wildMask);
 
-        // Cards must originate from a valid location
-        $locations = [$player->getHandLocation(), "timeless"];
-        $invalid = array_filter($cards, function ($card) use ($locations) {
-            return !$card->isLocation($locations);
-        });
-        if (!empty($invalid)) {
-            throw new BgaUserException("Your word cannot use cards unavailable to $player: " .  CardMgr::getString($invalid));
-        }
-
         // All inked cards must be used and cannot be wild
         $inked = array_filter($player->getHand(HAS_INK), function ($card) use ($cardIds) {
             return $card->isWild() || !in_array($card->getId(), $cardIds);
         });
         if (!empty($inked)) {
             throw new BgaUserException("Your word must use all inked cards: " .  CardMgr::getString($inked));
+        }
+
+        // Cards must originate from a valid location
+        $locations = [$player->getHandLocation(), "timeless"];
+        $invalid = array_filter($cards, function ($card) use ($locations) {
+            return !$card->isLocation($locations);
+        });
+        if (!empty($invalid)) {
+            throw new BgaVisibleSystemException("Not possible for $player to use card " .  CardMgr::getString($invalid));
         }
 
         // Word must be valid
@@ -211,6 +218,7 @@ class hardback extends Table
             ]);
             return;
         }
+        $this->incStat(1, 'words', $player->getId());
         self::notifyAllPlayers('message', '${player_name} spells ${word}', [
             'player_name' => $player->getName(),
             'word' => $word,
@@ -234,7 +242,7 @@ class hardback extends Table
             if ($length >= 7 && $this->gamestate->table_globals[OPTION_AWARDS]) {
                 // Issue new literary award
                 $points = $this->awards[min($length, 12)];
-                $player->addPoints($points);
+                $player->addPoints($points, 'pointsAward');
                 self::notifyAllPlayers('award', '${player_name} earns the ${points}${icon} literary award for spelling the first ${award}', [
                     'player_name' => $player->getName(),
                     'points' => $points,
@@ -247,7 +255,7 @@ class hardback extends Table
                 if ($previous) {
                     $points = $this->awards[min($longest, 12)];
                     $loser = PlayerMgr::getPlayer($previous);
-                    $loser->addPoints(-1 * $points);
+                    $loser->addPoints(-1 * $points, 'pointsAward');
                     self::notifyAllPlayers('message', '... and ${player_name} loses the tarnished ${points}${icon} literary award', [
                         'player_name' => $loser->getName(),
                         'points' => $points,
@@ -266,11 +274,27 @@ class hardback extends Table
      * PHASE 3: RESOLVE CARD BENEFITS
      */
 
+    function stAutoSkip(): void
+    {
+        $name = $this->gamestate->state()['name'];
+        $skip = $this->gamestate->state()['args']['skip'];
+        $auto = $this->gamestate->state()['args']['auto'] ?? false;
+        if ($skip) {
+            $this->skip();
+        } else if ($auto) {
+            if ($name == 'uncover') {
+                $this->uncover($auto);
+            } else if ($name == 'double') {
+                $this->double($auto);
+            }
+        }
+    }
+
     function argUncover(): array
     {
         $cardIds = [];
         $sources = [];
-        $tableau = CardMgr::getTableau();
+        $tableau = CardMgr::getTableau(self::getActivePlayerId());
         foreach ($tableau as $card) {
             if ($card->hasBenefit(UNCOVER_ADJ)) {
                 if ($card->getPrevious() != null && $card->getPrevious()->isWild()) {
@@ -288,27 +312,9 @@ class hardback extends Table
         return [
             'cardIds' => array_values(array_unique($cardIds)),
             'sources' => $sources,
+            'skip' => empty($sources),
+            'auto' => count($sources) == 1 ? key($sources) : null,
         ];
-    }
-
-    function stUncover(): void
-    {
-        $sources = $this->gamestate->state()['args']['sources'];
-        if (empty($sources)) {
-            $this->notifyAllPlayers("message", "No cards to uncover", []);
-            $this->gamestate->nextState('next');
-            return;
-        }
-
-        // Apply the first automatic action we find
-        /*
-        foreach ($sources as $cardIds) {
-            if (count($cardIds) == 1) {
-                $cardId = reset($cardIds);
-                $this->uncover($cardId);
-            }
-        }
-        */
     }
 
     function uncover(int $cardId): void
@@ -316,7 +322,7 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         $sourceIds = $this->gamestate->state()['args']['sources'][$cardId] ?? null;
         if (!$sourceIds || empty($sourceIds)) {
-            throw new BgaVisibleSystemException("Not possible for {$player->getName()} to uncover card $cardId");
+            throw new BgaVisibleSystemException("Not possible for $player to uncover card $cardId");
         }
         $sourceId = reset($sourceIds);
         $cards = CardMgr::getCards([$cardId, $sourceId]);
@@ -336,7 +342,7 @@ class hardback extends Table
     {
         $cardIds = [];
         $sources = [];
-        $tableau = CardMgr::getTableau();
+        $tableau = CardMgr::getTableau(self::getActivePlayerId());
         foreach ($tableau as $card) {
             if ($card->hasBenefit(DOUBLE_ADJ)) {
                 if ($card->getPrevious() != null && !$card->getPrevious()->isWild()) {
@@ -354,27 +360,9 @@ class hardback extends Table
         return [
             'cardIds' => array_values(array_unique($cardIds)),
             'sources' => $sources,
+            'skip' => empty($sources),
+            'auto' => count($sources) == 1 ? key($sources) : null,
         ];
-    }
-
-    function stDouble(): void
-    {
-        $sources = $this->gamestate->state()['args']['sources'];
-        if (empty($sources)) {
-            $this->notifyAllPlayers("message", "No cards to double", []);
-            $this->gamestate->nextState('next');
-            return;
-        }
-
-        // Apply the first automatic action we find
-        /*
-        foreach ($sources as $cardIds) {
-            if (count($cardIds) == 1) {
-                $cardId = reset($cardIds);
-                $this->double($cardId);
-            }
-        }
-        */
     }
 
     function double(int $cardId): void
@@ -382,7 +370,7 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         $sourceIds = $this->gamestate->state()['args']['sources'][$cardId] ?? null;
         if (!$sourceIds || empty($sourceIds)) {
-            throw new BgaVisibleSystemException("Not possible for {$player->getName()} to double card $cardId");
+            throw new BgaVisibleSystemException("Not possible for $player to double card $cardId");
         }
         $sourceId = reset($sourceIds);
         $cards = CardMgr::getCards([$cardId, $sourceId]);
@@ -402,19 +390,19 @@ class hardback extends Table
     {
         $player = PlayerMgr::getPlayer();
         $possible = [];
-        $tableau = CardMgr::getTableau();
+        $tableau = CardMgr::getTableau($player->getId());
         foreach ($tableau as $card) {
             $p = null;
-            $value = $card->getBenefitValue(EITHER_BASIC);
-            if ($value) {
-                $p = ['benefit' => EITHER_BASIC, 'amount' => $value];
+            $benefits = $card->getBenefits(EITHER_BASIC);
+            if (!empty($benefits)) {
+                $p = ['benefit' => EITHER_BASIC, 'amount' => $benefits[0]['value']];
             } else {
-                $value = $card->getBenefitValue(EITHER_GENRE);
-                if ($value) {
-                    $p = ['benefit' => EITHER_GENRE, 'amount' => $value];
+                $benefits = $card->getBenefits(EITHER_GENRE);
+                if (!empty($benefits)) {
+                    $p = ['benefit' => EITHER_GENRE, 'amount' => $benefits[0]['value']];
                 } else {
-                    $value = $card->getBenefitValue(EITHER_INK);
-                    if ($value) {
+                    $benefits = $card->getBenefits(EITHER_INK);
+                    if (!empty($benefits)) {
                         $p = ['benefit' => EITHER_INK, 'amount' => 1];
                     }
                 }
@@ -428,40 +416,31 @@ class hardback extends Table
             'coins' => $player->getCoins(),
             'points' => $player->getScore() - $this->getGameStateValue('startScore'),
             'icon' => ' star',
+            'skip' => empty($possible),
         ];
     }
 
-    function stEither(): void
-    {
-        $basic = $this->gamestate->state()['args']['possible'];
-        if (empty($basic) && empty($genre)) {
-            $this->notifyAllPlayers("message", "No cards with either-or choices", []);
-            $this->gamestate->nextState('next');
-            return;
-        }
-    }
-
-    function either(int $cardId, int $benefit, string $choice): void
+    function either(int $cardId, int $benefitId, string $choice): void
     {
         $player = PlayerMgr::getPlayer();
         $state = $this->gamestate->state();
         $p = $state['args']['possible'][$cardId] ?? null;
-        if (!$p || $p['benefit'] != $benefit) {
-            throw new BgaVisibleSystemException("Not possible for {$player->getName()} to choose this benefit for card $cardId (benefit $benefit, choice $choice)");
+        $card = CardMgr::getCard($cardId);
+        $benefits = $card->getBenefits($benefitId);
+        if (!$p || empty($benefits)) {
+            throw new BgaVisibleSystemException("Not possible for $player to choose benefit $benefitId for $card");
         }
 
-        $card = CardMgr::getCard($cardId);
-        CardMgr::useBenefit($card, $benefit);
-        if (($benefit == EITHER_BASIC || $benefit == EITHER_GENRE) && $choice == 'coins') {
+        CardMgr::useBenefit($card, $benefitId);
+        if (($benefitId == EITHER_BASIC || $benefitId == EITHER_GENRE) && $choice == 'coins') {
             $player->addCoins($p['amount']);
-        } else if (($benefit == EITHER_BASIC || $benefit == EITHER_GENRE) && $choice == 'points') {
-            $player->addPoints($p['amount']);
-        } else if ($benefit == EITHER_INK && $choice == 'ink') {
+        } else if (($benefitId == EITHER_BASIC || $benefitId == EITHER_GENRE) && $choice == 'points') {
+            $stat = $benefits[0]['activation'] == FROM_GENRE ? 'pointsGenre' : 'pointsBasic';
+            $player->addPoints($p['amount'], $stat);
+        } else if ($benefitId == EITHER_INK && $choice == 'ink') {
             $player->addInk();
-        } else if ($benefit == EITHER_INK && $choice = 'remover') {
+        } else if ($benefitId == EITHER_INK && $choice = 'remover') {
             $player->addRemover();
-        } else {
-            throw new BgaVisibleSystemException("Not possible for {$player->getName()} to choose this benefit for $card (benefit $benefit, choice $choice)");
         }
         $this->gamestate->nextState('again');
     }
@@ -469,28 +448,26 @@ class hardback extends Table
     function stBasic(): void
     {
         $player = PlayerMgr::getPlayer();
-        $tableau = CardMgr::getTableau();
-        $points = 0;
-        $coins = 0;
+        $tableau = CardMgr::getTableau($player->getId());
         foreach ($tableau as $card) {
-            $coinValue = $card->getBenefitValue(COINS);
-            if ($coinValue) {
-                $coins += $coinValue;
+            $benefits = $card->getBenefits(COINS);
+            foreach ($benefits as $benefit) {
+                $player->addCoins($benefit['value']);
             }
-            $pointValue = $card->getBenefitValue(POINTS);
-            if ($pointValue) {
-                $points += $pointValue;
+            $benefits = $card->getBenefits(POINTS);
+            foreach ($benefits as $benefit) {
+                $stat = $benefit['activation'] == FROM_GENRE ? 'pointsGenre' : 'pointsBasic';
+                $player->addPoints($benefit['value'], $stat);
             }
         }
-        $player->addPoints($points);
-        $player->addCoins($coins);
         $this->gamestate->nextState('next');
     }
 
     function argTrash(): array
     {
+        $player = PlayerMgr::getPlayer();
         $cardIds = [];
-        $tableau = CardMgr::getTableau();
+        $tableau = CardMgr::getTableau($player->getId());
         foreach ($tableau as $card) {
             if ($card->hasBenefit(TRASH_COINS) || $card->hasBenefit(TRASH_POINTS)) {
                 $cardIds[] = $card->getId();
@@ -498,17 +475,11 @@ class hardback extends Table
         }
         return [
             'cardIds' => $cardIds,
+            'coins' => $player->getCoins(),
+            'points' => $player->getScore() - $this->getGameStateValue('startScore'),
+            'icon' => ' star',
+            'skip' => empty($cardIds),
         ];
-    }
-
-    function stTrash(): void
-    {
-        $cardIds = $this->gamestate->state()['args']['cardIds'];
-        if (empty($cardIds)) {
-            $this->notifyAllPlayers("message", "No cards to trash", []);
-            $this->gamestate->nextState('next');
-            return;
-        }
     }
 
     function trash(int $cardId): void
@@ -519,25 +490,86 @@ class hardback extends Table
         }
 
         $card = CardMgr::getCard($cardId);
-        $coins = $card->getBenefitValue(TRASH_COINS);
-        $icon = null;
-        if ($coins) {
-            CardMgr::useBenefit($card, TRASH_COINS);
-            $player->addCoins($coins);
-            $icon = '¢';
-        } else {
-            CardMgr::useBenefit($card, TRASH_POINTS);
-            $points = $card->getBenefitValue(TRASH_POINTS);
-            $player->addPoints($points);
-            $icon = ' star';
+        $benefits = $card->getBenefits(TRASH_POINTS);
+        if (empty($benefits)) {
+            $benefits = $card->getBenefits(TRASH_COINS);
         }
+        if (empty($benefits)) {
+            $benefits = $card->getBenefits(TRASH_DISCARD);
+        }
+        if (empty($benefits)) {
+            throw new BgaVisibleSystemException("Not possible for $player to trash $card");
+        }
+
+        $icon = null;
+        $amount = $benefits[0]['value'];
+        if ($benefits[0]['id'] == TRASH_POINTS) {
+            $stat = $benefits[0]['activation'] == FROM_GENRE ? 'pointsGenre' : 'pointsBasic';
+            $player->addPoints($amount, $stat);
+            $icon = ' star';
+        } else {
+            $player->addCoins($amount);
+            $icon = '¢';
+        }
+        CardMgr::useBenefit($card, $benefits[0]['id']);
 
         self::notifyAllPlayers('message', '${player_name} trashes ${genre}${letter} to earn ${amount}${icon}', [
             'player_name' => $player->getName(),
             'genre' => $card->getGenreName() . ' ',
             'letter' => $card->getLetter(),
-            'amount' => $coins ?? $points,
+            'amount' => $amount,
             'icon' => $icon,
+        ]);
+        CardMgr::discard($card, 'trash');
+        $this->gamestate->nextState('again');
+    }
+
+
+    function argTrashDiscard(): array
+    {
+        $player = PlayerMgr::getPlayer();
+        $sources = [];
+        if ($player->getDiscardCount() > 0) {
+            $tableau = CardMgr::getTableau($player->getId());
+            foreach ($tableau as $card) {
+                $benefits = $card->getBenefits(TRASH_DISCARD);
+                if (!empty($benefits)) {
+                    $sources[$card->getId()] = $benefits[0]['value'];
+                }
+            }
+            arsort($sources);
+        }
+        return [
+            'sourceIds' => array_keys($sources),
+            'amount' => reset($sources),
+            'coins' => $player->getCoins(),
+            'points' => $player->getScore() - $this->getGameStateValue('startScore'),
+            'icon' => ' star',
+            'skip' => empty($sources),
+        ];
+    }
+
+    function trashDiscard(int $cardId): void
+    {
+        $player = PlayerMgr::getPlayer();
+        $sourceIds = $this->gamestate->state()['args']['sourceIds'];
+        if (empty($sourceIds)) {
+            throw new BgaVisibleSystemException("Not possible for $player to jail any card");
+        }
+        $source = CardMgr::getCard($sourceIds[0]);
+        $card = CardMgr::getCard($cardId);
+        if ($card == null || !$card->isLocation($player->getDiscardLocation())) {
+            throw new BgaVisibleSystemException("Not possible for $player to trash $card");
+        }
+
+        $amount = $this->gamestate->state()['args']['amount'];
+        CardMgr::useBenefit($source, TRASH_DISCARD);
+        $player->addCoins($amount);
+        self::notifyAllPlayers('message', '${player_name} trashes ${genre}${letter} to earn ${amount}¢', [
+            'player_name' => $player->getName(),
+            'genre' => $card->getGenreName() . ' ',
+            'letter' => $card->getLetter(),
+            'amount' => $amount,
         ]);
         CardMgr::discard($card, 'trash');
         $this->gamestate->nextState('again');
@@ -546,7 +578,7 @@ class hardback extends Table
     function argJail(): array
     {
         $sourceIds = [];
-        $tableau = CardMgr::getTableau();
+        $tableau = CardMgr::getTableau(self::getActivePlayerId());
         foreach ($tableau as $card) {
             if ($card->hasBenefit(JAIL)) {
                 $sourceIds[] = $card->getId();
@@ -554,17 +586,8 @@ class hardback extends Table
         }
         return [
             'sourceIds' => $sourceIds,
+            'skip' => empty($sourcesIds),
         ];
-    }
-
-    function stJail(): void
-    {
-        $sourceIds = $this->gamestate->state()['args']['sourceIds'];
-        if (empty($sourceIds)) {
-            $this->notifyAllPlayers("message", "No cards to jail", []);
-            $this->gamestate->nextState('next');
-            return;
-        }
     }
 
     function jail(int $cardId, string $choice): void
@@ -572,29 +595,29 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         $sourceIds = $this->gamestate->state()['args']['sourceIds'];
         if (empty($sourceIds)) {
-            throw new BgaVisibleSystemException("Not possible for {$player->getName()} to jail any card");
+            throw new BgaVisibleSystemException("Not possible for $player to jail any card");
         }
         $source = CardMgr::getCard($sourceIds[0]);
         $card = CardMgr::getCard($cardId);
         if ($card == null || !$card->isLocation('offer')) {
-            throw new BgaVisibleSystemException("Not possible for {$player->getName()} to jail card $card");
+            throw new BgaVisibleSystemException("Not possible for $player to jail card $card");
         }
 
         CardMgr::useBenefit($source, JAIL);
         if ($choice == 'trash') {
-            CardMgr::discard($card, 'trash');
             self::notifyAllPlayers('message', '${player_name} trashes ${genre}${letter} from the offer row', [
                 'player_name' => $player->getName(),
                 'genre' => $card->getGenreName() . ' ',
                 'letter' => $card->getLetter(),
             ]);
+            CardMgr::discard($card, 'trash');
         } else {
-            CardMgr::jail($player->getId(), $card);
             self::notifyAllPlayers('message', '${player_name} jails ${genre}${letter} from the offer row', [
                 'player_name' => $player->getName(),
                 'genre' => $card->getGenreName() . ' ',
                 'letter' => $card->getLetter(),
             ]);
+            CardMgr::jail($player->getId(), $card);
         }
         CardMgr::drawCards(1, 'deck', 'offer', null, true);
         $this->gamestate->nextState('again');
@@ -659,18 +682,22 @@ class hardback extends Table
         $cardIds = CardMgr::getIds(array_filter($offer, function ($card) use ($player) {
             return $player->getCoins() >= $card->getCost();
         }));
+        $advert = null;
+        if ($this->gamestate->table_globals[OPTION_ADVERTS]) {
+            foreach ($this->adverts as $points => $coins) {
+                if ($points > $player->getAdvert()) {
+                    $advert = ['coins' => $coins, 'points' => $points, 'icon' => ' star'];
+                    break;
+                }
+            }
+        }
         return [
             'cardIds' => $cardIds,
             'convert' => $player->getInk() >= 3,
             'coins' => $player->getCoins(),
+            'advert' => $advert,
+            'skip' => empty($cardIds) && $player->getInk() < 3,
         ];
-    }
-
-    function stPurchase(): void
-    {
-        if (empty($this->gamestate->state()['args']['cardIds']) && !$this->gamestate->state()['args']['convert']) {
-            $this->skip();
-        }
     }
 
     function purchase(int $cardId): void
@@ -682,11 +709,11 @@ class hardback extends Table
         $card = CardMgr::getCard($cardId);
         $oldLocation = $card->getLocation();
         $msg = '${player_name} spends ${coins}¢ to purchase ${genre}${letter}';
-        $player->spendCoins($card->getCost());
         if ($card->getPoints() > 0) {
             $msg = '${player_name} spends ${coins}¢ to purchase ${genre}${letter} and earns ${points}${icon}';
-            $player->addPoints($card->getPoints());
+            $player->addPoints($card->getPoints(), 'pointsPurchase', false);
         }
+        $player->spendCoins($card->getCost());
         CardMgr::discard($card, $player->getDiscardLocation());
         self::notifyAllPlayers('message', $msg, [
             'player_name' => $player->getName(),
@@ -705,12 +732,33 @@ class hardback extends Table
     function convert(): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-        $player->spendInk(3);
+        $player->spendInk(3, false);
         $player->addCoins(1);
         self::notifyAllPlayers('message', '${player_name} spends 3 ink for 1¢', [
             'player_name' => $player->getName(),
         ]);
         $this->gamestate->nextState('again');
+    }
+
+    function advert(): void
+    {
+        if ($this->gamestate->table_globals[OPTION_ADVERTS]) {
+            $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+            foreach ($this->adverts as $points => $coins) {
+                if ($points > $player->getAdvert()) {
+                    $player->buyAdvert($points, $coins);
+                    $this->notifyAllPlayers('message', '${player_name} spends ${coins}¢ to purchase the ${points}${icon} advertisement', [
+                        'player_name' => $player->getName(),
+                        'coins' => $coins,
+                        'points' => $points,
+                        'icon' => ' star',
+                    ]);
+                    $this->gamestate->nextState('again');
+                    return;
+                }
+            }
+        }
+        throw new BgaVisibleSystemException("Not possible for $player to purchase an advertisement");
     }
 
     function skip(): void
@@ -729,8 +777,8 @@ class hardback extends Table
         $amount = $player->getCoins();
         if ($amount > 0) {
             // Purchase ink with remaining coins
-            $player->spendCoins($amount);
-            $player->addInk($amount, false);
+            $player->spendCoins($amount, false);
+            $player->addInk($amount);
             $this->notifyAllPlayers('pause', '${player_name} spends ${amount}¢ to purchase ${amount} ink and ends their turn', [
                 'player_name' => $player->getName(),
                 'amount' => $amount,
@@ -815,15 +863,6 @@ class hardback extends Table
         $this->incStat(1, 'useRemover', $player->getId());
     }
 
-    /*
-     * END OF THE GAME
-     */
-
-    function stGameEndStats(): void
-    {
-        $this->gamestate->nextState('gameEnd');
-    }
-
     //////////////////////////////////////////////////////////////////////////////
     //////////// Zombie
     ////////////
@@ -843,26 +882,7 @@ class hardback extends Table
 
     function zombieTurn($state, $active_player): void
     {
-        $statename = $state['name'];
-
-        if ($state['type'] === "activeplayer") {
-            switch ($statename) {
-                default:
-                    $this->gamestate->nextState("zombiePass");
-                    break;
-            }
-
-            return;
-        }
-
-        if ($state['type'] === "multipleactiveplayer") {
-            // Make sure player is in a non blocking status for role turn
-            $this->gamestate->setPlayerNonMultiactive($active_player, '');
-
-            return;
-        }
-
-        throw new BgaVisibleSystemException("Zombie mode not supported at this game state: " . $statename);
+        $this->gamestate->nextState('zombie');
     }
 
     ///////////////////////////////////////////////////////////////////////////////////:

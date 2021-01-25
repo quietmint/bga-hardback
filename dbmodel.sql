@@ -19,23 +19,24 @@
 --       you have to restart a game to see your changes in database.
 
 CREATE TABLE IF NOT EXISTS `card` (
-  `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `card_type` varchar(32) NOT NULL,
-  `card_type_arg` int(11) NOT NULL,
-  `card_location` varchar(32) NOT NULL,
-  `card_location_arg` int(11) NOT NULL,
+  `id` int(3) unsigned NOT NULL AUTO_INCREMENT,
+  `refId` int(3) unsigned NOT NULL,
+  `location` varchar(32) NOT NULL,
+  `order` int(3) NOT NULL DEFAULT -1,
+  `origin` varchar(32) NOT NULL,
+  `factor` int(1) NOT NULL DEFAULT 1,
   `ink` int(1),
   `wild` char(1),
-  `factor` int(1) NOT NULL DEFAULT 1,
-  PRIMARY KEY (`card_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS `resolve` (
-  `card_id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL,
   `benefit_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`card_id`, `benefit_id`)
+  PRIMARY KEY (`id`, `benefit_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 ALTER TABLE `player` ADD `coins` INT NOT NULL DEFAULT 0;
 ALTER TABLE `player` ADD `ink` INT NOT NULL DEFAULT 0;
 ALTER TABLE `player` ADD `remover` INT NOT NULL DEFAULT 0;
+ALTER TABLE `player` ADD `advert` INT NOT NULL DEFAULT 0;

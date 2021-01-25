@@ -23,6 +23,7 @@ define('SPECIAL_ADVENTURE', 20); // 2 coins for each adventure
 define('SPECIAL_HORROR', 21); // opponents return ink
 define('SPECIAL_MYSTERY', 22); // 1 star for each wild
 define('SPECIAL_ROMANCE', 23); // peek top 3 cards
+define('ALL_BENEFITS', 99);
 
 // Player colors
 define('RED', 'ff0000');
@@ -34,6 +35,10 @@ define('PURPLE', '982fff');
 // Ink values
 define('HAS_INK', 1);
 define('HAS_REMOVER', 2);
+
+// Benefit activation values
+define('FROM_BASIC', 1);
+define('FROM_GENRE', 2);
 
 // Globals
 define('COUNT_STARTER', 10);
@@ -48,11 +53,17 @@ define('AWARD_WINNER', 30);
 
 // Game statistics
 define('STAT_TURNS', 10);
-define('STAT_LONGEST_WORD', 11);
-define('STAT_INVALID_WORDS', 12);
+define('STAT_WORDS', 11);
+define('STAT_LONGEST_WORD', 12);
+define('STAT_INVALID_WORDS', 13);
 define('STAT_USE_INK', 20);
 define('STAT_USE_REMOVER', 21);
 define('STAT_COINS', 30);
+define('STAT_POINTS_BASIC', 40);
+define('STAT_POINTS_GENRE', 41);
+define('STAT_POINTS_PURCHASE', 42);
+define('STAT_POINTS_AWARD', 43);
+define('STAT_POINTS_ADVERT', 44);
 
 // Game options
 define('OPTION_DICTIONARY', 100);
@@ -76,18 +87,15 @@ define('COOP_EASY', 2);
 // Game states
 define('ST_BGA_GAME_SETUP', 1);
 define('ST_PLAYER_TURN', 2);
-
 define('ST_UNCOVER', 10);
 define('ST_DOUBLE', 11);
-define('ST_BASIC', 20);
-define('ST_TRASH', 21);
-define('ST_EITHER', 30);
-define('ST_JAIL', 31);
-
-define('ST_FLUSH', 80);
-define('ST_PURCHASE', 81);
+define('ST_BASIC', 12);
+define('ST_TRASH', 13);
+define('ST_TRASH_DISCARD', 14);
+define('ST_EITHER', 15);
+define('ST_JAIL', 16);
+define('ST_FLUSH', 20);
+define('ST_PURCHASE', 21);
 define('ST_CLEANUP', 90);
 define('ST_NEXT_PLAYER', 91);
-
-define('ST_GAME_END', 98);
 define('ST_BGA_GAME_END', 99);
