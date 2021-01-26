@@ -54,17 +54,19 @@ define('AWARD_WINNER', 30);
 
 // Game statistics
 define('STAT_TURNS', 10);
-define('STAT_WORDS', 11);
-define('STAT_LONGEST_WORD', 12);
-define('STAT_INVALID_WORDS', 13);
-define('STAT_USE_INK', 20);
-define('STAT_USE_REMOVER', 21);
-define('STAT_COINS', 30);
-define('STAT_POINTS_BASIC', 40);
-define('STAT_POINTS_GENRE', 41);
-define('STAT_POINTS_PURCHASE', 42);
-define('STAT_POINTS_AWARD', 43);
-define('STAT_POINTS_ADVERT', 44);
+define('STAT_POINTS_BASIC', 10);
+define('STAT_POINTS_GENRE', 11);
+define('STAT_POINTS_PURCHASE', 12);
+define('STAT_POINTS_AWARD', 13);
+define('STAT_POINTS_ADVERT', 14);
+define('STAT_COINS', 20);
+define('STAT_CARDS_PURCHASE', 30);
+define('STAT_CARDS_TRASH', 31);
+define('STAT_WORDS', 50);
+define('STAT_LONGEST_WORD', 51);
+define('STAT_INVALID_WORDS', 52);
+define('STAT_USE_INK', 60);
+define('STAT_USE_REMOVER', 61);
 
 // Game options
 define('OPTION_DICTIONARY', 100);
@@ -72,6 +74,7 @@ define('TWELVEDICTS', 1);
 define('NWL', 2);
 define('COLLINS', 3);
 
+define('OPTION_LENGTH', 105);
 define('OPTION_AWARDS', 101);
 define('OPTION_ADVERTS', 102);
 define('OPTION_EVENTS', 103);

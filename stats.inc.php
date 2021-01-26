@@ -64,36 +64,6 @@ $stats_type = [
     ],
 
     'player' => [
-        'words' => [
-            'id' => STAT_WORDS,
-            'name' => 'Words',
-            'type' => 'int',
-        ],
-        'longestWord' => [
-            'id' => STAT_LONGEST_WORD,
-            'name' => 'Longest word',
-            'type' => 'int',
-        ],
-        'invalidWords' => [
-            'id' => STAT_INVALID_WORDS,
-            'name' => 'Misspelled words',
-            'type' => 'int',
-        ],
-        'useInk' => [
-            'id' => STAT_USE_INK,
-            'name' => 'Ink used',
-            'type' => 'int',
-        ],
-        'useRemover' => [
-            'id' => STAT_USE_REMOVER,
-            'name' => 'Remover used',
-            'type' => 'int',
-        ],
-        'coins' => [
-            'id' => STAT_COINS,
-            'name' => 'Coins earned',
-            'type' => 'int',
-        ],
         'pointsBasic' => [
             'id' => STAT_POINTS_BASIC,
             'name' => 'Points from basic benefits',
@@ -117,6 +87,46 @@ $stats_type = [
         'pointsAdvert' => [
             'id' => STAT_POINTS_ADVERT,
             'name' => 'Points from adverts',
+            'type' => 'int',
+        ],
+        'coins' => [
+            'id' => STAT_COINS,
+            'name' => 'Coins earned',
+            'type' => 'int',
+        ],
+        'cardsPurchase' => [
+            'id' => STAT_CARDS_PURCHASE,
+            'name' => 'Cards purchased',
+            'type' => 'int',
+        ],
+        'cardsTrash' => [
+            'id' => STAT_CARDS_TRASH,
+            'name' => 'Cards trashed',
+            'type' => 'int',
+        ],
+        'words' => [
+            'id' => STAT_WORDS,
+            'name' => 'Words',
+            'type' => 'int',
+        ],
+        'longestWord' => [
+            'id' => STAT_LONGEST_WORD,
+            'name' => 'Longest word',
+            'type' => 'int',
+        ],
+        'invalidWords' => [
+            'id' => STAT_INVALID_WORDS,
+            'name' => 'Misspelled words',
+            'type' => 'int',
+        ],
+        'useInk' => [
+            'id' => STAT_USE_INK,
+            'name' => 'Ink used',
+            'type' => 'int',
+        ],
+        'useRemover' => [
+            'id' => STAT_USE_REMOVER,
+            'name' => 'Remover used',
             'type' => 'int',
         ],
     ],

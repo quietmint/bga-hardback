@@ -46,6 +46,24 @@ $game_options = [
         ]
     ],
 
+    OPTION_LENGTH => [
+        'name' => 'Game Length',
+        'default' => 60,
+        'values' => [
+            40 => [
+                'name' => 'Shorter (40 Points)',
+                'tmdisplay' => 'Shorter (40 Points)',
+            ],
+            60 => [
+                'name' => 'Standard (60 Points)',
+            ],
+            80 => [
+                'name' => 'Longer (80 Points)',
+                'tmdisplay' => 'Longer (80 Points)',
+            ],
+        ]
+    ],
+
     OPTION_AWARDS => [
         'name' => 'Literary Awards',
         'default' => YES,

@@ -179,8 +179,8 @@ $machinestates = [
 
     ST_FLUSH => [
         'name' => 'flush',
-        'description' => clienttranslate('${actplayer} may flush the offer row'),
-        'descriptionmyturn' => clienttranslate('${you} may flush the offer row'),
+        'description' => clienttranslate('${actplayer} may flush the offer row (${coins}¢ available)'),
+        'descriptionmyturn' => clienttranslate('${you} may flush the offer row (${coins}¢ available)'),
         'type' => 'activeplayer',
         'args' => 'argFlush',
         'action' => 'stFlush',

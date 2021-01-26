@@ -106,17 +106,19 @@ class hardback extends Table
         // Init game statistics
         self::initStat('table', 'turns', 0);
         self::initStat('table', 'longestWord', 0);
-        self::initStat('player', 'words', 0);
-        self::initStat('player', 'longestWord', 0);
-        self::initStat('player', 'invalidWords', 0);
-        self::initStat('player', 'useInk', 0);
-        self::initStat('player', 'useRemover', 0);
-        self::initStat('player', 'coins', 0);
         self::initStat('player', 'pointsBasic', 0);
         self::initStat('player', 'pointsGenre', 0);
         self::initStat('player', 'pointsPurchase', 0);
         self::initStat('player', 'pointsAward', 0);
         self::initStat('player', 'pointsAdvert', 0);
+        self::initStat('player', 'coins', 0);
+        self::initStat('player', 'cardsPurchase', 0);
+        self::initStat('player', 'cardsTrash', 0);
+        self::initStat('player', 'words', 0);
+        self::initStat('player', 'longestWord', 0);
+        self::initStat('player', 'invalidWords', 0);
+        self::initStat('player', 'useInk', 0);
+        self::initStat('player', 'useRemover', 0);
 
         // Deal the cards
         CardMgr::setup();
@@ -517,7 +519,6 @@ class hardback extends Table
             $icon = '¢';
         }
         CardMgr::useBenefit($card, $benefits[0]['id']);
-
         self::notifyAllPlayers('message', '${player_name} trashes ${genre}${letter} to earn ${amount}${icon}', [
             'player_name' => $player->getName(),
             'genre' => $card->getGenreName() . ' ',
@@ -526,6 +527,7 @@ class hardback extends Table
             'icon' => $icon,
         ]);
         CardMgr::discard($card, 'trash');
+        $this->incStat(1, 'cardsTrash', $player->getId());
         $this->gamestate->nextState('again');
     }
 
@@ -577,6 +579,7 @@ class hardback extends Table
             'amount' => $amount,
         ]);
         CardMgr::discard($card, 'trash');
+        $this->incStat(1, 'cardsTrash', $player->getId());
         $this->gamestate->nextState('again');
     }
 
@@ -634,7 +637,9 @@ class hardback extends Table
 
     function argFlush(): array
     {
+        $player = PlayerMgr::getPlayer();
         return [
+            'coins' => $player->getCoins(),
             'possible' => CardMgr::canFlushOffer(),
         ];
     }
@@ -658,10 +663,15 @@ class hardback extends Table
                 }
             }
         }
-        if (empty($msg)) {
-            $msg[] = 'nothing';
+        $count = count($msg);
+        $msgStr = 'nothing';
+        if ($count >= 1) {
+            $msgStr = array_pop($msg);
+            if ($count >= 2) {
+                $msgStr = implode(', ', $msg) . " and $msgStr";
+            }
         }
-        self::notifyAllPlayers('message', '${player_name} earns ' . implode(', ', $msg) . ' this round', [
+        self::notifyAllPlayers('message', '${player_name} earns ' . $msgStr . ' this round', [
             'player_name' => $player->getName(),
             'icon' => ' star',
         ]);
@@ -731,6 +741,7 @@ class hardback extends Table
         if ($oldLocation == 'offer') {
             CardMgr::drawCards(1, 'deck', 'offer', null, true);
         }
+        $this->incStat(1, 'cardsPurchase', $player->getId());
         $this->gamestate->nextState('again');
     }
 
@@ -846,10 +857,11 @@ class hardback extends Table
         if (empty($cards)) {
             throw new BgaUserException("Your deck is empty");
         }
+        $card = reset($cards);
         if ($player->isActive()) {
-            $player->notifyInk(reset($cards));
+            $player->notifyInk($card);
         }
-        CardMgr::inkCards($cards);
+        CardMgr::inkCard($card);
         $this->incStat(1, 'useInk', $player->getId());
     }
 
@@ -864,7 +876,7 @@ class hardback extends Table
         if ($player->isActive()) {
             $player->notifyRemover($card);
         }
-        CardMgr::inkCards($card, HAS_REMOVER);
+        CardMgr::inkCard($card, HAS_REMOVER);
         $this->incStat(1, 'useRemover', $player->getId());
     }
 
