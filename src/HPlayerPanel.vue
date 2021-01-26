@@ -1,6 +1,9 @@
 <template>
   <teleport :to="teleportTo">
     <div class="tailwind">
+      <!-- First player marker -->
+      <div v-if="player.order == 1">TODO: First player marker</div>
+
       <!-- Ink, remover, card counts -->
       <div :class="colorClass" class="grid grid-cols-4 gap-1 mt-1 text-14 text-center">
         <div class="rounded-lg bg-white bg-opacity-50" title="Ink">

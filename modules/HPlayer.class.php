@@ -48,6 +48,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
             'genreCounts' => $this->getGenreCounts(),
             'ink' => $this->ink,
             'name' => $this->name,
+            'order' => $this->order,
             'remover' => $this->remover,
             'score' => $this->score,
             'zombie' => $this->zombie,
