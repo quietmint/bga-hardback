@@ -15,28 +15,28 @@
           {{ card.letter }}
         </div>
 
-        <div :class="benefitClass" class="absolute">
+        <div :class="benefitClass" class="absolute text-15">
           <!-- Basic Benefits -->
           <ul title="Basic benefits always activate">
-            <li v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.text"></span><Icon v-if="benefit.icon" :icon="benefit.icon" class="inline text-18" /><span v-html="benefit.text2"></span><Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline text-18" /></li>
+            <li v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.text"></span><Icon v-if="benefit.icon" :icon="benefit.icon" class="inline text-17" /><span v-html="benefit.text2"></span><Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline text-17" /></li>
           </ul>
 
           <!-- Genre Benefits -->
           <div v-if="card.genreBenefitsList.length" :class="textClass" class="flex items-center border-t border-black" :title="'Genre benefits activate if you play multiple ' + card.genreName + ' cards'">
             <Icon :icon="card.genreName" class="text-24 flex-none" />
             <ul class="border-l border-black ml-1 py-1 pl-1">
-              <li v-for="benefit in card.genreBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.text"></span><Icon v-if="benefit.icon" :icon="benefit.icon" class="inline text-18" /><span v-html="benefit.text2"></span><Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline text-18" /></li>
+              <li v-for="benefit in card.genreBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.text"></span><Icon v-if="benefit.icon" :icon="benefit.icon" class="inline text-17" /><span v-html="benefit.text2"></span><Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline text-17" /></li>
             </ul>
           </div>
         </div>
 
         <!-- ID -->
-        <div class="absolute bottom-1 right-1 text-12 text-gray-400">{{ card.origin }} (#{{ card.id }}/{{ card.order }})</div>
+        <div class="absolute top-0 right-0 text-12 text-white" style="text-shadow: 1px 1px black;">{{ card.origin }} (#{{ card.id }}/{{ card.order }})</div>
       </div>
 
       <!-- Wild -->
       <div class="cardface back rounded-lg">
-        <div v-if="card.wild" class="absolute wildletter text-center leading-none top-11 w-full">
+        <div v-if="card.wild" class="absolute wildletter text-center leading-none top-10 w-full">
           {{ card.wild }}
         </div>
       </div>
@@ -177,7 +177,7 @@ export default {
     cardClass(): string {
       let c = "card-" + this.card.genreName + " ";
       c += this.clickAction ? "cursor-pointer " : "cursor-not-allowed ";
-      c += this.card.timeless ? "timeless w-60 h-44 " : "w-44 h-60 ";
+      c += this.card.timeless ? "timeless " : "";
       if (this.card.ink) {
         c += "mx-2 ring ring-black ";
       } else if (this.card.location == "jail" || this.card.origin.startsWith("timeless")) {
@@ -189,7 +189,7 @@ export default {
     },
 
     bookmarkClass(): string {
-      let c = this.card.timeless ? "flex-row bottom-2 left-0 w-20 h-7 " : "flex-col top-1 left-2 w-7 h-20 ";
+      let c = this.card.timeless ? "flex-row w-20 h-7 " : "flex-col w-7 h-20 ";
       switch (this.card.genre) {
         case Constants.ADVENTURE:
           return c + "text-yellow-900";
@@ -205,11 +205,11 @@ export default {
     },
 
     letterClass(): string {
-      return "letter-" + this.card.letter + (this.card.timeless ? " top-0 w-28" : " top-8 w-full");
+      return "letter-" + this.card.letter + (this.card.timeless ? " top-0 w-28" : " top-7 w-full");
     },
 
     benefitClass(): string {
-      return this.card.timeless ? "top-8 bottom-0 right-1 w-28 pl-1" : "bottom-0 left-0 right-0 h-24 px-2 pb-1";
+      return this.card.timeless ? "top-8 bottom-0 right-1 w-28 pl-2" : "bottom-0 left-0 right-0 h-24 px-2 pb-1";
     },
 
     textClass(): string {
