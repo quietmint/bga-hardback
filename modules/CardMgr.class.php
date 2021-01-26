@@ -671,7 +671,7 @@ class CardMgr extends APP_GameClass
         $opponent = [];
         $tableauIds = [];
         foreach ($cards as $card) {
-            $sql = "UPDATE card SET `ink` = NULL, `wild` = " . ($card->isWild() ? "'{$card->getLetter()}'" : "NULL") . ", `location` = 'tableau', `order` = $order WHERE `id` = {$card->getId()}";
+            $sql = "UPDATE card SET `wild` = " . ($card->isWild() ? "'{$card->getLetter()}'" : "NULL") . ", `location` = 'tableau', `order` = $order WHERE `id` = {$card->getId()}";
             self::DbQuery($sql);
             $order++;
             $tableauIds[] = $card->getId();
@@ -791,20 +791,14 @@ class CardMgr extends APP_GameClass
         self::notifyCards($newCards);
     }
 
-    public static function inkCards(array &$cards, int $inkValue = HAS_INK): void
+    public static function inkCard(HCard $card, int $inkValue = HAS_INK): void
     {
-        $updatedIds = self::getIds($cards);
-        $sql = "UPDATE card SET `ink` = $inkValue WHERE `id` IN (" . implode(',', $updatedIds) . ")";
+        $sql = "UPDATE card SET `ink` = $inkValue WHERE `id` = {$card->getId()} AND `ink` != $inkValue";
         self::DbQuery($sql);
-        foreach ($cards as &$card) {
-            $card->setInk($inkValue);
-            if ($inkValue == HAS_INK) {
-                $card->setOrigin($card->getLocation());
-            }
-        }
+        $card->setInk($inkValue);
 
         // Notify
-        self::notifyCards($cards);
+        self::notifyCards($card);
     }
 
     public static function uncover(HCard &$card, HCard $source): void
