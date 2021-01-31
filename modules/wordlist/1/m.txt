@@ -127,8 +127,10 @@ mafiosos
 mag
 magazine
 magazines
+mage
 magenta
 magentas
+mages
 maggot
 maggots
 maggoty
