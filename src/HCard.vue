@@ -31,7 +31,7 @@
         </div>
 
         <!-- ID -->
-        <div class="absolute top-0 right-0 text-12 text-white" style="text-shadow: 1px 1px black">{{ card.origin }} (#{{ card.id }}/{{ card.order }})<br />DRAG: {{ card.drag }}</div>
+        <div class="absolute top-0 right-0 text-12 text-white" style="text-shadow: 1px 1px black">{{ card.origin }} (#{{ card.id }}/{{ card.order }})</div>
       </div>
 
       <!-- Wild -->
@@ -159,11 +159,11 @@ export default {
   components: { Icon },
 
   mounted() {
-    this.emitter.on("clickAll", this.clickAll);
+    this.emitter.on("requestClickCard", this.requestClickCard);
   },
 
   beforeUnmount() {
-    this.emitter.off("clickAll", this.clickAll);
+    this.emitter.off("requestClickCard", this.requestClickCard);
   },
 
   props: {
@@ -307,9 +307,8 @@ export default {
   },
 
   methods: {
-    clickAll(evt): void {
-      console.log("clickAll", evt, this.card.id);
-      if (this.card.location === evt.location) {
+    requestClickCard(id: number): void {
+      if (id == this.card.id) {
         this.clickCard();
       }
     },

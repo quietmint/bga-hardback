@@ -123,11 +123,11 @@
 
 <script lang="ts">
 import Constants from "./constants.js";
-import { nextTick } from "vue";
-import { firstBy } from "thenby";
-import { Icon, addIcon } from "@iconify/vue";
 import HCardList from "./HCardList.vue";
 import HPlayerPanel from "./HPlayerPanel.vue";
+import { Icon, addIcon } from "@iconify/vue";
+import { firstBy } from "thenby";
+import { nextTick } from "vue";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const repaint = () => new Promise((resolve) => requestAnimationFrame(resolve));
@@ -192,8 +192,28 @@ addIcon("cards", mdiCards);
 
 export default {
   name: "HGame",
-  emits: ["clickAll"],
+  emits: ["requestClickCard"],
   components: { Icon, HCardList, HPlayerPanel },
+
+  provide() {
+    return {
+      gamestate: this.gamestate,
+    };
+  },
+
+  mounted() {
+    this.emitter.on("clickCard", this.clickCard);
+    this.emitter.on("clickFooter", this.clickFooter);
+    this.emitter.on("drag", this.drag);
+    this.visibleLocations[this.discardLocation] = false;
+    this.visibleLocations[this.handLocation] = true;
+  },
+
+  beforeUnmount() {
+    this.emitter.off("clickCard", this.clickCard);
+    this.emitter.off("clickFooter", this.clickFooter);
+    this.emitter.off("drag", this.drag);
+  },
 
   data() {
     return {
@@ -218,26 +238,6 @@ export default {
     };
   },
 
-  mounted() {
-    this.emitter.on("clickCard", this.clickCard);
-    this.emitter.on("clickFooter", this.clickFooter);
-    this.emitter.on("drag", this.drag);
-    this.visibleLocations[this.discardLocation] = false;
-    this.visibleLocations[this.handLocation] = true;
-  },
-
-  beforeUnmount() {
-    this.emitter.off("clickCard", this.clickCard);
-    this.emitter.off("clickFooter", this.clickFooter);
-    this.emitter.off("drag", this.drag);
-  },
-
-  provide() {
-    return {
-      gamestate: this.gamestate,
-    };
-  },
-
   computed: {
     spectator() {
       return this.game.isSpectator;
@@ -256,11 +256,7 @@ export default {
     },
 
     handCards() {
-      console.log("recompute handCards");
-      let location = this.handLocation;
-      let cards = this.cardsInLocation(location);
-      cards.sort(this.sorter(location));
-      return cards;
+      return this.cardsInLocation(this.handLocation);
     },
 
     handWildCards() {
@@ -272,33 +268,20 @@ export default {
     },
 
     discardCards() {
-      let location = this.discardLocation;
-      let cards = this.cardsInLocation(location);
-      cards.sort(this.sorter(location));
-      return cards;
+      return this.cardsInLocation(this.discardLocation);
     },
 
     tableauCards() {
-      let location = "tableau";
-      let cards = this.cardsInLocation(location);
-      cards.sort(this.sorter(location));
-      return cards;
+      return this.cardsInLocation("tableau");
     },
 
     timelessCards() {
-      let location = "timeless";
-      let cards = this.cardsInLocation(location);
-      cards.sort(this.sorter(location));
-      return cards;
+      return this.cardsInLocation("timeless");
     },
 
     offerCards() {
-      let location = "offer";
-      let cards = this.cardsInLocation(location);
-      cards.sort(this.sorter(location));
-      location = "jail";
-      let jail = this.cardsInLocation(location);
-      jail.sort(this.sorter(location));
+      let cards = this.cardsInLocation("offer");
+      let jail = this.cardsInLocation("jail");
       Array.prototype.push.apply(cards, jail);
       return cards;
     },
@@ -310,26 +293,25 @@ export default {
      */
 
     cardsInLocation(location: string): any[] {
-      return this.populateCards(
+      let cards = this.populateCards(
         Object.values(this.gamedatas.cards).filter((card: any) => {
           return card.location.startsWith(location);
         })
       );
+      let order = this.locationOrder[location] || "letter";
+      let sorter = firstBy(order);
+      if (order != "letter") {
+        sorter = sorter.thenBy("letter");
+      }
+      sorter = sorter.thenBy("id");
+      cards.sort(sorter);
+      return cards;
     },
 
     nextOrderInLocation(location: string): number {
       const cards = this.cardsInLocation(location);
       const max: number = cards.map((card: any) => card.order).reduce((acc: number, cur: number) => Math.max(acc, cur), -1);
       return max + 1;
-    },
-
-    sorter(location: string) {
-      let order = this.locationOrder[location];
-      if (order) {
-        return firstBy(order).thenBy("letter").thenBy("id");
-      } else {
-        return firstBy("letter").thenBy("id");
-      }
     },
 
     populateCard(card) {
@@ -633,7 +615,7 @@ export default {
       }
       callback = callback || function (res) {};
       let gameName = this.game.name();
-      console.log("Take action", action, data);
+      console.log(`Take action ${action}`, data);
       this.game.ajaxcall("/" + gameName + "/" + gameName + "/" + action + ".html", data, this, callback);
     },
 
@@ -678,7 +660,7 @@ export default {
     },
 
     onUpdateActionButtons(stateName: string, args: any): void {
-      console.log("State", stateName, args);
+      console.log(`State ${stateName}`, args);
       Object.assign(this.gamestate, this.game.gamedatas.gamestate, { active: this.game.isCurrentPlayerActive() });
 
       const actionRef = {
@@ -770,29 +752,25 @@ export default {
     },
 
     onEnteringState(stateName: string, args: any): void {
-      console.log("enter state ", stateName);
       if (stateName == "trashDiscard" && !args.skip) {
         //this.visibleLocations[this.discardLocation] = true;
       }
     },
 
     onLeavingState(stateName: string): void {
-      console.log("leave state ", stateName);
       if (stateName == "trashDiscard") {
         //this.visibleLocations[this.discardLocation] = false;
       }
     },
 
     onNotify(notif: any): void {
-      console.log("Notify", notif.type, notif.args);
+      console.log(`Notify ${notif.type}`, notif.args);
       if (notif.type == "cards") {
         let cards = Object.values(notif.args.cards);
         cards.sort(firstBy("location").thenBy("order").thenBy("id"));
-        console.log("packet of changed cards: " + cards.map((c: any) => c.id).join(", "));
         let delay = 0;
         const promises = cards.map((card) => this.animateCard(card, (delay += 0)));
         Promise.allSettled(promises).then((results) => {
-          console.log("packet allSettled: ", results.join(", "));
           this.game.notifqueue.setSynchronousDuration(0);
         });
       } else if (notif.type == "invalid") {
@@ -812,8 +790,9 @@ export default {
      */
 
     sort(location: string, order: string): void {
-      let cards = this.cardsInLocation(location);
+      this.locationOrder[location] = order;
       if (order == "shuffle") {
+        let cards = this.cardsInLocation(location);
         for (let i = cards.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [cards[i], cards[j]] = [cards[j], cards[i]];
@@ -822,16 +801,14 @@ export default {
           this.gamedatas.cards[card.id].shuffle = index;
         });
       }
-      this.locationOrder[location] = order;
     },
 
     drag(e): void {
       let { location, cardIds } = e;
-      console.log("drag", e);
       cardIds.forEach((id, index) => {
-        this.gamedatas.cards[id].drag = index;
+        this.gamedatas.cards[id].order = index;
       });
-      this.locationOrder[location] = "drag";
+      this.locationOrder[location] = "order";
 
       // Non-blocking server update
       // let lock = false;
@@ -843,7 +820,9 @@ export default {
     },
 
     clickAll(location): void {
-      this.emitter.emit("clickAll", { location });
+      this.cardsInLocation(location).forEach((card) => {
+        this.emitter.emit("requestClickCard", card.id);
+      });
     },
 
     resetAll(): void {
@@ -854,7 +833,6 @@ export default {
 
     clickCard(e): void {
       let { action, card } = e;
-      console.log("clickCard event in parent", action, card.id);
       if (action.action == "move") {
         this.animateCard(card, 0, {
           location: action.destination,
@@ -871,7 +849,6 @@ export default {
 
     clickFooter(e): void {
       let { action, card } = e;
-      console.log("clickFooter event in parent", action, card.id);
       if (action.action == "wild") {
         let wild = (prompt("What letter does this wild card represent?") || "").trim().toUpperCase();
         const regex = RegExp("^[A-Z]$");
