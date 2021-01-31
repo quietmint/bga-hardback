@@ -2,23 +2,9 @@
 
 class WordMgr extends APP_GameClass
 {
-    private static function getDictionary($dictionaryId, $letter)
+    private static function getDictionary(string $letter): array
     {
-        $path = null;
-        $dictionary = null;
-        switch ($dictionaryId) {
-            case TWELVEDICTS:
-                $path = __DIR__ . "/wordlist/12dicts/$letter.txt";
-                break;
-            case NWL:
-                $path = __DIR__ . "/wordlist/nwl/$letter.txt";
-                break;
-            case COLLINS:
-                $path = __DIR__ . "/wordlist/collins/$letter.txt";
-                break;
-            default:
-                throw new BgaVisibleSystemException("Invalid dictionary ID: $dictionaryId");
-        }
+        $path = __DIR__ . "/wordlist/" . hardback::$instance->gamestate->table_globals[OPTION_DICTIONARY] . "/$letter.txt";
         if (!is_readable($path)) {
             throw new BgaVisibleSystemException("Missing dictionary file: $path");
         }
@@ -26,11 +12,11 @@ class WordMgr extends APP_GameClass
         return $dictionary;
     }
 
-    public static function isWord($dictionaryId, $word)
+    public static function isWord(string $word): bool
     {
         $word = trim(strtolower($word));
         $letter = substr($word, 0, 1);
-        $dictionary = self::getDictionary($dictionaryId, $letter);
+        $dictionary = self::getDictionary($letter);
         return isset($dictionary[$word]);
     }
 }

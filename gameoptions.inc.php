@@ -32,16 +32,16 @@ $game_options = [
         'default' => TWELVEDICTS,
         'values' => [
             TWELVEDICTS => [
-                'name' => "Learner's Dictionary (65,000 words)",
-                'description' => '65,000 words appearing in at least three advanced-level dictionaries for learners of English',
+                'name' => 'Multisource (85,000 words)',
+                'description' => 'Words appearing in at least 2 of 12 English dictionaries',
             ],
             NWL => [
                 'name' => 'North American Scrabble (115,000 words)',
-                'description' => '115,000 words allowed in North American Scrabble tournaments',
+                'description' => 'Words allowed in North American Scrabble tournaments',
             ],
             COLLINS => [
                 'name' => 'Collins Scrabble (280,000 words)',
-                'description' => '280,000 words allowed in British Scrabble tournaments',
+                'description' => 'Words allowed in British Scrabble tournaments',
             ],
         ]
     ],

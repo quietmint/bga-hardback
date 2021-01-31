@@ -214,8 +214,7 @@ class hardback extends Table
         $word = implode('', array_map(function ($card) {
             return $card->getLetter();
         }, $cards));
-        $dictionaryId = $this->gamestate->table_globals[OPTION_DICTIONARY];
-        $valid = WordMgr::isWord($dictionaryId, $word);
+        $valid = WordMgr::isWord($word);
         if (!$valid) {
             $this->incStat(1, 'invalidWords', $player->getId());
             self::notifyAllPlayers('invalid', '${player_name} spells an invalid word, ${invalid}', [
