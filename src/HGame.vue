@@ -719,9 +719,9 @@ export default {
         },
         doctor: {
           text() {
-            return this.game.format_string_recursive("Purchase ${points}${icon} Advert for ${coins}¢", this.gamestate.args.advert);
+            return this.game.format_string_recursive("Purchase ${points}${icon} for ${coins}¢", this.gamestate.args.advert);
           },
-          color: "blue",
+          color: "gray",
           function() {
             this.takeAction("doctor");
           },
