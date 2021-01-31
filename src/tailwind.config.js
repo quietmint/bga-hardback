@@ -21,6 +21,9 @@ module.exports = {
             DEFAULT: '2px 2px 4px rgba(0, 0, 0, 0.5)',
         },
         extend: {
+            cursor: {
+                'ew-resize': 'ew-resize',
+            },
             ringWidth: {
                 'DEFAULT': '6px',
             },

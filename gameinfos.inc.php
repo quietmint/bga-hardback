@@ -37,10 +37,10 @@ $gameinfos = [
     'bgg_id' => 223750,
 
     // Players configuration that can be played (ex: 2 to 4 players)
-    'players' => [2, 3, 4, 5],
+    'players' => [1, 2, 3, 4, 5],
 
     // Suggest players to play with this number of players. Must be null if there is no such advice, or if there is only one possible player configuration.
-    'suggest_player_number' => null,
+    'suggest_player_number' => 3,
 
     // Discourage players to play with these numbers of players. Must be null if there is no such advice.
     'not_recommend_player_number' => null,
@@ -115,7 +115,7 @@ $gameinfos = [
         //  maximum possible value: 740 (ie: your game interface should fit with a 740px width (correspond to a 1024px screen)
         //  minimum possible value: 320 (the lowest value you specify, the better the display is on mobile)
         'min' => 960,
-        
+
 
         // Maximum width
         //  default: null (ie: no limit, the game interface is as big as the player's screen allows it).

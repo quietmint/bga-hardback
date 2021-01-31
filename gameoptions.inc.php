@@ -61,7 +61,15 @@ $game_options = [
                 'name' => 'Longer (80 Points)',
                 'tmdisplay' => 'Longer (80 Points)',
             ],
-        ]
+        ],
+        'displaycondition' => [
+            [
+                'type' => 'otheroption',
+                'id' => OPTION_COOP,
+                'value' => NO,
+            ],
+        ],
+        'notdisplayedmessage' => 'Standard (60 Points)',
     ],
 
     OPTION_AWARDS => [
@@ -150,6 +158,7 @@ $game_options = [
                 'name' => 'Cooperative (Easier)',
                 'tmdisplay' => 'Cooperative (Easier)',
                 'description' => 'Win or lose as a team against archrival Penny Dreadful',
+                'nobeginner' => true,
             ],
             COOP_HARD => [
                 'name' => 'Cooperative (Harder)',
@@ -157,6 +166,15 @@ $game_options = [
                 'description' => 'Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre',
                 'nobeginner' => true,
             ],
-        ]
+        ],
+        'startcondition' => [
+            NO => [
+                [
+                    'type' => 'minplayers',
+                    'value' => 2,
+                    'message' => 'Solo mode must use Cooperative Anthology',
+                ],
+            ],
+        ],
     ],
 ];

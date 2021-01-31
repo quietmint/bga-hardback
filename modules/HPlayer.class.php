@@ -2,17 +2,17 @@
 
 class HPlayer extends APP_GameClass implements JsonSerializable
 {
-    private $id;
-    private $advert;
-    private $coins;
-    private $color;
-    private $eliminated;
-    private $ink;
-    private $name;
-    private $order;
-    private $remover;
-    private $score;
-    private $zombie;
+    protected $id;
+    protected $advert;
+    protected $coins;
+    protected $color;
+    protected $eliminated;
+    protected $ink;
+    protected $name;
+    protected $order;
+    protected $remover;
+    protected $score;
+    protected $zombie;
 
     public function __construct($dbplayer)
     {
@@ -231,7 +231,11 @@ class HPlayer extends APP_GameClass implements JsonSerializable
             return;
         }
         hardback::$instance->incStat($amount, $stat, $this->id);
-        self::DbQuery("UPDATE player SET player_score = player_score + $amount WHERE player_id = {$this->id}");
+        $sql = "UPDATE player SET player_score = player_score + $amount";
+        if (hardback::$instance->gamestate->table_globals[OPTION_COOP] == NO) {
+            $sql .= " WHERE player_id = {$this->id}";
+        }
+        self::DbQuery($sql);
         $this->score += $amount;
         if ($notifyPanel) {
             $this->notifyPanel();

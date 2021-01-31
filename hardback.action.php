@@ -193,7 +193,10 @@ class action_hardback extends APP_GameAction
   public function useInk()
   {
     self::setAjaxMode();
-    // Don't check action, since ink is allowed out-of-turn
+    // Custom access check, non-active players can always do this
+    if ($this->game->isCurrentPlayerActive() && $this->game->gamestate->state()['name'] != 'playerTurn') {
+      throw new BgaUserException('This game action is impossible right now');
+    }
     $this->game->useInk();
     self::ajaxResponse();
   }
@@ -201,7 +204,10 @@ class action_hardback extends APP_GameAction
   public function useRemover()
   {
     self::setAjaxMode();
-    // Don't check action, since remover is allowed out-of-turn
+    // Custom access check, non-active players can always do this
+    if ($this->game->isCurrentPlayerActive() && $this->game->gamestate->state()['name'] != 'playerTurn') {
+      throw new BgaUserException('This game action is impossible right now');
+    }
     $cardId = self::getArg('cardId', AT_posint, true);
     $this->game->useRemover($cardId);
     self::ajaxResponse();

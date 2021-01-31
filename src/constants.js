@@ -3,8 +3,8 @@ export default Object.freeze({
     STARTER: 0,
     ADVENTURE: 1,
     HORROR: 2,
-    ROMANCE: 3,
-    MYSTERY: 4,
+    MYSTERY: 3,
+    ROMANCE: 4,
 
     // Benefits
     EITHER_BASIC: 3,

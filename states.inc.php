@@ -69,12 +69,14 @@ $machinestates = [
         'description' => clienttranslate('${actplayer} must spell a word'),
         'descriptionmyturn' => clienttranslate('${you} must spell a word'),
         'type' => 'activeplayer',
+        'action' => 'stPlayerTurn',
         'possibleactions' => ['confirmWord', 'skipWord'],
         'transitions' => [
             'next' => ST_UNCOVER,
-            'skip' => ST_NEXT_PLAYER,
+            'skip' => ST_COOP_TURN,
             'zombie' => ST_NEXT_PLAYER,
         ],
+        'updateGameProgression' => true,
     ],
 
     ST_UNCOVER => [
@@ -204,6 +206,7 @@ $machinestates = [
             'next' => ST_CLEANUP,
             'zombie' => ST_CLEANUP,
         ],
+        'updateGameProgression' => true,
     ],
 
     ST_CLEANUP => [
@@ -212,7 +215,18 @@ $machinestates = [
         'type' => 'game',
         'action' => 'stCleanup',
         'transitions' => [
+            'next' => ST_COOP_TURN,
+        ],
+    ],
+
+    ST_COOP_TURN => [
+        'name' => 'coopTurn',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stCoopTurn',
+        'transitions' => [
             'next' => ST_NEXT_PLAYER,
+            'gameEnd' => ST_BGA_GAME_END,
         ],
     ],
 
@@ -227,6 +241,7 @@ $machinestates = [
         ],
         'updateGameProgression' => true,
     ],
+
 
     // Final state.
     // Please do not modify (and do not overload action/args methods).

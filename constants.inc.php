@@ -4,8 +4,8 @@
 define('STARTER', 0);
 define('ADVENTURE', 1);
 define('HORROR', 2);
-define('ROMANCE', 3);
-define('MYSTERY', 4);
+define('MYSTERY', 3);
+define('ROMANCE', 4);
 
 // Benefits
 define('COINS', 1);
@@ -51,6 +51,8 @@ define('START_SCORE', 20);
 define('START_INK', 21);
 define('START_REMOVER', 22);
 define('AWARD_WINNER', 30);
+define('COOP_GENRE', 70);
+define('COOP_SCORE', 71);
 
 // Game statistics
 define('STAT_TURNS', 10);
@@ -92,6 +94,7 @@ define('COOP_HARD', 2);
 // Game states
 define('ST_BGA_GAME_SETUP', 1);
 define('ST_PLAYER_TURN', 2);
+define('ST_COOP_TURN', 3);
 define('ST_UNCOVER', 10);
 define('ST_DOUBLE', 11);
 define('ST_BASIC', 12);

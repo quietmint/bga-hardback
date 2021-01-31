@@ -22,6 +22,7 @@ require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
 require_once('constants.inc.php');
 require_once('modules/HCard.class.php');
 require_once('modules/HPlayer.class.php');
+require_once('modules/HPlayerCoop.class.php');
 require_once('modules/PlayerMgr.class.php');
 require_once('modules/CardMgr.class.php');
 require_once('modules/WordMgr.class.php');
@@ -46,6 +47,8 @@ class hardback extends Table
             'awards' => OPTION_AWARDS,
             'awardWinner' => AWARD_WINNER,
             'coop' => OPTION_COOP,
+            'coopGenre' => COOP_GENRE,
+            'coopScore' => COOP_SCORE,
             'count' . STARTER => COUNT_STARTER,
             'count' . ADVENTURE => COUNT_ADVENTURE,
             'count' . HORROR => COUNT_HORROR,
@@ -53,6 +56,7 @@ class hardback extends Table
             'count' . ROMANCE => COUNT_ROMANCE,
             'dictionary' => OPTION_DICTIONARY,
             'events' => OPTION_EVENTS,
+            'length' => OPTION_LENGTH,
             'powers' => OPTION_POWERS,
             'startInk' => START_INK,
             'startRemover' => START_REMOVER,
@@ -102,6 +106,12 @@ class hardback extends Table
         self::setGameStateInitialValue('startInk', 0);
         self::setGameStateInitialValue('startRemover', 0);
         self::setGameStateInitialValue('startScore', 0);
+        self::setGameStateInitialValue('coopScore', 0);
+        if ($this->gamestate->table_globals[OPTION_COOP] == COOP_HARD) {
+            self::setGameStateInitialValue('coopGenre', rand(ADVENTURE, ROMANCE));
+        } else {
+            self::setGameStateInitialValue('coopGenre', 0);
+        }
 
         // Init game statistics
         self::initStat('table', 'turns', 0);
@@ -125,6 +135,11 @@ class hardback extends Table
 
         // Activate first player
         $this->activeNextPlayer();
+    }
+
+    public function isCurrentPlayerActive(): bool
+    {
+        return self::getCurrentPlayerId() == self::getActivePlayerId();
     }
 
     /*
@@ -174,14 +189,63 @@ class hardback extends Table
     */
     function getGameProgression(): int
     {
-        $max = intval(self::getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_zombie = 0 and player_eliminated = 0"));
-        return min(round($max / .6), 100);
+        $score = PlayerMgr::getMaxScore();
+        if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
+            $score = max($score, PlayerMgr::getPlayer(0)->getScore());
+        }
+        return min(round($score / $this->getGameLength() * 100), 100);
+    }
+
+    function getGameLength(): int
+    {
+        if ($this->gamestate->table_globals[OPTION_COOP] == NO) {
+            return $this->gamestate->table_globals[OPTION_LENGTH];
+        } else {
+            return 60 * PlayerMgr::getPlayerCount();
+        }
     }
 
     /*
      * PHASE 1: SPELL A WORD
      * PHASE 2: DISCARD UNUSED CARDS
      */
+
+    function stPlayerTurn()
+    {
+        $player = PlayerMgr::getPlayer();
+        // Give extra time
+        $this->giveExtraTime($player->getId());
+
+        $coopCondition = false;
+        $penny = null;
+        if ($this->getGameStateValue('coopGenre') == HORROR) {
+            $penny = PlayerMgr::getPlayer(0);
+            $offer = CardMgr::getOffer();
+            foreach ($offer as $offerCard) {
+                if ($offerCard->getGenre() == HORROR) {
+                    $coopCondition = true;
+                    break;
+                }
+            }
+        }
+
+        // Notify about ink used out-of-turn
+        foreach ($player->getHand(HAS_INK) as $card) {
+            $player->notifyInk($card);
+            if ($coopCondition) {
+                // Horror: Penny earns 1 per ink
+                $penny->addPoints(1, '');
+                self::notifyAllPlayers('message', '${player_name} earns ${points}${icon}', [
+                    'player_name' => $penny->getName(),
+                    'points' => 1,
+                    'icon' => ' star',
+                ]);
+            }
+        }
+        foreach ($player->getHand(HAS_REMOVER) as $card) {
+            $player->notifyRemover($card);
+        }
+    }
 
     function confirmWord(array $cardIds, string $wildMask): void
     {
@@ -593,7 +657,7 @@ class hardback extends Table
         }
         return [
             'sourceIds' => $sourceIds,
-            'skip' => empty($sourcesIds),
+            'skip' => empty($sourceIds),
         ];
     }
 
@@ -720,6 +784,18 @@ class hardback extends Table
         if (!in_array($cardId, $this->gamestate->state()['args']['cardIds'])) {
             throw new BgaVisibleSystemException("Not possible for $player to purchase card $cardId");
         }
+
+        $coopCondition = false;
+        if ($this->getGameStateValue('coopGenre') == ADVENTURE) {
+            $offer = CardMgr::getOffer();
+            foreach ($offer as $offerCard) {
+                if ($offerCard->getGenre() == ADVENTURE) {
+                    $coopCondition = true;
+                    break;
+                }
+            }
+        }
+
         $card = CardMgr::getCard($cardId);
         $oldLocation = $card->getLocation();
         $msg = '${player_name} spends ${coins}¢ to purchase ${genre}${letter}';
@@ -737,6 +813,18 @@ class hardback extends Table
             'points' => $card->getPoints(),
             'icon' => ' star',
         ]);
+
+        if ($coopCondition) {
+            // Adventure: Penny earns 1 per purchase
+            $penny = PlayerMgr::getPlayer(0);
+            $penny->addPoints(1, '');
+            self::notifyAllPlayers('message', '${player_name} earns ${points}${icon}', [
+                'player_name' => $penny->getName(),
+                'points' => 1,
+                'icon' => ' star',
+            ]);
+        }
+
         if ($oldLocation == 'offer') {
             CardMgr::drawCards(1, 'deck', 'offer', null, true);
         }
@@ -810,6 +898,79 @@ class hardback extends Table
     }
 
     /*
+     * COOPERATIVE ANTHOLOGY
+     */
+
+    function stCoopTurn()
+    {
+        $player = PlayerMgr::getPlayer();
+        if ($this->gamestate->table_globals[OPTION_COOP] == NO || $player->isEliminated() || $player->isZombie()) {
+            $this->gamestate->nextState('next');
+            return;
+        }
+
+        // Check for win
+        $penny = PlayerMgr::getPlayer(0);
+        if ($this->getGameProgression() >= 100) {
+            self::notifyAllPlayers('message', '${player_name} is defeated and the players win!', [
+                'player_name' => $penny->getName(),
+            ]);
+            $this->gamestate->nextState('gameEnd');
+            return;
+        }
+
+        $coopGenre = $this->getGameStateValue('coopGenre');
+        $offer = CardMgr::getOffer();
+        $card = reset($offer);
+        $points = $card->getCost();
+        if ($coopGenre == ROMANCE && $card->getGenre() == ROMANCE) {
+            // Romance: Penny earns double
+            $points *= 2;
+        }
+        $penny->addPoints($points, '');
+
+        // Discard the first card
+        CardMgr::discard($card, $penny->getDiscardLocation());
+        self::notifyAllPlayers('message', '${player_name} purchases ${genre}${letter} and earns ${points}${icon}', [
+            'player_name' => $penny->getName(),
+            'genre' => $card->getGenreName() . ' ',
+            'letter' => $card->getLetter(),
+            'points' => $points,
+            'icon' => ' star',
+        ]);
+
+        // Draw a new card
+        $draw = CardMgr::drawCards(1, 'deck', 'offer', null, true);
+        $draw = reset($draw);
+        unset($offer[$card->getId()]);
+        $offer[$draw->getId()] = $draw;
+        if ($coopGenre == MYSTERY && $card->getGenre() == MYSTERY) {
+            // Mystery: Penny discards cheapest
+            CardMgr::sortCards($offer, 'cost');
+            $card = reset($offer);
+            CardMgr::discard($card, $penny->getDiscardLocation());
+            self::notifyAllPlayers('message', '${player_name} purchases ${genre}${letter} and earns ${points}${icon}', [
+                'player_name' => $penny->getName(),
+                'genre' => $card->getGenreName() . ' ',
+                'letter' => $card->getLetter(),
+                'points' => $points,
+                'icon' => ' star',
+            ]);
+        }
+
+        // Check for lose
+        if ($penny->getScore() >= $this->getGameLength()) {
+            self::notifyAllPlayers('message', 'The players are defeated and ${player_name} wins!', [
+                'player_name' => $penny->getName(),
+            ]);
+            self::DbQuery('UPDATE player SET player_score = -1');
+            $this->gamestate->nextState('gameEnd');
+        } else {
+            $this->gamestate->nextState('next');
+        }
+    }
+
+    /*
      * PHASE 7: DRAW YOUR NEXT HAND
      */
 
@@ -830,18 +991,14 @@ class hardback extends Table
 
         // Activate next player
         $this->activeNextPlayer();
-
-        // Notify about ink used out-of-turn
         $player = PlayerMgr::getPlayer();
-        foreach ($player->getHand(HAS_INK) as $card) {
-            $player->notifyInk($card);
-        }
-        foreach ($player->getHand(HAS_REMOVER) as $card) {
-            $player->notifyRemover($card);
-        }
 
-        $this->giveExtraTime($player->getId());
-        $this->gamestate->nextState('playerTurn');
+        // Check for game end
+        if ($player->getOrder() == 1 && $this->getGameProgression() >= 100) {
+            $this->gamestate->nextState('gameEnd');
+        } else {
+            $this->gamestate->nextState('playerTurn');
+        }
     }
 
     /*
@@ -859,6 +1016,23 @@ class hardback extends Table
         $card = reset($cards);
         if ($player->isActive()) {
             $player->notifyInk($card);
+
+            if ($this->getGameStateValue('coopGenre') == HORROR) {
+                $offer = CardMgr::getOffer();
+                foreach ($offer as $offerCard) {
+                    if ($offerCard->getGenre() == HORROR) {
+                        // Horror: Penny earns 1 per ink
+                        $penny = PlayerMgr::getPlayer(0);
+                        $penny->addPoints(1, '');
+                        self::notifyAllPlayers('message', '${player_name} earns ${points}${icon}', [
+                            'player_name' => $penny->getName(),
+                            'points' => 1,
+                            'icon' => ' star',
+                        ]);
+                        break;
+                    }
+                }
+            }
         }
         CardMgr::inkCard($card);
         $this->incStat(1, 'useInk', $player->getId());

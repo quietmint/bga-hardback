@@ -31,7 +31,7 @@
         </div>
 
         <!-- ID -->
-        <div class="absolute top-0 right-0 text-12 text-white" style="text-shadow: 1px 1px black;">{{ card.origin }} (#{{ card.id }}/{{ card.order }})</div>
+        <div class="absolute top-0 right-0 text-12 text-white" style="text-shadow: 1px 1px black">{{ card.origin }} (#{{ card.id }}/{{ card.order }})<br />DRAG: {{ card.drag }}</div>
       </div>
 
       <!-- Wild -->
@@ -176,7 +176,7 @@ export default {
   computed: {
     cardClass(): string {
       let c = "card-" + this.card.genreName + " ";
-      c += this.clickAction ? "cursor-pointer " : "cursor-not-allowed ";
+      c += this.clickAction ? "cursor-pointer " : this.card.draggable ? "cursor-ew-resize " : "cursor-not-allowed ";
       c += this.card.timeless ? "timeless " : "";
       if (this.card.ink) {
         c += "mx-2 ring ring-black ";
@@ -226,7 +226,6 @@ export default {
     },
 
     clickAction(): any {
-      //this.takeAction("preview", { lock: false, cardId: card.id, location: card.location, order: card.order });
       if (this.gamestate.active) {
         if (this.gamestate.name == "playerTurn") {
           let destination = null;
@@ -279,7 +278,7 @@ export default {
             action: null,
             text: `${this.card.player.name} `,
             icon: "timeless",
-            title: `Timeless Classic: ${this.card.player.name} receives benefits each turn. Others may play this card to discard it but will not receive benefits.`,
+            title: `Timeless Classic: ${this.card.player.name} receives benefits each turn`,
             class: `leading-6 ${this.card.player.colorBg} ${this.card.player.colorBgText}`,
           },
         ];

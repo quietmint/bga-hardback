@@ -339,27 +339,8 @@ class CardMgr extends APP_GameClass
 
         // Populate from database and sort
         $cards = self::getCards($ids);
-        if (count($cards) > 1) {
-            if ($sort == 'letter') {
-                uasort($cards, function ($a, $b) {
-                    $result = strcmp($a->getLetter(), $b->getLetter());
-                    if ($result == 0) {
-                        $result = $a->getId() - $b->getId();
-                    }
-                    return $result;
-                });
-            } else if ($sort == 'cost') {
-                uasort($cards, function ($a, $b) {
-                    $result = $a->getCost() - $b->getCost();
-                    if ($result == 0) {
-                        $result = strcmp($a->getLetter(), $b->getLetter());
-                    }
-                    if ($result == 0) {
-                        $result = $a->getId() - $b->getId();
-                    }
-                    return $result;
-                });
-            }
+        if (count($cards) > 1 && $sort) {
+            self::sortCards($cards, $sort);
         }
 
         // Reposition at the end and update origin
@@ -388,6 +369,38 @@ class CardMgr extends APP_GameClass
             $order++;
         }
         return $ids;
+    }
+
+    public static function sortCards(array &$cards, string $sort): void
+    {
+        if ($sort == 'letter') {
+            uasort($cards, function ($a, $b) {
+                $result = strcmp($a->getLetter(), $b->getLetter());
+                if ($result == 0) {
+                    $result = $a->getOrder() - $b->getOrder();
+                }
+                if ($result == 0) {
+                    $result = $a->getId() - $b->getId();
+                }
+                return $result;
+            });
+        } else if ($sort == 'cost') {
+            uasort($cards, function ($a, $b) {
+                $result = $a->getCost() - $b->getCost();
+                if ($result == 0) {
+                    $result = strcmp($a->getLetter(), $b->getLetter());
+                }
+                if ($result == 0) {
+                    $result = $a->getOrder() - $b->getOrder();
+                }
+                if ($result == 0) {
+                    $result = $a->getId() - $b->getId();
+                }
+                return $result;
+            });
+        } else {
+            throw new BgaVisibleSystemException("Invalid sort order: $sort");
+        }
     }
 
     /*
@@ -634,8 +647,8 @@ class CardMgr extends APP_GameClass
             $counts[STARTER] ?? 0,
             $counts[ADVENTURE] ?? 0,
             $counts[HORROR] ?? 0,
-            $counts[ROMANCE] ?? 0,
             $counts[MYSTERY] ?? 0,
+            $counts[ROMANCE] ?? 0,
         ];
     }
 
@@ -762,6 +775,10 @@ class CardMgr extends APP_GameClass
 
     public static function canFlushOffer(): bool
     {
+        if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO) {
+            return false;
+        }
+
         $offer = self::getOffer(); // without jail
 
         $costCondition = count(array_filter($offer, function ($card) {
@@ -787,13 +804,13 @@ class CardMgr extends APP_GameClass
         self::discard($updatedIds, 'discard');
 
         // Draw new offer and notify
-        $newCards = self::drawCards(7, 'deck', 'offer', 'letter');
+        $newCards = self::drawCards(7, 'deck', 'offer');
         self::notifyCards($newCards);
     }
 
     public static function inkCard(HCard $card, int $inkValue = HAS_INK): void
     {
-        $sql = "UPDATE card SET `ink` = $inkValue WHERE `id` = {$card->getId()} AND `ink` != $inkValue";
+        $sql = "UPDATE card SET `ink` = $inkValue WHERE `id` = {$card->getId()}";
         self::DbQuery($sql);
         $card->setInk($inkValue);
 

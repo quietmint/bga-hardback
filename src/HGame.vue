@@ -1,5 +1,33 @@
 <template>
   <div>
+    <!-- Coop player board -->
+    <teleport to="#player_boards">
+      <div id="overall_player_board_0" class="player-board" style="border-color: rgb(0, 0, 0); width: 234px; height: auto">
+        <div class="player_board_inner" id="player_board_inner_000000">
+          <div class="emblemwrap is_premium" id="avatarwrap_0">
+            <img src="https://en.1.studio.boardgamearena.com:8083/data/themereleases/210121-0943/../../avatar/0/2/2305/2305326_32.jpg?h=a1c15cbf2a" alt="" class="avatar emblem" id="avatar_0" />
+            <div class="emblempremium"></div>
+          </div>
+          <div class="player-name" id="player_name_0">
+            <div style="color: #000000">Penny Dreadful</div>
+            <i class="fa fa-circle status_online player_status"></i>
+            <div class="flag" style="background-position: -384px -99px" title="Unknown"></div>
+          </div>
+          <div id="player_board_0" class="player_board_content">
+            <div class="player_score">
+              <span id="player_score_0" class="player_score_value">0</span> <i class="fa fa-star" id="icon_point_0"></i>
+              <span class="player_elo_wrap"
+                >•
+                <div class="gamerank gamerank_expert"><span class="icon20 icon20_rankw"></span> <span class="gamerank_value">666</span></div></span
+              >
+            </div>
+            <div class="player_table_status" id="player_table_status_0" style="display: none"></div>
+          </div>
+          <div id="player_panel_content_000000" class="player_panel_content"></div>
+        </div>
+      </div>
+    </teleport>
+
     <!-- Player panels (moved using teleport) -->
     <HPlayerPanel v-for="(player, id) in players" :key="id" :player="player" />
 
@@ -33,11 +61,11 @@
       <b class="title"><Icon @click="chevron(handLocation)" icon="chevron" class="chevron inline text-24" /> My Hand ({{ handCards.length }})</b>
 
       <!-- Cards -->
-      <HCardList v-if="visibleLocations[handLocation]" :cards="handCards" :location="handLocation" :checkDrag="checkDragHand" />
+      <HCardList v-if="visibleLocations[handLocation]" :cards="handCards" :location="handLocation" />
 
       <!-- Actions -->
       <div v-if="visibleLocations[handLocation]" class="actions">
-        <div v-if="myself.ink && (myself.deckCount || myself.discardCount)" @click="takeAction('useInk')" class="button blue">DRAW WITH INK</div>
+        <div v-if="myself.ink && (myself.deckCount || myself.discardCount) && (!gamestate.active || gamestate.name == 'playerTurn')" @click="takeAction('useInk')" class="button blue">DRAW WITH INK</div>
         <div v-if="handWildCards.length" @click="resetAll()" class="button blue">RESET ALL</div>
         <div v-if="gamestate.active && handCards.length > 1" @click="clickAll(handLocation)" class="button blue">PLAY ALL</div>
       </div>
@@ -56,7 +84,7 @@
       <b class="title">Current Word ({{ tableauCards.length }})</b>
 
       <!-- Cards -->
-      <HCardList :cards="tableauCards" location="tableau" :checkDrag="checkDragTableau" />
+      <HCardList :cards="tableauCards" location="tableau" />
 
       <!-- Actions -->
       <div v-if="gamestate.active && gamestate.name == 'playerTurn' && tableauCards.length" class="actions">
@@ -70,7 +98,7 @@
       <b class="title">Timeless Classics ({{ timelessCards.length }})</b>
 
       <!-- Cards -->
-      <HCardList :cards="timelessCards" location="timeless" :checkDrag="checkDragTimeless" />
+      <HCardList :cards="timelessCards" location="timeless" />
     </div>
 
     <!-- Offer -->
@@ -79,7 +107,7 @@
       <b class="title">Offer Row ({{ offerCards.length }})</b>
 
       <!-- Cards -->
-      <HCardList :cards="offerCards" location="offer" :checkDrag="checkDragTimeless" />
+      <HCardList :cards="offerCards" location="offer" />
 
       <!-- Sorter -->
       <div class="sorter">
@@ -193,6 +221,7 @@ export default {
   mounted() {
     this.emitter.on("clickCard", this.clickCard);
     this.emitter.on("clickFooter", this.clickFooter);
+    this.emitter.on("drag", this.drag);
     this.visibleLocations[this.discardLocation] = false;
     this.visibleLocations[this.handLocation] = true;
   },
@@ -200,6 +229,7 @@ export default {
   beforeUnmount() {
     this.emitter.off("clickCard", this.clickCard);
     this.emitter.off("clickFooter", this.clickFooter);
+    this.emitter.off("drag", this.drag);
   },
 
   provide() {
@@ -226,6 +256,7 @@ export default {
     },
 
     handCards() {
+      console.log("recompute handCards");
       let location = this.handLocation;
       let cards = this.cardsInLocation(location);
       cards.sort(this.sorter(location));
@@ -303,6 +334,7 @@ export default {
 
     populateCard(card) {
       let newCard = Object.assign({}, this.gamedatas.refs.cards[card.refId], card);
+      // Basic benefits
       newCard.basicBenefitsList = [];
       newCard.factor = newCard.factor || 1;
       if (newCard.basicBenefits) {
@@ -323,6 +355,8 @@ export default {
         }
         newCard.basicBenefitsList.sort(firstBy("id"));
       }
+
+      // Genre benefits
       newCard.genreBenefitsList = [];
       if (newCard.genreBenefits) {
         for (const id in newCard.genreBenefits) {
@@ -342,6 +376,8 @@ export default {
         }
         newCard.genreBenefitsList.sort(firstBy("id"));
       }
+
+      // Genre name
       if (newCard.genre == Constants.ADVENTURE) {
         newCard.genreName = "adventure";
       } else if (newCard.genre == Constants.HORROR) {
@@ -353,12 +389,18 @@ export default {
       } else if (newCard.genre == Constants.STARTER) {
         newCard.genreName = "starter";
       }
+
+      // Owning player
       if (newCard.location == "jail") {
         newCard.player = this.players[newCard.order];
       } else if (newCard.origin.startsWith("timeless")) {
         const playerId = newCard.origin.split("_")[1];
         newCard.player = this.players[playerId];
       }
+
+      // Draggable
+      newCard.draggable = newCard.location == this.handLocation || (newCard.location == "tableau" && this.gamestate.active && this.gamestate.name == "playerTurn");
+
       return newCard;
     },
 
@@ -388,7 +430,7 @@ export default {
         case "green":
           player.colorRing = "ring-green-700";
           player.colorBg = "bg-green-700";
-          player.colorText = "text-green-600";
+          player.colorText = "text-green-700";
           break;
         case "blue":
           player.colorRing = "ring-blue-700";
@@ -657,7 +699,12 @@ export default {
           },
         },
         skip: {
-          text: "Skip",
+          text() {
+            if (this.gamestate.name == "purchase") {
+              return `Purchase ${this.gamestate.args.coins} Ink (End Turn)`;
+            }
+            return "Skip";
+          },
           color: "gray",
           function() {
             this.takeAction("skip");
@@ -672,7 +719,7 @@ export default {
         },
         doctor: {
           text() {
-            return this.game.format_string_recursive("Spend ${coins}¢ for ${points}${icon}", this.gamestate.args.advert);
+            return this.game.format_string_recursive("Purchase ${points}${icon} Advert for ${coins}¢", this.gamestate.args.advert);
           },
           color: "blue",
           function() {
@@ -764,54 +811,7 @@ export default {
      * Other functions
      */
 
-    checkDragHand(card: any, fromLocation: String, toLocation: String): boolean {
-      // Anyone can reorder their own hand
-      if (toLocation == fromLocation) {
-        return;
-      }
-      // Active player can also move cards to the tableau
-      if (this.gamestate.active && toLocation == "tableau") {
-        return;
-      }
-      return false;
-    },
-
-    checkDragTimeless(card: any, fromLocation: String, toLocation: String): boolean {
-      // Active player can move cards to the tableau
-      return this.gamestate.active && toLocation == "tableau";
-    },
-
-    checkDragTableau(card: any, fromLocation: String, toLocation: String): boolean {
-      // Active player can reorder the tableau and return cards to their origin
-      return this.gamestate.active && (toLocation == fromLocation || toLocation == card.origin);
-    },
-
-    /*
-    dragCard(evt) {
-      if (evt.event == "add" || evt.event == "remove") {
-        if (this.dragMoveEvt == null || this.dragMoveEvt.cardId != evt.cardId) {
-          this.dragMoveEvt = {
-            event: "move",
-            cardId: evt.cardId,
-          };
-        }
-        if (evt.event == "add") {
-          this.dragMoveEvt.to = evt.location;
-          this.dragMoveEvt.order = evt.order;
-        } else {
-          this.dragMoveEvt.from = evt.location;
-        }
-        if (this.dragMoveEvt.from && this.dragMoveEvt.to) {
-          this.takeAction("dragMove", this.dragMoveEvt);
-          this.dragMoveEvt = null;
-        }
-      } else if (evt.event == "order") {
-        this.takeAction("dragOrder", evt);
-      }
-    },
-    */
-
-    sort(location: string, order: string) {
+    sort(location: string, order: string): void {
       let cards = this.cardsInLocation(location);
       if (order == "shuffle") {
         for (let i = cards.length - 1; i > 0; i--) {
@@ -823,6 +823,19 @@ export default {
         });
       }
       this.locationOrder[location] = order;
+    },
+
+    drag(e): void {
+      let { location, cardIds } = e;
+      console.log("drag", e);
+      cardIds.forEach((id, index) => {
+        this.gamedatas.cards[id].drag = index;
+      });
+      this.locationOrder[location] = "drag";
+
+      // Non-blocking server update
+      // let lock = false;
+      // this.takeAction("drag", { cardIds, lock });
     },
 
     chevron(location: string) {
@@ -839,8 +852,8 @@ export default {
       });
     },
 
-    clickCard(evt): void {
-      let { action, card } = evt;
+    clickCard(e): void {
+      let { action, card } = e;
       console.log("clickCard event in parent", action, card.id);
       if (action.action == "move") {
         this.animateCard(card, 0, {
@@ -856,8 +869,8 @@ export default {
       }
     },
 
-    clickFooter(evt): void {
-      let { action, card } = evt;
+    clickFooter(e): void {
+      let { action, card } = e;
       console.log("clickFooter event in parent", action, card.id);
       if (action.action == "wild") {
         let wild = (prompt("What letter does this wild card represent?") || "").trim().toUpperCase();

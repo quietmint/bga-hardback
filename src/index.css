@@ -22,6 +22,7 @@
 
 .cardgrid {
   display: grid;
+  text-decoration: unset;
   grid-template: "title actions sorter" auto "cardlist cardlist sorter" auto / 1fr auto auto;
 }
 
@@ -73,13 +74,21 @@
 }
 
 .genreCounts div {
-  transition: width 0.6s cubic-bezier(0.7, 1.2, 1, 1);
+  transition: width 0.6s ease-out;
+}
+
+.genreNovel {
+  font-family: "Deutsch Gothic", serif;
 }
 
 .cardholder {
-  transition: transform 0.6s cubic-bezier(0.7, 1.2, 1, 1);
+  transition: transform 0.6s ease-out, opacity 0.6s ease-out;
   perspective: 600px;
   z-index: 1;
+}
+
+.dragInProgress .cardholder {
+  transition-duration: 0.3s;
 }
 
 .gap {
@@ -118,6 +127,14 @@
   transform: rotateY(180deg);
 }
 
+/* z-index needed for drag-and-drop ghost images */
+.cardface.front {
+  z-index: 1;
+}
+.card.wild .cardface.back {
+  z-index: 2;
+}
+
 .wildletter {
   @apply text-blue-100;
   font-size: 9rem;
@@ -126,7 +143,7 @@
     1px -1px theme("colors.blue.700"), 0 0 4px #0008;
 }
 
-.card-starter .front {
+.card-starter .cardface.front {
   @apply bg-gray-500;
   background-image: url(starter.jpg);
   background-size: cover;
@@ -141,14 +158,14 @@
   text-shadow: -1px 1px white, 1px -1px black, 0 0 4px black;
 }
 
-.card-adventure {
+.card-adventure .cardface.front {
   @apply bg-yellow-700;
   background-image: url(adventure.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-.card-adventure.timeless {
+.card-adventure.timeless .cardface.front {
   background-image: url(adventure-timeless.jpg);
 }
 
@@ -173,14 +190,14 @@
   line-height: 89px;
 }
 
-.card-horror {
+.card-horror .cardface.front {
   @apply bg-green-900;
   background-image: url(horror.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-.card-horror.timeless {
+.card-horror.timeless .cardface.front {
   background-image: url(horror-timeless.jpg);
 }
 
@@ -213,14 +230,14 @@
   margin-top: 8px;
 }
 
-.card-romance {
+.card-romance .cardface.front {
   @apply bg-red-800;
   background-image: url(romance.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-.card-romance.timeless {
+.card-romance.timeless .cardface.front {
   background-image: url(romance-timeless.jpg);
 }
 
@@ -248,14 +265,14 @@
   margin-top: 1px;
 }
 
-.card-mystery {
+.card-mystery .cardface.front {
   @apply bg-blue-500;
   background-image: url(mystery.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-.card-mystery.timeless {
+.card-mystery.timeless .cardface.front {
   background-image: url(mystery-timeless.jpg);
 }
 
@@ -325,5 +342,5 @@
 }
 
 .tailwind svg.inline {
-  vertical-align: -0.15rem;
+  vertical-align: -3px;
 }
