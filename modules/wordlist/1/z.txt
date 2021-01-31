@@ -1,3 +1,7 @@
+zag
+zagged
+zagging
+zags
 zanier
 zanies
 zaniest
@@ -52,6 +56,10 @@ zests
 zesty
 zeta
 zetas
+zig
+zigged
+zigging
+zigs
 zigzag
 zigzagged
 zigzagging
