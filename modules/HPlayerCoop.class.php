@@ -33,15 +33,13 @@ class HPlayerCoop extends HPlayer
         return hardback::$instance->getGameStateValue('coopGenre');
     }
 
-    public function addPoints(int $amount, string $stat, bool $notifyPanel = true): void
+    public function addPoints(int $amount, string $stat): void
     {
         if ($amount == 0) {
             return;
         }
         hardback::$instance->incGameStateValue('coopScore', $amount);
         $this->score += $amount;
-        if ($notifyPanel) {
-            $this->notifyPanel();
-        }
+        $this->notifyPanel();
     }
 }

@@ -310,7 +310,7 @@ class CardMgr extends APP_GameClass
     {
         $order = self::getMaxOrderInLocation($toLocation) + 1;
 
-        // Draw cards from desck
+        // Draw cards from deck
         $sql = "SELECT `id` FROM card WHERE " . self::getLocationWhereClause($fromLocation) . " ORDER BY `location`, `order` LIMIT $count";
         $ids = self::getObjectListFromDB($sql, true);
 
@@ -350,6 +350,12 @@ class CardMgr extends APP_GameClass
             $card->setOrigin($toLocation);
             $card->setOrder($order);
             $order++;
+
+            // Count offer row draws for timeless classic discard condition
+            if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO && $fromLocation == 'deck' && $toLocation == 'offer') {
+                hardback::$instance->notifyAllPlayers('message', "countDraw{$card->getGenreName()}", []);
+                hardback::$instance->incGameStateValue("countDraw{$card->getGenre()}", 1);
+            }
         }
         if ($notify) {
             self::notifyCards($cards);
@@ -577,6 +583,11 @@ class CardMgr extends APP_GameClass
         return self::getCardsInLocation(['tableau', self::getTimelessLocation($playerId)]);
     }
 
+    public static function getTimeless(int $playerId): array
+    {
+        return self::getCardsInLocation(self::getTimelessLocation($playerId));
+    }
+
     public static function getOffer(int $playerId = null): array
     {
         $cards = self::getCardsInLocation('offer');
@@ -705,11 +716,13 @@ class CardMgr extends APP_GameClass
         // Add own timeless cards
         // Subtract opponent timeless cards
         $counts = self::getGenreCounts($cards);
-        $myCounts = self::getGenreCounts(self::getCardsInLocation(self::getTimelessLocation($playerId)));
+        $myCounts = self::getGenreCounts(self::getTimeless($playerId));
         $opponentCounts = self::getGenreCounts($opponent);
         foreach ($counts as $genre => $count) {
-            $val = $count + $myCounts[$genre] - $opponentCounts[$genre];
-            hardback::$instance->setGameStateValue("count$genre", $val);
+            if ($genre != STARTER) {
+                $val = $count + $myCounts[$genre] - $opponentCounts[$genre];
+                hardback::$instance->setGameStateValue("countActive$genre", $val);
+            }
         }
 
         // Notify
@@ -718,7 +731,7 @@ class CardMgr extends APP_GameClass
 
     public static function isGenreActive(int $genre): bool
     {
-        return hardback::$instance->getGameStateValue("count$genre") >= 2;
+        return $genre != STARTER && hardback::$instance->getGameStateValue("countActive$genre") >= 2;
     }
 
     public static function discard($cards, string $location, bool $notify = true): void
@@ -747,23 +760,19 @@ class CardMgr extends APP_GameClass
             return $card->isTimeless() && !$card->isWild() && $card->isLocation('tableau');
         });
         if (!empty($timeless)) {
-            $timelessDiscardIds = [];
-            $timelessKeepIds = [];
             foreach ($timeless as $card) {
-                if ($card->isOrigin('timeless') && !$card->isOrigin(self::getTimelessLocation($playerId))) {
+                if (hardback::$instance->gamestate->table_globals[OPTION_COOP] == NO && $card->isOrigin('timeless') && !$card->isOrigin(self::getTimelessLocation($playerId))) {
                     // Discard to owner
-                    $timelessDiscardIds[] = $card->getId();
                     self::discard($card, self::getDiscardLocation($card->getOwner()), false);
                 } else {
-                    // Remain in play
-                    $timelessKeepIds[] = $card->getId();
+                    // Remain in play for owner
+                    $owner = $card->getOwner() ?? $playerId;
+                    self::discard($card, self::getTimelessLocation($owner), false);
                 }
             }
-            if (!empty($timelessKeepIds)) {
-                self::discard($timelessKeepIds, self::getTimelessLocation($playerId), false);
-            }
-            self::notifyCards(self::getCards($timelessDiscardIds) + self::getCards($timelessKeepIds));
-            $updatedIds = array_diff($updatedIds, $timelessDiscardIds, $timelessKeepIds);
+            $timelessIds = self::getIds($timeless);
+            self::notifyCards(self::getCards($timelessIds));
+            $updatedIds = array_diff($updatedIds, $timelessIds);
         }
 
         // Discard remaining cards

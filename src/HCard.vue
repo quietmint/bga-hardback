@@ -158,14 +158,6 @@ export default {
   inject: ["gamestate"],
   components: { Icon },
 
-  mounted() {
-    this.emitter.on("requestClickCard", this.requestClickCard);
-  },
-
-  beforeUnmount() {
-    this.emitter.off("requestClickCard", this.requestClickCard);
-  },
-
   props: {
     card: {
       type: Object,
@@ -176,7 +168,7 @@ export default {
   computed: {
     cardClass(): string {
       let c = "card-" + this.card.genreName + " ";
-      c += this.clickAction ? "cursor-pointer " : this.card.draggable ? "cursor-ew-resize " : "cursor-not-allowed ";
+      c += this.card.draggable ? "cursor-ew-resize " : this.clickAction ? "cursor-pointer " : "cursor-not-allowed ";
       c += this.card.timeless ? "timeless " : "";
       if (this.card.ink) {
         c += "mx-2 ring ring-black ";
@@ -307,12 +299,6 @@ export default {
   },
 
   methods: {
-    requestClickCard(id: number): void {
-      if (id == this.card.id) {
-        this.clickCard();
-      }
-    },
-
     clickCard(): void {
       let action: any = this.clickAction;
       if (action) {

@@ -112,7 +112,7 @@ $game_options = [
             YES => [
                 'name' => 'Yes',
                 'tmdisplay' => 'Events',
-                'description' => 'Word restrictions and rule changes provide additional challenge',
+                'description' => 'Word restrictions (challenging)',
                 'nobeginner' => true,
             ]
         ]
@@ -128,22 +128,32 @@ $game_options = [
             YES => [
                 'name' => 'Yes',
                 'tmdisplay' => 'Powers',
-                'description' => 'Unique powers can either out-wit or penalize opponents (everyone receives the same type)',
+                'description' => 'Unique powers to either out-wit or penalize opponents (everyone receives the same type)',
                 'nobeginner' => true,
             ],
             PASSIVE => [
                 'name' => 'Passive Powers',
                 'tmdisplay' => 'Passive Powers',
-                'description' => 'Unique powers can out-wit opponents',
+                'description' => 'Unique powers to out-wit opponents',
                 'nobeginner' => true,
             ],
             AGRESSIVE => [
                 'name' => 'Agressive Powers',
                 'tmdisplay' => 'Agressive Powers',
-                'description' => 'Unique powers can penalize opponents',
+                'description' => 'Unique powers to penalize opponents',
                 'nobeginner' => true,
             ],
-        ]
+        ],
+        'startcondition' => [
+            AGRESSIVE => [
+                [
+                    'type' => 'otheroption',
+                    'id' => OPTION_COOP,
+                    'value' => NO,
+                    'message' => 'Cannot use Agressive Powers with Cooperative Anthology',
+                ],
+            ],
+        ],
     ],
 
     OPTION_COOP => [
@@ -154,16 +164,22 @@ $game_options = [
                 'name' => 'No',
                 'description' => 'Compete to be the finest novelist of the age',
             ],
-            COOP_EASY => [
-                'name' => 'Cooperative (Easier)',
-                'tmdisplay' => 'Cooperative (Easier)',
-                'description' => 'Win or lose as a team against archrival Penny Dreadful',
+            COOP_BASIC => [
+                'name' => 'Cooperative',
+                'tmdisplay' => 'Cooperative',
+                'description' => 'Win or lose as a team against archrival Penny Dreadful (challenging)',
                 'nobeginner' => true,
             ],
-            COOP_HARD => [
-                'name' => 'Cooperative (Harder)',
-                'tmdisplay' => 'Cooperative (Harder)',
-                'description' => 'Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre',
+            COOP_SIGNATURE => [
+                'name' => 'Cooperative With Signature Genre',
+                'tmdisplay' => 'Cooperative With Signature Genre',
+                'description' => 'Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging)',
+                'nobeginner' => true,
+            ],
+            COOP_MINUS1 => [
+                'name' => 'Cooperative (-1 Point)',
+                'tmdisplay' => 'Cooperative (-1 Point)',
+                'description' => 'Win or lose as a team against archrival Penny Dreadful, who receives 1 less point per card (less challenging unofficial variant)',
                 'nobeginner' => true,
             ],
         ],

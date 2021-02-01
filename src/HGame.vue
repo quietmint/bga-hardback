@@ -192,7 +192,6 @@ addIcon("cards", mdiCards);
 
 export default {
   name: "HGame",
-  emits: ["requestClickCard"],
   components: { Icon, HCardList, HPlayerPanel },
 
   provide() {
@@ -446,7 +445,7 @@ export default {
     /*
      * Animation
      */
-    async animateCard(card: any, delay: number, changes: any): Promise<number> {
+    async animateCard(card: any, changes: any): Promise<number> {
       if (changes) {
         card = Object.assign({}, card, changes);
       }
@@ -484,11 +483,6 @@ export default {
         // Invisible card movement, no animation
         this.gamedatas.cards[card.id] = card;
         return card.id;
-      }
-
-      // Optional delay
-      if (delay) {
-        await sleep(delay);
       }
 
       let mode = null;
@@ -550,7 +544,7 @@ export default {
       await repaint();
 
       // Resolve when the transition ends
-      let promise: Promise<number> = new Promise((resolve, reject) => {
+      let promise: Promise<number> = new Promise((resolve) => {
         // Just in case transitionend never fires
         const timeout = setTimeout(() => {
           console.warn(`Animate card ${card.id} ${mode} missing transitionend`);
@@ -601,7 +595,7 @@ export default {
     /*
      * BGA framework methods
      */
-    takeAction(action: string, data: any, callback): void {
+    takeAction(action: string, data: any): Promise<any> {
       data = data || {};
       if (data.lock === false) {
         delete data.lock;
@@ -613,47 +607,58 @@ export default {
           data[key] = data[key].join(",");
         }
       }
-      callback = callback || function (res) {};
       let gameName = this.game.name();
       console.log(`Take action ${action}`, data);
-      this.game.ajaxcall("/" + gameName + "/" + gameName + "/" + action + ".html", data, this, callback);
+      return new Promise((resolve, reject) => {
+        this.game.ajaxcall("/" + gameName + "/" + gameName + "/" + action + ".html", data, this, resolve, (error) => {
+          error ? reject(error) : resolve(error);
+        });
+      });
     },
 
     /*
      * BGA framework event callbacks
      */
     onFormatString(log: string, args: any): string {
-      if (args.award) {
-        args.award = `<b>${args.award}</b>-letter word<div class="haward length${args.award}"></div>`;
-      }
-      if (args.word) {
-        let q = args.word.toLowerCase();
-        let links = [
-          `<a target="hdefine" href="https://ahdictionary.com/word/search.html?q=${q}">American Heritage</a>`, //
-          `<a target="hdefine" href="https://dictionary.cambridge.org/dictionary/english/${q}">Cambridge</a>`, //
-          `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`, //
-          `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`, //
-          `<a target="hdefine" href="https://www.merriam-webster.com/dictionary/${q}">Merriam-Webster</a>`, //
-          `<a target="hdefine" href="https://www.lexico.com/en/definition/${q}">Oxford Lexico</a>`, //
-          `<a target="hdefine" href="https://en.wiktionary.org/wiki/${q}">Wiktionary</a>`, //
-          `<a target="hdefine" href="http://wordnetweb.princeton.edu/perl/webwn?s=${q}">WordNet</a>`, //
-        ];
-        args.word = `<b>${args.word}</b><div class="hdefine">Dictionary definitions:<ul><li>${links.join("</li><li>")}</li></ul></div>`;
-      }
-      if (args.invalid) {
-        args.invalid = `<b>${args.invalid}</b>`;
-      }
-      if (args.genre) {
-        const el = document.getElementById("hicon_" + args.genre.toLowerCase().trim());
-        args.genre = `<span class="hgenre ${args.genre}">${el ? el.outerHTML : args.genre}`;
-      }
-      if (args.letter) {
-        args.letter = `${args.letter}</span>`;
-      }
-      if (args.icon) {
-        const el = document.getElementById("hicon_" + args.icon.toLowerCase().trim());
-        if (el) {
-          args.icon = el.outerHTML;
+      if (args) {
+        if (args.award) {
+          args.award = `<div class="haward length${args.award}"></div>`;
+        }
+        if (args.word) {
+          let q = args.word.toLowerCase();
+          let links = [
+            `<a target="hdefine" href="https://ahdictionary.com/word/search.html?q=${q}">American Heritage</a>`, //
+            `<a target="hdefine" href="https://dictionary.cambridge.org/dictionary/english/${q}">Cambridge</a>`, //
+            `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`, //
+            `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`, //
+            `<a target="hdefine" href="https://www.merriam-webster.com/dictionary/${q}">Merriam-Webster</a>`, //
+            `<a target="hdefine" href="https://www.lexico.com/en/definition/${q}">Oxford Lexico</a>`, //
+            `<a target="hdefine" href="https://en.wiktionary.org/wiki/${q}">Wiktionary</a>`, //
+            `<a target="hdefine" href="http://wordnetweb.princeton.edu/perl/webwn?s=${q}">WordNet</a>`, //
+          ];
+          args.word = `<b>${args.word}</b><div class="hdefine">${_("Dictionary definitions")}:<ul><li>${links.join("</li><li>")}</li></ul></div>`;
+        }
+        if (args.invalid) {
+          args.invalid = `<b>${args.invalid}</b>`;
+        }
+        if (args.genre) {
+          const el = document.getElementById("hicon_" + args.genre.toLowerCase().trim());
+          args.genre = `<span class="hgenre ${args.genre}">${el ? el.outerHTML : args.genre}`;
+        }
+        if (args.letter) {
+          args.letter = `${args.letter}</span>`;
+        }
+        for (const k in args) {
+          if (k.startsWith("icon")) {
+            let v = args[k];
+            const el = document.getElementById("hicon_" + v.toLowerCase().trim());
+            if (el) {
+              v = el.outerHTML;
+            } else if (v != "¢") {
+              v = ` ${_(v)}`;
+            }
+            args[k] = v;
+          }
         }
       }
       return log;
@@ -667,7 +672,11 @@ export default {
         confirmWord: {
           text: "Confirm Word",
           color: "blue",
-          function() {
+          async function() {
+            if (this.tableauCards.length == 0) {
+              // Did you forget to play any cards?
+              await this.clickAll(this.handLocation);
+            }
             let cardIds = this.cardIds(this.tableauCards);
             let wildMask = this.tableauCards.map((card) => card.wild || "_").join("");
             this.takeAction("confirmWord", { cardIds, wildMask });
@@ -683,7 +692,7 @@ export default {
         skip: {
           text() {
             if (this.gamestate.name == "purchase") {
-              return `Purchase ${this.gamestate.args.coins} Ink (End Turn)`;
+              return `${this.gamestate.args.coins} Ink (End Turn)`;
             }
             return "Skip";
           },
@@ -701,7 +710,7 @@ export default {
         },
         doctor: {
           text() {
-            return this.game.format_string_recursive("Purchase ${points}${icon} for ${coins}¢", this.gamestate.args.advert);
+            return this.game.format_string_recursive(_("${points}${icon} for ${coins}¢"), this.gamestate.args.advert);
           },
           color: "gray",
           function() {
@@ -712,8 +721,8 @@ export default {
           },
         },
         convert: {
-          text: "Spend 3 ink for 1¢",
-          color: "gray",
+          text: "Convert 3 Ink to 1¢",
+          color: "red",
           function() {
             this.takeAction("convert");
           },
@@ -768,9 +777,7 @@ export default {
       if (notif.type == "cards") {
         let cards = Object.values(notif.args.cards);
         cards.sort(firstBy("location").thenBy("order").thenBy("id"));
-        let delay = 0;
-        const promises = cards.map((card) => this.animateCard(card, (delay += 0)));
-        Promise.allSettled(promises).then((results) => {
+        Promise.all(cards.map(this.animateCard)).then(() => {
           this.game.notifqueue.setSynchronousDuration(0);
         });
       } else if (notif.type == "invalid") {
@@ -780,8 +787,15 @@ export default {
       } else if (notif.type == "pause") {
         this.game.notifqueue.setSynchronousDuration(notif.args.duration);
       } else if (notif.type == "panel") {
-        this.gamedatas.players[notif.args.player.id] = notif.args.player;
-        this.game.scoreCtrl[notif.args.player.id].toValue(notif.args.player.score);
+        Object.assign(this.gamedatas.players[notif.args.player.id], notif.args.player);
+        if (notif.args.allScore) {
+          // Everyone except Penny scores
+          Object.keys(this.gamedatas.players)
+            .filter((id) => id != "0")
+            .forEach((id) => this.game.scoreCtrl[id].toValue(notif.args.allScore));
+        } else {
+          this.game.scoreCtrl[notif.args.player.id].toValue(notif.args.player.score);
+        }
       }
     },
 
@@ -819,10 +833,22 @@ export default {
       this.visibleLocations[location] = !this.visibleLocations[location];
     },
 
-    clickAll(location): void {
-      this.cardsInLocation(location).forEach((card) => {
-        this.emitter.emit("requestClickCard", card.id);
-      });
+    clickAll(location): Promise<any> {
+      if (this.gamestate.active && this.gamestate.name == "playerTurn") {
+        return Promise.all(
+          this.cardsInLocation(location).map((card) =>
+            this.clickCard({
+              card: card,
+              action: {
+                action: "move",
+                destination: location == "tableau" ? card.origin : "tableau",
+              },
+            })
+          )
+        );
+      } else {
+        return Promise.resolve([]);
+      }
     },
 
     resetAll(): void {
@@ -831,10 +857,10 @@ export default {
       });
     },
 
-    clickCard(e): void {
+    clickCard(e): Promise<any> {
       let { action, card } = e;
       if (action.action == "move") {
-        this.animateCard(card, 0, {
+        return this.animateCard(card, {
           location: action.destination,
           order: this.nextOrderInLocation(action.destination),
         });
@@ -843,7 +869,7 @@ export default {
         if (action.actionArgs) {
           Object.assign(args, action.actionArgs);
         }
-        this.takeAction(action.action, args);
+        return this.takeAction(action.action, args);
       }
     },
 

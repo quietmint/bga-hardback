@@ -121,7 +121,7 @@ $machinestates = [
 
     ST_TRASH => [
         'name' => 'trash',
-        'description' => clienttranslate('${actplayer} may trash a card'),
+        'description' => clienttranslate('${actplayer} may trash a card (${coins}¢ and ${points}${icon} earned so far)'),
         'descriptionmyturn' => clienttranslate('${you} may trash a card (${coins}¢ and ${points}${icon} earned so far)'),
         'type' => 'activeplayer',
         'args' => 'argTrash',
@@ -136,7 +136,7 @@ $machinestates = [
 
     ST_TRASH_DISCARD => [
         'name' => 'trashDiscard',
-        'description' => clienttranslate('${actplayer} may trash a card'),
+        'description' => clienttranslate('${actplayer} may trash a card (${coins}¢ and ${points}${icon} earned so far)'),
         'descriptionmyturn' => clienttranslate('${you} may trash a card (${coins}¢ and ${points}${icon} earned so far)'),
         'type' => 'activeplayer',
         'args' => 'argTrashDiscard',
@@ -151,7 +151,7 @@ $machinestates = [
 
     ST_EITHER => [
         'name' => 'either',
-        'description' => clienttranslate('${actplayer} must choose a benefit'),
+        'description' => clienttranslate('${actplayer} must choose a benefit (${coins}¢ and ${points}${icon} earned so far)'),
         'descriptionmyturn' => clienttranslate('${you} must choose a benefit (${coins}¢ and ${points}${icon} earned so far)'),
         'type' => 'activeplayer',
         'args' => 'argEither',
@@ -166,8 +166,8 @@ $machinestates = [
 
     ST_JAIL => [
         'name' => 'jail',
-        'description' => clienttranslate('${actplayer} may jail or trash an offer row card'),
-        'descriptionmyturn' => clienttranslate('${you} may jail or trash an offer row card'),
+        'description' => clienttranslate('${actplayer} may jail an offer row card (${coins}¢ and ${points}${icon} earned so far)'),
+        'descriptionmyturn' => clienttranslate('${you} may jail an offer row card (${coins}¢ and ${points}${icon} earned so far)'),
         'type' => 'activeplayer',
         'args' => 'argJail',
         'action' => 'stAutoSkip',
@@ -200,7 +200,7 @@ $machinestates = [
         'type' => 'activeplayer',
         'args' => 'argPurchase',
         'action' => 'stAutoSkip',
-        'possibleactions' => ['purchase', 'doctor', 'convert', 'skip'],
+        'possibleactions' => ['purchase', 'doctor', 'skip', 'convert'],
         'transitions' => [
             'again' => ST_PURCHASE,
             'next' => ST_CLEANUP,

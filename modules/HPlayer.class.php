@@ -36,23 +36,32 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return [
-            'id' => $this->id,
-            'advert' => $this->advert,
-            'coins' => $this->coins,
+        return $this->jsonSerializeForPanel() + [
             'color' => $this->color,
             'colorName' => $this->getColorName(),
-            'deckCount' => $this->getDeckCount(),
-            'discardCount' => $this->getDiscardCount(),
             'eliminated' => $this->eliminated,
-            'genreCounts' => $this->getGenreCounts(),
-            'ink' => $this->ink,
             'name' => $this->name,
             'order' => $this->order,
-            'remover' => $this->remover,
-            'score' => $this->score,
             'zombie' => $this->zombie,
         ];
+    }
+
+    public function jsonSerializeForPanel(): array
+    {
+        $json = [
+            'id' => $this->id,
+            'coins' => $this->coins,
+            'deckCount' => $this->getDeckCount(),
+            'discardCount' => $this->getDiscardCount(),
+            'genreCounts' => $this->getGenreCounts(),
+            'ink' => $this->ink,
+            'remover' => $this->remover,
+            'score' => $this->score,
+        ];
+        if (hardback::$instance->gamestate->table_globals[OPTION_ADVERTS]) {
+            $json['advert'] = $this->advert;
+        }
+        return $json;
     }
 
     public function getId(): int
@@ -170,6 +179,11 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         return CardMgr::getDiscardLocation($this->id);
     }
 
+    public function getTimeless(): array
+    {
+        return CardMgr::getTimeless($this->id);
+    }
+
     public function getTimelessLocation(): string
     {
         return CardMgr::getTimelessLocation($this->id);
@@ -187,11 +201,15 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         return $this->id == hardback::$instance->getActivePlayerId();
     }
 
-    public function notifyPanel(): void
+    public function notifyPanel(string $hint = null): void
     {
-        hardback::$instance->notifyAllPlayers('panel', '', [
-            'player' => $this,
-        ]);
+        $args = [
+            'player' => $this->jsonSerializeForPanel(),
+        ];
+        if ($hint == 'allScore') {
+            $args['allScore'] = $this->score;
+        }
+        hardback::$instance->notifyAllPlayers('panel', '', $args);
     }
 
     public function notifyInk(HCard $card): void
@@ -213,57 +231,52 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         ]);
     }
 
-    public function addCoins(int $amount, bool $notifyPanel = true): void
+    public function addCoins(int $amount): void
     {
         if ($amount <= 0) {
             return;
         }
         self::DbQuery("UPDATE player SET coins = coins + $amount WHERE player_id = {$this->id}");
         $this->coins += $amount;
-        if ($notifyPanel) {
-            $this->notifyPanel();
-        }
+        $this->notifyPanel();
     }
 
-    public function addPoints(int $amount, string $stat, bool $notifyPanel = true): void
+    public function addPoints(int $amount, string $stat): void
     {
         if ($amount == 0) {
             return;
         }
         hardback::$instance->incStat($amount, $stat, $this->id);
+        $hint = null;
         $sql = "UPDATE player SET player_score = player_score + $amount";
         if (hardback::$instance->gamestate->table_globals[OPTION_COOP] == NO) {
             $sql .= " WHERE player_id = {$this->id}";
+        } else {
+            $hint = 'allScore';
         }
         self::DbQuery($sql);
         $this->score += $amount;
-        if ($notifyPanel) {
-            $this->notifyPanel();
-        }
+        $this->notifyPanel($hint);
     }
 
-    public function addInk(int $amount = 1, bool $notifyPanel = true): void
+    public function addInk(int $amount = 1): void
     {
         if ($amount <= 0) {
             return;
         }
         self::DbQuery("UPDATE player SET ink = ink + $amount WHERE player_id = {$this->id}");
         $this->ink += $amount;
-        if ($notifyPanel) {
-            $this->notifyPanel();
-        }
+        $this->notifyPanel();
     }
 
-    public function addRemover(int $amount = 1, bool $notifyPanel = true): void
+    public function addRemover(int $amount = 1): void
     {
         if ($amount <= 0) {
             return;
         }
         self::DbQuery("UPDATE player SET remover = remover + $amount WHERE player_id = {$this->id}");
         $this->remover += $amount;
-        if ($notifyPanel) {
-            $this->notifyPanel();
-        }
+        $this->notifyPanel();
     }
 
     public function spendCoins(int $amount, bool $notifyPanel = true): void
