@@ -169,18 +169,14 @@ $game_options = [
                 'tmdisplay' => 'Cooperative',
                 'description' => 'Win or lose as a team against archrival Penny Dreadful (challenging)',
                 'nobeginner' => true,
+                'is_coop' => true,
             ],
             COOP_SIGNATURE => [
                 'name' => 'Cooperative With Signature Genre',
                 'tmdisplay' => 'Cooperative With Signature Genre',
                 'description' => 'Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging)',
                 'nobeginner' => true,
-            ],
-            COOP_MINUS1 => [
-                'name' => 'Cooperative (-1 Point)',
-                'tmdisplay' => 'Cooperative (-1 Point)',
-                'description' => 'Win or lose as a team against archrival Penny Dreadful, who receives 1 less point per card (less challenging unofficial variant)',
-                'nobeginner' => true,
+                'is_coop' => true,
             ],
         ],
         'startcondition' => [
@@ -188,9 +184,27 @@ $game_options = [
                 [
                     'type' => 'minplayers',
                     'value' => 2,
-                    'message' => 'Solo mode must use Cooperative Anthology',
+                    'message' => 'Solo mode can only be played with Cooperative Anthology',
                 ],
             ],
+            /*
+            COOP_BASIC => [
+                [
+                    'type' => 'otheroption',
+                    'id' => GAMESTATE_RATING_MODE,
+                    'value' => ELO_OFF,
+                    'message' => 'Cooperative Anthology can only be played in Training mode (no ELO)',
+                ],
+            ],
+            COOP_SIGNATURE => [
+                [
+                    'type' => 'otheroption',
+                    'id' => GAMESTATE_RATING_MODE,
+                    'value' => ELO_OFF,
+                    'message' => 'Cooperative Anthology can only be played in Training mode (no ELO)',
+                ],
+            ],
+            */
         ],
     ],
 ];

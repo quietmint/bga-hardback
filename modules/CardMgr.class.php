@@ -353,8 +353,7 @@ class CardMgr extends APP_GameClass
 
             // Count offer row draws for timeless classic discard condition
             if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO && $fromLocation == 'deck' && $toLocation == 'offer') {
-                hardback::$instance->notifyAllPlayers('message', "countDraw{$card->getGenreName()}", []);
-                hardback::$instance->incGameStateValue("countDraw{$card->getGenre()}", 1);
+                hardback::$instance->incGameStateValue("countOffer{$card->getGenre()}", 1);
             }
         }
         if ($notify) {
@@ -751,6 +750,7 @@ class CardMgr extends APP_GameClass
     {
         $cards = self::getCardsInLocation([self::getHandLocation($playerId), 'tableau']);
         $updatedIds = self::getIds($cards);
+        $discardIds = $updatedIds;
 
         // Clear used benefits
         self::DbQuery('TRUNCATE resolve');
@@ -771,13 +771,13 @@ class CardMgr extends APP_GameClass
                 }
             }
             $timelessIds = self::getIds($timeless);
-            self::notifyCards(self::getCards($timelessIds));
-            $updatedIds = array_diff($updatedIds, $timelessIds);
+            $discardIds = array_diff($updatedIds, $timelessIds);
         }
-
+        
         // Discard remaining cards
-        self::discard($updatedIds, self::getDiscardLocation($playerId));
-
+        self::discard($discardIds, self::getDiscardLocation($playerId), false);
+        self::notifyCards(self::getCards($updatedIds));
+        
         // Draw new hand
         self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId), 'letter', true);
     }

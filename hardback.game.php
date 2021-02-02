@@ -53,10 +53,10 @@ class hardback extends Table
             'countActive' . HORROR => COUNT_ACTIVE_HORROR,
             'countActive' . MYSTERY => COUNT_ACTIVE_MYSTERY,
             'countActive' . ROMANCE => COUNT_ACTIVE_ROMANCE,
-            'countDraw' . ADVENTURE => COUNT_DRAW_ADVENTURE,
-            'countDraw' . HORROR => COUNT_DRAW_HORROR,
-            'countDraw' . MYSTERY => COUNT_DRAW_MYSTERY,
-            'countDraw' . ROMANCE => COUNT_DRAW_ROMANCE,
+            'countOffer' . ADVENTURE => COUNT_OFFER_ADVENTURE,
+            'countOffer' . HORROR => COUNT_OFFER_HORROR,
+            'countOffer' . MYSTERY => COUNT_OFFER_MYSTERY,
+            'countOffer' . ROMANCE => COUNT_OFFER_ROMANCE,
             'dictionary' => OPTION_DICTIONARY,
             'events' => OPTION_EVENTS,
             'length' => OPTION_LENGTH,
@@ -105,10 +105,10 @@ class hardback extends Table
         self::setGameStateInitialValue('countActive' . HORROR, 0);
         self::setGameStateInitialValue('countActive' . MYSTERY, 0);
         self::setGameStateInitialValue('countActive' . ROMANCE, 0);
-        self::setGameStateInitialValue('countDraw' . ADVENTURE, 0);
-        self::setGameStateInitialValue('countDraw' . HORROR, 0);
-        self::setGameStateInitialValue('countDraw' . MYSTERY, 0);
-        self::setGameStateInitialValue('countDraw' . ROMANCE, 0);
+        self::setGameStateInitialValue('countOffer' . ADVENTURE, 0);
+        self::setGameStateInitialValue('countOffer' . HORROR, 0);
+        self::setGameStateInitialValue('countOffer' . MYSTERY, 0);
+        self::setGameStateInitialValue('countOffer' . ROMANCE, 0);
         self::setGameStateInitialValue('startInk', 0);
         self::setGameStateInitialValue('startRemover', 0);
         self::setGameStateInitialValue('startScore', 0);
@@ -226,7 +226,7 @@ class hardback extends Table
         // Reset draw counts
         if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
             foreach ([ADVENTURE, HORROR, MYSTERY, ROMANCE] as $genre) {
-                hardback::$instance->setGameStateValue("countDraw$genre", 0);
+                hardback::$instance->setGameStateValue("countOffer$genre", 0);
             }
         }
 
@@ -730,10 +730,10 @@ class hardback extends Table
         // Summary of all earnings
         $player = PlayerMgr::getPlayer();
         $earnings = [
+            'star' => $player->getScore() - $this->getGameStateValue('startScore'),
+            '¢' => $player->getCoins(),
             'ink' => $player->getInk() - $this->getGameStateValue('startInk'),
             'remover' => $player->getRemover() - $this->getGameStateValue('startRemover'),
-            '¢' => $player->getCoins(),
-            'star' => $player->getScore() - $this->getGameStateValue('startScore'),
         ];
 
         $args = [
@@ -914,6 +914,10 @@ class hardback extends Table
             ]);
         }
 
+        // Reset hand
+        CardMgr::reset($player->getId());
+        $player->notifyPanel();
+
         $this->gamestate->nextState('next');
     }
 
@@ -943,9 +947,6 @@ class hardback extends Table
         $offer = CardMgr::getOffer();
         $card = reset($offer);
         $points = $card->getCost();
-        if ($this->gamestate->table_globals[OPTION_COOP] == COOP_MINUS1) {
-            $points -= 1;
-        }
         if ($coopGenre == ROMANCE && $card->getGenre() == ROMANCE) {
             // Romance: Penny earns double
             $points *= 2;
@@ -976,7 +977,7 @@ class hardback extends Table
                 'genre' => $card->getGenreName(),
                 'letter' => $card->getLetter(),
             ]);
-            CardMgr::discard($card, 'trash');
+            CardMgr::discard($card, $penny->getDiscardLocation());
             CardMgr::drawCards(1, 'deck', 'offer', null, true);
         }
 
@@ -984,12 +985,12 @@ class hardback extends Table
         $timeless = $player->getTimeless();
         $discardIds = [];
         foreach ($timeless as $card) {
-            $count = hardback::$instance->getGameStateValue("countDraw{$card->getGenre()}");
-            self::notifyAllPlayers('message',  "timeless {$card->getLetter()}, genre {$card->getGenre()}, count $count", []);
-            if ($count > 0) {
+            $countOffer = hardback::$instance->getGameStateValue("countOffer{$card->getGenre()}");
+            if ($countOffer > 0) {
                 $discardIds[] = $card->getId();
-                self::notifyAllPlayers('message', $this->msg['coopDiscard'], [
+                self::notifyAllPlayers('message', $this->msg['timeless'], [
                     'player_name' => $penny->getName(),
+                    'player_name2' => $player->getName(),
                     'genre' => $card->getGenreName(),
                     'letter' => $card->getLetter(),
                 ]);
@@ -1004,7 +1005,7 @@ class hardback extends Table
             self::notifyAllPlayers('message', $this->msg['coopLose'], [
                 'player_name' => $penny->getName(),
             ]);
-            self::DbQuery('UPDATE player SET player_score = 0');
+            self::DbQuery('UPDATE player SET player_score = player_score * -1');
             $this->gamestate->nextState('gameEnd');
         } else {
             $this->gamestate->nextState('next');
@@ -1025,11 +1026,6 @@ class hardback extends Table
 
     function stNextPlayer(): void
     {
-        // Reset hand
-        $player = PlayerMgr::getPlayer();
-        CardMgr::reset($player->getId());
-        $player->notifyPanel();
-
         // Activate next player
         $this->activeNextPlayer();
         $player = PlayerMgr::getPlayer();

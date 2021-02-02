@@ -46,10 +46,10 @@ define('COUNT_ACTIVE_ADVENTURE', 11);
 define('COUNT_ACTIVE_HORROR', 12);
 define('COUNT_ACTIVE_MYSTERY', 13);
 define('COUNT_ACTIVE_ROMANCE', 14);
-define('COUNT_DRAW_ADVENTURE', 15);
-define('COUNT_DRAW_HORROR', 16);
-define('COUNT_DRAW_MYSTERY', 17);
-define('COUNT_DRAW_ROMANCE', 18);
+define('COUNT_OFFER_ADVENTURE', 15);
+define('COUNT_OFFER_HORROR', 16);
+define('COUNT_OFFER_MYSTERY', 17);
+define('COUNT_OFFER_ROMANCE', 18);
 define('START_SCORE', 20);
 define('START_INK', 21);
 define('START_REMOVER', 22);
@@ -93,7 +93,13 @@ define('OPTION_COOP', 110);
 // 0 = no
 define('COOP_BASIC', 1);
 define('COOP_SIGNATURE', 2);
-define('COOP_MINUS1', 3);
+
+if (!defined('GAMESTATE_RATING_MODE')) {
+    define('GAMESTATE_RATING_MODE', 201);
+}
+if (!defined('ELO_OFF')) {
+    define('ELO_OFF', 1);
+}
 
 // Game states
 define('ST_BGA_GAME_SETUP', 1);
