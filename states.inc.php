@@ -115,7 +115,43 @@ $machinestates = [
         'type' => 'game',
         'action' => 'stBasic',
         'transitions' => [
+            'next' => ST_SPECIAL,
+        ],
+    ],
+
+    ST_SPECIAL => [
+        'name' => 'special',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stSpecial',
+        'transitions' => [
+            'again' => ST_SPECIAL,
+            'horror' => ST_SPECIAL_HORROR,
+            'romance' => ST_SPECIAL_ROMANCE,
             'next' => ST_TRASH,
+        ],
+    ],
+
+    ST_SPECIAL_HORROR => [
+        'name' => 'specialHorror',
+        'description' => clienttranslate('Other players must choose to discard ink or remover'),
+        'descriptionmyturn' => clienttranslate('${you} must choose to discard ink or remover'),
+        'type' => 'multipleactiveplayer',
+        'possibleactions' => ['discardInk', 'discardRemover'],
+        'transitions' => [
+            'next' => ST_SPECIAL,
+        ],
+    ],
+
+    ST_SPECIAL_ROMANCE => [
+        'name' => 'specialRomance',
+        'description' => clienttranslate('${actplayer} must return or discard previewed cards'),
+        'descriptionmyturn' => clienttranslate('${you} must return or discard previewed cards'),
+        'type' => 'activeplayer',
+        'possibleactions' => ['previewReturn', 'previewDiscard'],
+        'transitions' => [
+            'next' => ST_SPECIAL,
+            'zombie' => ST_CLEANUP,
         ],
     ],
 

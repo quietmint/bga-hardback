@@ -92,6 +92,40 @@ class action_hardback extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function discardInk()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('discardInk');
+    $this->game->discardInk();
+    self::ajaxResponse();
+  }
+
+  public function discardRemover()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('discardRemover');
+    $this->game->discardRemover();
+    self::ajaxResponse();
+  }
+
+  public function previewReturn()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('previewReturn');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->previewReturn($cardId);
+    self::ajaxResponse();
+  }
+
+  public function previewDiscard()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('previewDiscard');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->previewDiscard($cardId);
+    self::ajaxResponse();
+  }
+
   public function trash()
   {
     self::setAjaxMode();

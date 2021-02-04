@@ -2,64 +2,8 @@
 
 class CardMgr extends APP_GameClass
 {
-    public static $refBenefits = [
-        COINS => [
-            'text' => '%¢',
-        ],
-        DOUBLE_ADJ => [
-            'text' => 'Double adjacent card',
-        ],
-        EITHER_BASIC => [
-            'text' => '%¢ or %',
-            'icon' => 'star',
-        ],
-        EITHER_GENRE => [
-            'text' => '%¢ or %',
-            'icon' => 'star',
-        ],
-        EITHER_INK => [
-            'text' => '1 ink or remover',
-        ],
-        JAIL => [
-            'text' => 'Jail offer card',
-        ],
-        SPECIAL_ADVENTURE => [
-            'text' => '2',
-            'icon' => 'star',
-            'text2' => ' for each ',
-            'icon2' => 'adventure',
-        ],
-        SPECIAL_HORROR => [
-            'text' => 'Opponents return 1 ink/remover',
-        ],
-        SPECIAL_MYSTERY => [
-            'text' => '1',
-            'icon' => 'star',
-            'text2' => ' for each wild',
-        ],
-        SPECIAL_ROMANCE => [
-            'text' => 'Draw 3 cards. Return or discard each.',
-        ],
-        POINTS => [
-            'text' => '%',
-            'icon' => 'star',
-        ],
-        TRASH_COINS => [
-            'text' => 'Trash this for %¢',
-        ],
-        TRASH_DISCARD => [
-            'text' => 'Trash discard for %¢',
-        ],
-        TRASH_POINTS => [
-            'text' => 'Trash this for %',
-            'icon' => 'star',
-        ],
-        UNCOVER_ADJ => [
-            'text' => 'Uncover adjacent wild',
-        ],
-    ];
-
     // Timeless: UPDATE card SET `location` = 'offer', `origin` = 'offer' WHERE `location` IN ('deck', 'discard') AND `refId` IN (5, 12, 23, 31, 40, 42, 53, 64, 73, 86, 92, 96, 107, 113, 123, 134)
+    // Special: UPDATE card SET `location` = 'hand_2305326', `origin` = 'hand_2305326' WHERE `refId` IN (1, 7, 21, 26, 36, 43, 46, 71, 76, 95, 106, 111, 124)
 
     public static $refCards = [
         1 => ['genre' => ADVENTURE, 'letter' => 'A', 'cost' => 5, 'points' => 1, 'basicBenefits' => [POINTS => 2, TRASH_COINS => 3], 'genreBenefits' => [POINTS => 1]],
@@ -251,13 +195,6 @@ class CardMgr extends APP_GameClass
         return self::$refCards;
     }
 
-    public static function getBenefitRef(): array
-    {
-        return self::$refBenefits;
-    }
-
-    /* Change */
-
     public static function setup(): void
     {
         // Create genre cards
@@ -265,7 +202,6 @@ class CardMgr extends APP_GameClass
         $create = [];
         foreach (self::$refCards as $refId => $ref) {
             if ($ref['genre'] != STARTER) {
-                //$create[] = ['type' => '', 'type_arg' => $refId, 'nbr' => 1];
                 $create[] = "($refId, 'discard', 'discard')";
             }
         }
@@ -746,6 +682,15 @@ class CardMgr extends APP_GameClass
         }
     }
 
+    public static function previewReturn($card, $location)
+    {
+        self::DbQuery("UPDATE card SET `order` = `order` + 1 WHERE `location` = '$location' AND `order` >= {$card->getOrder()}");
+        self::DbQuery("UPDATE card SET `ink` = NULL, `wild` = NULL, `factor` = 1, `origin` = '$location', `location` = '$location' WHERE id = {$card->getId()}");
+        $card->setLocation($location);
+        $card->setOrigin($location);
+        self::notifyCards($card);
+    }
+
     public static function reset(int $playerId): void
     {
         $cards = self::getCardsInLocation([self::getHandLocation($playerId), 'tableau']);
@@ -773,11 +718,11 @@ class CardMgr extends APP_GameClass
             $timelessIds = self::getIds($timeless);
             $discardIds = array_diff($updatedIds, $timelessIds);
         }
-        
+
         // Discard remaining cards
         self::discard($discardIds, self::getDiscardLocation($playerId), false);
         self::notifyCards(self::getCards($updatedIds));
-        
+
         // Draw new hand
         self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId), 'letter', true);
     }
@@ -832,6 +777,9 @@ class CardMgr extends APP_GameClass
         self::useBenefit($source, UNCOVER_ADJ);
         self::DbQuery("UPDATE card SET `wild` = NULL WHERE `id` = {$card->getId()}");
         $card->setWild(null);
+        if ($card->getGenre() != STARTER) {
+            hardback::$instance->incGameStateValue("countActive{$card->getGenre()}", 1);
+        }
 
         // Notify
         self::notifyCards($card);

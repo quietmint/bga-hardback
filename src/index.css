@@ -59,7 +59,7 @@
 }
 
 .button {
-  @apply leading-7 px-3 transition-all cursor-pointer font-bold;
+  @apply leading-7 px-2 transition-all cursor-pointer font-bold;
 }
 
 .button.black {
@@ -104,7 +104,7 @@
   height: 224px;
 }
 
-.card.timeless {
+.card.timeless:not(.wild) {
   width: 224px;
   height: 160px;
 }

@@ -42,7 +42,7 @@ class hardback extends Table
         //  If your game has options (variants), you also have to associate here a label to
         //  the corresponding ID in gameoptions.inc.php.
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
-        self::initGameStateLabels(array(
+        self::initGameStateLabels([
             'adverts' => OPTION_ADVERTS,
             'awards' => OPTION_AWARDS,
             'awardWinner' => AWARD_WINNER,
@@ -64,7 +64,7 @@ class hardback extends Table
             'startInk' => START_INK,
             'startRemover' => START_REMOVER,
             'startScore' => START_SCORE,
-        ));
+        ]);
     }
 
     protected function getGameName(): string
@@ -178,7 +178,7 @@ class hardback extends Table
             ],
             'refs' => [
                 'cards' => CardMgr::getCardRef(),
-                'benefits' => CardMgr::getBenefitRef(),
+                'benefits' => $this->benefits,
             ],
         ];
     }
@@ -373,6 +373,10 @@ class hardback extends Table
         }
     }
 
+    /*
+     * UNCOVER
+     */
+
     function argUncover(): array
     {
         $cardIds = [];
@@ -421,6 +425,10 @@ class hardback extends Table
         $this->gamestate->nextState('again');
     }
 
+    /*
+     * DOUBLE
+     */
+
     function argDouble(): array
     {
         $cardIds = [];
@@ -468,6 +476,10 @@ class hardback extends Table
         ]);
         $this->gamestate->nextState('again');
     }
+
+    /*
+     * EITHER
+     */
 
     function argEither(): array
     {
@@ -528,6 +540,10 @@ class hardback extends Table
         $this->gamestate->nextState('again');
     }
 
+    /*
+     * BASIC
+     */
+
     function stBasic(): void
     {
         $player = PlayerMgr::getPlayer();
@@ -545,6 +561,166 @@ class hardback extends Table
         }
         $this->gamestate->nextState('next');
     }
+
+    /*
+     * SPECIAL
+     */
+
+    function argSpecial(): array
+    {
+        $player = PlayerMgr::getPlayer();
+        return [
+            'coins' => $player->getCoins(),
+            'points' => $player->getScore() - $this->getGameStateValue('startScore'),
+            'icon' => 'star',
+        ];
+    }
+
+    function stSpecial(): void
+    {
+        $player = PlayerMgr::getPlayer();
+        $tableau = CardMgr::getTableau($player->getId());
+        $specials = [];
+        foreach ($tableau as $card) {
+            if ($card->hasBenefit(SPECIAL_ADVENTURE)) {
+                $specials[SPECIAL_ADVENTURE] = $card;
+            } else if ($card->hasBenefit(SPECIAL_HORROR)) { // && $this->gamestate->table_globals[OPTION_COOP] == NO) {
+                $specials[SPECIAL_HORROR] = $card;
+            } else if ($card->hasBenefit(SPECIAL_MYSTERY)) {
+                $specials[SPECIAL_MYSTERY] = $card;
+            } else if ($card->hasBenefit(SPECIAL_ROMANCE)) {
+                $specials[SPECIAL_ROMANCE] = $card;
+            }
+        }
+
+        if (isset($specials[SPECIAL_ADVENTURE])) {
+            // Adventure: 2 coins per adventure
+            CardMgr::useBenefit($specials[SPECIAL_ADVENTURE], SPECIAL_ADVENTURE);
+            $coins = $this->getGameStateValue("countActive" . ADVENTURE) * 2;
+            $player->addCoins($coins);
+            $this->notifyAllPlayers('message', "SPECIAL_ADVENTURE coins: $coins", []);
+        }
+
+        if (isset($specials[SPECIAL_MYSTERY])) {
+            // Mystery: 1 point per wild
+            CardMgr::useBenefit($specials[SPECIAL_MYSTERY], SPECIAL_MYSTERY);
+            $wilds = 0;
+            foreach ($tableau as $card) {
+                if ($card->isWild()) {
+                    $wilds++;
+                }
+            }
+            $player->addPoints($wilds, 'pointsGenre');
+            $this->notifyAllPlayers('message', "SPECIAL_MYSTERY points: $wilds", []);
+        }
+
+        if (isset($specials[SPECIAL_HORROR])) {
+            // Horror: Opponents discard ink/remover
+            CardMgr::useBenefit($specials[SPECIAL_HORROR], SPECIAL_HORROR);
+            $multi = [];
+            foreach (PlayerMgr::getPlayers() as $opponent) {
+                if ($opponent->getId() == $player->getId()) {
+                    continue;
+                }
+                if ($opponent->getInk() > 0 && $opponent->getRemover() > 0) {
+                    $multi[] = $opponent->getId();
+                } else if ($opponent->getInk() > 0) {
+                    $opponent->spendInk();
+                    $this->notifyAllPlayers('message', $this->msg['forceDiscard'], [
+                        'i18n' => ['icon'],
+                        'player_name' => $player->getName(),
+                        'player_name2' => $opponent->getName(),
+                        'amount' => 1,
+                        'icon' => 'ink',
+                    ]);
+                } else if ($opponent->getRemover() > 0) {
+                    $opponent->spendRemover();
+                    $this->notifyAllPlayers('message', $this->msg['forceDiscard'], [
+                        'i18n' => ['icon'],
+                        'player_name' => $player->getName(),
+                        'player_name2' => $opponent->getName(),
+                        'amount' => 1,
+                        'icon' => 'remover',
+                    ]);
+                }
+            }
+            if (!empty($multi)) {
+                $this->gamestate->setPlayersMultiactive($multi, '', true);
+                $this->gamestate->nextState('horror');
+                return;
+            }
+        }
+
+        if (isset($specials[SPECIAL_ROMANCE])) {
+            // Romance: Draw 3 and return or discard
+            CardMgr::useBenefit($specials[SPECIAL_ROMANCE], SPECIAL_ROMANCE);
+            CardMgr::drawCards(3, $player->getDeckLocation(), $player->getHandLocation(), null, true);
+            $this->gamestate->nextState('romance');
+            return;
+        }
+
+        $this->gamestate->nextState('next');
+    }
+
+    function discardInk(): void
+    {
+        $active = PlayerMgr::getPlayer();
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $player->spendInk();
+        $this->notifyAllPlayers('message', $this->msg['forceDiscard'], [
+            'i18n' => ['icon'],
+            'player_name' => $active->getName(),
+            'player_name2' => $player->getName(),
+            'amount' => 1,
+            'icon' => 'ink',
+        ]);
+        $this->gamestate->setPlayerNonMultiactive($player->getId(), 'next');
+    }
+
+    function discardRemover(): void
+    {
+        $active = PlayerMgr::getPlayer();
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $player->spendRemover();
+        $this->notifyAllPlayers('message', $this->msg['forceDiscard'], [
+            'i18n' => ['icon'],
+            'player_name' => $active->getName(),
+            'player_name2' => $player->getName(),
+            'amount' => 1,
+            'icon' => 'remover',
+        ]);
+        $this->gamestate->setPlayerNonMultiactive($player->getId(), 'next');
+    }
+
+    function previewReturn(int $cardId): void
+    {
+        $player = PlayerMgr::getPlayer();
+        $card = CardMgr::getCard($cardId);
+        if ($card == null || !$card->isLocation($player->getHandLocation())) {
+            throw new BgaVisibleSystemException("Not possible for $player to return preview $card");
+        }
+        CardMgr::previewReturn($card, $player->getDeckLocation());
+        if (CardMgr::getHandCount($player->getId()) == 0) {
+            $this->gamestate->nextState('next');
+        }
+    }
+
+    function previewDiscard(int $cardId): void
+    {
+        $player = PlayerMgr::getPlayer();
+        $card = CardMgr::getCard($cardId);
+        if ($card == null || !$card->isLocation($player->getHandLocation())) {
+            throw new BgaVisibleSystemException("Not possible for $player to discard preview $card");
+        }
+        CardMgr::discard($card, $player->getDiscardLocation());
+        if (CardMgr::getHandCount($player->getId()) == 0) {
+            $this->gamestate->nextState('next');
+        }
+    }
+
+    /*
+     * TRASH
+     */
 
     function argTrash(): array
     {
@@ -660,11 +836,15 @@ class hardback extends Table
         $this->gamestate->nextState('again');
     }
 
+    /*
+     * JAIL
+     */
+
     function argJail(): array
     {
         $player = PlayerMgr::getPlayer();
         $sourceIds = [];
-        $tableau = CardMgr::getTableau(self::getActivePlayerId());
+        $tableau = CardMgr::getTableau($player->getId());
         foreach ($tableau as $card) {
             if ($card->hasBenefit(JAIL)) {
                 $sourceIds[] = $card->getId();
@@ -909,7 +1089,7 @@ class hardback extends Table
             ]);
         } else {
             $this->notifyAllPlayers('pause', $this->msg['endTurn'], [
-                'player_name' => self::getActivePlayerName(),
+                'player_name' => $player->getName(),
                 'duration' => 2000,
             ]);
         }
@@ -988,7 +1168,7 @@ class hardback extends Table
             $countOffer = hardback::$instance->getGameStateValue("countOffer{$card->getGenre()}");
             if ($countOffer > 0) {
                 $discardIds[] = $card->getId();
-                self::notifyAllPlayers('message', $this->msg['timeless'], [
+                self::notifyAllPlayers('message', $this->msg['forceTimeless'], [
                     'player_name' => $penny->getName(),
                     'player_name2' => $player->getName(),
                     'genre' => $card->getGenreName(),
@@ -1109,7 +1289,11 @@ class hardback extends Table
 
     function zombieTurn($state, $active_player): void
     {
-        $this->gamestate->nextState('zombie');
+        if ($state['type'] == 'multipleactiveplayer') {
+            $this->gamestate->setPlayerNonMultiactive($active_player, 'next');
+        } else {
+            $this->gamestate->nextState('zombie');
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////:

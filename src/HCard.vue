@@ -18,14 +18,14 @@
         <div :class="benefitClass" class="absolute text-15">
           <!-- Basic Benefits -->
           <ul title="Basic benefits always activate">
-            <li v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.text"></span><Icon v-if="benefit.icon" :icon="benefit.icon" class="inline text-17" /><span v-html="benefit.text2"></span><Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline text-17" /></li>
+            <li v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.html"></span></li>
           </ul>
 
           <!-- Genre Benefits -->
           <div v-if="card.genreBenefitsList.length" :class="textClass" class="flex items-center border-t border-black" :title="'Genre benefits activate if you play multiple ' + card.genreName + ' cards'">
             <Icon :icon="card.genreName" class="text-24 flex-none" />
             <ul class="border-l border-black ml-1 py-1 pl-1">
-              <li v-for="benefit in card.genreBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.text"></span><Icon v-if="benefit.icon" :icon="benefit.icon" class="inline text-17" /><span v-html="benefit.text2"></span><Icon v-if="benefit.icon2" :icon="benefit.icon2" class="inline text-17" /></li>
+              <li v-for="benefit in card.genreBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.html"></span></li>
             </ul>
           </div>
         </div>
@@ -44,7 +44,7 @@
 
     <!-- Footer -->
     <div v-if="footerActions && footerActions.length > 0" class="flex items-start justify-evenly text-center text-13 s mb-1">
-      <div v-for="action in footerActions" :key="action" @click="clickFooter(action)" :class="action.class" class="px-3 rounded-b-lg transition-all z-10" :title="action.title">{{ action.text }}<Icon v-if="action.icon" :icon="action.icon" class="inline" /></div>
+      <div v-for="action in footerActions" :key="action" @click="clickFooter(action)" :class="action.class" class="px-2 rounded-b-lg transition-all z-10" :title="action.title">{{ action.text }}<Icon v-if="action.icon" :icon="action.icon" class="inline text-15" /></div>
     </div>
   </div>
 </template>
@@ -82,6 +82,16 @@ const actionRef = {
     text: "DOUBLE",
     class: actionBlue,
   },
+  previewReturn: {
+    action: "previewReturn",
+    text: "RETURN",
+    class: actionBlue,
+  },
+  previewDiscard: {
+    action: "previewDiscard",
+    text: "DISCARD",
+    class: actionBlue,
+  },
   trash: {
     action: "trash",
     text: "TRASH",
@@ -107,25 +117,6 @@ const actionRef = {
     },
     text: "TRASH",
     class: actionRed,
-  },
-  eitherCoins: {
-    action: "either",
-    actionArgs: {
-      benefitId: null,
-      choice: "coins",
-    },
-    // dynamic text
-    class: actionBlue,
-  },
-  eitherPoints: {
-    action: "either",
-    actionArgs: {
-      benefitId: null,
-      choice: "points",
-    },
-    // dynamic text
-    icon: "star",
-    class: actionBlue,
   },
   eitherInk: {
     action: "either",
@@ -243,18 +234,38 @@ export default {
           return [actionRef.double];
         } else if (this.gamestate.name == "trash" && this.gamestate.args.cardIds.includes(this.card.id)) {
           return [actionRef.trash];
+          } else if (this.gamestate.name == "specialRomance" && this.card.location.startsWith("hand")) {
+          return [actionRef.previewReturn, actionRef.previewDiscard];
         } else if (this.gamestate.name == "trashDiscard" && this.card.location.startsWith("discard")) {
           const trashDiscard = Object.assign({ text: `TRASH FOR ${this.gamestate.args.amount}¢` }, actionRef.trashDiscard);
           return [trashDiscard];
         } else if (this.gamestate.name.startsWith("either") && this.gamestate.args.possible.hasOwnProperty(this.card.id)) {
           const p = this.gamestate.args.possible[this.card.id];
+          console.log(`card Id ${this.card.id} benfit`, p.benefit);
           if (p.benefit == Constants.EITHER_INK) {
             return [actionRef.eitherInk, actionRef.eitherRemover];
           } else {
-            let eitherCoins = Object.assign({ text: `${p.amount}¢` }, actionRef.eitherCoins);
-            eitherCoins.actionArgs.benefitId = p.benefit;
-            let eitherPoints = Object.assign({ text: p.amount }, actionRef.eitherPoints);
-            eitherPoints.actionArgs.benefitId = p.benefit;
+            const eitherCoins = {
+              action: "either",
+              actionArgs: {
+                benefitId: p.benefit,
+                choice: "coins",
+              },
+              text: `${p.amount}¢`,
+              class: actionBlue,
+            };
+            const eitherPoints = {
+              action: "either",
+              actionArgs: {
+                benefitId: p.benefit,
+                choice: "points",
+              },
+              text: p.amount,
+              icon: "star",
+              class: actionBlue,
+            };
+            console.log(`card Id ${this.card.id} eitherCoins`, eitherCoins);
+            console.log(`card Id ${this.card.id} eitherPoints`, eitherPoints);
             return [eitherCoins, eitherPoints];
           }
         } else if (this.gamestate.name == "jail" && this.card.location == "offer") {

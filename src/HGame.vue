@@ -34,6 +34,8 @@
     <!-- Log message icons-->
     <div class="hidden">
       <Icon v-for="icon in logIcons" :key="icon" :id="'hicon_' + icon" :icon="icon" class="hicon" />
+      <Icon icon="star" id="benefit_star" class="inline text-17" />
+      <Icon icon="adventure" id="benefit_adventure" class="inline text-17" />
     </div>
 
     <div><b>Gamestate:</b> Active: {{ gamestate.active }} &mdash; Name: {{ gamestate.name }}</div>
@@ -142,6 +144,12 @@ const getRect = (el: Element) => {
     width: bounds.width,
     height: bounds.height,
   };
+};
+const getHtml = (id: string) => {
+  const el = document.getElementById(id);
+  if (el) {
+    return el.outerHTML.replace(/ id=.*? /, " ");
+  }
 };
 
 // Genre icons
@@ -314,6 +322,8 @@ export default {
     },
 
     populateCard(card) {
+      const starIcon = getHtml("benefit_star");
+      const adventureIcon = getHtml("benefit_adventure");
       let newCard = Object.assign({}, this.gamedatas.refs.cards[card.refId], card);
       // Basic benefits
       newCard.basicBenefitsList = [];
@@ -324,14 +334,10 @@ export default {
           if (newCard.factor > 1) {
             value = `<span class="font-bold px-1 bg-yellow-400">${value * newCard.factor}</span>`;
           }
-          let newBenefit = Object.assign({}, this.gamedatas.refs.benefits[id]);
-          newBenefit.id = parseInt(id);
-          if (newBenefit.text) {
-            newBenefit.text = newBenefit.text.replaceAll("%", value);
-          }
-          if (newBenefit.text2) {
-            newBenefit.text2 = newBenefit.text2.replaceAll("%", value);
-          }
+          let newBenefit = {
+            id: parseInt(id),
+            html: _(this.gamedatas.refs.benefits[id]).replaceAll("{value}", value).replaceAll("{star}", starIcon).replaceAll("{adventure}", adventureIcon),
+          };
           newCard.basicBenefitsList.push(newBenefit);
         }
         newCard.basicBenefitsList.sort(firstBy("id"));
@@ -345,14 +351,10 @@ export default {
           if (newCard.factor > 1) {
             value = `<span class="font-bold px-1 bg-yellow-400">${value * newCard.factor}</span>`;
           }
-          let newBenefit = Object.assign({}, this.gamedatas.refs.benefits[id]);
-          newBenefit.id = parseInt(id);
-          if (newBenefit.text) {
-            newBenefit.text = newBenefit.text.replaceAll("%", value);
-          }
-          if (newBenefit.text2) {
-            newBenefit.text2 = newBenefit.text2.replaceAll("%", value);
-          }
+          let newBenefit = {
+            id: parseInt(id),
+            html: _(this.gamedatas.refs.benefits[id]).replaceAll("{value}", value).replaceAll("{star}", starIcon).replaceAll("{adventure}", adventureIcon),
+          };
           newCard.genreBenefitsList.push(newBenefit);
         }
         newCard.genreBenefitsList.sort(firstBy("id"));
@@ -642,8 +644,8 @@ export default {
           args.invalid = `<b>${args.invalid}</b>`;
         }
         if (args.genre) {
-          const el = document.getElementById("hicon_" + args.genre.toLowerCase().trim());
-          args.genre = `<span class="hgenre ${args.genre}">${el ? el.outerHTML : args.genre}`;
+          const html = getHtml("hicon_" + args.genre.toLowerCase().trim());
+          args.genre = `<span class="hgenre ${args.genre}">${html ? html : args.genre}`;
         }
         if (args.letter) {
           args.letter = `${args.letter}</span>`;
@@ -651,9 +653,9 @@ export default {
         for (const k in args) {
           if (k.startsWith("icon")) {
             let v = args[k];
-            const el = document.getElementById("hicon_" + v.toLowerCase().trim());
-            if (el) {
-              v = el.outerHTML;
+            const html = getHtml("hicon_" + v.toLowerCase().trim());
+            if (html) {
+              v = html;
             } else if (v != "¢") {
               v = ` ${_(v)}`;
             }
@@ -692,13 +694,27 @@ export default {
         skip: {
           text() {
             if (this.gamestate.name == "purchase") {
-              return `${this.gamestate.args.coins} Ink (End Turn)`;
+              return this.game.format_string_recursive(_("${coins} Ink (End Turn)"), this.gamestate.args);
             }
             return "Skip";
           },
           color: "gray",
           function() {
             this.takeAction("skip");
+          },
+        },
+        discardInk: {
+          text: "Discard 1 Ink",
+          color: "blue",
+          function() {
+            this.takeAction("discardInk");
+          },
+        },
+        discardRemover: {
+          text: "Discard 1 Remover",
+          color: "blue",
+          function() {
+            this.takeAction("discardRemover");
           },
         },
         flush: {
@@ -721,7 +737,7 @@ export default {
           },
         },
         convert: {
-          text: "Convert 3 Ink to 1¢",
+          text: _("Convert 3 Ink to 1¢"),
           color: "red",
           function() {
             this.takeAction("convert");

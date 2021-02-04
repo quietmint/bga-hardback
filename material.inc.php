@@ -41,6 +41,24 @@ $this->adverts = [
     20 => 18,
 ];
 
+$this->benefits = [
+    COINS => clienttranslate('{value}¢'),
+    DOUBLE_ADJ => clienttranslate('Double adjacent card'),
+    EITHER_BASIC => clienttranslate('{value}¢ or {value}{star}'),
+    EITHER_GENRE => clienttranslate('{value}¢ or {value}{star}'),
+    EITHER_INK => clienttranslate('1 ink or remover'),
+    JAIL => clienttranslate('Jail offer card'),
+    POINTS => clienttranslate('{value}{star}'),
+    SPECIAL_ADVENTURE => clienttranslate('2¢ for each {adventure}'),
+    SPECIAL_HORROR => clienttranslate('Opponents return 1 ink/remover'),
+    SPECIAL_MYSTERY => clienttranslate('1{star} for each wild'),
+    SPECIAL_ROMANCE => clienttranslate('Preview your next 3 cards'),
+    TRASH_COINS => clienttranslate('Trash this for {value}¢'),
+    TRASH_DISCARD => clienttranslate('Trash discard for {value}¢'),
+    TRASH_POINTS => clienttranslate('Trash this for {value}{star}'),
+    UNCOVER_ADJ => clienttranslate('Uncover adjacent wild'),
+];
+
 $this->names = [
     'define' => clienttranslate('Dictionary definitions'),
     'ink' => clienttranslate('ink'),
@@ -60,6 +78,8 @@ $this->msg = [
     'endTurnInk' => clienttranslate('${player_name} purchases ${amount} ink and ends their turn'),
     'errorInk' => clienttranslate('Your word must use all inked cards: %s'),
     'errorLength' => clienttranslate('Your word must use at least 2 letters'),
+    'forceDiscard' => clienttranslate('${player_name} forces ${player_name2} to discard ${amount}${icon}'),
+    'forceTimeless' => clienttranslate('${player_name} forces ${player_name2} to discard timeless classic ${genre}${letter}'),
     'invalidWord' => clienttranslate('${player_name} spells an invalid word, ${invalid}'),
     'jailOffer' => clienttranslate('${player_name} jails ${genre}${letter} from the offer row'),
     'purchase' => clienttranslate('${player_name} purchases ${genre}${letter} for ${coins}${iconCoins}'),
@@ -72,8 +92,9 @@ $this->msg = [
     'summary2' => clienttranslate('${player_name} earns ${amount1}${icon1} and ${amount2}${icon2} this round'),
     'summary3' => clienttranslate('${player_name} earns ${amount1}${icon1}, ${amount2}${icon2}, and ${amount3}${icon3} this round'),
     'summary4' => clienttranslate('${player_name} earns ${amount1}${icon1}, ${amount2}${icon2}, ${amount3}${icon3}, and ${amount4}${icon4} this round'),
-    'timeless' => clienttranslate('${player_name} discards ${player_name2}\'s timeless classic ${genre}${letter}'),
     'trash' => clienttranslate('${player_name} trashes ${genre}${letter} and earns ${amount}${icon}'),
     'trashOffer' => clienttranslate('${player_name} trashes ${genre}${letter} from the offer row'),
     'uncover' => clienttranslate('${player_name} uncovers ${genre}${letter}'),
+    'useInk' => clienttranslate('${player_name} spends ink to draw ${genre}${letter}'),
+    'useRemover' => clienttranslate('${player_name} spends remover to avoid ${genre}${letter}'),
 ];
