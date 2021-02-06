@@ -3492,6 +3492,7 @@ borderline
 borderlines
 borders
 bore
+boreal
 bored
 boredom
 boredoms
