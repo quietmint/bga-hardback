@@ -180,10 +180,16 @@ class CardMgr extends APP_GameClass
         $i = 0;
         foreach ($cards as &$card) {
             if ($i > 0) {
-                $card->setPrevious($sequence[$i - 1]);
+                $prev = $sequence[$i - 1];
+                if ($card->getLocation() == $prev->getLocation()) {
+                    $card->setPrevious($prev);
+                }
             }
             if ($i < $count - 1) {
-                $card->setNext($sequence[$i + 1]);
+                $next = $sequence[$i + 1];
+                if ($card->getLocation() == $next->getLocation()) {
+                    $card->setNext($next);
+                }
             }
             $i++;
         }
