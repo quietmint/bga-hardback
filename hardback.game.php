@@ -170,15 +170,15 @@ class hardback extends Table
             'players' => $playersAsArray,
             'cards' => CardMgr::getCardsInLocation([CardMgr::getHandLocation($playerId), CardMgr::getDiscardLocation($playerId), 'tableau', 'offer', 'jail', 'timeless%']),
             'options' => [
-                'awards' => $this->gamestate->table_globals[OPTION_AWARDS] > 0,
                 'adverts' => $this->gamestate->table_globals[OPTION_ADVERTS] > 0,
+                'awards' => $this->gamestate->table_globals[OPTION_AWARDS] > 0,
+                'coop' => $this->gamestate->table_globals[OPTION_COOP] > 0,
                 'events' => $this->gamestate->table_globals[OPTION_EVENTS] > 0,
                 'powers' => $this->gamestate->table_globals[OPTION_POWERS] > 0,
-                'coop' => $this->gamestate->table_globals[OPTION_COOP] > 0,
             ],
             'refs' => [
-                'cards' => CardMgr::getCardRef(),
                 'benefits' => $this->benefits,
+                'cards' => CardMgr::getCardRef(),
             ],
         ];
     }
@@ -196,9 +196,6 @@ class hardback extends Table
     function getGameProgression(): int
     {
         $score = PlayerMgr::getMaxScore();
-        if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
-            $score = max($score, PlayerMgr::getPlayer(0)->getScore());
-        }
         return min(round($score / $this->getGameLength() * 100), 100);
     }
 
@@ -700,6 +697,7 @@ class hardback extends Table
             throw new BgaVisibleSystemException("Not possible for $player to return preview $card");
         }
         CardMgr::previewReturn($card, $player->getDeckLocation());
+        $player->notifyPanel();
         if (CardMgr::getHandCount($player->getId()) == 0) {
             $this->gamestate->nextState('next');
         }
@@ -713,6 +711,7 @@ class hardback extends Table
             throw new BgaVisibleSystemException("Not possible for $player to discard preview $card");
         }
         CardMgr::discard($card, $player->getDiscardLocation());
+        $player->notifyPanel();
         if (CardMgr::getHandCount($player->getId()) == 0) {
             $this->gamestate->nextState('next');
         }
@@ -1212,6 +1211,7 @@ class hardback extends Table
 
         // Check for game end
         if ($player->getOrder() == 1 && $this->getGameProgression() >= 100) {
+            self::DbQuery('UPDATE player SET player_score_aux = ink');
             $this->gamestate->nextState('gameEnd');
         } else {
             $this->gamestate->nextState('playerTurn');

@@ -31,7 +31,7 @@
         </div>
 
         <!-- ID -->
-        <div class="absolute top-0 right-0 text-12 text-white" style="text-shadow: 1px 1px black">{{ card.origin }} (#{{ card.id }}/{{ card.order }})</div>
+        <!-- <div class="absolute top-0 right-0 text-12 text-white" style="text-shadow: 1px 1px black">{{ card.origin }} (#{{ card.id }}/{{ card.order }})</div> -->
       </div>
 
       <!-- Wild -->
@@ -65,11 +65,6 @@ const actionRef = {
   wild: {
     action: "wild",
     text: "WILD",
-    class: actionBlue,
-  },
-  reset: {
-    action: "reset",
-    text: "RESET",
     class: actionBlue,
   },
   uncover: {
@@ -234,7 +229,7 @@ export default {
           return [actionRef.double];
         } else if (this.gamestate.name == "trash" && this.gamestate.args.cardIds.includes(this.card.id)) {
           return [actionRef.trash];
-          } else if (this.gamestate.name == "specialRomance" && this.card.location.startsWith("hand")) {
+        } else if (this.gamestate.name == "specialRomance" && this.card.location.startsWith("hand")) {
           return [actionRef.previewReturn, actionRef.previewDiscard];
         } else if (this.gamestate.name == "trashDiscard" && this.card.location.startsWith("discard")) {
           const trashDiscard = Object.assign({ text: `TRASH FOR ${this.gamestate.args.amount}¢` }, actionRef.trashDiscard);
@@ -304,7 +299,12 @@ export default {
       }
 
       if (this.card.location.startsWith("hand") || (this.card.location == "tableau" && this.gamestate.active && this.gamestate.name == "playerTurn")) {
-        return this.card.ink ? [actionRef.ink] : this.card.wild ? [actionRef.reset] : [actionRef.wild];
+        let reset = {
+          action: "reset",
+          text: `RESET (${this.card.letter})`,
+          class: actionBlue,
+        };
+        return this.card.ink ? [actionRef.ink] : this.card.wild ? [reset] : [actionRef.wild];
       }
     },
   },

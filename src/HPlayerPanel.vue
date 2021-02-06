@@ -36,9 +36,7 @@
       </div>
 
       <!-- Advert tracker -->
-      <div v-if="player.id" class="flex justify-between mt-1">
-        <div v-for="a in advertTracker" :key="a.level" :class="a.class" :title="a.title">{{ a.level }}<Icon class="inline text-18" icon="star" /></div>
-      </div>
+      <div v-if="player.id" class="mt-1">Advets: {{ player.advert }}<Icon class="inline text-18" icon="star" /></div>
 
       <!-- First player marker -->
       <div v-if="player.order == 1">TODO: First player marker</div>
@@ -52,6 +50,7 @@ import { Icon } from "@iconify/vue";
 
 export default {
   name: "HPlayerPanel",
+  inject: ["options"],
   components: { Icon },
 
   props: {

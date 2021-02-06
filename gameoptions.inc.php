@@ -102,6 +102,7 @@ $game_options = [
         ]
     ],
 
+    /*
     OPTION_EVENTS => [
         'name' => 'Events',
         'default' => NO,
@@ -155,6 +156,7 @@ $game_options = [
             ],
         ],
     ],
+    */
 
     OPTION_COOP => [
         'name' => 'Cooperative Anthology',

@@ -4,7 +4,11 @@ class PlayerMgr extends APP_GameClass
 {
     public static function getMaxScore()
     {
-        return intval(self::getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_eliminated = 0 AND player_zombie = 0"));
+        $max = intval(self::getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_eliminated = 0 AND player_zombie = 0"));
+        if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO) {
+            $max = max($max, self::getPlayer(0)->getScore());
+        }
+        return $max;
     }
 
     public static function getPlayerCount()

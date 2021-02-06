@@ -1,44 +1,22 @@
 <template>
   <div>
-    <!-- Coop player board -->
-    <teleport to="#player_boards">
-      <div id="overall_player_board_0" class="player-board" style="border-color: rgb(0, 0, 0); width: 234px; height: auto">
-        <div class="player_board_inner" id="player_board_inner_000000">
-          <div class="emblemwrap is_premium" id="avatarwrap_0">
-            <img src="https://en.1.studio.boardgamearena.com:8083/data/themereleases/210121-0943/../../avatar/0/2/2305/2305326_32.jpg?h=a1c15cbf2a" alt="" class="avatar emblem" id="avatar_0" />
-            <div class="emblempremium"></div>
-          </div>
-          <div class="player-name" id="player_name_0">
-            <div style="color: #000000">Penny Dreadful</div>
-            <i class="fa fa-circle status_online player_status"></i>
-            <div class="flag" style="background-position: -384px -99px" title="Unknown"></div>
-          </div>
-          <div id="player_board_0" class="player_board_content">
-            <div class="player_score">
-              <span id="player_score_0" class="player_score_value">0</span> <i class="fa fa-star" id="icon_point_0"></i>
-              <span class="player_elo_wrap"
-                >•
-                <div class="gamerank gamerank_expert"><span class="icon20 icon20_rankw"></span> <span class="gamerank_value">666</span></div></span
-              >
-            </div>
-            <div class="player_table_status" id="player_table_status_0" style="display: none"></div>
-          </div>
-          <div id="player_panel_content_000000" class="player_panel_content"></div>
-        </div>
-      </div>
-    </teleport>
-
     <!-- Player panels (moved using teleport) -->
+    <HCoopBoard />
     <HPlayerPanel v-for="(player, id) in players" :key="id" :player="player" />
 
-    <!-- Log message icons-->
+    <!-- Log message icons -->
     <div class="hidden">
       <Icon v-for="icon in logIcons" :key="icon" :id="'hicon_' + icon" :icon="icon" class="hicon" />
       <Icon icon="star" id="benefit_star" class="inline text-17" />
       <Icon icon="adventure" id="benefit_adventure" class="inline text-17" />
     </div>
 
-    <div><b>Gamestate:</b> Active: {{ gamestate.active }} &mdash; Name: {{ gamestate.name }}</div>
+    <!-- Keyboard popup -->
+    <transition name="fade">
+      <HKeyboard v-if="keyboardId" />
+    </transition>
+
+    <div><b>Gamestate:</b> Active: {{ gamestate.active }} &mdash; Name: {{ gamestate.name }}<br />Options {{ gamedatas.options }}</div>
 
     <!-- Discard -->
     <div class="container-discard cardgrid bg-opacity-50 rounded-lg my-2 p-2" :class="(visibleLocations[discardLocation] ? '' : 'collapsed ') + myself.colorBg">
@@ -49,7 +27,7 @@
       <HCardList v-if="visibleLocations[discardLocation]" :cards="discardCards" :location="discardLocation" />
 
       <!-- Sorter -->
-      <div v-if="visibleLocations[discardLocation]" class="sorter">
+      <div v-if="visibleLocations[discardLocation] && discardCards.length" class="sorter">
         <div @click="sort(discardLocation, 'letter')" class="button blue" title="Sort cards by letter">A-Z</div>
         <div @click="sort(discardLocation, 'cost')" class="button blue" title="Sort cards by cost">¢</div>
         <div @click="sort(discardLocation, 'genre')" class="button blue" title="Sort cards by genre"><Icon icon="starter" class="inline text-18 h-7" /></div>
@@ -67,13 +45,13 @@
 
       <!-- Actions -->
       <div v-if="visibleLocations[handLocation]" class="actions">
-        <div v-if="myself.ink && (myself.deckCount || myself.discardCount) && (!gamestate.active || gamestate.name == 'playerTurn')" @click="takeAction('useInk')" class="button blue">DRAW WITH INK</div>
+        <div v-if="myself.ink && (myself.deckCount || myself.discardCount) && (!gamestate.active || gamestate.name == 'playerTurn')" @click="takeAction('useInk')" class="button blue">DRAW WITH INK ({{ myself.ink }})</div>
         <div v-if="handWildCards.length" @click="resetAll()" class="button blue">RESET ALL</div>
-        <div v-if="gamestate.active && handCards.length > 1" @click="clickAll(handLocation)" class="button blue">PLAY ALL</div>
+        <div v-if="gamestate.active && gamestate.name == 'playerTurn' && handCards.length > 1" @click="clickAll(handLocation)" class="button blue">PLAY ALL</div>
       </div>
 
       <!-- Sorter -->
-      <div v-if="visibleLocations[handLocation]" class="sorter">
+      <div v-if="visibleLocations[handLocation] && handCards.length" class="sorter">
         <div @click="sort(handLocation, 'letter')" class="button blue" title="Sort cards by letter">A-Z</div>
         <div @click="sort(handLocation, 'genre')" class="button blue" title="Sort cards by genre"><Icon icon="starter" class="inline text-18 h-7" /></div>
         <div @click="sort(handLocation, 'shuffle')" class="button blue" title="Shuffle cards"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
@@ -126,6 +104,8 @@
 <script lang="ts">
 import Constants from "./constants.js";
 import HCardList from "./HCardList.vue";
+import HCoopBoard from "./HCoopBoard.vue";
+import HKeyboard from "./HKeyboard.vue";
 import HPlayerPanel from "./HPlayerPanel.vue";
 import { Icon, addIcon } from "@iconify/vue";
 import { firstBy } from "thenby";
@@ -200,17 +180,19 @@ addIcon("cards", mdiCards);
 
 export default {
   name: "HGame",
-  components: { Icon, HCardList, HPlayerPanel },
+  components: { Icon, HCardList, HCoopBoard, HKeyboard, HPlayerPanel },
 
   provide() {
     return {
       gamestate: this.gamestate,
+      options: this.options,
     };
   },
 
   mounted() {
     this.emitter.on("clickCard", this.clickCard);
     this.emitter.on("clickFooter", this.clickFooter);
+    this.emitter.on("clickKey", this.clickKey);
     this.emitter.on("drag", this.drag);
     this.visibleLocations[this.discardLocation] = false;
     this.visibleLocations[this.handLocation] = true;
@@ -219,6 +201,7 @@ export default {
   beforeUnmount() {
     this.emitter.off("clickCard", this.clickCard);
     this.emitter.off("clickFooter", this.clickFooter);
+    this.emitter.off("clickKey", this.clickKey);
     this.emitter.off("drag", this.drag);
   },
 
@@ -226,10 +209,21 @@ export default {
     return {
       gamedatas: {
         cards: {},
+        options: {
+          adverts: false,
+          awards: false,
+          coop: false,
+          events: false,
+          powers: false,
+        },
         players: {},
-        refs: { benefits: {}, cards: {} },
+        refs: {
+          benefits: {},
+          cards: {},
+        },
       },
       gamestate: {},
+      keyboardId: null,
       locationOrder: {
         timeless: "location",
         tableau: "order",
@@ -246,6 +240,10 @@ export default {
   },
 
   computed: {
+    options() {
+      return this.gamedatas.options;
+    },
+
     spectator() {
       return this.game.isSpectator;
     },
@@ -491,7 +489,7 @@ export default {
       if (start && !visible) {
         // Compute end position
         mode = "leave";
-        if (card.location.startsWith("discard_")) {
+        if (card.location.startsWith("discard_") || card.location == "deck_" + this.myself.id) {
           let playerId = card.location.split("_")[1];
           let parentEl = document.getElementById("player_board_" + playerId);
           end = getRect(parentEl);
@@ -629,7 +627,6 @@ export default {
         if (args.word) {
           let q = args.word.toLowerCase();
           let links = [
-            `<a target="hdefine" href="https://ahdictionary.com/word/search.html?q=${q}">American Heritage</a>`, //
             `<a target="hdefine" href="https://dictionary.cambridge.org/dictionary/english/${q}">Cambridge</a>`, //
             `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`, //
             `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`, //
@@ -892,11 +889,8 @@ export default {
     clickFooter(e): void {
       let { action, card } = e;
       if (action.action == "wild") {
-        let wild = (prompt("What letter does this wild card represent?") || "").trim().toUpperCase();
-        const regex = RegExp("^[A-Z]$");
-        if (regex.test(wild)) {
-          this.gamedatas.cards[card.id].wild = wild;
-        }
+        // Show keyboard
+        this.keyboardId = card.id;
       } else if (action.action == "reset") {
         this.gamedatas.cards[card.id].wild = false;
       } else {
@@ -905,6 +899,13 @@ export default {
           Object.assign(args, action.actionArgs);
         }
         this.takeAction(action.action, args);
+      }
+    },
+
+    clickKey(letter: string): void {
+      if (this.keyboardId != null) {
+        this.gamedatas.cards[this.keyboardId].wild = letter;
+        this.keyboardId = null;
       }
     },
   },

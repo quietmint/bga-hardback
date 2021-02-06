@@ -2,7 +2,7 @@ const colors = require('tailwindcss/colors')
 
 module.exports = {
     purge: ['*.vue'],
-    darkMode: false, // or 'media' or 'class'
+    darkMode: 'media',
     theme: {
         colors: {
             transparent: 'transparent',
@@ -43,13 +43,11 @@ module.exports = {
                 '20': '20px',
                 '24': '24px',
                 '32': '32px',
-            }
-        },
-    },
-    variants: {
-        extend: {
-            backgroundColor: ['active'],
-            padding: ['hover', 'focus'],
+            },
+            lineHeight: {
+                '14': '3.5rem',
+                '16': '4rem',
+            },
         },
     },
     plugins: [],
