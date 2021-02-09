@@ -6,7 +6,7 @@ class PlayerMgr extends APP_GameClass
     {
         $max = intval(self::getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_eliminated = 0 AND player_zombie = 0"));
         if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO) {
-            $max = max($max, self::getPlayer(0)->getScore());
+            $max = max($max, self::getPenny()->getScore());
         }
         return $max;
     }
@@ -35,13 +35,13 @@ class PlayerMgr extends APP_GameClass
         if (!empty($playerIds)) {
             $sql .= " WHERE player_id IN (" . implode(", ", $playerIds) . ")";
         }
-        $players = array_map(function ($dbplayer) {
+        return array_map(function ($dbplayer) {
             return new HPlayer($dbplayer);
         }, self::getCollectionFromDb($sql));
+    }
 
-        if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO) {
-            $players[0] = new HPlayerCoop();
-        }
-        return $players;
+    public static function getPenny(): HPenny
+    {
+        return new HPenny();
     }
 }

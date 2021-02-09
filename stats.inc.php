@@ -49,6 +49,11 @@
 
 require_once('constants.inc.php');
 
+$letters = [];
+foreach (range('A', 'Z') as $letter) {
+    $letters[ord($letter)] = $letter;
+}
+
 $stats_type = [
     'table' => [
         'turns' => [
@@ -129,5 +134,20 @@ $stats_type = [
             'name' => 'Remover used',
             'type' => 'int',
         ],
+        'starterCard1' => [
+            'id' => STAT_STARTER_CARD1,
+            'name' => 'Starter prestige card',
+            'type' => 'int',
+        ],
+        'starterCard2' => [
+            'id' => STAT_STARTER_CARD2,
+            'name' => 'Starter prestige card',
+            'type' => 'int',
+        ],
+    ],
+
+    'value_labels' => [
+        STAT_STARTER_CARD1 => $letters,
+        STAT_STARTER_CARD2 => $letters,
     ],
 ];

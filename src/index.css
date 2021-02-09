@@ -58,7 +58,7 @@
 }
 
 .button {
-  @apply leading-7 px-2 transition-all cursor-pointer font-bold;
+  @apply uppercase leading-7 px-2 transition-all cursor-pointer font-bold;
 }
 
 .button.black {
@@ -71,6 +71,10 @@
 
 .button.red {
   @apply bg-red-700 text-white hover:bg-red-100 hover:text-red-700;
+}
+
+.button.disabled {
+  @apply cursor-not-allowed bg-gray-600 text-gray-300;
 }
 
 .genreCounts div {
@@ -343,12 +347,18 @@
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity .3s ease;
+  transition: opacity 0.3s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.tailwind.unmargin {
+  margin-left: -3px;
+  margin-right: -3px;
+  margin-bottom: -5px;
 }
 
 .tailwind svg.inline {

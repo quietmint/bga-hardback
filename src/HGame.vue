@@ -1,8 +1,8 @@
 <template>
   <div>
     <!-- Player panels (moved using teleport) -->
-    <HCoopBoard />
     <HPlayerPanel v-for="(player, id) in players" :key="id" :player="player" />
+    <HPenny v-if="gamedatas.penny" :penny="gamedatas.penny" />
 
     <!-- Log message icons -->
     <div class="hidden">
@@ -16,66 +16,75 @@
       <HKeyboard v-if="keyboardId" />
     </transition>
 
-    <div><b>Gamestate:</b> Active: {{ gamestate.active }} &mdash; Name: {{ gamestate.name }}<br />Options {{ gamedatas.options }}</div>
+    <!-- Final round reminder -->
+    <div v-if="gamedatas.finalRound && !gamedatas.options.coop" class="text-20 text-center font-bold text-red-600 m-4" v-text="i18n('finalRound')"></div>
 
     <!-- Discard -->
     <div class="container-discard cardgrid bg-opacity-50 rounded-lg my-2 p-2" :class="(visibleLocations[discardLocation] ? '' : 'collapsed ') + myself.colorBg">
       <!-- Title -->
-      <b class="title"><Icon @click="chevron(discardLocation)" icon="chevron" class="chevron inline text-24" /> My Discard Pile ({{ discardCards.length }})</b>
+      <b class="title"><Icon @click="chevron(discardLocation)" icon="chevron" class="chevron inline text-24" /> <span v-text="i18n('myDiscard', { count: discardCards.length })"></span></b>
 
       <!-- Cards -->
       <HCardList v-if="visibleLocations[discardLocation]" :cards="discardCards" :location="discardLocation" />
 
       <!-- Sorter -->
       <div v-if="visibleLocations[discardLocation] && discardCards.length" class="sorter">
-        <div @click="sort(discardLocation, 'letter')" class="button blue" title="Sort cards by letter">A-Z</div>
-        <div @click="sort(discardLocation, 'cost')" class="button blue" title="Sort cards by cost">¢</div>
-        <div @click="sort(discardLocation, 'genre')" class="button blue" title="Sort cards by genre"><Icon icon="starter" class="inline text-18 h-7" /></div>
-        <div @click="sort(discardLocation, 'shuffle')" class="button blue" title="Shuffle cards"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
+        <div @click="sort(discardLocation, 'letter')" class="button blue" :title="i18n('sortLetterTip')">A-Z</div>
+        <div @click="sort(discardLocation, 'cost')" class="button blue" :title="i18n('sortCostTip')">¢</div>
+        <div @click="sort(discardLocation, 'genre')" class="button blue" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-18 h-7" /></div>
+        <div @click="sort(discardLocation, 'shuffle')" class="button blue" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
       </div>
     </div>
 
     <!-- Hand -->
-    <div class="container-hand cardgrid bg-opacity-50 rounded-lg my-2 p-2" :class="(visibleLocations[handLocation] ? '' : 'collapsed ') + myself.colorBg">
+    <div class="container-hand cardgrid bg-opacity-50 rounded-lg my-2 p-2" :class="myself.colorBg">
       <!-- Title -->
-      <b class="title"><Icon @click="chevron(handLocation)" icon="chevron" class="chevron inline text-24" /> My Hand ({{ handCards.length }})</b>
+      <b class="title" v-text="i18n('myHand', { count: handCards.length })"></b>
 
       <!-- Cards -->
-      <HCardList v-if="visibleLocations[handLocation]" :cards="handCards" :location="handLocation" />
+      <HCardList :cards="handCards" :location="handLocation" />
 
       <!-- Actions -->
-      <div v-if="visibleLocations[handLocation]" class="actions">
-        <div v-if="myself.ink && (myself.deckCount || myself.discardCount) && (!gamestate.active || gamestate.name == 'playerTurn')" @click="takeAction('useInk')" class="button blue">DRAW WITH INK ({{ myself.ink }})</div>
-        <div v-if="handWildCards.length" @click="resetAll()" class="button blue">RESET ALL</div>
-        <div v-if="gamestate.active && gamestate.name == 'playerTurn' && handCards.length > 1" @click="clickAll(handLocation)" class="button blue">PLAY ALL</div>
+      <div class="actions">
+        <div @click="buttonEnabled['useInk'] && takeAction('useInk')" class="button" :class="buttonEnabled['useInk'] ? 'blue' : 'disabled'" v-text="i18n('draw', { count: myself.ink })"></div>
+        <div @click="buttonEnabled['resetAll'] && resetAll(handLocation)" class="button" :class="buttonEnabled['resetAll'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
+        <div @click="buttonEnabled['moveAll'] && moveAll(handLocation)" class="button" :class="buttonEnabled['moveAll'] ? 'blue' : 'disabled'" v-text="i18n('moveAll')"></div>
       </div>
 
       <!-- Sorter -->
-      <div v-if="visibleLocations[handLocation] && handCards.length" class="sorter">
-        <div @click="sort(handLocation, 'letter')" class="button blue" title="Sort cards by letter">A-Z</div>
-        <div @click="sort(handLocation, 'genre')" class="button blue" title="Sort cards by genre"><Icon icon="starter" class="inline text-18 h-7" /></div>
-        <div @click="sort(handLocation, 'shuffle')" class="button blue" title="Shuffle cards"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
+      <div v-if="handCards.length" class="sorter">
+        <div @click="sort(handLocation, 'letter')" class="button blue" :title="i18n('sortLetterTip')">A-Z</div>
+        <div @click="sort(handLocation, 'genre')" class="button blue" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-18 h-7" /></div>
+        <div @click="sort(handLocation, 'shuffle')" class="button blue" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
       </div>
     </div>
 
     <!-- Tableau -->
-    <div class="container-tableau cardgrid no-sorter my-2 p-2">
+    <div class="container-tableau cardgrid my-2 p-2">
       <!-- Title -->
-      <b class="title">Current Word ({{ tableauCards.length }})</b>
+      <b class="title" v-text="i18n('tableau', { count: tableauCards.length })"></b>
 
       <!-- Cards -->
       <HCardList :cards="tableauCards" location="tableau" />
 
       <!-- Actions -->
-      <div v-if="gamestate.active && gamestate.name == 'playerTurn' && tableauCards.length" class="actions">
-        <div @click="clickAll('tableau')" class="button blue">CLEAR ALL</div>
+      <div v-if="tableauCards.length" class="actions">
+        <div @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')" class="button" :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
+        <div @click="buttonEnabled['moveAllTableau'] && moveAll('tableau')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('moveAll')"></div>
+      </div>
+
+      <!-- Sorter -->
+      <div v-if="tableauCards.length" class="sorter">
+        <div @click="sort('tableau', 'letter')" class="button blue" :title="i18n('sortLetterTip')">A-Z</div>
+        <div @click="sort('tableau', 'genre')" class="button blue" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-18 h-7" /></div>
+        <div @click="sort('tableau', 'shuffle')" class="button blue" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
       </div>
     </div>
 
     <!-- Timeless Classics -->
     <div v-if="timelessCards.length" class="container-timeless cardgrid no-sorter my-2 p-2 border-t border-dashed border-black">
       <!-- Title -->
-      <b class="title">Timeless Classics ({{ timelessCards.length }})</b>
+      <b class="title" v-text="i18n('timeless', { count: timelessCards.length })"></b>
 
       <!-- Cards -->
       <HCardList :cards="timelessCards" location="timeless" />
@@ -84,18 +93,17 @@
     <!-- Offer -->
     <div class="container-offer cardgrid bg-gray-700 bg-opacity-30 rounded-lg my-2 p-2">
       <!-- Title -->
-      <b class="title">Offer Row ({{ offerCards.length }})</b>
+      <b class="title" v-text="i18n('offer', { count: offerCards.length })"></b>
 
       <!-- Cards -->
       <HCardList :cards="offerCards" location="offer" />
 
       <!-- Sorter -->
       <div class="sorter">
-        <div @click="sort('offer', 'letter')" class="button blue" title="Sort cards by letter">A-Z</div>
-        <div @click="sort('offer', 'cost')" class="button blue" title="Sort cards by cost">¢</div>
-        <div @click="sort('offer', 'genre')" class="button blue" title="Sort cards by genre"><Icon icon="starter" class="inline text-18 h-7" /></div>
-        <div @click="sort('offer', 'order')" class="button blue" title="Sort cards by draw order"><Icon icon="clock" class="inline text-18 h-7" /></div>
-        <div @click="sort('offer', 'shuffle')" class="button blue" title="Shuffle cards"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
+        <div @click="sort('offer', 'letter')" class="button blue" :title="i18n('sortLetterTip')">A-Z</div>
+        <div @click="sort('offer', 'cost')" class="button blue" :title="i18n('sortCostTip')">¢</div>
+        <div @click="sort('offer', 'genre')" class="button blue" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-18 h-7" /></div>
+        <div @click="sort('offer', 'order')" class="button blue" :title="i18n('sortOrderTip')"><Icon icon="clock" class="inline text-18 h-7" /></div>
       </div>
     </div>
   </div>
@@ -104,12 +112,12 @@
 <script lang="ts">
 import Constants from "./constants.js";
 import HCardList from "./HCardList.vue";
-import HCoopBoard from "./HCoopBoard.vue";
 import HKeyboard from "./HKeyboard.vue";
+import HPenny from "./HPenny.vue";
 import HPlayerPanel from "./HPlayerPanel.vue";
 import { Icon, addIcon } from "@iconify/vue";
 import { firstBy } from "thenby";
-import { nextTick } from "vue";
+import { nextTick, computed } from "vue";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const repaint = () => new Promise((resolve) => requestAnimationFrame(resolve));
@@ -180,12 +188,13 @@ addIcon("cards", mdiCards);
 
 export default {
   name: "HGame",
-  components: { Icon, HCardList, HCoopBoard, HKeyboard, HPlayerPanel },
+  components: { Icon, HCardList, HKeyboard, HPenny, HPlayerPanel },
 
   provide() {
     return {
       gamestate: this.gamestate,
-      options: this.options,
+      options: computed(() => this.gamedatas.options),
+      i18n: this.i18n,
     };
   },
 
@@ -209,17 +218,14 @@ export default {
     return {
       gamedatas: {
         cards: {},
-        options: {
-          adverts: false,
-          awards: false,
-          coop: false,
-          events: false,
-          powers: false,
-        },
+        finalRound: false,
+        options: {},
+        penny: {},
         players: {},
         refs: {
           benefits: {},
           cards: {},
+          i18n: {},
         },
       },
       gamestate: {},
@@ -240,10 +246,6 @@ export default {
   },
 
   computed: {
-    options() {
-      return this.gamedatas.options;
-    },
-
     spectator() {
       return this.game.isSpectator;
     },
@@ -280,6 +282,10 @@ export default {
       return this.cardsInLocation("tableau");
     },
 
+    tableauWildCards() {
+      return this.tableauCards.filter((card) => card.wild);
+    },
+
     timelessCards() {
       return this.cardsInLocation("timeless");
     },
@@ -290,6 +296,16 @@ export default {
       Array.prototype.push.apply(cards, jail);
       return cards;
     },
+
+    buttonEnabled() {
+      return {
+        useInk: this.myself.ink && (this.myself.deckCount || this.myself.discardCount) && (!this.gamestate.active || this.gamestate.name == "playerTurn"),
+        moveAll: this.gamestate.active && this.gamestate.name == "playerTurn" && this.handCards.length > 1,
+        resetAll: this.handWildCards.length,
+        moveAllTableau: this.gamestate.active && this.gamestate.name == "playerTurn" && this.tableauCards.length,
+        resetAllTableau: this.gamestate.active && this.gamestate.name == "playerTurn" && this.tableauWildCards.length,
+      };
+    },
   },
 
   methods: {
@@ -297,12 +313,28 @@ export default {
      * Utility functions
      */
 
+    i18n(msg: string, args: any): string {
+      if (this.gamedatas.refs.i18n[msg]) {
+        msg = this.gamedatas.refs.i18n[msg];
+      }
+      msg = window._(msg);
+      if (args) {
+        msg = this.game.format_string_recursive(msg, args);
+      }
+      return msg;
+    },
+
     cardsInLocation(location: string): any[] {
       let cards = this.populateCards(
         Object.values(this.gamedatas.cards).filter((card: any) => {
           return card.location.startsWith(location);
         })
       );
+      this.sortLocation(location, cards);
+      return cards;
+    },
+
+    sortLocation(location: string, cards: any[]): void {
       let order = this.locationOrder[location] || "letter";
       let sorter = firstBy(order);
       if (order != "letter") {
@@ -310,7 +342,15 @@ export default {
       }
       sorter = sorter.thenBy("id");
       cards.sort(sorter);
-      return cards;
+    },
+
+    reorderLocation(location: string): void {
+      if (this.locationOrder[location] != "order") {
+        this.cardsInLocation(location).forEach((card, i) => {
+          this.gamedatas.cards[card.id].order = i;
+        });
+        this.locationOrder[location] = "order";
+      }
     },
 
     nextOrderInLocation(location: string): number {
@@ -320,8 +360,8 @@ export default {
     },
 
     populateCard(card) {
-      const starIcon = getHtml("benefit_star");
-      const adventureIcon = getHtml("benefit_adventure");
+      const star = getHtml("benefit_star");
+      const adventure = getHtml("benefit_adventure");
       let newCard = Object.assign({}, this.gamedatas.refs.cards[card.refId], card);
       // Basic benefits
       newCard.basicBenefitsList = [];
@@ -334,7 +374,7 @@ export default {
           }
           let newBenefit = {
             id: parseInt(id),
-            html: _(this.gamedatas.refs.benefits[id]).replaceAll("{value}", value).replaceAll("{star}", starIcon).replaceAll("{adventure}", adventureIcon),
+            html: this.i18n(this.gamedatas.refs.benefits[id], { value, star, adventure }),
           };
           newCard.basicBenefitsList.push(newBenefit);
         }
@@ -351,7 +391,7 @@ export default {
           }
           let newBenefit = {
             id: parseInt(id),
-            html: _(this.gamedatas.refs.benefits[id]).replaceAll("{value}", value).replaceAll("{star}", starIcon).replaceAll("{adventure}", adventureIcon),
+            html: this.i18n(this.gamedatas.refs.benefits[id], { value, star, adventure }),
           };
           newCard.genreBenefitsList.push(newBenefit);
         }
@@ -421,7 +461,7 @@ export default {
         case "yellow":
           player.colorBgText = "text-black";
           player.colorRing = "ring-yellow-500";
-          player.colorBg = "bg-yellow-500";
+          player.colorBg = "bg-yellow-600";
           player.colorText = "text-yellow-600";
           break;
         case "purple":
@@ -635,7 +675,7 @@ export default {
             `<a target="hdefine" href="https://en.wiktionary.org/wiki/${q}">Wiktionary</a>`, //
             `<a target="hdefine" href="http://wordnetweb.princeton.edu/perl/webwn?s=${q}">WordNet</a>`, //
           ];
-          args.word = `<b>${args.word}</b><div class="hdefine">${_("Dictionary definitions")}:<ul><li>${links.join("</li><li>")}</li></ul></div>`;
+          args.word = `<b>${args.word}</b><div class="hdefine">${this.i18n("dictionary")}<ul><li>${links.join("</li><li>")}</li></ul></div>`;
         }
         if (args.invalid) {
           args.invalid = `<b>${args.invalid}</b>`;
@@ -654,7 +694,7 @@ export default {
             if (html) {
               v = html;
             } else if (v != "¢") {
-              v = ` ${_(v)}`;
+              v = ` ${this.i18n(v)}`;
             }
             args[k] = v;
           }
@@ -669,12 +709,12 @@ export default {
 
       const actionRef = {
         confirmWord: {
-          text: "Confirm Word",
+          text: "confirmButton",
           color: "blue",
           async function() {
             if (this.tableauCards.length == 0) {
               // Did you forget to play any cards?
-              await this.clickAll(this.handLocation);
+              await this.moveAll(this.handLocation);
             }
             let cardIds = this.cardIds(this.tableauCards);
             let wildMask = this.tableauCards.map((card) => card.wild || "_").join("");
@@ -682,7 +722,7 @@ export default {
           },
         },
         skipWord: {
-          text: "Skip Turn",
+          text: "skipWordButton",
           color: "red",
           function() {
             this.takeAction("skipWord");
@@ -690,10 +730,7 @@ export default {
         },
         skip: {
           text() {
-            if (this.gamestate.name == "purchase") {
-              return this.game.format_string_recursive(_("${coins} Ink (End Turn)"), this.gamestate.args);
-            }
-            return "Skip";
+            return this.gamestate.name == "purchase" ? "skipPurchaseButton" : "skipButton";
           },
           color: "gray",
           function() {
@@ -701,21 +738,21 @@ export default {
           },
         },
         discardInk: {
-          text: "Discard 1 Ink",
+          text: "discardInkButton",
           color: "blue",
           function() {
             this.takeAction("discardInk");
           },
         },
         discardRemover: {
-          text: "Discard 1 Remover",
+          text: "discardRemoverButton",
           color: "blue",
           function() {
             this.takeAction("discardRemover");
           },
         },
         flush: {
-          text: "Flush Offer Row",
+          text: "flushButton",
           color: "blue",
           function() {
             this.takeAction("flush");
@@ -723,7 +760,7 @@ export default {
         },
         doctor: {
           text() {
-            return this.game.format_string_recursive(_("${points}${icon} for ${coins}¢"), this.gamestate.args.advert);
+            return this.i18n("doctorButton", this.gamestate.args.advert);
           },
           color: "gray",
           function() {
@@ -734,7 +771,7 @@ export default {
           },
         },
         convert: {
-          text: _("Convert 3 Ink to 1¢"),
+          text: "convertButton",
           color: "red",
           function() {
             this.takeAction("convert");
@@ -759,6 +796,7 @@ export default {
           if (typeof text == "function") {
             text = text.apply(this);
           }
+          text = this.i18n(text, this.gamestate.args);
           this.game.addActionButton(
             "action_" + index,
             text,
@@ -774,6 +812,11 @@ export default {
     },
 
     onEnteringState(stateName: string, args: any): void {
+      console.log(`onEnteringState ${stateName}`, args);
+      if (args && args.updateGameProgression) {
+        this.gamedatas.finalRound = args.updateGameProgression >= 100;
+        console.warn("game progression", args.updateGameProgression, this.gamedatas.finalRound);
+      }
       if (stateName == "trashDiscard" && !args.skip) {
         //this.visibleLocations[this.discardLocation] = true;
       }
@@ -795,17 +838,16 @@ export default {
         });
       } else if (notif.type == "invalid") {
         if (this.game.player_id == notif.args.player_id) {
-          this.game.showMessage(notif.args.invalid + " is not a valid word", "error");
+          this.game.showMessage(this.i18n("invalid", notif.args), "error");
         }
       } else if (notif.type == "pause") {
         this.game.notifqueue.setSynchronousDuration(notif.args.duration);
-      } else if (notif.type == "panel") {
+      } else if (notif.type == "penny") {
+        Object.assign(this.gamedatas.penny, notif.args.penny);
+      } else if (notif.type == "player") {
         Object.assign(this.gamedatas.players[notif.args.player.id], notif.args.player);
         if (notif.args.allScore) {
-          // Everyone except Penny scores
-          Object.keys(this.gamedatas.players)
-            .filter((id) => id != "0")
-            .forEach((id) => this.game.scoreCtrl[id].toValue(notif.args.allScore));
+          Object.keys(this.gamedatas.players).forEach((id) => this.game.scoreCtrl[id].toValue(notif.args.allScore));
         } else {
           this.game.scoreCtrl[notif.args.player.id].toValue(notif.args.player.score);
         }
@@ -846,7 +888,7 @@ export default {
       this.visibleLocations[location] = !this.visibleLocations[location];
     },
 
-    clickAll(location): Promise<any> {
+    moveAll(location: string): Promise<any> {
       if (this.gamestate.active && this.gamestate.name == "playerTurn") {
         return Promise.all(
           this.cardsInLocation(location).map((card) =>
@@ -864,8 +906,9 @@ export default {
       }
     },
 
-    resetAll(): void {
-      this.handWildCards.forEach((card) => {
+    resetAll(location: string): void {
+      const wilds = location == "tableau" ? this.tableauWildCards : this.handWildCards;
+      wilds.forEach((card) => {
         this.clickFooter({ card: card, action: { action: "reset" } });
       });
     },
@@ -873,6 +916,9 @@ export default {
     clickCard(e): Promise<any> {
       let { action, card } = e;
       if (action.action == "move") {
+        if (action.destination == "tableau") {
+          this.reorderLocation("tableau");
+        }
         return this.animateCard(card, {
           location: action.destination,
           order: this.nextOrderInLocation(action.destination),

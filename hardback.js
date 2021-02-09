@@ -18,7 +18,7 @@
 define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], function (dojo, declare) {
     return declare("bgagame.hardback", ebg.core.gamegui, {
         constructor: function () {
-            this.vue = {};
+            this.vue = null;
         },
 
         name: function () {
@@ -37,18 +37,19 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
             // Setup notifications
             dojo.subscribe('cards', this, 'onNotify');
-            this.notifqueue.setSynchronous('cards',);
+            this.notifqueue.setSynchronous('cards');
             dojo.subscribe('invalid', this, 'onNotify');
             dojo.subscribe('pause', this, 'onNotify');
             this.notifqueue.setSynchronous('pause');
-            dojo.subscribe('panel', this, 'onNotify');
+            dojo.subscribe('penny', this, 'onNotify');
+            dojo.subscribe('player', this, 'onNotify');
         },
 
         /* @Override */
         format_string_recursive: function (log, args) {
-            if (log && args && !args.processed) {
-                args.processed = true;
+            if (this.vue && log && args && !args.processed) {
                 log = this.vue.onFormatString(log, args);
+                args.processed = true;
             }
             return this.inherited(arguments);
         },

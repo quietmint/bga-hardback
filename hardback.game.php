@@ -22,7 +22,7 @@ require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
 require_once('constants.inc.php');
 require_once('modules/HCard.class.php');
 require_once('modules/HPlayer.class.php');
-require_once('modules/HPlayerCoop.class.php');
+require_once('modules/HPenny.class.php');
 require_once('modules/PlayerMgr.class.php');
 require_once('modules/CardMgr.class.php');
 require_once('modules/WordMgr.class.php');
@@ -58,9 +58,9 @@ class hardback extends Table
             'countOffer' . MYSTERY => COUNT_OFFER_MYSTERY,
             'countOffer' . ROMANCE => COUNT_OFFER_ROMANCE,
             'dictionary' => OPTION_DICTIONARY,
-            'events' => OPTION_EVENTS,
+            // 'events' => OPTION_EVENTS,
             'length' => OPTION_LENGTH,
-            'powers' => OPTION_POWERS,
+            // 'powers' => OPTION_POWERS,
             'startInk' => START_INK,
             'startRemover' => START_REMOVER,
             'startScore' => START_SCORE,
@@ -120,21 +120,23 @@ class hardback extends Table
         }
 
         // Init game statistics
-        self::initStat('table', 'turns', 0);
         self::initStat('table', 'longestWord', 0);
+        self::initStat('table', 'turns', 0);
+        self::initStat('player', 'cardsPurchase', 0);
+        self::initStat('player', 'cardsTrash', 0);
+        self::initStat('player', 'coins', 0);
+        self::initStat('player', 'invalidWords', 0);
+        self::initStat('player', 'longestWord', 0);
+        self::initStat('player', 'pointsAdvert', 0);
+        self::initStat('player', 'pointsAward', 0);
         self::initStat('player', 'pointsBasic', 0);
         self::initStat('player', 'pointsGenre', 0);
         self::initStat('player', 'pointsPurchase', 0);
-        self::initStat('player', 'pointsAward', 0);
-        self::initStat('player', 'pointsAdvert', 0);
-        self::initStat('player', 'coins', 0);
-        self::initStat('player', 'cardsPurchase', 0);
-        self::initStat('player', 'cardsTrash', 0);
-        self::initStat('player', 'words', 0);
-        self::initStat('player', 'longestWord', 0);
-        self::initStat('player', 'invalidWords', 0);
+        self::initStat('player', 'starterCard1', 0);
+        self::initStat('player', 'starterCard2', 0);
         self::initStat('player', 'useInk', 0);
         self::initStat('player', 'useRemover', 0);
+        self::initStat('player', 'words', 0);
 
         // Deal the cards
         CardMgr::setup();
@@ -166,21 +168,32 @@ class hardback extends Table
             return $player->jsonSerialize();
         }, PlayerMgr::getPlayers());
 
-        return [
+        $locations = [CardMgr::getHandLocation($playerId), CardMgr::getDiscardLocation($playerId), 'tableau', 'offer', 'jail', 'timeless%'];
+        if ($this->gamestate->state()['name'] == 'gameEnd') {
+            $locations[] = CardMgr::getDeckLocation($playerId);
+        }
+
+        $data = [
             'players' => $playersAsArray,
-            'cards' => CardMgr::getCardsInLocation([CardMgr::getHandLocation($playerId), CardMgr::getDiscardLocation($playerId), 'tableau', 'offer', 'jail', 'timeless%']),
+            'cards' => CardMgr::getCardsInLocation($locations),
+            'finalRound' => $this->getGameProgression() >= 100,
             'options' => [
                 'adverts' => $this->gamestate->table_globals[OPTION_ADVERTS] > 0,
                 'awards' => $this->gamestate->table_globals[OPTION_AWARDS] > 0,
                 'coop' => $this->gamestate->table_globals[OPTION_COOP] > 0,
-                'events' => $this->gamestate->table_globals[OPTION_EVENTS] > 0,
-                'powers' => $this->gamestate->table_globals[OPTION_POWERS] > 0,
+                // 'events' => $this->gamestate->table_globals[OPTION_EVENTS] > 0,
+                // 'powers' => $this->gamestate->table_globals[OPTION_POWERS] > 0,
             ],
             'refs' => [
                 'benefits' => $this->benefits,
                 'cards' => CardMgr::getCardRef(),
+                'i18n' => $this->i18n,
             ],
         ];
+        if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
+            $data['penny'] = PlayerMgr::getPenny();
+        }
+        return $data;
     }
 
     /*
@@ -217,9 +230,6 @@ class hardback extends Table
     {
         $player = PlayerMgr::getPlayer();
 
-        // Give extra time
-        $this->giveExtraTime($player->getId());
-
         // Reset draw counts
         if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
             foreach ([ADVENTURE, HORROR, MYSTERY, ROMANCE] as $genre) {
@@ -231,7 +241,7 @@ class hardback extends Table
         $coopCondition = false;
         $penny = null;
         if ($this->getGameStateValue('coopGenre') == HORROR) {
-            $penny = PlayerMgr::getPlayer(0);
+            $penny = PlayerMgr::getPenny();
             $offer = CardMgr::getOffer();
             foreach ($offer as $offerCard) {
                 if ($offerCard->getGenre() == HORROR) {
@@ -1012,7 +1022,7 @@ class hardback extends Table
 
         if ($coopCondition) {
             // Adventure: Penny earns 1 per purchase
-            $penny = PlayerMgr::getPlayer(0);
+            $penny = PlayerMgr::getPenny();
             $penny->addPoints(1, '');
             self::notifyAllPlayers('message', $this->msg['earn'], [
                 'player_name' => $penny->getName(),
@@ -1113,7 +1123,7 @@ class hardback extends Table
         }
 
         // Check for win
-        $penny = PlayerMgr::getPlayer(0);
+        $penny = PlayerMgr::getPenny();
         if ($this->getGameProgression() >= 100) {
             self::notifyAllPlayers('message', $this->msg['coopWin'], [
                 'player_name' => $penny->getName(),
@@ -1132,7 +1142,7 @@ class hardback extends Table
         }
 
         // Discard the first card
-        CardMgr::discard($card, $penny->getDiscardLocation());
+        CardMgr::discard($card, 'penny');
         $penny->addPoints($points, '');
         self::notifyAllPlayers('message', $this->msg['purchaseCoop'], [
             'player_name' => $penny->getName(),
@@ -1156,7 +1166,7 @@ class hardback extends Table
                 'genre' => $card->getGenreName(),
                 'letter' => $card->getLetter(),
             ]);
-            CardMgr::discard($card, $penny->getDiscardLocation());
+            CardMgr::discard($card, 'penny');
             CardMgr::drawCards(1, 'deck', 'offer', null, true);
         }
 
@@ -1164,7 +1174,7 @@ class hardback extends Table
         $timeless = $player->getTimeless();
         $discardIds = [];
         foreach ($timeless as $card) {
-            $countOffer = hardback::$instance->getGameStateValue("countOffer{$card->getGenre()}");
+            $countOffer = $this->getGameStateValue("countOffer{$card->getGenre()}");
             if ($countOffer > 0) {
                 $discardIds[] = $card->getId();
                 self::notifyAllPlayers('message', $this->msg['forceTimeless'], [
@@ -1209,13 +1219,19 @@ class hardback extends Table
         $this->activeNextPlayer();
         $player = PlayerMgr::getPlayer();
 
-        // Check for game end
-        if ($player->getOrder() == 1 && $this->getGameProgression() >= 100) {
-            self::DbQuery('UPDATE player SET player_score_aux = ink');
-            $this->gamestate->nextState('gameEnd');
-        } else {
-            $this->gamestate->nextState('playerTurn');
+        if ($player->getOrder() == 1) {
+            // Check for game end
+            $this->incStat(1, 'turns');
+            if ($this->getGameProgression() >= 100) {
+                self::DbQuery('UPDATE player SET player_score_aux = ink');
+                $this->gamestate->nextState('gameEnd');
+                return;
+            }
         }
+
+        // Give extra time
+        $this->giveExtraTime($player->getId());
+        $this->gamestate->nextState('playerTurn');
     }
 
     /*
@@ -1239,7 +1255,7 @@ class hardback extends Table
                 foreach ($offer as $offerCard) {
                     if ($offerCard->getGenre() == HORROR) {
                         // Horror: Penny earns 1 per ink
-                        $penny = PlayerMgr::getPlayer(0);
+                        $penny = PlayerMgr::getPenny();
                         $penny->addPoints(1, '');
                         self::notifyAllPlayers('message', $this->msg['earn'], [
                             'player_name' => $penny->getName(),

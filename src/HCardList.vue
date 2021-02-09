@@ -1,13 +1,12 @@
 <template>
-  <div class="cardlist relative flex flex-wrap justify-center" :class="dragInProgress ? 'dragInProgress' : ''" @dragover.stop="dragOverList($event)">
+  <div class="cardlist relative flex flex-wrap justify-center" :class="dragInProgress ? 'dragInProgress' : ''" @dragover.stop="dragOverList($event)" @dragenter.prevent>
     <transition-group :css="false">
-      <HCard v-for="card in cards" :key="card.id" :card="card" :draggable="card.draggable" @dragstart="dragStart($event, card)" @dragend="dragEnd($event, card)" @dragover.stop="dragOverCard($event, card)" :class="dragInProgress && dragInProgress.id == card.id ? 'opacity-5' : ''" />
+      <HCard v-for="card in cards" :key="card.id" :card="card" :draggable="card.draggable" @dragstart="dragStart($event, card)" @dragend="dragEnd($event, card)" @dragover.stop="dragOverCard($event, card)" @dragenter.prevent :class="dragInProgress && dragInProgress.id == card.id ? 'opacity-5' : ''" />
     </transition-group>
   </div>
 </template>
 
 <script lang="ts">
-import Constants from "./constants.js";
 import HCard from "./HCard.vue";
 import { debounce } from "lodash-es";
 

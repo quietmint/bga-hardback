@@ -172,8 +172,8 @@ $machinestates = [
 
     ST_TRASH_DISCARD => [
         'name' => 'trashDiscard',
-        'description' => clienttranslate('${actplayer} may trash a card (${coins}¢ and ${points}${icon} earned so far)'),
-        'descriptionmyturn' => clienttranslate('${you} may trash a card (${coins}¢ and ${points}${icon} earned so far)'),
+        'description' => clienttranslate('${actplayer} may trash a discard (${coins}¢ and ${points}${icon} earned so far)'),
+        'descriptionmyturn' => clienttranslate('${you} may trash a discard (${coins}¢ and ${points}${icon} earned so far)'),
         'type' => 'activeplayer',
         'args' => 'argTrashDiscard',
         'action' => 'stAutoSkip',

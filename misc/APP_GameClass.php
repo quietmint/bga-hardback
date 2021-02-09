@@ -15,8 +15,9 @@ define('AT_int', 0);
 define('AT_numberlist', 0);
 define('AT_posint', 0);
 
-function clienttranslate($text)
+function clienttranslate($text): string
 {
+    return $text;
 }
 
 function _($text)
@@ -149,9 +150,9 @@ class Table extends APP_GameClass
     {
     }
 
-    function getGameStateValue($value_label)
+    function getGameStateValue($value_label): string
     {
-        return 0;
+        return "";
     }
 
     function setGameStateValue($value_label, $value_value)
@@ -167,16 +168,17 @@ class Table extends APP_GameClass
     {
     }
 
-    function setStat(int $value, string $name, int $player_id = null)
+    function setStat(int $value, string $name, int $player_id = null): void
     {
     }
 
-    function incStat(int $delta, string $name, int $player_id = null)
+    function incStat(int $delta, string $name, int $player_id = null): void
     {
     }
 
     function getStat(string $name, int $player_id = null)
     {
+        return 0;
     }
 
     /* State functions */

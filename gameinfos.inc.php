@@ -129,11 +129,10 @@ $gameinfos = [
     // Each paragraph must be wrapped with totranslate() for translation and should not contain html (plain text without formatting).
     // A good length for this text is between 100 and 150 words (about 6 to 9 lines on a standard display)
     'presentation' => [
-        //    totranslate("This wonderful game is about geometric shapes!"),
-        //    totranslate("It was awarded best triangle game of the year in 2005 and nominated for the Spiel des Jahres."),
-        //    ...
         totranslate('Hardback is a deck-building word game.'),
-        totranslate('Build words to earn money and prestige. Purchase letter cards to improve your deck or ink to press your luck with longer words. Be the first to acquire enough prestige and be recognized as the finest novelist of the age.'),
+        totranslate("As an aspiring 19th-century novelist, you're paid by the word to complete romance, mystery, adventure, and horror novels. You start with your own personal deck of cards, using them to acquire new cards, and reshuffle your deck throughout the game."),
+        totranslate('Specialize your deck in certain genres to exploit card combinations, and press your luck to draw extra cards - but make sure you can still string a word together!'),
+        totranslate('Earn enough prestige to complete your masterpiece and be recognized as the finest novelist of the age!'),
     ],
 
     // Games categories

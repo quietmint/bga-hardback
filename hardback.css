@@ -13,12 +13,17 @@
  *
  */
 
+.playername,
+a:link.playername,
+a:visited.playername {
+  color: black;
+}
+
 .hdefine {
   font-style: italic;
   margin: 5px -5px -5px;
   padding: 5px;
-  border-top: 1px dashed #ccc;
-  background: #e8e8e8;
+  background: rbga(0, 0, 0, 0.1);
 }
 
 .hdefine li {

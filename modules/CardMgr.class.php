@@ -231,8 +231,13 @@ class CardMgr extends APP_GameClass
         shuffle($starterPoints);
         $playerIds = PlayerMgr::getPlayerIds();
         foreach ($playerIds as $playerId) {
+            $two = array_splice($starterPoints, 0, 2);
+            sort($two);
+            hardback::$instance->setStat(ord(self::$refCards[$two[0]]['letter']), 'starterCard1', $playerId);
+            hardback::$instance->setStat(ord(self::$refCards[$two[1]]['letter']), 'starterCard2', $playerId);
+            $starter = array_merge($starterCoins, $two);
+
             $location = self::getDiscardLocation($playerId);
-            $starter = array_merge($starterCoins, array_splice($starterPoints, 0, 2));
             $create = [];
             foreach ($starter as $refId) {
                 $create[] = "($refId, '$location', '$location')";

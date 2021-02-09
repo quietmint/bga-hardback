@@ -11,18 +11,18 @@
         </div>
 
         <!-- Letter -->
-        <div :class="letterClass" class="absolute letter text-center leading-none" :title="card.letter + ' (' + card.genreName + ')'">
+        <div :class="letterClass" class="absolute letter text-center leading-none" :title="card.letter">
           {{ card.letter }}
         </div>
 
-        <div :class="benefitClass" class="absolute text-15">
+        <div :class="benefitClass" class="absolute text-15 overflow-y-auto">
           <!-- Basic Benefits -->
-          <ul title="Basic benefits always activate">
+          <ul :title="i18n('basicTip')">
             <li v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.html"></span></li>
           </ul>
 
           <!-- Genre Benefits -->
-          <div v-if="card.genreBenefitsList.length" :class="textClass" class="flex items-center border-t border-black" :title="'Genre benefits activate if you play multiple ' + card.genreName + ' cards'">
+          <div v-if="card.genreBenefitsList.length" :class="textClass" class="flex items-center border-t border-black" :title="i18n('genreTip', { x: i18n(card.genreName) })">
             <Icon :icon="card.genreName" class="text-24 flex-none" />
             <ul class="border-l border-black ml-1 py-1 pl-1">
               <li v-for="benefit in card.genreBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.html"></span></li>
@@ -53,95 +53,10 @@
 import Constants from "./constants.js";
 import { Icon } from "@iconify/vue";
 
-const actionBlack = "button black shadow";
-const actionBlue = "button blue shadow";
-const actionRed = "button red shadow";
-const actionRef = {
-  ink: {
-    action: "useRemover",
-    text: "REMOVE INK",
-    class: actionBlack,
-  },
-  wild: {
-    action: "wild",
-    text: "WILD",
-    class: actionBlue,
-  },
-  uncover: {
-    action: "uncover",
-    text: "UNCOVER",
-    class: actionBlue,
-  },
-  double: {
-    action: "double",
-    text: "DOUBLE",
-    class: actionBlue,
-  },
-  previewReturn: {
-    action: "previewReturn",
-    text: "RETURN",
-    class: actionBlue,
-  },
-  previewDiscard: {
-    action: "previewDiscard",
-    text: "DISCARD",
-    class: actionBlue,
-  },
-  trash: {
-    action: "trash",
-    text: "TRASH",
-    class: actionRed,
-  },
-  trashDiscard: {
-    action: "trashDiscard",
-    // dynamic text
-    class: actionRed,
-  },
-  jailJail: {
-    action: "jail",
-    actionArgs: {
-      choice: "jail",
-    },
-    text: "JAIL",
-    class: actionBlue,
-  },
-  jailTrash: {
-    action: "jail",
-    actionArgs: {
-      choice: "trash",
-    },
-    text: "TRASH",
-    class: actionRed,
-  },
-  eitherInk: {
-    action: "either",
-    actionArgs: {
-      benefitId: Constants.EITHER_INK,
-      choice: "ink",
-    },
-    text: "Ink",
-    class: actionBlue,
-  },
-  eitherRemover: {
-    action: "either",
-    actionArgs: {
-      benefitId: Constants.EITHER_INK,
-      choice: "remover",
-    },
-    text: "Remover",
-    class: actionBlue,
-  },
-  purchase: {
-    action: "purchase",
-    text: "PURCHASE",
-    class: actionBlue,
-  },
-};
-
 export default {
   name: "HCard",
   emits: ["clickCard", "clickFooter"],
-  inject: ["gamestate"],
+  inject: ["gamestate", "i18n"],
   components: { Icon },
 
   props: {
@@ -187,7 +102,7 @@ export default {
     },
 
     benefitClass(): string {
-      return this.card.timeless ? "top-8 bottom-0 right-1 w-28 pl-2" : "bottom-0 left-0 right-0 h-24 px-2 pb-1";
+      return this.card.timeless ? "top-8 bottom-0 right-1 w-28 pl-2" : "bottom-0 left-0 right-0 h-24 px-1 pb-1";
     },
 
     textClass(): string {
@@ -216,12 +131,97 @@ export default {
             return { action: "move", destination: destination };
           }
         } else if (this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
-          return actionRef.purchase;
+          return { action: "purchase" };
         }
       }
     },
 
     footerActions(): any[] {
+      const actionBlack = "button black shadow";
+      const actionBlue = "button blue shadow";
+      const actionRed = "button red shadow";
+      const actionRef = {
+        ink: {
+          action: "useRemover",
+          text: this.i18n("useRemoverButton"),
+          class: actionBlack,
+        },
+        wild: {
+          action: "wild",
+          text: this.i18n("wildButton"),
+          class: actionBlue,
+        },
+        uncover: {
+          action: "uncover",
+          text: this.i18n("uncoverButton"),
+          class: actionBlue,
+        },
+        double: {
+          action: "double",
+          text: this.i18n("doubleButton"),
+          class: actionBlue,
+        },
+        previewReturn: {
+          action: "previewReturn",
+          text: this.i18n("returnButton"),
+          class: actionBlue,
+        },
+        previewDiscard: {
+          action: "previewDiscard",
+          text: this.i18n("discardButton"),
+          class: actionBlue,
+        },
+        trash: {
+          action: "trash",
+          text: this.i18n("trashButton"),
+          class: actionRed,
+        },
+        trashDiscard: {
+          action: "trashDiscard",
+          // dynamic text
+          class: actionRed,
+        },
+        jailJail: {
+          action: "jail",
+          actionArgs: {
+            choice: "jail",
+          },
+          text: this.i18n("jailButton"),
+          class: actionBlue,
+        },
+        jailTrash: {
+          action: "jail",
+          actionArgs: {
+            choice: "trash",
+          },
+          text: this.i18n("trashButton"),
+          class: actionRed,
+        },
+        eitherInk: {
+          action: "either",
+          actionArgs: {
+            benefitId: Constants.EITHER_INK,
+            choice: "ink",
+          },
+          text: this.i18n("ink"),
+          class: actionBlue,
+        },
+        eitherRemover: {
+          action: "either",
+          actionArgs: {
+            benefitId: Constants.EITHER_INK,
+            choice: "remover",
+          },
+          text: this.i18n("remover"),
+          class: actionBlue,
+        },
+        purchase: {
+          action: "purchase",
+          text: this.i18n("purchaseButton"),
+          class: actionBlue,
+        },
+      };
+
       if (this.gamestate.active) {
         if (this.gamestate.name == "uncover" && this.gamestate.args.cardIds.includes(this.card.id)) {
           return [actionRef.uncover];
@@ -232,11 +232,11 @@ export default {
         } else if (this.gamestate.name == "specialRomance" && this.card.location.startsWith("hand")) {
           return [actionRef.previewReturn, actionRef.previewDiscard];
         } else if (this.gamestate.name == "trashDiscard" && this.card.location.startsWith("discard")) {
-          const trashDiscard = Object.assign({ text: `TRASH FOR ${this.gamestate.args.amount}¢` }, actionRef.trashDiscard);
+          const text = this.i18n("trashCoinsButton", { coins: this.gamestate.args.amount });
+          const trashDiscard = Object.assign({ text }, actionRef.trashDiscard);
           return [trashDiscard];
         } else if (this.gamestate.name.startsWith("either") && this.gamestate.args.possible.hasOwnProperty(this.card.id)) {
           const p = this.gamestate.args.possible[this.card.id];
-          console.log(`card Id ${this.card.id} benfit`, p.benefit);
           if (p.benefit == Constants.EITHER_INK) {
             return [actionRef.eitherInk, actionRef.eitherRemover];
           } else {
@@ -259,8 +259,6 @@ export default {
               icon: "star",
               class: actionBlue,
             };
-            console.log(`card Id ${this.card.id} eitherCoins`, eitherCoins);
-            console.log(`card Id ${this.card.id} eitherPoints`, eitherPoints);
             return [eitherCoins, eitherPoints];
           }
         } else if (this.gamestate.name == "jail" && this.card.location == "offer") {
@@ -276,7 +274,7 @@ export default {
             action: null,
             text: `${this.card.player.name} `,
             icon: "timeless",
-            title: `Timeless Classic: ${this.card.player.name} receives benefits each turn`,
+            title: this.i18n("timelessTip", { player_name: this.card.player.name }),
             class: `leading-6 ${this.card.player.colorBg} ${this.card.player.colorBgText}`,
           },
         ];
@@ -291,7 +289,7 @@ export default {
               action: null,
               text: `${this.card.player.name} `,
               icon: "jail",
-              title: `Jailed: Only ${this.card.player.name} may purchase`,
+              title: this.i18n("jailTip", { player_name: this.card.player.name }),
               class: `leading-6 ${this.card.player.colorBg} ${this.card.player.colorBgText}`,
             },
           ];
@@ -301,7 +299,7 @@ export default {
       if (this.card.location.startsWith("hand") || (this.card.location == "tableau" && this.gamestate.active && this.gamestate.name == "playerTurn")) {
         let reset = {
           action: "reset",
-          text: `RESET (${this.card.letter})`,
+          text: this.i18n("resetButton", { x: this.card.letter }),
           class: actionBlue,
         };
         return this.card.ink ? [actionRef.ink] : this.card.wild ? [reset] : [actionRef.wild];

@@ -58,6 +58,9 @@ class HPlayer extends APP_GameClass implements JsonSerializable
             'remover' => $this->remover,
             'score' => $this->score,
         ];
+        if (hardback::$instance->gamestate->table_globals[OPTION_AWARDS]) {
+            $json['award'] = $this->getAward();
+        }
         if (hardback::$instance->gamestate->table_globals[OPTION_ADVERTS]) {
             $json['advert'] = $this->advert;
         }
@@ -72,6 +75,11 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     public function getAdvert(): int
     {
         return $this->advert;
+    }
+
+    public function getAward(): int
+    {
+        return hardback::$instance->getStat('pointsAward', $this->id);
     }
 
     public function getCoins(): int
@@ -209,7 +217,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($hint == 'allScore') {
             $args['allScore'] = $this->score;
         }
-        hardback::$instance->notifyAllPlayers('panel', '', $args);
+        hardback::$instance->notifyAllPlayers('player', '', $args);
     }
 
     public function notifyInk(HCard $card): void

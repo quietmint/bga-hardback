@@ -72,6 +72,8 @@ define('STAT_LONGEST_WORD', 51);
 define('STAT_INVALID_WORDS', 52);
 define('STAT_USE_INK', 60);
 define('STAT_USE_REMOVER', 61);
+define('STAT_STARTER_CARD1', 70);
+define('STAT_STARTER_CARD2', 71);
 
 // Game options
 define('OPTION_DICTIONARY', 100);

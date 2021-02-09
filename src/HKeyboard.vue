@@ -2,7 +2,7 @@
   <div class="fixed z-10 inset-0 bg-gray-500 bg-opacity-50" @click="click(null)">
     <div class="flex items-center justify-center min-h-screen">
       <div class="flex flex-col items-center justify-center bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow p-4">
-        <div class="text-20 mb-4">Click or type the wild letter</div>
+        <div class="text-20 mb-4" v-text="i18n('keyboard')"></div>
         <div v-for="row in rows" :key="row" class="flex justify-center">
           <div v-for="letter in row" :key="letter" @click.stop="click(letter)" class="flex-none cursor-pointer text-center m-2 w-14 h-14 leading-14 shadow text-24 font-bold rounded-full bg-gradient-to-b from-gray-100 via-white to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-blue-600 hover:to-blue-700 hover:text-white">{{ letter }}</div>
         </div>
@@ -18,6 +18,8 @@ const rows = ["QWERTYUIOP".split(""), "ASDFGHJKL".split(""), "ZXCVBNM".split("")
 
 export default {
   name: "HKeyboard",
+  emits: ["clickKey"],
+  inject: ["i18n"],
 
   mounted() {
     window.addEventListener("keydown", this.keydown, true);
