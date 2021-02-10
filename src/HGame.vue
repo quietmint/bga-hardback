@@ -540,7 +540,7 @@ export default {
         }
 
         // Insert a gap
-        let rootEl = document.getElementById("happ");
+        let rootEl = document.getElementById("HGame");
         gapEl = document.createElement("div");
         gapEl.id = "gap" + card.id;
         gapEl.className = "gap";
@@ -647,7 +647,7 @@ export default {
           data[key] = data[key].join(",");
         }
       }
-      let gameName = this.game.name();
+      const gameName = this.game.name();
       console.log(`Take action ${action}`, data);
       return new Promise((resolve, reject) => {
         this.game.ajaxcall("/" + gameName + "/" + gameName + "/" + action + ".html", data, this, resolve, (error) => {
@@ -665,8 +665,8 @@ export default {
           args.award = `<div class="haward length${args.award}"></div>`;
         }
         if (args.word) {
-          let q = args.word.toLowerCase();
-          let links = [
+          const q = args.word.toLowerCase();
+          const links = [
             `<a target="hdefine" href="https://dictionary.cambridge.org/dictionary/english/${q}">Cambridge</a>`, //
             `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`, //
             `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`, //

@@ -4,7 +4,8 @@ class WordMgr extends APP_GameClass
 {
     private static function getDictionary(string $letter): array
     {
-        $path = __DIR__ . "/wordlist/" . hardback::$instance->gamestate->table_globals[OPTION_DICTIONARY] . "/$letter.txt";
+        // Actually a plain-text file, but BGA requires .php extension
+        $path = __DIR__ . "/wordlist/" . hardback::$instance->gamestate->table_globals[OPTION_DICTIONARY] . "/$letter.inc.php";
         if (!is_readable($path)) {
             throw new BgaVisibleSystemException("Missing dictionary file: $path");
         }

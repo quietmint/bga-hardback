@@ -29,10 +29,10 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
             console.log("Game setup", gamedatas);
 
             // Intiailize Vue
-            let app = Vue.createApp(HGame);
+            var app = Vue.createApp(HGame);
             app.config.globalProperties.game = this;
             app.config.globalProperties.emitter = mitt();
-            this.vue = app.mount('#happ');
+            this.vue = app.mount('#HGame');
             this.vue.gamedatas = gamedatas;
 
             // Setup notifications
