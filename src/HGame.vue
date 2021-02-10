@@ -20,7 +20,7 @@
     <div v-if="gamedatas.finalRound && !gamedatas.options.coop" class="text-20 text-center font-bold text-red-600 m-4" v-text="i18n('finalRound')"></div>
 
     <!-- Discard -->
-    <div class="container-discard cardgrid bg-opacity-50 rounded-lg my-2 p-2" :class="(visibleLocations[discardLocation] ? '' : 'collapsed ') + myself.colorBg">
+    <div v-if="!spectator" class="container-discard cardgrid bg-opacity-50 rounded-lg my-2 p-2" :class="(visibleLocations[discardLocation] ? '' : 'collapsed ') + myself.colorBg">
       <!-- Title -->
       <b class="title"><Icon @click="chevron(discardLocation)" icon="chevron" class="chevron inline text-24" /> <span v-text="i18n('myDiscard', { count: discardCards.length })"></span></b>
 
@@ -37,7 +37,7 @@
     </div>
 
     <!-- Hand -->
-    <div class="container-hand cardgrid bg-opacity-50 rounded-lg my-2 p-2" :class="myself.colorBg">
+    <div v-if="!spectator" class="container-hand cardgrid bg-opacity-50 rounded-lg my-2 p-2" :class="myself.colorBg">
       <!-- Title -->
       <b class="title" v-text="i18n('myHand', { count: handCards.length })"></b>
 
