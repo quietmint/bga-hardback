@@ -47,7 +47,7 @@
     
 */
 
-require_once('constants.inc.php');
+require_once('modules/constants.inc.php');
 
 $letters = [];
 foreach (range('A', 'Z') as $letter) {

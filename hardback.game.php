@@ -19,7 +19,7 @@
 
 
 require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
-require_once('constants.inc.php');
+require_once('modules/constants.inc.php');
 require_once('modules/HCard.class.php');
 require_once('modules/HPlayer.class.php');
 require_once('modules/HPenny.class.php');
