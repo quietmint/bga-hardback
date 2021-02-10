@@ -15,7 +15,7 @@
           {{ card.letter }}
         </div>
 
-        <div :class="benefitClass" class="absolute text-15 overflow-y-auto">
+        <div :class="benefitClass" class="absolute text-14 overflow-y-auto">
           <!-- Basic Benefits -->
           <ul :title="i18n('basicTip')">
             <li v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.html"></span></li>
