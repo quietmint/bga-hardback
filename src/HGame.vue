@@ -68,13 +68,13 @@
       <HCardList :cards="tableauCards" location="tableau" />
 
       <!-- Actions -->
-      <div v-if="tableauCards.length" class="actions">
+      <div v-if="buttonEnabled['moveAllTableau']" class="actions">
         <div @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')" class="button" :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
         <div @click="buttonEnabled['moveAllTableau'] && moveAll('tableau')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('moveAll')"></div>
       </div>
 
       <!-- Sorter -->
-      <div v-if="tableauCards.length" class="sorter">
+      <div v-if="buttonEnabled['moveAllTableau']" class="sorter">
         <div @click="sort('tableau', 'letter')" class="button blue" :title="i18n('sortLetterTip')">A-Z</div>
         <div @click="sort('tableau', 'genre')" class="button blue" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-18 h-7" /></div>
         <div @click="sort('tableau', 'shuffle')" class="button blue" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
