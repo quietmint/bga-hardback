@@ -73,7 +73,7 @@ $machinestates = [
         'possibleactions' => ['confirmWord', 'skipWord'],
         'transitions' => [
             'next' => ST_UNCOVER,
-            'skip' => ST_COOP_TURN,
+            'skip' => ST_CLEANUP,
             'zombie' => ST_NEXT_PLAYER,
         ],
         'updateGameProgression' => true,
