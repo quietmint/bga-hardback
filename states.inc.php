@@ -262,7 +262,7 @@ $machinestates = [
         'action' => 'stCoopTurn',
         'transitions' => [
             'next' => ST_NEXT_PLAYER,
-            'gameEnd' => ST_BGA_GAME_END,
+            'end' => ST_END,
         ],
     ],
 
@@ -273,11 +273,21 @@ $machinestates = [
         'action' => 'stNextPlayer',
         'transitions' => [
             'playerTurn' => ST_PLAYER_TURN,
-            'gameEnd' => ST_BGA_GAME_END,
+            'end' => ST_END,
         ],
         'updateGameProgression' => true,
     ],
 
+    ST_END => [
+        'name' => 'end',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stEnd',
+        'transitions' => [
+            'gameEnd' => ST_BGA_GAME_END,
+        ],
+        'updateGameProgression' => true,
+    ],
 
     // Final state.
     // Please do not modify (and do not overload action/args methods).

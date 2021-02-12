@@ -82,9 +82,6 @@ class hardback extends Table
     */
     protected function setupNewGame($players, $options = []): void
     {
-        // Set the colors of the players with HTML color code
-        // The default below is red/green/blue/orange/brown
-        // The number of colors defined here must correspond to the maximum number of players allowed for the gams
         $gameinfos = self::getGameinfos();
         $default_colors = $gameinfos['player_colors'];
 
@@ -190,7 +187,7 @@ class hardback extends Table
                 'i18n' => $this->i18n,
             ],
         ];
-        if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
+        if ($this->gamestate->table_globals[OPTION_COOP]) {
             $data['penny'] = PlayerMgr::getPenny();
         }
         return $data;
@@ -214,10 +211,10 @@ class hardback extends Table
 
     function getGameLength(): int
     {
-        if ($this->gamestate->table_globals[OPTION_COOP] == NO) {
-            return $this->gamestate->table_globals[OPTION_LENGTH];
-        } else {
+        if ($this->gamestate->table_globals[OPTION_COOP]) {
             return 60 * PlayerMgr::getPlayerCount();
+        } else {
+            return $this->gamestate->table_globals[OPTION_LENGTH];
         }
     }
 
@@ -231,7 +228,7 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
 
         // Reset draw counts
-        if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
+        if ($this->gamestate->table_globals[OPTION_COOP]) {
             foreach ([ADVENTURE, HORROR, MYSTERY, ROMANCE] as $genre) {
                 hardback::$instance->setGameStateValue("countOffer$genre", 0);
             }
@@ -330,30 +327,25 @@ class hardback extends Table
         if ($length > $longest) {
             $this->setStat($length, 'longestWord');
             if ($length >= 7 && $this->gamestate->table_globals[OPTION_AWARDS]) {
-                // Issue new literary award
+                $msg = $this->msg['awardFirst'];
                 $points = $this->awards[min($length, 12)];
-                $player->addPoints($points, 'pointsAward');
-                self::notifyAllPlayers('award', $this->msg['awardWin'], [
+                $args = [
                     'player_name' => $player->getName(),
                     'points' => $points,
                     'iconPoints' => 'star',
                     'length' => $length,
                     'award' => $length,
-                ]);
-
-                // Revoke old literary award
+                ];
                 $previous = $this->getGameStateValue('awardWinner');
-                if ($previous) {
-                    $points = $this->awards[min($longest, 12)];
-                    $loser = PlayerMgr::getPlayer($previous);
-                    $loser->addPoints(-1 * $points, 'pointsAward');
-                    self::notifyAllPlayers('message', $this->msg['awardLose'], [
-                        'player_name' => $loser->getName(),
-                        'points' => $points,
-                        'iconPoints' => 'star',
-                    ]);
-                }
                 $this->setGameStateValue('awardWinner', $player->getId());
+                if ($previous && $previous != $player->getId()) {
+                    $msg = $this->msg['awardSecond'];
+                    $loser = PlayerMgr::getPlayer($previous);
+                    $args['player_name2'] = $loser->getName();
+                    $loser->notifyPanel();
+                }
+                $player->notifyPanel();
+                self::notifyAllPlayers('award', $msg, $args);
             }
         }
 
@@ -591,7 +583,7 @@ class hardback extends Table
         foreach ($tableau as $card) {
             if ($card->hasBenefit(SPECIAL_ADVENTURE)) {
                 $specials[SPECIAL_ADVENTURE] = $card;
-            } else if ($card->hasBenefit(SPECIAL_HORROR)) { // && $this->gamestate->table_globals[OPTION_COOP] == NO) {
+            } else if ($card->hasBenefit(SPECIAL_HORROR) && $this->gamestate->table_globals[OPTION_COOP] == NO) {
                 $specials[SPECIAL_HORROR] = $card;
             } else if ($card->hasBenefit(SPECIAL_MYSTERY)) {
                 $specials[SPECIAL_MYSTERY] = $card;
@@ -1125,10 +1117,7 @@ class hardback extends Table
         // Check for win
         $penny = PlayerMgr::getPenny();
         if ($this->getGameProgression() >= 100) {
-            self::notifyAllPlayers('message', $this->msg['coopWin'], [
-                'player_name' => $penny->getName(),
-            ]);
-            $this->gamestate->nextState('gameEnd');
+            $this->gamestate->nextState('end');
             return;
         }
 
@@ -1191,11 +1180,7 @@ class hardback extends Table
 
         // Check for lose
         if ($penny->getScore() >= $this->getGameLength()) {
-            self::notifyAllPlayers('message', $this->msg['coopLose'], [
-                'player_name' => $penny->getName(),
-            ]);
-            self::DbQuery('UPDATE player SET player_score = player_score * -1');
-            $this->gamestate->nextState('gameEnd');
+            $this->gamestate->nextState('end');
         } else {
             $this->gamestate->nextState('next');
         }
@@ -1224,7 +1209,7 @@ class hardback extends Table
             $this->incStat(1, 'turns');
             if ($this->getGameProgression() >= 100) {
                 self::DbQuery('UPDATE player SET player_score_aux = ink');
-                $this->gamestate->nextState('gameEnd');
+                $this->gamestate->nextState('end');
                 return;
             }
         }
@@ -1284,6 +1269,45 @@ class hardback extends Table
         }
         CardMgr::inkCard($card, HAS_REMOVER);
         $this->incStat(1, 'useRemover', $player->getId());
+    }
+
+    /*
+     * END OF GAME
+     */
+
+    function stEnd(): void
+    {
+        // Literary award points
+        if ($this->gamestate->table_globals[OPTION_AWARDS]) {
+            $winner = $this->getGameStateValue('awardWinner');
+            if ($winner) {
+                $length = $this->getStat('longestWord');
+                $points = $this->awards[min($length, 12)];
+                $player = PlayerMgr::getPlayer($winner);
+                $player->addPoints($points, 'pointsAward');
+            }
+        }
+
+        if ($this->gamestate->table_globals[OPTION_COOP]) {
+            $penny = PlayerMgr::getPenny();
+            if ($penny->getScore() >= $this->getGameLength()) {
+                // Coop lose
+                self::DbQuery("UPDATE player SET player_score = player_score - {$this->getGameLength()}");
+                self::notifyAllPlayers('message', $this->msg['coopLose'], [
+                    'player_name' => $penny->getName(),
+                ]);
+            } else {
+                // Coop win
+                self::notifyAllPlayers('message', $this->msg['coopWin'], [
+                    'player_name' => $penny->getName(),
+                ]);
+            }
+        } else {
+            // Ink is the tiebreaker
+            self::DbQuery('UPDATE player SET player_score_aux = ink');
+        }
+
+        $this->gamestate->nextState('gameEnd');
     }
 
     //////////////////////////////////////////////////////////////////////////////
