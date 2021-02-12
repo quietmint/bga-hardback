@@ -78,8 +78,8 @@ define('STAT_STARTER_CARD2', 71);
 // Game options
 define('OPTION_DICTIONARY', 100);
 define('TWELVEDICTS', 1);
-define('NWL', 2);
-define('COLLINS', 3);
+define('US', 2);
+define('UK', 3);
 
 define('OPTION_LENGTH', 105);
 define('OPTION_AWARDS', 101);

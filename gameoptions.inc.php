@@ -35,13 +35,13 @@ $game_options = [
                 'name' => 'Multisource (85,000 words)',
                 'description' => 'Words appearing in at least 2 of 12 English dictionaries',
             ],
-            NWL => [
-                'name' => 'North American Scrabble (115,000 words)',
+            US => [
+                'name' => 'American Scrabble (190,000 words)',
                 'description' => 'Words allowed in North American Scrabble tournaments',
             ],
-            COLLINS => [
-                'name' => 'Collins Scrabble (280,000 words)',
-                'description' => 'Words allowed in British Scrabble tournaments',
+            UK => [
+                'name' => 'British Scrabble (280,000 words)',
+                'description' => 'Words allowed in United Kingdom Scrabble tournaments',
             ],
         ]
     ],
