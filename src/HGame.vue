@@ -625,9 +625,11 @@ export default {
       });
 
       if (mode == "leave") {
-        promise = promise.finally(() => {
+        const finalizer = () => {
           this.gamedatas.cards[card.id] = card;
-        });
+          return card.id;
+        };
+        promise = promise.then(finalizer, finalizer);
       }
       return promise;
     },

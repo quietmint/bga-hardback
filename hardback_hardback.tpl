@@ -1,5 +1,6 @@
 {OVERALL_GAME_HEADER}
 
+<a id="browser-error" href="https://browsehappy.com/" target="_blank"></a>
 <div id="HGame" class="tailwind"></div>
 
 <script type="text/javascript">
