@@ -765,8 +765,8 @@ class CardMgr extends APP_GameClass
     {
         $updatedIds = self::getIds(self::getCardsInLocation('offer'));
 
-        // Discard offer and notify
-        self::discard($updatedIds, 'discard');
+        // Trash offer and notify
+        self::discard($updatedIds, 'trash');
 
         // Draw new offer and notify
         $newCards = self::drawCards(7, 'deck', 'offer');
