@@ -51,6 +51,9 @@ module.exports = {
         14: "3.5rem",
         17: "17px",
       },
+      zIndex: {
+        top: "2000",
+      },
     },
   },
   plugins: [],

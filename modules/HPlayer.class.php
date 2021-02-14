@@ -77,17 +77,14 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         return $this->advert;
     }
 
-    public function getAward(): ?array
+    public function getAward(): int
     {
+        $points = 0;
         if (hardback::$instance->gamestate->table_globals[OPTION_AWARDS] && hardback::$instance->getGameStateValue('awardWinner') == $this->id) {
             $length = min(hardback::$instance->getStat('longestWord'), 12);
             $points = hardback::$instance->awards[$length];
-            return [
-                'length' => $length,
-                'points' => $points
-            ];
         }
-        return null;
+        return $points;
     }
 
     public function getCoins(): int

@@ -19,24 +19,6 @@
   padding: 10px;
 }
 
-.player-name,
-.player_score_value,
-.timeToThink,
-.player_showcursor,
-.player_table_status {
-  text-shadow: 0px 0px 0px black, 1px 1px 1px white;
-}
-
-.player-name a {
-  background-color: #ebd5bd99;
-}
-
-.playername,
-a:link.playername,
-a:visited.playername {
-  color: black;
-}
-
 .hdefine {
   font-style: italic;
   margin: 5px -5px -5px;
@@ -98,42 +80,50 @@ a:visited.playername {
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.haward.length7,
-.panel-award.length7 {
+.haward.length7 {
   background-image: url(award7.jpg);
 }
 
-.haward.length8,
-.panel-award.length8 {
+.haward.length8 {
   background-image: url(award8.jpg);
 }
 
-.haward.length9,
-.panel-award.length9 {
+.haward.length9 {
   background-image: url(award9.jpg);
 }
 
-.haward.length10,
-.panel-award.length10 {
+.haward.length10 {
   background-image: url(award10.jpg);
 }
 
-.haward.length11,
-.panel-award.length11 {
+.haward.length11 {
   background-image: url(award11.jpg);
 }
 
-.haward.length12,
-.panel-award.length12 {
+.haward.length12 {
   background-image: url(award12.jpg);
+}
+
+/* Penny Dreadful name in log messages */
+
+.playername,
+a:link.playername,
+a:visited.playername {
+  color: black;
 }
 
 /* Player boards */
 
 .player-board {
-  background-position: top -10px right -10px;
-  background-repeat: no-repeat;
+  background: no-repeat top -12px right -9px #777;
   padding-bottom: 24px;
+  color: white;
+  text-shadow: -0.5px 0px 1px black, 0.5px 0px 1px black;
+}
+
+.player-name a {
+  background-color: #7779;
+  text-shadow: -0.5px 0px 1px black, 0.5px 0px 1px white;
 }
 
 .player_board_inner {
@@ -144,34 +134,28 @@ a:visited.playername {
   border-bottom-right-radius: 8px;
 }
 
-/* red */
 .player-board.red {
   background-image: url(book-red.png);
 }
 
-/* green */
 .player-board.green {
   background-image: url(book-green.png);
 }
 
-/* blue */
 .player-board.blue {
   background-image: url(book-blue.png);
 }
 
-/* yellow */
 .player-board.yellow {
   background-image: url(book-yellow.png);
 }
 
-/* purple */
 .player-board.purple {
   background-image: url(book-purple.png);
 }
 
-/* black */
-#player_board_inner_000000 {
-  background: no-repeat top right/100px url(penny.png);
+.player-board.black {
+  background: no-repeat top right/100px url(penny.png) #777;
 }
 
 #player_board_inner_000000 .player-name,

@@ -1,9 +1,12 @@
 <template>
   <teleport to="#player_boards">
-    <div id="overall_player_board_0" class="player-board" style="border-color: black; width: 234px; height: auto">
+    <div id="overall_player_board_0" class="player-board black" style="border-color: black; width: 234px; height: auto">
       <div class="player_board_inner" id="player_board_inner_000000">
+        <div v-if="icon" class="emblemwrap tailwind" id="avatarwrap_0">
+          <Icon :icon="icon.icon" :class="icon.color" class="avatar emblem" id="avatar_0" />
+        </div>
         <div class="player-name" id="player_name_0">
-          <div style="color: #000000" v-text="i18n('penny')"></div>
+          <a style="color: #000000" v-text="i18n('penny')"></a>
         </div>
         <div id="player_board_0" class="player_board_content">
           <div class="player_score">
@@ -16,7 +19,6 @@
           <div class="tailwind">
             <div class="panel-signature flex flex-col items-center justify-center">
               <div class="text-14 ml-1" v-html="description"></div>
-              <Icon v-if="icon" :icon="icon.icon" :class="icon.color" class="text-24 mt-1" />
             </div>
             <div v-if="title" class="panel-novel border-t border-b border-black mt-1 py-1 text-center text-20">{{ title }}</div>
             <HGenreCounts :counts="penny.genreCounts" />

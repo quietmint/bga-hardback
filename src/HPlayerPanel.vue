@@ -1,29 +1,30 @@
 <template>
   <teleport :to="teleportTo">
     <div class="tailwind panelbg">
-      <div class="panel-ink flex items-center text-20 text-center font-bold">
-        <div class="text-white flex-1" :title="i18n('ink') + ': ' + player.ink">{{ player.ink }}</div>
-        <div class="text-black flex-1" :title="i18n('remover') + ': ' + player.remover">{{ player.remover }}</div>
-      </div>
-
-      <div class="panel-cards flex flex-col items-center justify-evenly ml-1 mt-1 mb-2 ring-2 ring-gray-600 shadow">
-        <div class="p-1 text-white bg-black bg-opacity-25 rounded-lg leading-17">
-          <span v-text="i18n('discardButton')"></span>: <span class="font-bold text-17">{{ player.discardCount }}</span
-          ><br />
-          <span v-text="i18n('deck')"></span>: <span class="font-bold text-17">{{ player.deckCount || 0 }}</span>
+      <div class="panel-left text-center">
+        <div class="panel-ink flex items-center text-20 font-bold text-noshadow">
+          <div class="flex-1" :title="i18n('ink') + ': ' + player.ink">{{ player.ink }}</div>
+          <div class="flex-1 text-black" :title="i18n('remover') + ': ' + player.remover">{{ player.remover }}</div>
         </div>
+        <div class="panel-cards flex items-center text-24 font-bold text-noshadow">
+          <div class="flex-1" :title="i18n('deck') + ': ' + player.deckCount">{{ player.deckCount }}</div>
+          <div class="flex-1" :title="i18n('discardButton') + ': ' + player.discardCount">{{ player.discardCount }}</div>
+        </div>
+        <div class="flex items-center text-12">
+          <div class="flex-1" v-text="i18n('deck')"></div>
+          <div class="flex-1" v-text="i18n('discardButton')"></div>
+        </div>
+        <div v-if="player.order == 1" class="text-13 font-bold mt-1" v-text="i18n('first')"></div>
       </div>
 
-      <div class="panel-options flex justify-around">
+      <div class="panel-right flex items-end justify-around text-noshadow">
         <HTooltip v-if="options.value.awards" :table="refs.value.awards" :header="i18n('award')">
-          <div :class="'panel-award ' + (player.award ? 'length' + player.award.length : 'empty')" :title="i18n('award') + ': ' + (player.award ? player.award.points : 0)"></div>
+          <div class="panel-opt" :title="i18n('award') + ': ' + player.award">{{ player.award || "" }}<Icon v-if="player.award" class="inline text-20" icon="star" /></div>
         </HTooltip>
         <HTooltip v-if="options.value.adverts" :table="refs.value.adverts" :header="i18n('adverts')" suffix="¢">
-          <div class="panel-dr" :title="i18n('adverts') + ': ' + player.advert">{{ player.advert ? player.advert : "" }}<Icon v-if="player.advert" class="inline" icon="star" /></div>
+          <div class="panel-opt" :title="i18n('adverts') + ': ' + player.advert">{{ player.advert || "" }}<Icon v-if="player.advert" class="inline text-20" icon="star" /></div>
         </HTooltip>
       </div>
-
-      <div v-if="player.order == 1" class="text-13 font-bold text-center mt-2" v-text="i18n('first')"></div>
 
       <HGenreCounts :counts="player.genreCounts" />
     </div>

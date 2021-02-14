@@ -36,12 +36,17 @@
 
 .cardgrid {
   display: grid;
-  text-decoration: unset;
-  grid-template: "title actions sorter" auto "cardlist cardlist sorter" auto / 1fr auto auto;
+  grid-template:
+    "title actions sorter" auto
+    "cardlist cardlist sorter" auto
+    / 1fr auto auto;
 }
 
 .cardgrid.no-sorter {
-  grid-template: "title actions" auto "cardlist cardlist" auto / 1fr auto;
+  grid-template:
+    "title actions" auto
+    "cardlist cardlist" auto
+    / 1fr auto;
 }
 
 .chevron {
@@ -365,40 +370,40 @@
 
 .tailwind.panelbg {
   clear: both;
+  display: grid;
+  grid-template:
+    "left . right" auto
+    / 110px auto 115px;
+}
+
+.text-noshadow {
+  text-shadow: none;
+}
+
+.panel-left {
+  grid-area: left;
+  background: no-repeat url(ink-remover-cards.png);
+}
+
+.panel-right {
+  grid-area: right;
 }
 
 .panel-ink {
-  background: no-repeat url(ink-remover.png);
-  width: 115px;
-  height: 66px;
-  padding: 0 3px 8px;
+  height: 55px;
+  padding: 0 4px;
 }
 
 .panel-cards {
-  @apply rounded-lg text-center text-13;
-  background: no-repeat center/cover url(discard.jpg);
-  width: 96px;
-  height: 96px;
+  height: 70px;
+  padding: 4px 4px 0 0;
 }
 
-.panel-options {
-  position: absolute;
-  top: 174px;
-  right: 0;
-  width: 115px;
-}
-
-.panel-award,
-.panel-dr {
-  @apply rounded-full text-black border-3 border-dashed border-gray-800 text-18 text-center font-bold shadow;
-  width: 44px;
-  height: 44px;
-  line-height: 38px;
-}
-
-.panel-award {
-  background-size: 185px;
-  background-position: 89% 84%;
+.panel-opt {
+  @apply rounded-full bg-white bg-opacity-80 text-black border-3 border-dashed border-gray-800 text-17 text-center font-bold shadow;
+  width: 45px;
+  height: 45px;
+  line-height: 39px;
 }
 
 .panel-signature {

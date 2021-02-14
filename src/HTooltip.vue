@@ -1,6 +1,6 @@
 <template>
   <div @mouseover="mouseover" @mouseout="hover = false" ref="holder">
-    <table v-if="hover" class="table-fixed fixed z-10 bg-white ring-2 ring-black rounded-lg overflow-hidden text-13 text-center" :style="{ top: top, left: left }" ref="table">
+    <table v-if="hover" class="table-fixed fixed z-top bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-13 text-center" :style="{ top: top, left: left }" ref="table">
       <tr>
         <th colspan="2" class="p-2 bg-gray-200 font-bold text-center">{{ header }}</th>
       </tr>
@@ -53,8 +53,8 @@ export default {
       const table: HTMLElement = this.$refs.table;
       const holder: HTMLElement = this.$refs.holder;
       const h = holder.getBoundingClientRect();
-      this.top = h.top - table.clientHeight / 2 + "px";
-      this.left = h.left - table.clientWidth - 10 + "px";
+      this.top = Math.max(h.top - table.clientHeight / 2, 0) + "px";
+      this.left = Math.max(h.left - table.clientWidth - 10, 0) + "px";
     },
   },
 };
