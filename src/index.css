@@ -12,6 +12,16 @@
 
 @tailwind base;
 @layer base {
+  .ring,
+  .ring-2 {
+    --tw-ring-offset-shadow: 0 0 transparent !important;
+  }
+  .ring {
+    --tw-ring-shadow: 0 0 0 6px var(--tw-ring-color) !important;
+  }
+  .ring-2 {
+    --tw-ring-shadow: 0 0 0 2px var(--tw-ring-color) !important;
+  }
   button:focus {
     outline: none;
   }
