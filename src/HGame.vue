@@ -193,8 +193,10 @@ export default {
   provide() {
     return {
       gamestate: this.gamestate,
-      options: computed(() => this.gamedatas.options),
+      getHtml: getHtml,
       i18n: this.i18n,
+      options: computed(() => this.gamedatas.options),
+      refs: computed(() => this.gamedatas.refs),
     };
   },
 
@@ -226,6 +228,7 @@ export default {
           benefits: {},
           cards: {},
           i18n: {},
+          signature: {},
         },
       },
       gamestate: {},
@@ -649,10 +652,9 @@ export default {
           data[key] = data[key].join(",");
         }
       }
-      const gameName = this.game.name();
       console.log(`Take action ${action}`, data);
       return new Promise((resolve, reject) => {
-        this.game.ajaxcall("/" + gameName + "/" + gameName + "/" + action + ".html", data, this, resolve, (error) => {
+        this.game.ajaxcall("/hardback/hardback/" + action + ".html", data, this, resolve, (error) => {
           error ? reject(error) : resolve(error);
         });
       });
@@ -817,7 +819,6 @@ export default {
       console.log(`onEnteringState ${stateName}`, args);
       if (args && args.updateGameProgression) {
         this.gamedatas.finalRound = args.updateGameProgression >= 100;
-        console.warn("game progression", args.updateGameProgression, this.gamedatas.finalRound);
       }
       if (stateName == "trashDiscard" && !args.skip) {
         //this.visibleLocations[this.discardLocation] = true;

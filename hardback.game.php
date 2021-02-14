@@ -187,8 +187,15 @@ class hardback extends Table
                 'i18n' => $this->i18n,
             ],
         ];
+        if ($this->gamestate->table_globals[OPTION_ADVERTS]) {
+            $data['refs']['adverts'] = $this->adverts;
+        }
+        if ($this->gamestate->table_globals[OPTION_AWARDS]) {
+            $data['refs']['awards'] = $this->awards;
+        }
         if ($this->gamestate->table_globals[OPTION_COOP]) {
             $data['penny'] = PlayerMgr::getPenny();
+            $data['refs']['signature'] = $this->signature;
         }
         return $data;
     }
@@ -824,8 +831,8 @@ class hardback extends Table
 
         $amount = $this->gamestate->state()['args']['amount'];
         CardMgr::useBenefit($source, TRASH_DISCARD);
-        $player->addCoins($amount);
         CardMgr::discard($card, 'trash');
+        $player->addCoins($amount);
         self::notifyAllPlayers('message', $this->msg['trash'], [
             'player_name' => $player->getName(),
             'genre' => $card->getGenreName(),
@@ -958,7 +965,7 @@ class hardback extends Table
         }));
         $advert = null;
         if ($this->gamestate->table_globals[OPTION_ADVERTS]) {
-            foreach ($this->adverts as $points => $coins) {
+            foreach ($this->adverts as $coins => $points) {
                 if ($points > $player->getAdvert()) {
                     $advert = ['coins' => $coins, 'points' => $points, 'icon' => 'star'];
                     break;
@@ -1047,7 +1054,7 @@ class hardback extends Table
     {
         if ($this->gamestate->table_globals[OPTION_ADVERTS]) {
             $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-            foreach ($this->adverts as $points => $coins) {
+            foreach ($this->adverts as $coins => $points) {
                 if ($points > $player->getAdvert()) {
                     $player->buyAdvert($points, $coins);
                     $this->notifyAllPlayers('message', $this->msg['purchaseAdvert'], [
@@ -1281,8 +1288,8 @@ class hardback extends Table
         if ($this->gamestate->table_globals[OPTION_AWARDS]) {
             $winner = $this->getGameStateValue('awardWinner');
             if ($winner) {
-                $length = $this->getStat('longestWord');
-                $points = $this->awards[min($length, 12)];
+                $length = min($this->getStat('longestWord'), 12);
+                $points = $this->awards[$length];
                 $player = PlayerMgr::getPlayer($winner);
                 $player->addPoints($points, 'pointsAward');
             }

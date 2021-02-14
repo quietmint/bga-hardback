@@ -17,6 +17,10 @@
   }
 }
 
+.tailwind svg.inline {
+  vertical-align: -3px;
+}
+
 @tailwind components;
 @tailwind utilities;
 
@@ -75,14 +79,6 @@
 
 .button.disabled {
   @apply cursor-not-allowed bg-gray-600 text-gray-300;
-}
-
-.genreCounts div {
-  transition: width 0.6s ease-out;
-}
-
-.genreNovel {
-  font-family: "Deutsch Gothic", serif;
 }
 
 .cardholder {
@@ -355,12 +351,62 @@
   opacity: 0;
 }
 
-.tailwind.unmargin {
-  margin-left: -3px;
-  margin-right: -3px;
-  margin-bottom: -5px;
+/* Player panels */
+
+.tailwind.panelbg {
+  clear: both;
 }
 
-.tailwind svg.inline {
-  vertical-align: -3px;
+.panel-ink {
+  background: no-repeat url(ink-remover.png);
+  width: 115px;
+  height: 66px;
+  padding: 0 3px 8px;
+}
+
+.panel-cards {
+  @apply rounded-lg text-center text-13;
+  background: no-repeat center/cover url(discard.jpg);
+  width: 96px;
+  height: 96px;
+}
+
+.panel-options {
+  position: absolute;
+  top: 174px;
+  right: 0;
+  width: 115px;
+}
+
+.panel-award,
+.panel-dr {
+  @apply rounded-full text-black border-3 border-dashed border-gray-800 text-18 text-center font-bold shadow;
+  width: 44px;
+  height: 44px;
+  line-height: 38px;
+}
+
+.panel-award {
+  background-size: 185px;
+  background-position: 89% 84%;
+}
+
+.panel-signature {
+  min-height: 120px;
+  margin-right: 100px;
+}
+
+.panel-novel {
+  font-family: "Deutsch Gothic", serif;
+}
+
+.genreCounts {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.genreCounts div {
+  transition: width 0.6s ease-out;
 }

@@ -217,7 +217,7 @@ export default {
         },
         purchase: {
           action: "purchase",
-          text: this.i18n("purchaseButton"),
+          // dynamic text
           class: actionBlue,
         },
       };
@@ -264,7 +264,9 @@ export default {
         } else if (this.gamestate.name == "jail" && this.card.location == "offer") {
           return [actionRef.jailJail, actionRef.jailTrash];
         } else if (this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
-          return [actionRef.purchase];
+          const text = this.i18n("purchaseButton", { coins: this.card.cost });
+          const purchase = Object.assign({ text }, actionRef.purchase);
+          return [purchase];
         }
       }
 

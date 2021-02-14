@@ -21,6 +21,9 @@ module.exports = {
             DEFAULT: '2px 2px 4px rgba(0, 0, 0, 0.5)',
         },
         extend: {
+            borderWidth: {
+                '3': '3px',
+            },
             cursor: {
                 'ew-resize': 'ew-resize',
             },
@@ -46,7 +49,7 @@ module.exports = {
             },
             lineHeight: {
                 '14': '3.5rem',
-                '16': '4rem',
+                '17': '17px',
             },
         },
     },

@@ -34,11 +34,11 @@ $this->awards = [
 ];
 
 $this->adverts = [
-    3 => 6,
-    6 => 9,
-    10 => 12,
+    6 => 3,
+    9 => 6,
+    12 => 10,
     15 => 15,
-    20 => 18,
+    18 => 20,
 ];
 
 $this->benefits = [
@@ -59,26 +59,50 @@ $this->benefits = [
     UNCOVER_ADJ => clienttranslate('Uncover adjacent wild'),
 ];
 
+$this->signature = [
+    ADVENTURE => [
+        'title' => clienttranslate('Adventures in Peril'),
+        'description' => clienttranslate('If there is an Adventure card in the offer row, Penny gains 1${star} for each card purchased by any player'),
+    ],
+    HORROR => [
+        'title' => clienttranslate('The Horrors of Fear'),
+        'description' => clienttranslate('If there is a Horror card in the offer row, Penny gains 1${star} for each ink used by any player'),
+    ],
+    MYSTERY => [
+        'title' => clienttranslate('A Mysterious Mystery'),
+        'description' => clienttranslate('Each time Penny claims a Mystery card, she also jails the cheapest card in the offer row'),
+    ],
+    ROMANCE => [
+        'title' => clienttranslate('Romancing the Heart'),
+        'description' => clienttranslate('Double the value of each Romance card Penny claims from the offer row'),
+    ],
+];
+
 $this->i18n = [
     'starter' => clienttranslate('Starter'),
     'adventure' => clienttranslate('Adventure'),
     'horror' => clienttranslate('Horror'),
     'mystery' => clienttranslate('Mystery'),
     'romance' => clienttranslate('Romance'),
+
+    'adverts' => clienttranslate('Adverts'),
+    'award' => clienttranslate('Literary Awards'),
     'basicTip' => clienttranslate('Basic benefits always activate'),
     'confirmButton' => clienttranslate('Confirm Word'),
     'convertButton' => clienttranslate('Convert 3 Ink to 1¢'),
+    'deck' => clienttranslate('Deck'),
     'dictionary' => clienttranslate('Dictionary definitions:'),
     'discardButton' => clienttranslate('Discard'),
     'discardInkButton' => clienttranslate('Discard 1 Ink'),
     'discardRemoverButton' => clienttranslate('Discard 1 Remover'),
-    'doctorButton' => clienttranslate('${points}${icon} for ${coins}¢'),
+    'doctorButton' => clienttranslate('${points}${icon} Advert (${coins}¢)'),
     'doubleButton' => clienttranslate('Double'),
     'draw' => clienttranslate('Draw With Ink (${count})'),
     'finalRound' => clienttranslate('This is the final round!'),
+    'first' => clienttranslate('First Player'),
     'flushButton' => clienttranslate('Flush Offer Row'),
     'genreTip' => clienttranslate('Genre benefits activate if you play multiple ${x} cards'),
-    'ink' => clienttranslate('ink'),
+    'ink' => clienttranslate('Ink'),
     'invalid' => clienttranslate('${invalid} is not a valid word'),
     'jailButton' => clienttranslate('Jail'),
     'jailButton' => clienttranslate('Jail'),
@@ -89,8 +113,8 @@ $this->i18n = [
     'myHand' => clienttranslate('My Hand (${count})'),
     'offer' => clienttranslate('Offer Row (${count})'),
     'penny' => clienttranslate('Penny Dreadful'),
-    'purchaseButton' => clienttranslate('Purchase'),
-    'remover' => clienttranslate('remover'),
+    'purchaseButton' => clienttranslate('Purchase (${coins}¢)'),
+    'remover' => clienttranslate('Remover'),
     'resetAll' => clienttranslate('Reset All'),
     'resetButton' => clienttranslate('Reset (${x})'),
     'returnButton' => clienttranslate('Return'),
@@ -105,8 +129,8 @@ $this->i18n = [
     'tableau' => clienttranslate('Current Word (${count})'),
     'timeless' => clienttranslate('Timeless Classics (${count})'),
     'timelessTip' => clienttranslate('Timeless Classic: ${player_name} receives benefits each turn'),
-    'trashButton' => clienttranslate('Trash for ${coins}¢'),
     'trashButton' => clienttranslate('Trash'),
+    'trashCoinsButton' => clienttranslate('Trash (${coins}¢)'),
     'uncoverButton' => clienttranslate('Uncover'),
     'useRemoverButton' => clienttranslate('Remove Ink'),
     'wildButton' => clienttranslate('Wild'),

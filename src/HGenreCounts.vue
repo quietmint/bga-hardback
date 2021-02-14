@@ -1,5 +1,5 @@
 <template>
-  <div class="genreCounts mt-1 flex flex-grow overflow-hidden text-center">
+  <div class="genreCounts rounded-bl-lg mt-1 flex flex-grow overflow-hidden text-center">
     <div v-for="g in genreCounts" :key="g.genre" :style="{ width: g.percent + '%' }" :class="g.class" :title="g.title"><Icon class="inline h-5" :icon="g.genre" /></div>
   </div>
 </template>
