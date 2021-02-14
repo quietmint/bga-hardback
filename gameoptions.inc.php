@@ -189,13 +189,17 @@ $game_options = [
                     'message' => 'Solo mode can only be played with Cooperative Anthology',
                 ],
             ],
-            /*
             COOP_BASIC => [
                 [
                     'type' => 'otheroption',
                     'id' => GAMESTATE_RATING_MODE,
                     'value' => ELO_OFF,
                     'message' => 'Cooperative Anthology can only be played in Training mode (no ELO)',
+                ],
+                [
+                    'type' => 'maxplayers',
+                    'value' => 4,
+                    'message' => 'Cooperative Anthology supports 1 - 4 players',
                 ],
             ],
             COOP_SIGNATURE => [
@@ -205,8 +209,12 @@ $game_options = [
                     'value' => ELO_OFF,
                     'message' => 'Cooperative Anthology can only be played in Training mode (no ELO)',
                 ],
+                [
+                    'type' => 'maxplayers',
+                    'value' => 4,
+                    'message' => 'Cooperative Anthology supports 1 - 4 players',
+                ],
             ],
-            */
         ],
     ],
 ];

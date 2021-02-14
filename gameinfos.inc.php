@@ -16,7 +16,7 @@ $gameinfos = [
     'game_name' => 'Hardback',
 
     // Game designer (or game designers, separated by commas)
-    'designer' => 'John Doe, Tim Fowers',
+    'designer' => 'Jeff Beck, Tim Fowers',
 
     // Game artist (or game artists, separated by commas)
     'artist' => 'Ryan Goldsberry',
@@ -63,7 +63,7 @@ $gameinfos = [
     // Note: if you are NOT using any tie breaker, leave the empty string.
     //
     // Example: 'tie_breaker_description' => totranslate( "Number of remaining cards in hand" ),
-    'tie_breaker_description' => "Remaining ink",
+    'tie_breaker_description' => "Ink",
 
     // If in the game, all losers are equal (no score to rank them or explicit in the rules that losers are not ranked between them), set this to true 
     // The game end result will display "Winner" for the 1st player and "Loser" for all other players
@@ -96,7 +96,7 @@ $gameinfos = [
     'diplomacy' => 1,
 
     // Colors attributed to players
-    'player_colors' => ["ff0000", "008000", "0000ff", "ffa500", "982fff"],
+    'player_colors' => ["ff0000", "008000", "0000ff", "982fff", "ffa500"],
 
     // Favorite colors support : if set to "true", support attribution of favorite colors based on player's preferences (see reattributeColorsBasedOnPreferences PHP method)
     // NB: this parameter is used only to flag games supporting this feature; you must use (or not use) reattributeColorsBasedOnPreferences PHP method to actually enable or disable the feature.
