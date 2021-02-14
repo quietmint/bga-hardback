@@ -7,7 +7,7 @@
         </div>
         <div id="player_board_0" class="player_board_content">
           <div class="player_score">
-            <span id="player_score_0" class="player_score_value">{{ penny.score }}</span> <i class="fa fa-star" id="icon_point_0"></i>
+            <span id="player_score_0" class="player_score_value">{{ penny.score }} / {{ penny.gameLength }}</span> <i class="fa fa-star" id="icon_point_0"></i>
             <span class="player_elo_wrap">
               •
               <div class="gamerank gamerank_expert"><span class="icon20 icon20_rankw"></span> <span class="gamerank_value">666</span></div></span

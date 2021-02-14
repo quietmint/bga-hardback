@@ -5,6 +5,7 @@ class HPenny extends APP_GameClass implements JsonSerializable
     public function jsonSerialize(): array
     {
         return [
+            'gameLength' => hardback::$instance->getGameLength(),
             'genre' => $this->getGenre(),
             'genreCounts' => $this->getGenreCounts(),
             'score' => $this->getScore(),
