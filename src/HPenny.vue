@@ -50,14 +50,14 @@ export default {
   computed: {
     title() {
       if (this.penny.genre) {
-        return this.i18n(this.refs.value.signature[this.penny.genre].title);
+        return this.i18n(this.refs.value.signatures[this.penny.genre].title);
       }
     },
 
     description() {
       const star = this.getHtml("benefit_star");
       if (this.penny.genre) {
-        return this.i18n(this.refs.value.signature[this.penny.genre].description, { star });
+        return this.i18n(this.refs.value.signatures[this.penny.genre].description, { star });
       }
     },
 

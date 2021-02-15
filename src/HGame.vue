@@ -225,10 +225,12 @@ export default {
         penny: {},
         players: {},
         refs: {
+          adverts: {},
+          awards: {},
           benefits: {},
           cards: {},
           i18n: {},
-          signature: {},
+          signatures: {},
         },
       },
       gamestate: {},

@@ -183,7 +183,7 @@ class hardback extends Table
             ],
             'refs' => [
                 'benefits' => $this->benefits,
-                'cards' => CardMgr::getCardRef(),
+                'cards' => $this->cards,
                 'i18n' => $this->i18n,
             ],
         ];
@@ -195,7 +195,7 @@ class hardback extends Table
         }
         if ($this->gamestate->table_globals[OPTION_COOP]) {
             $data['penny'] = PlayerMgr::getPenny();
-            $data['refs']['signature'] = $this->signature;
+            $data['refs']['signatures'] = $this->signatures;
         }
         return $data;
     }

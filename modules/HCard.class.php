@@ -178,7 +178,7 @@ class HCard extends APP_GameClass implements JsonSerializable
         $benefits = [];
         if (!$this->wild && !in_array(ALL_BENEFITS, $this->resolve)) {
             // Basic benefits
-            $basicBenefits = CardMgr::$refCards[$this->refId]['basicBenefits'] ?? [];
+            $basicBenefits = hardback::$instance->cards[$this->refId]['basicBenefits'] ?? [];
             foreach ($basicBenefits as $k => $v) {
                 // Filter by ID and already-resolved benefits
                 if (($benefitId == null || $benefitId == $k) && !in_array($k, $this->resolve)) {
@@ -195,7 +195,7 @@ class HCard extends APP_GameClass implements JsonSerializable
 
             if (CardMgr::isGenreActive($this->getGenre())) {
                 // Genre benefits if active
-                $genreBenefits = CardMgr::$refCards[$this->refId]['genreBenefits'] ?? [];
+                $genreBenefits = hardback::$instance->cards[$this->refId]['genreBenefits'] ?? [];
                 foreach ($genreBenefits as $k => $v) {
                     // Filter by ID and already-resolved benefits
                     if (($benefitId == null || $benefitId == $k) && !in_array($k, $this->resolve)) {
@@ -221,7 +221,7 @@ class HCard extends APP_GameClass implements JsonSerializable
 
     public function getGenre(): int
     {
-        return CardMgr::$refCards[$this->refId]['genre'];
+        return hardback::$instance->cards[$this->refId]['genre'];
     }
 
     public function isGenre(int $genre): bool
@@ -247,22 +247,22 @@ class HCard extends APP_GameClass implements JsonSerializable
 
     public function getLetter(): string
     {
-        return $this->wild ?? CardMgr::$refCards[$this->refId]['letter'];
+        return $this->wild ?? hardback::$instance->cards[$this->refId]['letter'];
     }
 
     public function getCost(): int
     {
-        return CardMgr::$refCards[$this->refId]['cost'] ?? 0;
+        return hardback::$instance->cards[$this->refId]['cost'] ?? 0;
     }
 
     public function getPoints(): int
     {
-        return CardMgr::$refCards[$this->refId]['points'] ?? 0;
+        return hardback::$instance->cards[$this->refId]['points'] ?? 0;
     }
 
     public function isTimeless(): bool
     {
-        return CardMgr::$refCards[$this->refId]['timeless'] ?? false;
+        return hardback::$instance->cards[$this->refId]['timeless'] ?? false;
     }
 
     public function getOwner(): ?int
