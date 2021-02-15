@@ -6,15 +6,15 @@
           <div class="flex-1" :title="i18n('ink') + ': ' + player.ink">{{ player.ink }}</div>
           <div class="flex-1 text-black" :title="i18n('remover') + ': ' + player.remover">{{ player.remover }}</div>
         </div>
-        <div class="panel-cards flex items-center text-24 font-bold text-noshadow">
+        <div v-if="player.id == game.player_id" class="panel-cards flex items-center text-24 font-bold text-noshadow">
           <div class="flex-1" :title="i18n('deck') + ': ' + player.deckCount">{{ player.deckCount }}</div>
           <div class="flex-1" :title="i18n('discardButton') + ': ' + player.discardCount">{{ player.discardCount }}</div>
         </div>
-        <div class="flex items-center text-12">
+        <div v-if="player.id == game.player_id" class="flex items-center text-12">
           <div class="flex-1" v-text="i18n('deck')"></div>
           <div class="flex-1" v-text="i18n('discardButton')"></div>
         </div>
-        <div v-if="player.order == 1" class="text-13 font-bold mt-1" v-text="i18n('first')"></div>
+        <div v-if="player.order == 1" class="panel-first text-13 font-bold pt-1" v-text="i18n('first')"></div>
       </div>
 
       <div class="panel-right flex items-end justify-around text-noshadow">

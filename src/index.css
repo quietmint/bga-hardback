@@ -390,13 +390,17 @@
 }
 
 .panel-ink {
-  height: 55px;
+  height: 59px;
   padding: 0 4px;
 }
 
 .panel-cards {
   height: 70px;
-  padding: 4px 4px 0 0;
+  padding: 0px 4px 0 0;
+}
+
+.panel-first {
+  background: #888;
 }
 
 .panel-opt {
