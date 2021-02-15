@@ -21,14 +21,19 @@ class HPenny extends APP_GameClass implements JsonSerializable
         ]);
     }
 
+    public function getDiscardLocation(): string
+    {
+        return CardMgr::getDiscardLocation(0);
+    }
+
     public function getGenre(): int
     {
-        return intval(hardback::$instance->getGameStateValue('coopGenre'));
+        return intval(hardback::$instance->getStat('coopGenre'));
     }
 
     public function getGenreCounts(): array
     {
-        return CardMgr::getGenreCounts(CardMgr::getCardsInLocation('penny'), true);
+        return CardMgr::getGenreCounts(CardMgr::getDiscard(0), true);
     }
 
     public function getName(): string
@@ -38,7 +43,7 @@ class HPenny extends APP_GameClass implements JsonSerializable
 
     public function getScore(): int
     {
-        return intval(hardback::$instance->getGameStateValue('coopScore'));
+        return intval(hardback::$instance->getStat('coopScore'));
     }
 
     public function addPoints(int $amount): void
@@ -46,7 +51,7 @@ class HPenny extends APP_GameClass implements JsonSerializable
         if ($amount == 0) {
             return;
         }
-        hardback::$instance->incGameStateValue('coopScore', $amount);
+        hardback::$instance->incStat($amount, 'coopScore');
         $this->notifyPanel();
     }
 }

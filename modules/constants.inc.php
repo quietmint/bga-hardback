@@ -54,8 +54,6 @@ define('START_SCORE', 20);
 define('START_INK', 21);
 define('START_REMOVER', 22);
 define('AWARD_WINNER', 30);
-define('COOP_GENRE', 70);
-define('COOP_SCORE', 71);
 
 // Game statistics
 define('STAT_TURNS', 10);
@@ -70,10 +68,17 @@ define('STAT_CARDS_TRASH', 31);
 define('STAT_WORDS', 50);
 define('STAT_LONGEST_WORD', 51);
 define('STAT_INVALID_WORDS', 52);
+define('STAT_FLUSH', 53);
 define('STAT_USE_INK', 60);
 define('STAT_USE_REMOVER', 61);
 define('STAT_STARTER_CARD1', 70);
 define('STAT_STARTER_CARD2', 71);
+define('STAT_COOP_SCORE', 80);
+define('STAT_COOP_TURNS', 81);
+define('STAT_COOP_AVG', 82);
+define('STAT_COOP_POINTS_PURCHASE', 83);
+define('STAT_COOP_POINTS_GENRE', 84);
+define('STAT_COOP_GENRE', 89);
 
 // Game options
 define('OPTION_DICTIONARY', 100);

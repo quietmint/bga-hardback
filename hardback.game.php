@@ -47,8 +47,6 @@ class hardback extends Table
             'awards' => OPTION_AWARDS,
             'awardWinner' => AWARD_WINNER,
             'coop' => OPTION_COOP,
-            'coopGenre' => COOP_GENRE,
-            'coopScore' => COOP_SCORE,
             'countActive' . ADVENTURE => COUNT_ACTIVE_ADVENTURE,
             'countActive' . HORROR => COUNT_ACTIVE_HORROR,
             'countActive' . MYSTERY => COUNT_ACTIVE_MYSTERY,
@@ -109,23 +107,34 @@ class hardback extends Table
         self::setGameStateInitialValue('startInk', 0);
         self::setGameStateInitialValue('startRemover', 0);
         self::setGameStateInitialValue('startScore', 0);
-        self::setGameStateInitialValue('coopScore', 0);
         if ($this->gamestate->table_globals[OPTION_COOP] == COOP_SIGNATURE) {
-            self::setGameStateInitialValue('coopGenre', rand(ADVENTURE, ROMANCE));
-        } else {
-            self::setGameStateInitialValue('coopGenre', 0);
+            $genre = rand(ADVENTURE, ROMANCE);
+            self::initStat('table', 'coopGenre', $genre);
         }
 
         // Init game statistics
+        self::initStat('table', 'invalidWords', 0);
         self::initStat('table', 'longestWord', 0);
         self::initStat('table', 'turns', 0);
+        self::initStat('table', 'words', 0);
+        if ($this->gamestate->table_globals[OPTION_COOP]) {
+            self::initStat('table', 'coopAvg', 0);
+            self::initStat('table', 'coopScore', 0);
+            self::initStat('table', 'coopTurns', 0);
+        } else {
+            self::initStat('table', 'flush', 0);
+        }
         self::initStat('player', 'cardsPurchase', 0);
         self::initStat('player', 'cardsTrash', 0);
         self::initStat('player', 'coins', 0);
         self::initStat('player', 'invalidWords', 0);
         self::initStat('player', 'longestWord', 0);
-        self::initStat('player', 'pointsAdvert', 0);
-        self::initStat('player', 'pointsAward', 0);
+        if ($this->gamestate->table_globals[OPTION_ADVERTS]) {
+            self::initStat('player', 'pointsAdvert', 0);
+        }
+        if ($this->gamestate->table_globals[OPTION_AWARDS]) {
+            self::initStat('player', 'pointsAward', 0);
+        }
         self::initStat('player', 'pointsBasic', 0);
         self::initStat('player', 'pointsGenre', 0);
         self::initStat('player', 'pointsPurchase', 0);
@@ -235,7 +244,8 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
 
         // Reset draw counts
-        if ($this->gamestate->table_globals[OPTION_COOP]) {
+        $penny = PlayerMgr::getPenny();
+        if ($this->gamestate->table_globals[OPTION_COOP] == COOP_SIGNATURE) {
             foreach ([ADVENTURE, HORROR, MYSTERY, ROMANCE] as $genre) {
                 hardback::$instance->setGameStateValue("countOffer$genre", 0);
             }
@@ -243,9 +253,7 @@ class hardback extends Table
 
         // Notify about ink used out-of-turn
         $coopCondition = false;
-        $penny = null;
-        if ($this->getGameStateValue('coopGenre') == HORROR) {
-            $penny = PlayerMgr::getPenny();
+        if ($penny->getGenre() == HORROR) {
             $offer = CardMgr::getOffer();
             foreach ($offer as $offerCard) {
                 if ($offerCard->getGenre() == HORROR) {
@@ -304,6 +312,7 @@ class hardback extends Table
         }, $cards));
         $valid = WordMgr::isWord($word);
         if (!$valid) {
+            $this->incStat(1, 'invalidWords');
             $this->incStat(1, 'invalidWords', $player->getId());
             self::notifyAllPlayers('invalid', $this->msg['invalidWord'], [
                 'player_id' => $player->getId(),
@@ -312,6 +321,7 @@ class hardback extends Table
             ]);
             return;
         }
+        $this->incStat(1, 'words');
         $this->incStat(1, 'words', $player->getId());
         self::notifyAllPlayers('message', $this->msg['confirmWord'], [
             'player_name' => $player->getName(),
@@ -988,8 +998,9 @@ class hardback extends Table
             throw new BgaVisibleSystemException("Not possible for $player to purchase card $cardId");
         }
 
+        $penny = PlayerMgr::getPenny();
         $coopCondition = false;
-        if ($this->getGameStateValue('coopGenre') == ADVENTURE) {
+        if ($penny->getGenre() == ADVENTURE) {
             $offer = CardMgr::getOffer();
             foreach ($offer as $offerCard) {
                 if ($offerCard->getGenre() == ADVENTURE) {
@@ -1021,7 +1032,6 @@ class hardback extends Table
 
         if ($coopCondition) {
             // Adventure: Penny earns 1 per purchase
-            $penny = PlayerMgr::getPenny();
             $penny->addPoints(1, '');
             self::notifyAllPlayers('message', $this->msg['earn'], [
                 'player_name' => $penny->getName(),
@@ -1128,18 +1138,22 @@ class hardback extends Table
             return;
         }
 
-        $coopGenre = $this->getGameStateValue('coopGenre');
         $offer = CardMgr::getOffer();
         $card = reset($offer);
         $points = $card->getCost();
-        if ($coopGenre == ROMANCE && $card->getGenre() == ROMANCE) {
+        if ($penny->getGenre() == ROMANCE && $card->getGenre() == ROMANCE) {
             // Romance: Penny earns double
             $points *= 2;
         }
 
         // Discard the first card
-        CardMgr::discard($card, 'penny');
+        CardMgr::discard($card, $penny->getDiscardLocation());
         $penny->addPoints($points, '');
+        $this->incStat(1, 'coopTurns');
+        $turns = $this->getStat('coopTurns');
+        $avg = $this->getStat('coopAvg');
+        $avg = $avg + (($points - $avg) / $turns);
+        $this->setStat($avg, 'coopAvg');
         self::notifyAllPlayers('message', $this->msg['purchaseCoop'], [
             'player_name' => $penny->getName(),
             'genre' => $card->getGenreName(),
@@ -1153,7 +1167,7 @@ class hardback extends Table
         $draw = reset($draw);
         unset($offer[$card->getId()]);
         $offer[$draw->getId()] = $draw;
-        if ($coopGenre == MYSTERY && $card->getGenre() == MYSTERY) {
+        if ($penny->getGenre() == MYSTERY && $card->getGenre() == MYSTERY) {
             // Mystery: Penny discards cheapest
             CardMgr::sortCards($offer, 'cost');
             $card = reset($offer);
@@ -1162,7 +1176,7 @@ class hardback extends Table
                 'genre' => $card->getGenreName(),
                 'letter' => $card->getLetter(),
             ]);
-            CardMgr::discard($card, 'penny');
+            CardMgr::discard($card, $penny->getDiscardLocation());
             CardMgr::drawCards(1, 'deck', 'offer', null, true);
         }
 

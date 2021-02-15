@@ -13,7 +13,7 @@ class PlayerMgr extends APP_GameClass
 
     public static function getPlayerCount()
     {
-        return intval(self::getUniqueValueFromDB("SELECT COUNT(*) FROM player WHERE player_eliminated = 0 AND player_zombie = 0"));
+        return intval(self::getUniqueValueFromDB("SELECT COUNT(*) FROM player"));
     }
 
     public static function getPlayerIds()

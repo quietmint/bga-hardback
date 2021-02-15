@@ -595,6 +595,7 @@ class CardMgr extends APP_GameClass
 
         // Trash offer and notify
         self::discard($updatedIds, 'trash');
+        hardback::$instance->incStat(1, 'flush');
 
         // Draw new offer and notify
         $newCards = self::drawCards(7, 'deck', 'offer');

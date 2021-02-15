@@ -49,6 +49,13 @@
 
 require_once('modules/constants.inc.php');
 
+$genres = [
+    ADVENTURE => clienttranslate('Adventure'),
+    HORROR => clienttranslate('Horror'),
+    MYSTERY => clienttranslate('Mystery'),
+    ROMANCE => clienttranslate('Romance'),
+];
+
 $letters = [];
 foreach (range('A', 'Z') as $letter) {
     $letters[ord($letter)] = $letter;
@@ -61,9 +68,44 @@ $stats_type = [
             'name' => 'Turns',
             'type' => 'int',
         ],
+        'words' => [
+            'id' => STAT_WORDS,
+            'name' => 'Words',
+            'type' => 'int',
+        ],
         'longestWord' => [
             'id' => STAT_LONGEST_WORD,
             'name' => 'Longest word',
+            'type' => 'int',
+        ],
+        'invalidWords' => [
+            'id' => STAT_INVALID_WORDS,
+            'name' => 'Invalid words',
+            'type' => 'int',
+        ],
+        'flush' => [
+            'id' => STAT_FLUSH,
+            'name' => 'Flush Offer Row',
+            'type' => 'int',
+        ],
+        'coopScore' => [
+            'id' => STAT_COOP_SCORE,
+            'name' => 'Penny Dreadful: Score',
+            'type' => 'int',
+        ],
+        'coopTurns' => [
+            'id' => STAT_COOP_TURNS,
+            'name' => 'Penny Dreadful: Turns',
+            'type' => 'int',
+        ],
+        'coopAvg' => [
+            'id' => STAT_COOP_AVG,
+            'name' => 'Penny Dreadful: Points per turn',
+            'type' => 'float',
+        ],
+        'coopGenre' => [
+            'id' => STAT_COOP_GENRE,
+            'name' => 'Penny Dreadful: Signature Genre',
             'type' => 'int',
         ],
     ],
@@ -121,7 +163,7 @@ $stats_type = [
         ],
         'invalidWords' => [
             'id' => STAT_INVALID_WORDS,
-            'name' => 'Misspelled words',
+            'name' => 'Invalid words',
             'type' => 'int',
         ],
         'useInk' => [
@@ -136,12 +178,12 @@ $stats_type = [
         ],
         'starterCard1' => [
             'id' => STAT_STARTER_CARD1,
-            'name' => 'Starter prestige card',
+            'name' => 'Starter card',
             'type' => 'int',
         ],
         'starterCard2' => [
             'id' => STAT_STARTER_CARD2,
-            'name' => 'Starter prestige card',
+            'name' => 'Starter card',
             'type' => 'int',
         ],
     ],
@@ -149,5 +191,6 @@ $stats_type = [
     'value_labels' => [
         STAT_STARTER_CARD1 => $letters,
         STAT_STARTER_CARD2 => $letters,
+        STAT_COOP_GENRE => $genres,
     ],
 ];
