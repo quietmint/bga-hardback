@@ -17,3 +17,4 @@ modules/*.js.map
 modules/wordlist/
 src/build/
 src/index.html
+src/node_modules/
