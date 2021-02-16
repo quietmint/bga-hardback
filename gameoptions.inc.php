@@ -32,16 +32,14 @@ $game_options = [
         'default' => TWELVEDICTS,
         'values' => [
             TWELVEDICTS => [
-                'name' => 'Multisource (85,000 words)',
-                'description' => 'Words appearing in at least 2 of 12 English dictionaries',
+                'name' => '12dicts (85,000 words)',
+                'description' => 'Common words appearing in at least 2 of 12 English dictionaries',
             ],
             US => [
                 'name' => 'American Scrabble (190,000 words)',
-                'description' => 'Words allowed in North American Scrabble tournaments',
             ],
             UK => [
                 'name' => 'British Scrabble (280,000 words)',
-                'description' => 'Words allowed in United Kingdom Scrabble tournaments',
             ],
         ]
     ],
