@@ -2,10 +2,13 @@
   <teleport :to="teleportTo">
     <div class="tailwind panelbg">
       <div class="panel-left text-center">
+        <div v-if="player.order == 1" class="text-13 text-left pl-1 pt-1" v-text="i18n('first')"></div>
+
         <div class="panel-ink flex items-center text-20 font-bold text-noshadow">
           <div class="flex-1" :title="i18n('ink') + ': ' + player.ink">{{ player.ink }}</div>
           <div class="flex-1 text-black" :title="i18n('remover') + ': ' + player.remover">{{ player.remover }}</div>
         </div>
+
         <div v-if="player.id == game.player_id" class="panel-cards flex items-center text-24 font-bold text-noshadow">
           <div class="flex-1" :title="i18n('deck') + ': ' + player.deckCount">{{ player.deckCount }}</div>
           <div class="flex-1" :title="i18n('discardButton') + ': ' + player.discardCount">{{ player.discardCount }}</div>
@@ -14,7 +17,6 @@
           <div class="flex-1" v-text="i18n('deck')"></div>
           <div class="flex-1" v-text="i18n('discardButton')"></div>
         </div>
-        <div v-if="player.order == 1" class="panel-first text-13 font-bold pt-1" v-text="i18n('first')"></div>
       </div>
 
       <div class="panel-right flex items-end justify-around text-noshadow">

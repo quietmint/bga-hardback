@@ -20,7 +20,7 @@
             <div class="panel-signature flex flex-col items-center justify-center">
               <div class="text-14 ml-1" v-html="description"></div>
             </div>
-            <div v-if="title" class="panel-novel border-t border-b border-black mt-1 py-1 text-center text-20">{{ title }}</div>
+            <div v-if="title" class="panel-novel text-center text-20">{{ title }}</div>
             <HGenreCounts :counts="penny.genreCounts" />
           </div>
         </div>

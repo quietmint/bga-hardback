@@ -115,7 +115,10 @@ a:visited.playername {
 /* Player boards */
 
 .player-board {
-  background: no-repeat top -15px right -9px #888;
+  background-repeat: no-repeat;
+  background-position: top -15px right -9px, top center;
+  background-size: auto, cover;
+  background-color: #888;
   padding-bottom: 24px;
   color: white;
   text-shadow: -0.5px 0px 1px black, 0.5px 0px 1px black;
@@ -135,27 +138,29 @@ a:visited.playername {
 }
 
 .player-board.red {
-  background-image: url(book-red.png);
+  background-image: url(book-red.png), url(wood.jpg);
 }
 
 .player-board.green {
-  background-image: url(book-green.png);
+  background-image: url(book-green.png), url(wood.jpg);
 }
 
 .player-board.blue {
-  background-image: url(book-blue.png);
+  background-image: url(book-blue.png), url(wood.jpg);
 }
 
 .player-board.yellow {
-  background-image: url(book-yellow.png);
+  background-image: url(book-yellow.png), url(wood.jpg);
 }
 
 .player-board.purple {
-  background-image: url(book-purple.png);
+  background-image: url(book-purple.png), url(wood.jpg);
 }
 
 .player-board.black {
-  background: no-repeat top right/100px url(penny.png) #888;
+  background-image: url(penny.png), url(wood.jpg);
+  background-position: top right, top center;
+  background-size: 100px, cover;
 }
 
 #player_board_inner_000000 .player-name,
