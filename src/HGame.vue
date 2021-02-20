@@ -840,7 +840,7 @@ export default {
       }
     },
 
-    onNotify(notif: any): void {
+    onNotify(notif): void {
       console.log(`Notify ${notif.type}`, notif.args);
       if (notif.type == "cards") {
         let cards = Object.values(notif.args.cards);
@@ -860,9 +860,9 @@ export default {
       } else if (notif.type == "player") {
         Object.assign(this.gamedatas.players[notif.args.player.id], notif.args.player);
         if (notif.args.allScore) {
-          Object.keys(this.gamedatas.players).forEach((id) => this.game.scoreCtrl[id].toValue(notif.args.allScore));
+          Object.keys(this.gamedatas.players).forEach((id) => this.game.scoreCtrl[id].setValue(notif.args.allScore));
         } else {
-          this.game.scoreCtrl[notif.args.player.id].toValue(notif.args.player.score);
+          this.game.scoreCtrl[notif.args.player.id].setValue(notif.args.player.score);
         }
       }
     },
