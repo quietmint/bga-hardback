@@ -426,3 +426,7 @@
 .genreCounts div {
   transition: width 0.6s ease-out;
 }
+
+.genreCounts svg {
+  height: 22px;
+}

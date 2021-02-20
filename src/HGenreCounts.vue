@@ -1,6 +1,6 @@
 <template>
-  <div class="genreCounts rounded-bl-lg mt-1 flex flex-grow overflow-hidden text-center">
-    <div v-for="g in genreCounts" :key="g.genre" :style="{ width: g.percent + '%' }" :class="g.class" :title="g.title"><Icon class="inline h-5" :icon="g.genre" /></div>
+  <div class="genreCounts rounded-bl-lg flex flex-grow overflow-hidden text-center">
+    <div v-for="g in genreCounts" :key="g.genre" :style="{ width: g.percent + '%' }" :class="g.class" :title="g.title"><Icon class="inline" :icon="g.genre" /></div>
   </div>
 </template>
 
@@ -36,11 +36,6 @@ export default {
 
       return [
         {
-          genre: "starter",
-          class: "bg-gray-600 text-gray-100",
-          count: this.counts[Constants.STARTER],
-        },
-        {
           genre: "adventure",
           class: "bg-yellow-400 text-yellow-900",
           count: this.counts[Constants.ADVENTURE],
@@ -59,6 +54,11 @@ export default {
           genre: "romance",
           class: "bg-red-700 text-red-100",
           count: this.counts[Constants.ROMANCE],
+        },
+        {
+          genre: "starter",
+          class: "bg-gray-600 text-gray-100",
+          count: this.counts[Constants.STARTER],
         },
       ].map((x: any) => {
         x.percent = (x.count / this.genreTotal) * 100;
