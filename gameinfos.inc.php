@@ -12,6 +12,11 @@
 
 $gameinfos = [
 
+    'custom_buy_button' => [
+        'url' => 'https://www.fowers.games/collections/homepage-products/products/hardback',
+        'label' => 'Fowers Games',
+    ],
+
     // Name of the game in English (will serve as the basis for translation) 
     'game_name' => 'Hardback',
 
