@@ -318,10 +318,11 @@ export default {
      * Utility functions
      */
 
-    i18n(msg: string, args: any): string {
+    i18n(msg: string, args): string {
       if (this.gamedatas.refs.i18n[msg]) {
         msg = this.gamedatas.refs.i18n[msg];
       }
+      // @ts-ignore
       msg = window._(msg);
       if (args) {
         msg = this.game.format_string_recursive(msg, args);
@@ -343,8 +344,10 @@ export default {
       let order = this.locationOrder[location] || "letter";
       let sorter = firstBy(order);
       if (order != "letter") {
+        // @ts-ignore
         sorter = sorter.thenBy("letter");
       }
+      // @ts-ignore
       sorter = sorter.thenBy("id");
       cards.sort(sorter);
     },
@@ -360,7 +363,7 @@ export default {
 
     nextOrderInLocation(location: string): number {
       const cards = this.cardsInLocation(location);
-      const max: number = cards.map((card: any) => card.order).reduce((acc: number, cur: number) => Math.max(acc, cur), -1);
+      const max: number = cards.map((card) => card.order).reduce((acc: number, cur: number) => Math.max(acc, cur), -1);
       return max + 1;
     },
 
@@ -642,7 +645,7 @@ export default {
     /*
      * BGA framework methods
      */
-    takeAction(action: string, data: any): Promise<any> {
+    takeAction(action: string, data): Promise<any> {
       data = data || {};
       if (data.lock === false) {
         delete data.lock;
@@ -665,7 +668,7 @@ export default {
     /*
      * BGA framework event callbacks
      */
-    onFormatString(log: string, args: any): string {
+    onFormatString(log: string, args): string {
       if (args) {
         if (args.award) {
           args.award = `<div class="haward length${args.award}"></div>`;
@@ -709,7 +712,7 @@ export default {
       return log;
     },
 
-    onUpdateActionButtons(stateName: string, args: any): void {
+    onUpdateActionButtons(stateName: string, args): void {
       console.log(`State ${stateName}`, args);
       Object.assign(this.gamestate, this.game.gamedatas.gamestate, { active: this.game.isCurrentPlayerActive() });
 
@@ -817,7 +820,7 @@ export default {
       });
     },
 
-    onEnteringState(stateName: string, args: any): void {
+    onEnteringState(stateName: string, args): void {
       console.log(`onEnteringState ${stateName}`, args);
       if (args && args.updateGameProgression) {
         this.gamedatas.finalRound = args.updateGameProgression >= 100;
@@ -837,6 +840,7 @@ export default {
       console.log(`Notify ${notif.type}`, notif.args);
       if (notif.type == "cards") {
         let cards = Object.values(notif.args.cards);
+        // @ts-ignore
         cards.sort(firstBy("location").thenBy("order").thenBy("id"));
         Promise.all(cards.map(this.animateCard)).then(() => {
           this.game.notifqueue.setSynchronousDuration(0);
@@ -878,6 +882,7 @@ export default {
     },
 
     drag(e): void {
+      console.log("got drag", e);
       let { location, cardIds } = e;
       cardIds.forEach((id, index) => {
         this.gamedatas.cards[id].order = index;
