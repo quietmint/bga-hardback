@@ -97,7 +97,7 @@
 }
 
 .cardholder {
-  transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+  transition: transform 0.6s ease-out;
   perspective: 600px;
   z-index: 1;
 }
@@ -107,7 +107,7 @@
 }
 
 .gap {
-  transition: width 0.6s cubic-bezier(0.7, 1.2, 1, 1);
+  transition: width 0.6s ease-out;
   width: 0;
 }
 
@@ -125,6 +125,10 @@
 
 .card.wild {
   transform: rotateY(180deg);
+}
+
+.card.nomargin {
+  margin: 0;
 }
 
 .cardface {

@@ -493,7 +493,7 @@ export default {
     /*
      * Animation
      */
-    async animateCard(card: any, changes: any): Promise<number> {
+    async animateCard(card, changes): Promise<number> {
       if (changes) {
         card = Object.assign({}, card, changes);
       }
@@ -516,8 +516,8 @@ export default {
       }
 
       // Compute start position
-      let cardEl = null;
-      let gapEl = null;
+      let cardEl: HTMLElement = null;
+      let gapEl: HTMLElement = null;
       let start = null;
       let end = null;
       if (oldCard != null) {
@@ -539,16 +539,15 @@ export default {
         mode = "leave";
         if (card.location.startsWith("discard_") || card.location == "deck_" + this.myself.id) {
           let playerId = card.location.split("_")[1];
-          let parentEl = document.getElementById("player_board_" + playerId);
+          let parentEl = document.getElementById("overall_player_board_" + playerId);
           end = getRect(parentEl);
         }
         if (end == null) {
           // Exit below
-          end = { top: window.innerHeight + start.height, left: start.left, width: start.width, height: start.height };
+          end = { top: window.innerHeight + start.height, left: start.left };
         }
 
         // Insert a gap
-        let rootEl = document.getElementById("HGame");
         gapEl = document.createElement("div");
         gapEl.id = "gap" + card.id;
         gapEl.className = "gap";
@@ -557,12 +556,16 @@ export default {
         cardEl.parentNode.insertBefore(gapEl, cardEl);
 
         // Move card to end
-        const top = end.top + (end.height - start.height) / 2;
-        const left = end.left + (end.width - start.width) / 2;
+        const rootEl = document.getElementById("HGame");
+        const root = getRect(rootEl);
+        console.log("root rect", root);
+        const top = end.top - root.top;
+        const left = end.left - root.left;
         rootEl.appendChild(cardEl);
         cardEl.style.position = "absolute";
         cardEl.style.top = top + "px";
         cardEl.style.left = left + "px";
+        cardEl.firstElementChild.classList.add("nomargin");
         await repaint();
 
         // Compute reverse transform
@@ -579,8 +582,8 @@ export default {
         }
         end = getRect(cardEl);
         if (start == null) {
-          // Enter above
-          start = { top: -end.height, left: end.left, width: end.width, height: end.height };
+          // Enter from left
+          start = { top: end.top, left: -end.width };
         }
       }
 
@@ -634,6 +637,7 @@ export default {
 
       if (mode == "leave") {
         const finalizer = () => {
+          console.log(`Animate card ${card.id} ${mode} finalizer`);
           this.gamedatas.cards[card.id] = card;
           return card.id;
         };
