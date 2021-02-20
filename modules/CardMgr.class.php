@@ -455,8 +455,6 @@ class CardMgr extends APP_GameClass
 
     public static function playWord(int $playerId, array $cards): void
     {
-        $updatedIds = self::getIds(self::getCardsInLocation(self::getHandLocation($playerId)));
-
         // Update tableau
         $ids = self::getIds($cards);
         $remainder = array_filter(self::getCardsInLocation('tableau'), function ($card) use ($ids) {
@@ -467,24 +465,26 @@ class CardMgr extends APP_GameClass
         }
         $order = 0;
         $opponent = [];
-        $tableauIds = [];
+        $updatedIds = [];
         foreach ($cards as $card) {
             $sql = "UPDATE card SET `wild` = " . ($card->isWild() ? "'{$card->getLetter()}'" : "NULL") . ", `location` = 'tableau', `order` = $order WHERE `id` = {$card->getId()}";
             self::DbQuery($sql);
             $order++;
-            $tableauIds[] = $card->getId();
+            $updatedIds[] = $card->getId();
 
             // Cancel all benefits on opponent timeless cards
             if ($card->isOrigin('timeless') && !$card->isOrigin(self::getTimelessLocation($playerId))) {
                 self::useBenefit($card, ALL_BENEFITS);
                 $opponent[] = $card;
-                $updatedIds[] = $card->getId();
             }
         }
 
         // Discard unused cards
-        $discardIds = array_diff($updatedIds, $tableauIds);
-        self::discard($discardIds, self::getDiscardLocation($playerId), false);
+        $discardIds = self::getIds(self::getHand($playerId));
+        if (!empty($discardIds)) {
+            $updatedIds = array_merge($updatedIds, $discardIds);
+            self::discard($discardIds, self::getDiscardLocation($playerId), false);
+        }
 
         // Compute active genres
         // Add own timeless cards
