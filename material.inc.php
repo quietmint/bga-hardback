@@ -104,6 +104,7 @@ $this->i18n = [
     'skipButton' => clienttranslate('Skip'),
     'skipPurchaseButton' => clienttranslate('${coins} Ink (End Turn)'),
     'skipWordButton' => clienttranslate('Skip Turn'),
+    'skipWordWarning' => clienttranslate('You are about to skip your turn'),
     'sortCostTip' => clienttranslate('Sort cards by cost'),
     'sortGenreTip' => clienttranslate('Sort cards by genre'),
     'sortLetterTip' => clienttranslate('Sort cards by letter'),

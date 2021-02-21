@@ -739,14 +739,16 @@ export default {
           text: "skipWordButton",
           color: "red",
           function() {
-            this.takeAction("skipWord");
+            this.game.confirmationDialog(this.i18n("skipWordWarning"), () => {
+              this.takeAction("skipWord");
+            });
           },
         },
         skip: {
           text() {
             return this.gamestate.name == "purchase" ? "skipPurchaseButton" : "skipButton";
           },
-          color: "gray",
+          color: this.gamestate.name == "purchase" ? "blue" : "gray",
           function() {
             this.takeAction("skip");
           },
