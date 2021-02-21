@@ -558,7 +558,6 @@ export default {
         // Move card to end
         const rootEl = document.getElementById("HGame");
         const root = getRect(rootEl);
-        console.log("root rect", root);
         const top = end.top - root.top;
         const left = end.left - root.left;
         rootEl.appendChild(cardEl);
