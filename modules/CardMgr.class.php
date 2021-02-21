@@ -72,7 +72,7 @@ class CardMgr extends APP_GameClass
             }
             $sql = "INSERT INTO card (`refId`, `location`, `origin`) VALUES " . implode(', ', $create);
             self::DbQuery($sql);
-            self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId), 'letter');
+            self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId));
         }
     }
 
@@ -81,7 +81,7 @@ class CardMgr extends APP_GameClass
         self::DbQuery("UPDATE card SET `origin` = `location`");
     }
 
-    public static function drawCards(int $count, string $fromLocation, string $toLocation, string $sort = null, bool $notify = false): array
+    public static function drawCards(int $count, string $fromLocation, string $toLocation, bool $notify = false): array
     {
         $order = self::getMaxOrderInLocation($toLocation) + 1;
 
@@ -114,9 +114,6 @@ class CardMgr extends APP_GameClass
 
         // Populate from database and sort
         $cards = self::getCards($ids);
-        if (count($cards) > 1 && $sort) {
-            self::sortCards($cards, $sort);
-        }
 
         // Reposition at the end and update origin
         foreach ($cards as &$card) {
@@ -563,7 +560,7 @@ class CardMgr extends APP_GameClass
         self::notifyCards(self::getCards($updatedIds));
 
         // Draw new hand
-        self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId), 'letter', true);
+        self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId), true);
     }
 
     public static function canFlushOffer(): bool

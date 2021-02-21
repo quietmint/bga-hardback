@@ -289,12 +289,20 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         $cards = CardMgr::getCards($cardIds, $wildMask);
 
-        // All inked cards must be used and cannot be wild
+        // Inked cards must be used
         $inked = array_filter($player->getHand(HAS_INK), function ($card) use ($cardIds) {
-            return $card->isWild() || !in_array($card->getId(), $cardIds);
+            return !in_array($card->getId(), $cardIds);
         });
         if (!empty($inked)) {
-            throw new BgaUserException($this->msg['errorInk'] . CardMgr::getString($inked));
+            throw new BgaUserException(sprintf($this->msg['errorInk'], CardMgr::getString($inked)));
+        }
+
+        // Inked and timeless cards cannot be wild
+        $invalidWilds = array_filter($cards, function ($card) {
+            return $card->isWild() && ($card->hasInk() || $card->isOrigin("timeless"));
+        });
+        if (!empty($invalidWilds)) {
+            throw new BgaUserException(sprintf($this->msg['errorWild'], CardMgr::getString($invalidWilds)));
         }
 
         // Cards must originate from a valid location
@@ -670,7 +678,7 @@ class hardback extends Table
         if (isset($specials[SPECIAL_ROMANCE])) {
             // Romance: Draw 3 and return or discard
             CardMgr::useBenefit($specials[SPECIAL_ROMANCE], SPECIAL_ROMANCE);
-            CardMgr::drawCards(3, $player->getDeckLocation(), $player->getHandLocation(), null, true);
+            CardMgr::drawCards(3, $player->getDeckLocation(), $player->getHandLocation(), true);
             $this->gamestate->nextState('romance');
             return;
         }
@@ -906,7 +914,7 @@ class hardback extends Table
             ]);
             CardMgr::jail($player->getId(), $card);
         }
-        CardMgr::drawCards(1, 'deck', 'offer', null, true);
+        CardMgr::drawCards(1, 'deck', 'offer', true);
         $this->gamestate->nextState('again');
     }
 
@@ -1041,7 +1049,7 @@ class hardback extends Table
         }
 
         if ($oldLocation == 'offer') {
-            CardMgr::drawCards(1, 'deck', 'offer', null, true);
+            CardMgr::drawCards(1, 'deck', 'offer', true);
         }
         $this->incStat(1, 'cardsPurchase', $player->getId());
         $this->gamestate->nextState('again');
@@ -1163,7 +1171,7 @@ class hardback extends Table
         ]);
 
         // Draw a new card
-        $draw = CardMgr::drawCards(1, 'deck', 'offer', null, true);
+        $draw = CardMgr::drawCards(1, 'deck', 'offer', true);
         $draw = reset($draw);
         unset($offer[$card->getId()]);
         $offer[$draw->getId()] = $draw;
@@ -1177,7 +1185,7 @@ class hardback extends Table
                 'letter' => $card->getLetter(),
             ]);
             CardMgr::discard($card, $penny->getDiscardLocation());
-            CardMgr::drawCards(1, 'deck', 'offer', null, true);
+            CardMgr::drawCards(1, 'deck', 'offer', true);
         }
 
         // Discard timeless cards
@@ -1255,13 +1263,12 @@ class hardback extends Table
         $card = reset($cards);
         if ($player->isActive()) {
             $player->notifyInk($card);
-
-            if ($this->getGameStateValue('coopGenre') == HORROR) {
+            $penny = PlayerMgr::getPenny();
+            if ($penny->getGenre() == HORROR) {
                 $offer = CardMgr::getOffer();
                 foreach ($offer as $offerCard) {
                     if ($offerCard->getGenre() == HORROR) {
                         // Horror: Penny earns 1 per ink
-                        $penny = PlayerMgr::getPenny();
                         $penny->addPoints(1, '');
                         self::notifyAllPlayers('message', $this->msg['earn'], [
                             'player_name' => $penny->getName(),

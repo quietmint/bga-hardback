@@ -129,8 +129,9 @@ $this->msg = [
     'earn' => clienttranslate('${player_name} earns ${amount}${icon}'),
     'endTurn' => clienttranslate('${player_name} ends their turn'),
     'endTurnInk' => clienttranslate('${player_name} purchases ${amount} ink and ends their turn'),
-    'errorInk' => clienttranslate('Your word must use all inked cards: %s'),
-    'errorLength' => clienttranslate('Your word must use at least 2 letters'),
+    'errorInk' => self::_('Must use all inked cards: %s'),
+    'errorLength' => self::_('Must use at least 2 letters'),
+    'errorWild' => self::_('Cards cannot be wild: %s'),
     'forceDiscard' => clienttranslate('${player_name} forces ${player_name2} to discard ${amount}${icon}'),
     'forceTimeless' => clienttranslate('${player_name} forces ${player_name2} to discard timeless classic ${genre}${letter}'),
     'invalidWord' => clienttranslate('${player_name} spells an invalid word, ${invalid}'),
@@ -170,7 +171,7 @@ $this->benefits = [
     UNCOVER_ADJ => clienttranslate('Uncover adjacent wild'),
 ];
 
-// Timeless: UPDATE card SET `location` = 'hand_2305326', `origin` = 'hand_2305326' WHERE `location` IN ('deck', 'discard') AND `refId` IN (5, 12, 23, 31, 40, 42, 53, 64, 73, 86, 92, 96, 107, 113, 123, 134)
+// Timeless: UPDATE card SET `location` = 'hand_2305326', `origin` = 'hand_2305326' WHERE `refId` IN (5, 12, 23, 31, 40, 42, 53, 64, 73, 86, 92, 96, 107, 113, 123, 134)
 // Special: UPDATE card SET `location` = 'hand_2305326', `origin` = 'hand_2305326' WHERE `refId` IN (1, 7, 21, 26, 36, 43, 46, 71, 76, 95, 106, 111, 124)
 
 $this->cards = [
