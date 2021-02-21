@@ -20,7 +20,7 @@
     <div v-if="gamedatas.finalRound && !gamedatas.options.coop" class="text-20 text-center font-bold text-red-600 m-4" v-text="i18n('finalRound')"></div>
 
     <!-- Discard -->
-    <div v-if="!spectator" class="container-discard cardgrid bg-opacity-50 rounded-lg my-2 p-2" :class="(visibleLocations[discardLocation] ? '' : 'collapsed ') + myself.colorBg">
+    <div v-if="!spectator" class="container-discard cardgrid bg-opacity-50 my-2 p-2" :class="(visibleLocations[discardLocation] ? '' : 'collapsed ') + myself.colorBg">
       <!-- Title -->
       <b class="title"><Icon @click="chevron(discardLocation)" icon="chevron" class="chevron inline text-24" /> <span v-text="i18n('myDiscard', { count: discardCards.length })"></span></b>
 
@@ -37,7 +37,7 @@
     </div>
 
     <!-- Hand -->
-    <div v-if="!spectator" class="container-hand cardgrid bg-opacity-50 rounded-lg my-2 p-2" :class="myself.colorBg">
+    <div v-if="!spectator" class="container-hand cardgrid bg-opacity-50 my-2 p-2" :class="myself.colorBg">
       <!-- Title -->
       <b class="title" v-text="i18n('myHand', { count: handCards.length })"></b>
 
@@ -91,7 +91,7 @@
     </div>
 
     <!-- Offer -->
-    <div class="container-offer cardgrid bg-gray-700 bg-opacity-30 rounded-lg my-2 p-2">
+    <div class="container-offer cardgrid bg-gray-700 bg-opacity-30 my-2 p-2">
       <!-- Title -->
       <b class="title" v-text="i18n('offer', { count: offerCards.length })"></b>
 
@@ -565,7 +565,7 @@ export default {
         cardEl.style.position = "absolute";
         cardEl.style.top = top + "px";
         cardEl.style.left = left + "px";
-        cardEl.firstElementChild.classList.add("nomargin");
+        cardEl.getElementsByClassName("card")[0].classList.add("nomargin");
         await repaint();
 
         // Compute reverse transform
@@ -599,11 +599,8 @@ export default {
         // Just in case transitionend never fires
         const timeout = setTimeout(() => {
           console.warn(`Animate card ${card.id} ${mode} missing transitionend`);
-          if (gapEl) {
-            gapEl.remove();
-          }
           resolve(card.id);
-        }, 2000);
+        }, 2400);
 
         cardEl.style.transition = "";
         cardEl.style.transform = "";
@@ -636,9 +633,14 @@ export default {
       });
 
       if (mode == "leave") {
-        const finalizer = () => {
-          console.log(`Animate card ${card.id} ${mode} finalizer`);
+        const finalizer = async () => {
           this.gamedatas.cards[card.id] = card;
+          await nextTick();
+          console.log(`Animate card ${card.id} ${mode} destroy card`);
+          cardEl.remove();
+          if (gapEl) {
+            gapEl.remove();
+          }
           return card.id;
         };
         promise = promise.then(finalizer, finalizer);

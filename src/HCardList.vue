@@ -1,5 +1,5 @@
 <template>
-  <div class="cardlist relative flex flex-wrap justify-center" :class="dragInProgress ? 'dragInProgress' : ''" @dragover.stop="dragOverList($event)" @dragenter.prevent>
+  <div class="cardlist relative flex flex-wrap items-center justify-center" :class="dragInProgress ? 'dragInProgress' : ''" @dragover.stop="dragOverList($event)" @dragenter.prevent>
     <transition-group :css="false">
       <HCard v-for="card in cards" :key="card.id" :card="card" :draggable="card.draggable" @dragstart="dragStart($event, card)" @dragend="dragEnd($event, card)" @dragover.stop="dragOverCard($event, card)" @dragenter.prevent :class="dragInProgress && dragInProgress.id == card.id ? 'opacity-5' : ''" />
     </transition-group>

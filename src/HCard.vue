@@ -1,7 +1,12 @@
 <template>
-  <div :id="'card' + this.card.id" :class="this.card.invisible ? 'invisible' : ''" class="cardholder relative">
+  <div :id="'card' + this.card.id" class="cardholder relative m-1 mt-2">
+    <!-- Header -->
+    <div v-if="header" class="flex items-start justify-evenly text-center text-13 leading-5">
+      <div class="px-2 rounded-t-lg z-10" :class="header.class" :title="header.title"><Icon v-if="header.icon" :icon="header.icon" class="inline text-15" /> {{ header.text }}</div>
+    </div>
+
     <!-- Card -->
-    <div @click="clickCard()" :class="cardClass" class="card shadow relative rounded-lg select-none mt-2 mx-1">
+    <div @click="clickCard()" :class="cardClass" class="card shadow relative rounded-lg select-none">
       <div class="cardface front rounded-lg">
         <!-- Bookmark -->
         <div :class="bookmarkClass" class="bookmark absolute flex items-center text-center font-bold leading-none">
@@ -15,23 +20,23 @@
           {{ card.letter }}
         </div>
 
-        <div :class="benefitClass" class="absolute text-14 overflow-y-auto">
+        <div :class="benefitClass" class="absolute text-14 overflow-y-auto flex flex-col">
           <!-- Basic Benefits -->
-          <ul :title="i18n('basicTip')">
-            <li v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.html"></span></li>
-          </ul>
+          <div :title="i18n('basicTip')" class="flex-grow flex flex-col justify-evenly p-1">
+            <div v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="hanging" v-html="benefit.html"></div>
+          </div>
 
           <!-- Genre Benefits -->
-          <div v-if="card.genreBenefitsList.length" :class="textClass" class="flex items-center border-t border-black" :title="i18n('genreTip', { x: i18n(card.genreName) })">
-            <Icon :icon="card.genreName" class="text-24 flex-none" />
-            <ul class="border-l border-black ml-1 py-1 pl-1">
-              <li v-for="benefit in card.genreBenefitsList" :key="benefit.id" class="hanging"><span v-html="benefit.html"></span></li>
-            </ul>
+          <div v-if="card.genreBenefitsList.length" :class="textClass" class="flex-grow flex border-t-2 border-black" :title="i18n('genreTip', { x: i18n(card.genreName) })">
+            <Icon :icon="card.genreName" class="text-24 flex-none self-center" />
+            <div class="flex flex-col justify-evenly p-1 border-l border-black ml-1">
+              <div v-for="benefit in card.genreBenefitsList" :key="benefit.id" class="hanging" v-html="benefit.html"></div>
+            </div>
           </div>
         </div>
 
         <!-- ID -->
-        <!-- <div class="absolute top-0 right-0 text-12 text-white" style="text-shadow: 1px 1px black">{{ card.origin }} (#{{ card.id }}/{{ card.order }})</div> -->
+        <!-- <div class="absolute top-0 right-0 text-12 text-white" style="text-shadow: 1px 1px black">{{ card.id }} / Order: {{ card.order }}</div> -->
       </div>
 
       <!-- Wild -->
@@ -43,8 +48,8 @@
     </div>
 
     <!-- Footer -->
-    <div v-if="footerActions && footerActions.length > 0" class="flex items-start justify-evenly text-center text-13 s mb-1">
-      <div v-for="action in footerActions" :key="action" @click="clickFooter(action)" :class="action.class" class="px-2 rounded-b-lg transition-all z-10" :title="action.title">{{ action.text }}<Icon v-if="action.icon" :icon="action.icon" class="inline text-15" /></div>
+    <div class="h-7 flex items-start justify-evenly text-center text-13">
+      <div v-for="action in footerActions" :key="action" @click="clickFooter(action)" :class="action.class" class="px-2 rounded-b-lg transition-all z-10">{{ action.text }}<Icon v-if="action.icon" :icon="action.icon" class="inline text-15" /></div>
     </div>
   </div>
 </template>
@@ -72,9 +77,9 @@ export default {
       c += this.card.draggable ? "cursor-ew-resize " : this.clickAction ? "cursor-pointer " : "cursor-not-allowed ";
       c += this.card.timeless ? "timeless " : "";
       if (this.card.ink) {
-        c += "mx-2 ring ring-black ";
+        c += "mx-1 ring ring-black ";
       } else if (this.card.location == "jail" || this.card.origin.startsWith("timeless")) {
-        c += "mx-2 ring " + this.card.player.colorRing;
+        c += `mx-1 ring ${this.card.player.colorRing} `;
       } else if (this.card.wild) {
         c += "wild ";
       }
@@ -102,19 +107,37 @@ export default {
     },
 
     benefitClass(): string {
-      return this.card.timeless ? "top-8 bottom-0 right-1 w-28 pl-2" : "bottom-0 left-0 right-0 h-24 px-1 pb-1";
+      return this.card.timeless ? "top-6 bottom-0 right-0 w-28" : "bottom-0 left-0 right-0 h-25";
     },
 
     textClass(): string {
       switch (this.card.genre) {
         case Constants.ADVENTURE:
-          return "text-yellow-900";
+          return "text-yellow-900 bg-yellow-600 bg-opacity-10";
         case Constants.HORROR:
-          return "text-green-700";
+          return "text-green-700 bg-green-700 bg-opacity-10";
         case Constants.ROMANCE:
-          return "text-red-700";
+          return "text-red-700 bg-red-700 bg-opacity-10";
         case Constants.MYSTERY:
-          return "text-blue-700";
+          return "text-blue-700 bg-blue-700 bg-opacity-10";
+      }
+    },
+
+    header() {
+      if (this.card.origin.startsWith("timeless")) {
+        return {
+          text: this.card.player.name,
+          icon: "timeless",
+          title: this.i18n("timelessTip", { player_name: this.card.player.name }),
+          class: `${this.card.player.colorBg} ${this.card.player.colorBgText}`,
+        };
+      } else if (this.card.location == "jail") {
+        return {
+          text: this.card.player.name,
+          icon: "jail",
+          title: this.i18n("jailTip", { player_name: this.card.player.name }),
+          class: `${this.card.player.colorBg} ${this.card.player.colorBgText}`,
+        };
       }
     },
 
@@ -270,35 +293,11 @@ export default {
         }
       }
 
-      if (this.card.origin.startsWith("timeless")) {
-        return [
-          {
-            action: null,
-            text: `${this.card.player.name} `,
-            icon: "timeless",
-            title: this.i18n("timelessTip", { player_name: this.card.player.name }),
-            class: `leading-6 ${this.card.player.colorBg} ${this.card.player.colorBgText}`,
-          },
-        ];
+      if (this.card.location == "jail" && this.gamestate.active && this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
+        return [actionRef.purchase];
       }
 
-      if (this.card.location == "jail") {
-        if (this.gamestate.active && this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
-          return [actionRef.purchase];
-        } else {
-          return [
-            {
-              action: null,
-              text: `${this.card.player.name} `,
-              icon: "jail",
-              title: this.i18n("jailTip", { player_name: this.card.player.name }),
-              class: `leading-6 ${this.card.player.colorBg} ${this.card.player.colorBgText}`,
-            },
-          ];
-        }
-      }
-
-      if (this.card.location.startsWith("hand") || (this.card.location == "tableau" && this.gamestate.active && this.gamestate.name == "playerTurn")) {
+      if (!this.card.origin.startsWith("timeless") && (this.card.location.startsWith("hand") || (this.card.location == "tableau" && this.gamestate.active && this.gamestate.name == "playerTurn"))) {
         let reset = {
           action: "reset",
           text: this.i18n("resetButton", { x: this.card.letter }),
