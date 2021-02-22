@@ -62,27 +62,11 @@ export default {
     },
 
     icon() {
-      switch (this.penny.genre) {
-        case Constants.ADVENTURE:
-          return {
-            icon: "adventure",
-            color: "text-yellow-900",
-          };
-        case Constants.HORROR:
-          return {
-            icon: "horror",
-            color: "text-green-700",
-          };
-        case Constants.MYSTERY:
-          return {
-            icon: "mystery",
-            color: "text-blue-700",
-          };
-        case Constants.ROMANCE:
-          return {
-            icon: "romance",
-            color: "text-red-700",
-          };
+      if (this.penny.genre) {
+        return {
+          icon: Constants.GENRES[this.penny.genre].icon,
+          color: Constants.GENRES[this.penny.genre].text,
+        };
       }
     },
   },

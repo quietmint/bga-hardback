@@ -76,14 +76,9 @@ class CardMgr extends APP_GameClass
         }
     }
 
-    public static function updateOrigin(): void
+    public static function drawCards(int $count, string $fromLocation, string $toLocation, string $origin = null): array
     {
-        self::DbQuery("UPDATE card SET `origin` = `location`");
-    }
-
-    public static function drawCards(int $count, string $fromLocation, string $toLocation, bool $notify = false): array
-    {
-        $order = self::getMaxOrderInLocation($toLocation) + 1;
+        $order = self::getNextOrderInLocation($toLocation);
 
         // Draw cards from deck
         $sql = "SELECT `id` FROM card WHERE " . self::getLocationWhereClause($fromLocation) . " ORDER BY `location`, `order` LIMIT $count";
@@ -116,10 +111,13 @@ class CardMgr extends APP_GameClass
         $cards = self::getCards($ids);
 
         // Reposition at the end and update origin
+        if ($origin == null) {
+            $origin = $toLocation;
+        }
         foreach ($cards as &$card) {
-            self::DbQuery("UPDATE card SET `origin` = '$toLocation', `location` = '$toLocation', `order` = $order WHERE `id` = {$card->getId()}");
+            self::DbQuery("UPDATE card SET `origin` = '$origin', `location` = '$toLocation', `order` = $order WHERE `id` = {$card->getId()}");
             $card->setLocation($toLocation);
-            $card->setOrigin($toLocation);
+            $card->setOrigin($origin);
             $card->setOrder($order);
             $order++;
 
@@ -127,9 +125,6 @@ class CardMgr extends APP_GameClass
             if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO && $fromLocation == 'deck' && $toLocation == 'offer') {
                 hardback::$instance->incGameStateValue("countOffer{$card->getGenre()}", 1);
             }
-        }
-        if ($notify) {
-            self::notifyCards($cards);
         }
         return $cards;
     }
@@ -176,7 +171,7 @@ class CardMgr extends APP_GameClass
                 return $result;
             });
         } else {
-            throw new BgaVisibleSystemException("Invalid sort order: $sort");
+            throw new BgaVisibleSystemException("sortCards: Invalid sort order: $sort");
         }
     }
 
@@ -234,18 +229,16 @@ class CardMgr extends APP_GameClass
         $cards = self::populateCards($seqcards);
 
         // Apply wild mask
-        $wilds = [];
         if ($wildMask) {
             $countCards = count($cards);
             $countWilds = strlen($wildMask);
             if ($countCards != $countWilds) {
-                throw new BgaVisibleSystemException("Invalid wildcard mask (cards: $countCards, wilds: $countWilds)");
+                throw new BgaVisibleSystemException("getCards: Invalid wildcard mask (cards: $countCards, wilds: $countWilds)");
             }
             $wilds = array_combine($cardIds, str_split($wildMask));
-        }
-        foreach ($cards as $card) {
-            if (isset($wilds[$card->getId()]) && $wilds[$card->getId()] != '_') {
-                $card->setWild($wilds[$card->getId()]);
+            foreach ($cards as $card) {
+                $wild = $wilds[$card->getId()];
+                $card->setWild($wild != '_' ? $wild : null);
             }
         }
 
@@ -296,10 +289,10 @@ class CardMgr extends APP_GameClass
         return intval($count);
     }
 
-    public static function getMaxOrderInLocation(string $location): int
+    public static function getNextOrderInLocation(string $location): int
     {
-        $max = self::getUniqueValueFromDB("SELECT COALESCE(MAX(`order`), 0) FROM card WHERE `location` = '$location'");
-        return intval($max);
+        $max = intval(self::getUniqueValueFromDB("SELECT COALESCE(MAX(`order`), -1) FROM card WHERE `location` = '$location'"));
+        return $max + 1;
     }
 
     public static function getHandLocation(int $playerId): string
@@ -349,9 +342,13 @@ class CardMgr extends APP_GameClass
         return self::getCountInLocation(self::getDiscardLocation($playerId));
     }
 
-    public static function getTableau(int $playerId): array
+    public static function getTableau(int $playerId = null): array
     {
-        return self::getCardsInLocation(['tableau', self::getTimelessLocation($playerId)]);
+        $locations = ['tableau'];
+        if ($playerId != null) {
+            $locations[] = self::getTimelessLocation($playerId);
+        }
+        return self::getCardsInLocation($locations);
     }
 
     public static function getTimeless(int $playerId): array
@@ -386,6 +383,9 @@ class CardMgr extends APP_GameClass
     public static function getIds($cards): array
     {
         $ids = [];
+        if ($cards == null) {
+            return $ids;
+        }
         if (!is_array($cards)) {
             $cards = [$cards];
         }
@@ -436,33 +436,125 @@ class CardMgr extends APP_GameClass
 
     /* Notify utilities */
 
-    private static function notifyCards($cards): void
+    public static function notifyCards($cards, int $ignorePlayerId = null): void
     {
         if ($cards instanceof HCard) {
             $cards = [
                 $cards->getId() => $cards
             ];
         }
-        hardback::$instance->notifyAllPlayers('cards', '', [
-            'cards' => $cards,
-        ]);
+        $action = 'cards';
+        $args = ['cards' => $cards];
+        if ($ignorePlayerId) {
+            $action = 'cardsPreview';
+            $args['ignorePlayerId'] = $ignorePlayerId;
+            hardback::$instance->not_a_move_notification = true;
+        }
+        hardback::$instance->notifyAllPlayers($action, '', $args);
+    }
+
+    public static function deletePreviewNotifications(): void
+    {
+        // Delete transient preview notifications
+        self::DbQuery("DELETE FROM `gamelog` WHERE gamelog_move_id IS NULL AND gamelog_notification LIKE '%cardsPreview%'");
     }
 
     /* Change (specific) */
 
-    public static function playWord(int $playerId, array $cards): void
+    public static function moveHandToTableau(int $playerId): void
     {
+        $location = self::getHandLocation($playerId);
+        $sql = "UPDATE card SET `location` = 'tableau' WHERE `location` = '$location'";
+        self::DbQuery($sql);
+        self::notifyCards(self::getTableau($playerId));
+    }
+
+    public static function endGameDiscard(): void
+    {
+        $locations = [];
+        foreach (PlayerMgr::getPlayers() as $player) {
+            $location = $player->getDiscardLocation();;
+            $locations[] = $location;
+            $sql = "UPDATE card SET `ink` = NULL, `wild` = NULL, `factor` = 1, `origin` = '$location', `location` = '$location', `order` = -1 WHERE `origin` LIKE '%_{$player->getId()}'";
+            self::DbQuery($sql);
+            $player->notifyPanel();
+        }
+        self::notifyCards(self::getCardsInLocation($locations));
+    }
+
+    public static function previewWord(int $playerId, array $hand, array $tableau = null, $notify = true): void
+    {
+        $updatedIds = [];
+
+        // Update hand
+        $oldHand = self::getHand($playerId);
+        $order = 0;
+        $location = self::getHandLocation($playerId);
+        foreach ($hand as $card) {
+            $sql = "UPDATE card SET `wild` = " . ($card->isWild() ? "'{$card->getLetter()}'" : "NULL") . ", `location` = '$location', `order` = $order WHERE `id` = {$card->getId()}";
+            self::DbQuery($sql);
+            $order++;
+            $updatedIds[] = $card->getId();
+        }
+
         // Update tableau
+        $oldTableau = [];
+        if ($tableau !== null) {
+            $oldTableau = self::getTableau(null);
+            $order = 0;
+            foreach ($tableau as $card) {
+                $sql = "UPDATE card SET `wild` = " . ($card->isWild() ? "'{$card->getLetter()}'" : "NULL") . ", `location` = 'tableau', `order` = $order WHERE `id` = {$card->getId()}";
+                self::DbQuery($sql);
+                $order++;
+                $updatedIds[] = $card->getId();
+            }
+        }
+
+        // Return remaining cards to origin
+        $remainder = [];
+        foreach ($oldHand as $card) {
+            if (!in_array($card->getId(), $updatedIds)) {
+                $remainder[] = $card;
+            }
+        }
+        foreach ($oldTableau as $card) {
+            if (!in_array($card->getId(), $updatedIds)) {
+                $remainder[] = $card;
+            }
+        }
+        foreach ($remainder as $card) {
+            $card->setOrder(self::getNextOrderInLocation($card->getOrigin()));
+            $sql = "UPDATE card SET `wild` = NULL, `location` = `origin`, `order` = {$card->getOrder()} WHERE `id` = {$card->getId()}";
+            self::DbQuery($sql);
+            $updatedIds[] = $card->getId();
+        }
+
+        // Notify
+        if ($notify) {
+            self::notifyCards(self::getCards($updatedIds), $playerId);
+        }
+    }
+
+    public static function commitWord(int $playerId, array $cards): void
+    {
+        self::deletePreviewNotifications();
+
+        // Return remaining cards to origin
+        $updatedIds = [];
         $ids = self::getIds($cards);
-        $remainder = array_filter(self::getCardsInLocation('tableau'), function ($card) use ($ids) {
+        $remainder = array_filter(self::getTableau(null), function ($card) use ($ids) {
             return !in_array($card->getId(), $ids);
         });
-        if (!empty($remainder)) {
-            throw new BgaVisibleSystemException("Tableau contains unexpected cards: " . self::getString($cards));
+        foreach ($remainder as $card) {
+            $card->setOrder(self::getNextOrderInLocation($card->getOrigin()));
+            $sql = "UPDATE card SET `wild` = NULL, `location` = `origin`, `order` = {$card->getOrder()} WHERE `id` = {$card->getId()}";
+            self::DbQuery($sql);
+            $updatedIds[] = $card->getId();
         }
+
+        // Update tableau
         $order = 0;
         $opponent = [];
-        $updatedIds = [];
         foreach ($cards as $card) {
             $sql = "UPDATE card SET `wild` = " . ($card->isWild() ? "'{$card->getLetter()}'" : "NULL") . ", `location` = 'tableau', `order` = $order WHERE `id` = {$card->getId()}";
             self::DbQuery($sql);
@@ -500,6 +592,7 @@ class CardMgr extends APP_GameClass
         self::notifyCards(self::getCards($updatedIds));
     }
 
+
     public static function isGenreActive(int $genre): bool
     {
         return $genre != STARTER && hardback::$instance->getGameStateValue("countActive$genre") >= 2;
@@ -527,7 +620,19 @@ class CardMgr extends APP_GameClass
         self::notifyCards($card);
     }
 
-    public static function reset(int $playerId): void
+    public static function skipWord(int $playerId): void
+    {
+        // Discard timeless cards not played
+        $cards = self::getTableau(null);
+        $timeless = array_filter($cards, function (HCard $card) {
+            return $card->isTimeless() && $card->isLocation('tableau') && $card->isOrigin('hand');
+        });
+        self::discard($timeless, self::getDiscardLocation($playerId), false);
+        foreach ($timeless as $card) {
+        }
+    }
+
+    public static function reset(int $playerId, bool $skipWord = false): void
     {
         $cards = self::getCardsInLocation([self::getHandLocation($playerId), 'tableau']);
         $updatedIds = self::getIds($cards);
@@ -536,9 +641,9 @@ class CardMgr extends APP_GameClass
         // Clear used benefits
         self::DbQuery('TRUNCATE resolve');
 
-        // Discard Timeless classics
-        $timeless = array_filter($cards, function (HCard $card) {
-            return $card->isTimeless() && !$card->isWild() && $card->isLocation('tableau');
+        // Discard timeless cards
+        $timeless = array_filter($cards, function (HCard $card) use ($skipWord) {
+            return $card->isTimeless() && !$card->isWild() && $card->isLocation('tableau') && (!$skipWord || !$card->isOrigin('hand'));
         });
         if (!empty($timeless)) {
             foreach ($timeless as $card) {
@@ -560,7 +665,7 @@ class CardMgr extends APP_GameClass
         self::notifyCards(self::getCards($updatedIds));
 
         // Draw new hand
-        self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId), true);
+        self::notifyCards(self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId)));
     }
 
     public static function canFlushOffer(): bool
@@ -595,8 +700,7 @@ class CardMgr extends APP_GameClass
         hardback::$instance->incStat(1, 'flush');
 
         // Draw new offer and notify
-        $newCards = self::drawCards(7, 'deck', 'offer');
-        self::notifyCards($newCards);
+        self::notifyCards(self::drawCards(7, 'deck', 'offer'));
     }
 
     public static function inkCard(HCard $card, int $inkValue = HAS_INK): void

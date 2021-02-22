@@ -20,91 +20,84 @@
     <div v-if="gamedatas.finalRound && !gamedatas.options.coop" class="text-20 text-center font-bold text-red-600 m-4" v-text="i18n('finalRound')"></div>
 
     <!-- Discard -->
-    <div v-if="!spectator" class="container-discard cardgrid bg-opacity-50 my-2 p-2" :class="(visibleLocations[discardLocation] ? '' : 'collapsed ') + myself.colorBg">
-      <!-- Title -->
-      <b class="title"><Icon @click="chevron(discardLocation)" icon="chevron" class="chevron inline text-24" /> <span v-text="i18n('myDiscard', { count: discardCards.length })"></span></b>
+    <div v-if="!spectator" class="p-2 border-t-2 border-black bg-black bg-opacity-25">
+      <div class="flex leading-7 font-bold">
+        <div @click="discardVisible = !discardVisible" class="title flex-grow cursor-pointer"><Icon icon="chevron" class="chevron float-left h-7 text-24" :class="{ collapsed: !discardVisible }" /> <span v-text="i18n('myDiscard', { count: discardCards.length })"></span></div>
 
-      <!-- Cards -->
-      <HCardList v-if="visibleLocations[discardLocation]" :cards="discardCards" :location="discardLocation" />
-
-      <!-- Sorter -->
-      <div v-if="visibleLocations[discardLocation] && discardCards.length" class="sorter">
-        <div @click="sort(discardLocation, 'letter')" class="button blue" :title="i18n('sortLetterTip')">A-Z</div>
-        <div @click="sort(discardLocation, 'cost')" class="button blue" :title="i18n('sortCostTip')">¢</div>
-        <div @click="sort(discardLocation, 'genre')" class="button blue" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-18 h-7" /></div>
-        <div @click="sort(discardLocation, 'shuffle')" class="button blue" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
+        <div v-if="discardVisible" class="buttongroup grid grid-cols-3">
+          <div @click="sort(discardLocation, 'letter')" class="button" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
+          <div @click="sort(discardLocation, 'cost')" class="button text-15" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortCostTip')">¢</div>
+          <div @click="sort(discardLocation, 'genre')" class="button" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
+        </div>
       </div>
+
+      <HCardList v-if="discardVisible" :cards="discardCards" :location="discardLocation" />
     </div>
 
     <!-- Hand -->
-    <div v-if="!spectator" class="container-hand cardgrid bg-opacity-50 my-2 p-2" :class="myself.colorBg">
-      <!-- Title -->
-      <b class="title" v-text="i18n('myHand', { count: handCards.length })"></b>
+    <div v-if="!spectator && gamestate.name != 'gameEnd'" class="p-2 border-t-2 border-black">
+      <div class="flex leading-7 font-bold">
+        <div class="title flex-grow" v-text="i18n('myHand', { count: handCards.length })"></div>
 
-      <!-- Cards -->
+        <div class="buttongroup flex">
+          <div @click="buttonEnabled['useInk'] && takeAction('useInk')" class="button" :class="buttonEnabled['useInk'] ? 'blue' : 'disabled'" v-text="i18n('draw', { count: myself.ink })"></div>
+          <div @click="buttonEnabled['resetAll'] && resetAll(handLocation)" class="button" :class="buttonEnabled['resetAll'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
+          <div @click="buttonEnabled['moveAll'] && moveAll(handLocation)" class="button" :class="buttonEnabled['moveAll'] ? 'blue' : 'disabled'" v-text="i18n('moveAll')"></div>
+        </div>
+
+        <div class="buttongroup grid grid-cols-3">
+          <div @click="sortOnce(handLocation, 'letter')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
+          <div @click="sortOnce(handLocation, 'genre')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
+          <div @click="sortOnce(handLocation, 'shuffle')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-17 h-7" /></div>
+        </div>
+      </div>
+
       <HCardList :cards="handCards" :location="handLocation" />
-
-      <!-- Actions -->
-      <div class="actions">
-        <div @click="buttonEnabled['useInk'] && takeAction('useInk')" class="button" :class="buttonEnabled['useInk'] ? 'blue' : 'disabled'" v-text="i18n('draw', { count: myself.ink })"></div>
-        <div @click="buttonEnabled['resetAll'] && resetAll(handLocation)" class="button" :class="buttonEnabled['resetAll'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
-        <div @click="buttonEnabled['moveAll'] && moveAll(handLocation)" class="button" :class="buttonEnabled['moveAll'] ? 'blue' : 'disabled'" v-text="i18n('moveAll')"></div>
-      </div>
-
-      <!-- Sorter -->
-      <div v-if="handCards.length" class="sorter">
-        <div @click="sort(handLocation, 'letter')" class="button blue" :title="i18n('sortLetterTip')">A-Z</div>
-        <div @click="sort(handLocation, 'genre')" class="button blue" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-18 h-7" /></div>
-        <div @click="sort(handLocation, 'shuffle')" class="button blue" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
-      </div>
     </div>
 
     <!-- Tableau -->
-    <div class="container-tableau cardgrid my-2 p-2">
-      <!-- Title -->
-      <b class="title" v-text="i18n('tableau', { count: tableauCards.length })"></b>
+    <div v-if="gamestate.name != 'gameEnd'" class="p-2 border-t-2 border-black bg-opacity-30 transition-colors duration-1000" :class="author.colorBg || 'bg-white'">
+      <div class="flex leading-7 font-bold">
+        <div class="title flex-grow" v-html="i18n('tableau', { player_name: '<span class=\'transition-colors duration-1000 ' + (author.colorText || 'text-black') + '\'>' + author.name + '</span>', count: tableauCards.length })"></div>
 
-      <!-- Cards -->
+        <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup flex">
+          <div @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')" class="button" :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
+          <div @click="buttonEnabled['moveAllTableau'] && moveAll('tableau')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('moveAll')"></div>
+        </div>
+
+        <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup grid grid-cols-3">
+          <div @click="sortOnce('tableau', 'letter')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
+          <div @click="sortOnce('tableau', 'genre')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
+          <div @click="sortOnce('tableau', 'shuffle')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-17 h-7" /></div>
+        </div>
+      </div>
+
       <HCardList :cards="tableauCards" location="tableau" />
-
-      <!-- Actions -->
-      <div v-if="buttonEnabled['moveAllTableau']" class="actions">
-        <div @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')" class="button" :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
-        <div @click="buttonEnabled['moveAllTableau'] && moveAll('tableau')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('moveAll')"></div>
-      </div>
-
-      <!-- Sorter -->
-      <div v-if="buttonEnabled['moveAllTableau']" class="sorter">
-        <div @click="sort('tableau', 'letter')" class="button blue" :title="i18n('sortLetterTip')">A-Z</div>
-        <div @click="sort('tableau', 'genre')" class="button blue" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-18 h-7" /></div>
-        <div @click="sort('tableau', 'shuffle')" class="button blue" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-18 h-7" /></div>
-      </div>
     </div>
 
     <!-- Timeless Classics -->
-    <div v-if="timelessCards.length" class="container-timeless cardgrid no-sorter my-2 p-2 border-t border-dashed border-black">
-      <!-- Title -->
-      <b class="title" v-text="i18n('timeless', { count: timelessCards.length })"></b>
+    <div v-if="timelessCards.length" class="p-2 border-t-2 border-black">
+      <div class="flex leading-7 font-bold">
+        <div class="title flex-grow" v-text="i18n('timeless', { count: timelessCards.length })"></div>
+      </div>
 
-      <!-- Cards -->
       <HCardList :cards="timelessCards" location="timeless" />
     </div>
 
     <!-- Offer -->
-    <div class="container-offer cardgrid bg-gray-700 bg-opacity-30 my-2 p-2">
-      <!-- Title -->
-      <b class="title" v-text="i18n('offer', { count: offerCards.length })"></b>
+    <div class="p-2 border-t-2 border-black">
+      <div class="flex leading-7 font-bold">
+        <div class="title flex-grow" v-text="i18n('offer', { count: offerCards.length })"></div>
 
-      <!-- Cards -->
-      <HCardList :cards="offerCards" location="offer" />
-
-      <!-- Sorter -->
-      <div class="sorter">
-        <div @click="sort('offer', 'letter')" class="button blue" :title="i18n('sortLetterTip')">A-Z</div>
-        <div @click="sort('offer', 'cost')" class="button blue" :title="i18n('sortCostTip')">¢</div>
-        <div @click="sort('offer', 'genre')" class="button blue" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-18 h-7" /></div>
-        <div @click="sort('offer', 'order')" class="button blue" :title="i18n('sortOrderTip')"><Icon icon="clock" class="inline text-18 h-7" /></div>
+        <div class="buttongroup grid grid-cols-4">
+          <div @click="sort('offer', 'letter')" class="button blue" :title="i18n('sortLetterTip')">A-Z</div>
+          <div @click="sort('offer', 'cost')" class="button blue text-15" :title="i18n('sortCostTip')">¢</div>
+          <div @click="sort('offer', 'genre')" class="button blue" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
+          <div @click="sort('offer', 'order')" class="button blue" :title="i18n('sortTimeTip')"><Icon icon="clock" class="inline text-17 h-7" /></div>
+        </div>
       </div>
+
+      <HCardList :cards="offerCards" location="offer" />
     </div>
   </div>
 </template>
@@ -118,6 +111,7 @@ import HPlayerPanel from "./HPlayerPanel.vue";
 import { Icon, addIcon } from "@iconify/vue";
 import { firstBy } from "thenby";
 import { nextTick, computed } from "vue";
+import { debounce } from "lodash-es";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const repaint = () => new Promise((resolve) => requestAnimationFrame(resolve));
@@ -200,13 +194,17 @@ export default {
     };
   },
 
+  created() {
+    this.previewWord = debounce(this.previewWord, 1000, { maxWait: 1000 });
+  },
+
   mounted() {
     this.emitter.on("clickCard", this.clickCard);
     this.emitter.on("clickFooter", this.clickFooter);
     this.emitter.on("clickKey", this.clickKey);
     this.emitter.on("drag", this.drag);
-    this.visibleLocations[this.discardLocation] = false;
-    this.visibleLocations[this.handLocation] = true;
+    this.discardVisible = this.gamestate.name == "gameEnd";
+    this.locationOrder[this.discardLocation] = "genre";
   },
 
   beforeUnmount() {
@@ -234,19 +232,12 @@ export default {
         },
       },
       gamestate: {},
+      discardVisible: false,
       keyboardId: null,
       locationOrder: {
         timeless: "location",
-        tableau: "order",
-        offer: "order",
       },
       logIcons: ["starter", "adventure", "horror", "mystery", "romance", "star"],
-      visibleLocations: {
-        tableau: true,
-        timeless: true,
-        offer: true,
-        jail: true,
-      },
     };
   },
 
@@ -255,12 +246,16 @@ export default {
       return this.game.isSpectator;
     },
 
+    players() {
+      return this.populatePlayers(this.gamedatas.players) || {};
+    },
+
     myself() {
       return this.players[this.game.player_id] || {};
     },
 
-    players() {
-      return this.populatePlayers(this.gamedatas.players) || {};
+    author() {
+      return this.players[this.gamestate.activeId] || {};
     },
 
     handLocation() {
@@ -336,12 +331,12 @@ export default {
           return card.location.startsWith(location);
         })
       );
-      this.sortLocation(location, cards);
+      this.sortCards(this.locationOrder[location], cards);
       return cards;
     },
 
-    sortLocation(location: string, cards: any[]): void {
-      let order = this.locationOrder[location] || "letter";
+    sortCards(order: string, cards: any[]): void {
+      order = order || "order";
       let sorter = firstBy(order);
       if (order != "letter") {
         // @ts-ignore
@@ -352,12 +347,10 @@ export default {
       cards.sort(sorter);
     },
 
-    reorderLocation(location: string): void {
-      if (this.locationOrder[location] != "order") {
-        this.cardsInLocation(location).forEach((card, i) => {
-          this.gamedatas.cards[card.id].order = i;
-        });
-        this.locationOrder[location] = "order";
+    shuffleCards(cards: any[]): void {
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
       }
     },
 
@@ -447,35 +440,41 @@ export default {
       return cards.map((card) => card.id);
     },
 
+    wildMask(cards): string {
+      return cards.map((card) => card.wild || "_").join("");
+    },
+
     populatePlayer(player) {
-      player.colorBgText = "text-white";
       switch (player.colorName) {
         case "red":
           player.colorRing = "ring-red-700";
           player.colorBg = "bg-red-700";
-          player.colorBgText = "text-red-100";
-          player.colorText = "text-red-600";
+          player.colorTextLight = "text-red-100";
+          player.colorText = "text-red-700";
           break;
         case "green":
           player.colorRing = "ring-green-700";
           player.colorBg = "bg-green-700";
+          player.colorTextLight = "text-green-100";
           player.colorText = "text-green-700";
           break;
         case "blue":
           player.colorRing = "ring-blue-700";
           player.colorBg = "bg-blue-700";
-          player.colorText = "text-blue-600";
+          player.colorTextLight = "text-blue-100";
+          player.colorText = "text-blue-700";
           break;
         case "yellow":
-          player.colorBgText = "text-black";
           player.colorRing = "ring-yellow-500";
-          player.colorBg = "bg-yellow-600";
-          player.colorText = "text-yellow-600";
+          player.colorBg = "bg-yellow-500";
+          player.colorTextLight = "text-yellow-900";
+          player.colorText = "text-yellow-700";
           break;
         case "purple":
           player.colorRing = "ring-purple-700";
           player.colorBg = "bg-purple-700";
-          player.colorText = "text-purple-600";
+          player.colorTextLight = "text-purple-100";
+          player.colorText = "text-purple-700";
           break;
       }
       return player;
@@ -525,7 +524,7 @@ export default {
         start = getRect(cardEl);
       }
 
-      let visible = this.visibleLocations[card.location] || card.location.startsWith("timeless");
+      let visible = card.location == this.handLocation || card.location == "tableau" || card.location == "offer" || card.location == "jail" || (this.discardVisible && card.location == this.discardLocation) || card.location.startsWith("timeless");
       console.log(`Animate card ${card.id} new location ${card.location} is visible? ${visible}`);
       if (!start && !visible) {
         // Invisible card movement, no animation
@@ -564,7 +563,6 @@ export default {
         cardEl.style.position = "absolute";
         cardEl.style.top = top + "px";
         cardEl.style.left = left + "px";
-        cardEl.getElementsByClassName("card")[0].classList.add("nomargin");
         await repaint();
 
         // Compute reverse transform
@@ -718,8 +716,16 @@ export default {
     },
 
     onUpdateActionButtons(stateName: string, args): void {
-      console.log(`State ${stateName}`, args);
-      Object.assign(this.gamestate, this.game.gamedatas.gamestate, { active: this.game.isCurrentPlayerActive() });
+      const activeId = this.game.getActivePlayerId();
+      console.log(`State ${stateName}, active ${activeId}`, args);
+      Object.assign(this.gamestate, this.game.gamedatas.gamestate, {
+        active: this.game.isCurrentPlayerActive(),
+        // @ts-ignore
+        replay: typeof g_replayFrom != "undefined",
+      });
+      if (activeId) {
+        this.gamestate.activeId = activeId;
+      }
 
       const actionRef = {
         confirmWord: {
@@ -731,7 +737,7 @@ export default {
               await this.moveAll(this.handLocation);
             }
             let cardIds = this.cardIds(this.tableauCards);
-            let wildMask = this.tableauCards.map((card) => card.wild || "_").join("");
+            let wildMask = this.wildMask(this.tableauCards);
             this.takeAction("confirmWord", { cardIds, wildMask });
           },
         },
@@ -832,20 +838,28 @@ export default {
       if (args && args.updateGameProgression) {
         this.gamedatas.finalRound = args.updateGameProgression >= 100;
       }
-      if (stateName == "trashDiscard" && !args.skip) {
-        //this.visibleLocations[this.discardLocation] = true;
+      if (stateName == "gameEnd") {
+        this.discardVisible = true;
       }
+      // if (stateName == "trashDiscard" && !args.skip) {
+      //   this.discardVisible = true;
+      // }
     },
 
     onLeavingState(stateName: string): void {
-      if (stateName == "trashDiscard") {
-        //this.visibleLocations[this.discardLocation] = false;
-      }
+      // if (stateName == "trashDiscard") {
+      //   this.discardVisible = false;
+      // }
     },
 
     onNotify(notif): void {
       console.log(`Notify ${notif.type}`, notif.args);
-      if (notif.type == "cards") {
+      if (notif.type == "cards" || notif.type == "cardsPreview") {
+        if (notif.args.ignorePlayerId && notif.args.ignorePlayerId == this.game.player_id) {
+          console.warn("Notification ignored");
+          this.game.notifqueue.setSynchronousDuration(0);
+          return;
+        }
         let cards = Object.values(notif.args.cards);
         // @ts-ignore
         cards.sort(firstBy("location").thenBy("order").thenBy("id"));
@@ -857,7 +871,8 @@ export default {
           this.game.showMessage(this.i18n("invalid", notif.args), "error");
         }
       } else if (notif.type == "pause") {
-        this.game.notifqueue.setSynchronousDuration(notif.args.duration);
+        const duration = this.gamestate.replay ? 0 : notif.args.duration;
+        this.game.notifqueue.setSynchronousDuration(duration);
       } else if (notif.type == "penny") {
         Object.assign(this.gamedatas.penny, notif.args.penny);
       } else if (notif.type == "player") {
@@ -874,18 +889,29 @@ export default {
      * Other functions
      */
 
-    sort(location: string, order: string): void {
-      this.locationOrder[location] = order;
+    sortOnce(location: string, order: string): void {
+      const cards = this.cardsInLocation(location);
       if (order == "shuffle") {
-        let cards = this.cardsInLocation(location);
-        for (let i = cards.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [cards[i], cards[j]] = [cards[j], cards[i]];
-        }
+        this.shuffleCards(cards);
+      } else {
+        this.sortCards(order, cards);
+      }
+      cards.forEach((card, index) => {
+        this.gamedatas.cards[card.id].order = index;
+      });
+      this.previewWord();
+    },
+
+    sort(location: string, order: string): void {
+      if (order == "shuffle") {
+        order = "order";
+        const cards = this.cardsInLocation(location);
+        this.shuffleCards(cards);
         cards.forEach((card, index) => {
-          this.gamedatas.cards[card.id].shuffle = index;
+          this.gamedatas.cards[card.id].order = index;
         });
       }
+      this.locationOrder[location] = order;
     },
 
     drag(e): void {
@@ -894,15 +920,7 @@ export default {
       cardIds.forEach((id, index) => {
         this.gamedatas.cards[id].order = index;
       });
-      this.locationOrder[location] = "order";
-
-      // Non-blocking server update
-      // let lock = false;
-      // this.takeAction("drag", { cardIds, lock });
-    },
-
-    chevron(location: string) {
-      this.visibleLocations[location] = !this.visibleLocations[location];
+      this.previewWord();
     },
 
     moveAll(location: string): Promise<any> {
@@ -933,13 +951,10 @@ export default {
     clickCard(e): Promise<any> {
       let { action, card } = e;
       if (action.action == "move") {
-        if (action.destination == "tableau") {
-          this.reorderLocation("tableau");
-        }
         return this.animateCard(card, {
           location: action.destination,
           order: this.nextOrderInLocation(action.destination),
-        });
+        }).then(this.previewWord, this.previewWord);
       } else {
         let args = { cardId: card.id };
         if (action.actionArgs) {
@@ -956,6 +971,7 @@ export default {
         this.keyboardId = card.id;
       } else if (action.action == "reset") {
         this.gamedatas.cards[card.id].wild = false;
+        this.previewWord();
       } else {
         let args = { cardId: card.id };
         if (action.actionArgs) {
@@ -969,7 +985,21 @@ export default {
       if (this.keyboardId != null) {
         this.gamedatas.cards[this.keyboardId].wild = letter;
         this.keyboardId = null;
+        this.previewWord();
       }
+    },
+
+    previewWord(): void {
+      let lock = false;
+      let handIds = this.cardIds(this.handCards);
+      let handMask = this.wildMask(this.handCards);
+      let tableauIds = null;
+      let tableauMask = null;
+      if (this.gamestate.active) {
+        tableauIds = this.cardIds(this.tableauCards);
+        tableauMask = this.wildMask(this.tableauCards);
+      }
+      this.takeAction("previewWord", { lock, handIds, handMask, tableauIds, tableauMask });
     },
   },
 };

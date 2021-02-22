@@ -7,7 +7,7 @@ class WordMgr extends APP_GameClass
         // Actually a plain-text file, but BGA requires .php extension
         $path = __DIR__ . "/wordlist/" . hardback::$instance->gamestate->table_globals[OPTION_DICTIONARY] . "/$letter.inc.php";
         if (!is_readable($path)) {
-            throw new BgaVisibleSystemException("Missing dictionary file: $path");
+            throw new BgaVisibleSystemException("getDictionary: Missing dictionary file: $path");
         }
         $dictionary = array_flip(file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
         return $dictionary;

@@ -73,7 +73,7 @@ $machinestates = [
         'possibleactions' => ['confirmWord', 'skipWord'],
         'transitions' => [
             'next' => ST_UNCOVER,
-            'skip' => ST_CLEANUP,
+            'skip' => ST_COOP_TURN,
             'zombie' => ST_NEXT_PLAYER,
         ],
         'updateGameProgression' => true,
@@ -236,7 +236,7 @@ $machinestates = [
         'type' => 'activeplayer',
         'args' => 'argPurchase',
         'action' => 'stAutoSkip',
-        'possibleactions' => ['purchase', 'convert', 'doctor', 'skip'],
+        'possibleactions' => ['purchase', 'skip', 'doctor', 'convert'],
         'transitions' => [
             'again' => ST_PURCHASE,
             'next' => ST_CLEANUP,

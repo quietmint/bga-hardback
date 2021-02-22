@@ -34,50 +34,25 @@
 @tailwind components;
 @tailwind utilities;
 
-.cardgrid {
-  display: grid;
-  grid-template:
-    "title actions sorter" auto
-    "cardlist cardlist sorter" auto
-    / 1fr auto auto;
-}
-
-.cardgrid.no-sorter {
-  grid-template:
-    "title actions" auto
-    "cardlist cardlist" auto
-    / 1fr auto;
-}
-
 .chevron {
   transition: transform 0.3s ease-out;
 }
 
-.cardgrid.collapsed .chevron {
+.chevron.collapsed,
+.cj {
   transform: rotate(-90deg);
 }
 
 .title {
-  grid-area: title;
+  text-shadow: -0.5px 0 rgba(0, 0, 0, 0.5), 0.5px 0.5px rgba(255, 255, 255, 0.5);
 }
 
-.cardlist {
-  grid-area: cardlist;
-}
-
-.actions {
-  @apply flex leading-7 text-13 text-center font-bold rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer divide-x divide-white;
-  grid-area: actions;
-}
-
-.sorter {
-  @apply ml-2 leading-7 text-13 text-center font-bold rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer divide-y divide-white;
-  height: min-content;
-  grid-area: sorter;
+.buttongroup {
+  @apply mb-1 ml-2 rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer text-13 text-center divide-x divide-white;
 }
 
 .button {
-  @apply uppercase leading-7 px-2 transition-all cursor-pointer font-bold;
+  @apply uppercase px-2 transition-all cursor-pointer font-bold;
 }
 
 .button.black {
@@ -125,10 +100,6 @@
 
 .card.wild {
   transform: rotateY(180deg);
-}
-
-.card.nomargin {
-  margin: 0;
 }
 
 .cardface {

@@ -36,7 +36,7 @@
         </div>
 
         <!-- ID -->
-        <!-- <div class="absolute top-0 right-0 text-12 text-white" style="text-shadow: 1px 1px black">{{ card.id }} / Order: {{ card.order }}</div> -->
+        <div class="absolute top-0 right-0 text-12 text-white" style="text-shadow: 1px 1px black">{{ card.id }} / #{{ card.order }} / {{ card.origin }}</div>
       </div>
 
       <!-- Wild -->
@@ -48,8 +48,8 @@
     </div>
 
     <!-- Footer -->
-    <div class="h-7 flex items-start justify-evenly text-center text-13">
-      <div v-for="action in footerActions" :key="action" @click="clickFooter(action)" :class="action.class" class="px-2 rounded-b-lg transition-all z-10">{{ action.text }}<Icon v-if="action.icon" :icon="action.icon" class="inline text-15" /></div>
+    <div class="h-7 leading-7 flex items-start justify-evenly text-center text-13">
+      <div v-for="action in footerActions" :key="action" @click="clickFooter(action)" :class="action.class" class="rounded-b-lg z-10">{{ action.text }}<Icon v-if="action.icon" :icon="action.icon" class="inline text-15" /></div>
     </div>
   </div>
 </template>
@@ -88,18 +88,7 @@ export default {
 
     bookmarkClass(): string {
       let c = this.card.timeless ? "flex-row w-20 h-7 " : "flex-col w-7 h-20 ";
-      switch (this.card.genre) {
-        case Constants.ADVENTURE:
-          return c + "text-yellow-900";
-        case Constants.HORROR:
-          return c + "text-green-100";
-        case Constants.ROMANCE:
-          return c + "text-red-100";
-        case Constants.MYSTERY:
-          return c + "text-blue-100";
-        default:
-          return c + "text-white";
-      }
+      return c + Constants.GENRES[this.card.genre].textLight;
     },
 
     letterClass(): string {
@@ -111,16 +100,7 @@ export default {
     },
 
     textClass(): string {
-      switch (this.card.genre) {
-        case Constants.ADVENTURE:
-          return "text-yellow-900 bg-yellow-600 bg-opacity-10";
-        case Constants.HORROR:
-          return "text-green-700 bg-green-700 bg-opacity-10";
-        case Constants.ROMANCE:
-          return "text-red-700 bg-red-700 bg-opacity-10";
-        case Constants.MYSTERY:
-          return "text-blue-700 bg-blue-700 bg-opacity-10";
-      }
+      return `${Constants.GENRES[this.card.genre].text} ${Constants.GENRES[this.card.genre].bg} bg-opacity-15`;
     },
 
     header() {
@@ -129,14 +109,14 @@ export default {
           text: this.card.player.name,
           icon: "timeless",
           title: this.i18n("timelessTip", { player_name: this.card.player.name }),
-          class: `${this.card.player.colorBg} ${this.card.player.colorBgText}`,
+          class: `${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
         };
       } else if (this.card.location == "jail") {
         return {
           text: this.card.player.name,
           icon: "jail",
           title: this.i18n("jailTip", { player_name: this.card.player.name }),
-          class: `${this.card.player.colorBg} ${this.card.player.colorBgText}`,
+          class: `${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
         };
       }
     },

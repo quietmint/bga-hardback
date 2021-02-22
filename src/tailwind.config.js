@@ -1,42 +1,30 @@
 const colors = require("tailwindcss/colors");
 
 module.exports = {
-  purge: ["*.vue"],
+  purge: ["*.js", "*.vue"],
   darkMode: "media",
   theme: {
     colors: {
       transparent: "transparent",
-      white: "white",
-      black: "black",
+      current: "currentColor",
+      black: colors.black,
+      white: colors.white,
       gray: colors.trueGray,
       red: colors.red,
       yellow: colors.yellow,
       green: colors.lime,
       blue: colors.blue,
-      indigo: colors.indigo,
-      purple: colors.violet,
-      pink: colors.pink,
+      purple: colors.fuchsia,
     },
     boxShadow: {
       DEFAULT: "2px 2px 4px rgba(0, 0, 0, 0.5)",
     },
     extend: {
-      height: {
-        25: "6.25rem",
-      },
       borderWidth: {
         3: "3px",
       },
       cursor: {
         "ew-resize": "ew-resize",
-      },
-      ringWidth: {
-        DEFAULT: "6px",
-      },
-      minHeight: {
-        60: "15rem",
-        64: "16rem",
-        66: "16.5rem",
       },
       fontSize: {
         12: "12px",
@@ -50,9 +38,23 @@ module.exports = {
         24: "24px",
         32: "32px",
       },
+      height: {
+        25: "6.25rem",
+      },
       lineHeight: {
         14: "3.5rem",
         17: "17px",
+      },
+      minHeight: {
+        60: "15rem",
+        64: "16rem",
+        66: "16.5rem",
+      },
+      opacity: {
+        15: "0.15",
+      },
+      ringWidth: {
+        DEFAULT: "6px",
       },
       zIndex: {
         top: "2000",

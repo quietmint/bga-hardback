@@ -149,11 +149,22 @@ class hardback extends Table
 
         // Activate first player
         $this->activeNextPlayer();
+        CardMgr::moveHandToTableau(self::getActivePlayerId());
     }
 
     public function isCurrentPlayerActive(): bool
     {
         return self::getCurrentPlayerId() == self::getActivePlayerId();
+    }
+
+    public function checkActionCustom(string $action, bool $throwException = true): bool
+    {
+        $stateName = $this->gamestate->state()['name'];
+        $invalid =  $stateName == 'gameEnd' || ($this->isCurrentPlayerActive() && $stateName != 'playerTurn');
+        if ($invalid && $throwException) {
+            throw new BgaVisibleSystemException("This game action is impossible right now: $action");
+        }
+        return !$invalid;
     }
 
     /*
@@ -179,6 +190,12 @@ class hardback extends Table
             $locations[] = CardMgr::getDeckLocation($playerId);
         }
 
+        $cards = $this->cards;
+        if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
+            // Hide Special Horror benefit for co-op games
+            unset($cards[46]['genreBenefits'][SPECIAL_HORROR]);
+        }
+
         $data = [
             'players' => $playersAsArray,
             'cards' => CardMgr::getCardsInLocation($locations),
@@ -192,7 +209,7 @@ class hardback extends Table
             ],
             'refs' => [
                 'benefits' => $this->benefits,
-                'cards' => $this->cards,
+                'cards' => $cards,
                 'i18n' => $this->i18n,
             ],
         ];
@@ -279,6 +296,35 @@ class hardback extends Table
         }
     }
 
+    function previewWord(array $handIds, string $handMask, ?array $tableauIds, ?string $tableauMask): void
+    {
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $origins = [$player->getHandLocation(), "timeless"];
+
+        $hand = CardMgr::getCards($handIds, $handMask);
+        $invalid = array_filter($hand, function ($card) use ($origins) {
+            return !$card->isOrigin($origins);
+        });
+        if (!empty($invalid)) {
+            throw new BgaVisibleSystemException("previewWord: Not possible for $player to use hand cards " .  CardMgr::getString($invalid));
+        }
+
+        $notify = false;
+        $tableau = null;
+        if ($this->isCurrentPlayerActive() && $tableauIds !== null) {
+            $notify = PlayerMgr::getPlayerCount() > 1;
+            $tableau = CardMgr::getCards($tableauIds, $tableauMask);
+            $invalid = array_filter($tableau, function ($card) use ($origins) {
+                return !$card->isOrigin($origins);
+            });
+            if (!empty($invalid)) {
+                throw new BgaVisibleSystemException("previewWord: Not possible for $player to use tableau cards " .  CardMgr::getString($invalid));
+            }
+        }
+
+        CardMgr::previewWord($player->getId(), $hand, $tableau, $notify);
+    }
+
     function confirmWord(array $cardIds, string $wildMask): void
     {
         // Minimum 2 letters
@@ -306,12 +352,12 @@ class hardback extends Table
         }
 
         // Cards must originate from a valid location
-        $locations = [$player->getHandLocation(), "timeless"];
-        $invalid = array_filter($cards, function ($card) use ($locations) {
-            return !$card->isLocation($locations);
+        $origins = [$player->getHandLocation(), "timeless"];
+        $invalid = array_filter($cards, function ($card) use ($origins) {
+            return !$card->isOrigin($origins);
         });
         if (!empty($invalid)) {
-            throw new BgaVisibleSystemException("Not possible for $player to use card " .  CardMgr::getString($invalid));
+            throw new BgaVisibleSystemException("confirmWord: Not possible for $player to use cards " .  CardMgr::getString($invalid));
         }
 
         // Word must be valid
@@ -337,7 +383,7 @@ class hardback extends Table
         ]);
 
         // Database commit
-        CardMgr::playWord($player->getId(), $cards);
+        CardMgr::commitWord($player->getId(), $cards);
         $this->setGameStateValue('startInk', $player->getInk());
         $this->setGameStateValue('startRemover', $player->getRemover());
         $this->setGameStateValue('startScore', $player->getScore());
@@ -433,7 +479,7 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         $sourceIds = $this->gamestate->state()['args']['sources'][$cardId] ?? null;
         if (!$sourceIds || empty($sourceIds)) {
-            throw new BgaVisibleSystemException("Not possible for $player to uncover card $cardId");
+            throw new BgaVisibleSystemException("uncover: Not possible for $player to use card ID $cardId");
         }
         $sourceId = reset($sourceIds);
         $cards = CardMgr::getCards([$cardId, $sourceId]);
@@ -485,7 +531,7 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         $sourceIds = $this->gamestate->state()['args']['sources'][$cardId] ?? null;
         if (!$sourceIds || empty($sourceIds)) {
-            throw new BgaVisibleSystemException("Not possible for $player to double card $cardId");
+            throw new BgaVisibleSystemException("double: Not possible for $player to use card ID $cardId");
         }
         $sourceId = reset($sourceIds);
         $cards = CardMgr::getCards([$cardId, $sourceId]);
@@ -547,7 +593,7 @@ class hardback extends Table
         $card = CardMgr::getCard($cardId);
         $benefits = $card->getBenefits($benefitId);
         if (!$p || empty($benefits)) {
-            throw new BgaVisibleSystemException("Not possible for $player to choose benefit $benefitId for $card");
+            throw new BgaVisibleSystemException("either: Not possible for $player to choose benefit $benefitId for card $card");
         }
 
         CardMgr::useBenefit($card, $benefitId);
@@ -678,7 +724,7 @@ class hardback extends Table
         if (isset($specials[SPECIAL_ROMANCE])) {
             // Romance: Draw 3 and return or discard
             CardMgr::useBenefit($specials[SPECIAL_ROMANCE], SPECIAL_ROMANCE);
-            CardMgr::drawCards(3, $player->getDeckLocation(), $player->getHandLocation(), true);
+            CardMgr::notifyCards(CardMgr::drawCards(3, $player->getDeckLocation(), $player->getHandLocation()));
             $this->gamestate->nextState('romance');
             return;
         }
@@ -721,7 +767,7 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         $card = CardMgr::getCard($cardId);
         if ($card == null || !$card->isLocation($player->getHandLocation())) {
-            throw new BgaVisibleSystemException("Not possible for $player to return preview $card");
+            throw new BgaVisibleSystemException("previewReturn: Not possible for $player to use card $card");
         }
         CardMgr::previewReturn($card, $player->getDeckLocation());
         $player->notifyPanel();
@@ -735,7 +781,7 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         $card = CardMgr::getCard($cardId);
         if ($card == null || !$card->isLocation($player->getHandLocation())) {
-            throw new BgaVisibleSystemException("Not possible for $player to discard preview $card");
+            throw new BgaVisibleSystemException("previewDiscard: Not possible for $player to use card $card");
         }
         CardMgr::discard($card, $player->getDiscardLocation());
         $player->notifyPanel();
@@ -771,7 +817,7 @@ class hardback extends Table
     {
         $player = PlayerMgr::getPlayer();
         if (!in_array($cardId, $this->gamestate->state()['args']['cardIds'])) {
-            throw new BgaVisibleSystemException("Not possible for $player to trash card $cardId");
+            throw new BgaVisibleSystemException("trash: Not possible for $player to use card ID $cardId");
         }
 
         $card = CardMgr::getCard($cardId);
@@ -783,7 +829,7 @@ class hardback extends Table
             $benefits = $card->getBenefits(TRASH_DISCARD);
         }
         if (empty($benefits)) {
-            throw new BgaVisibleSystemException("Not possible for $player to trash $card");
+            throw new BgaVisibleSystemException("trash: Not possible for $player to use card $card");
         }
 
         CardMgr::useBenefit($card, $benefits[0]['id']);
@@ -839,12 +885,12 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         $sourceIds = $this->gamestate->state()['args']['sourceIds'];
         if (empty($sourceIds)) {
-            throw new BgaVisibleSystemException("Not possible for $player to trash any card");
+            throw new BgaVisibleSystemException("trashDiscard: Not possible for $player to trash any card");
         }
         $source = CardMgr::getCard($sourceIds[0]);
         $card = CardMgr::getCard($cardId);
         if ($card == null || !$card->isLocation($player->getDiscardLocation())) {
-            throw new BgaVisibleSystemException("Not possible for $player to trash $card");
+            throw new BgaVisibleSystemException("trashDiscard: Not possible for $player to use card $card");
         }
 
         $amount = $this->gamestate->state()['args']['amount'];
@@ -890,12 +936,12 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         $sourceIds = $this->gamestate->state()['args']['sourceIds'];
         if (empty($sourceIds)) {
-            throw new BgaVisibleSystemException("Not possible for $player to jail any card");
+            throw new BgaVisibleSystemException("jail: Not possible for $player to jail any card");
         }
         $source = CardMgr::getCard($sourceIds[0]);
         $card = CardMgr::getCard($cardId);
         if ($card == null || !$card->isLocation('offer')) {
-            throw new BgaVisibleSystemException("Not possible for $player to jail card $card");
+            throw new BgaVisibleSystemException("jail: Not possible for $player to use card $card");
         }
 
         CardMgr::useBenefit($source, JAIL);
@@ -914,7 +960,7 @@ class hardback extends Table
             ]);
             CardMgr::jail($player->getId(), $card);
         }
-        CardMgr::drawCards(1, 'deck', 'offer', true);
+        CardMgr::notifyCards(CardMgr::drawCards(1, 'deck', 'offer'));
         $this->gamestate->nextState('again');
     }
 
@@ -1003,7 +1049,7 @@ class hardback extends Table
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
         if (!in_array($cardId, $this->gamestate->state()['args']['cardIds'])) {
-            throw new BgaVisibleSystemException("Not possible for $player to purchase card $cardId");
+            throw new BgaVisibleSystemException("purchase: Not possible for $player to use card ID $cardId");
         }
 
         $penny = PlayerMgr::getPenny();
@@ -1049,7 +1095,7 @@ class hardback extends Table
         }
 
         if ($oldLocation == 'offer') {
-            CardMgr::drawCards(1, 'deck', 'offer', true);
+            CardMgr::notifyCards(CardMgr::drawCards(1, 'deck', 'offer'));
         }
         $this->incStat(1, 'cardsPurchase', $player->getId());
         $this->gamestate->nextState('again');
@@ -1087,7 +1133,7 @@ class hardback extends Table
                 }
             }
         }
-        throw new BgaVisibleSystemException("Not possible for $player to purchase an advertisement");
+        throw new BgaVisibleSystemException("advert: Not possible for $player to purchase an advertisement");
     }
 
     function skip(): void
@@ -1099,6 +1145,19 @@ class hardback extends Table
      * PHASE 5: DISCARD USED CARDS AND INK
      * PHASE 6: DISCARD USED TIMELESS CLASSIC CARDS
      */
+
+    function skipWord(): void
+    {
+        $player = PlayerMgr::getPlayer();
+        self::notifyAllPlayers('message', $this->msg['skipWord'], [
+            'player_name' => self::getActivePlayerName(),
+        ]);
+
+        // Reset hand and tableau
+        CardMgr::reset($player->getId(), true);
+        $player->notifyPanel();
+        $this->gamestate->nextState('skip');
+    }
 
     function stCleanup(): void
     {
@@ -1120,10 +1179,9 @@ class hardback extends Table
             ]);
         }
 
-        // Reset hand
+        // Reset hand and tableau
         CardMgr::reset($player->getId());
         $player->notifyPanel();
-
         $this->gamestate->nextState('next');
     }
 
@@ -1171,7 +1229,8 @@ class hardback extends Table
         ]);
 
         // Draw a new card
-        $draw = CardMgr::drawCards(1, 'deck', 'offer', true);
+        $draw = CardMgr::drawCards(1, 'deck', 'offer');
+        CardMgr::notifyCards($draw);
         $draw = reset($draw);
         unset($offer[$card->getId()]);
         $offer[$draw->getId()] = $draw;
@@ -1185,7 +1244,7 @@ class hardback extends Table
                 'letter' => $card->getLetter(),
             ]);
             CardMgr::discard($card, $penny->getDiscardLocation());
-            CardMgr::drawCards(1, 'deck', 'offer', true);
+            CardMgr::notifyCards(CardMgr::drawCards(1, 'deck', 'offer'));
         }
 
         // Discard timeless cards
@@ -1219,14 +1278,6 @@ class hardback extends Table
      * PHASE 7: DRAW YOUR NEXT HAND
      */
 
-    function skipWord(): void
-    {
-        self::notifyAllPlayers('message', $this->msg['skipWord'], [
-            'player_name' => self::getActivePlayerName(),
-        ]);
-        $this->gamestate->nextState('skip');
-    }
-
     function stNextPlayer(): void
     {
         // Activate next player
@@ -1246,6 +1297,9 @@ class hardback extends Table
         // Give extra time
         $this->giveExtraTime($player->getId());
         $this->gamestate->nextState('playerTurn');
+
+        // Move cards to tableau
+        CardMgr::moveHandToTableau($player->getId());
     }
 
     /*
@@ -1256,7 +1310,8 @@ class hardback extends Table
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
         $player->spendInk();
-        $cards = CardMgr::drawCards(1, $player->getDeckLocation(), $player->getHandLocation());
+        $location = $player->isActive() ? 'tableau' : $player->getHandLocation();
+        $cards = CardMgr::drawCards(1, $player->getDeckLocation(), $location, $player->getHandLocation());
         if (empty($cards)) {
             throw new BgaUserException("Your deck is empty");
         }
@@ -1335,6 +1390,9 @@ class hardback extends Table
             self::DbQuery('UPDATE player SET player_score_aux = ink');
         }
 
+        // Discard all cards
+        CardMgr::endGameDiscard();
+        CardMgr::deletePreviewNotifications();
         $this->gamestate->nextState('gameEnd');
     }
 

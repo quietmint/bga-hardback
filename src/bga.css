@@ -19,6 +19,10 @@
   padding: 10px;
 }
 
+#game_play_area {
+  margin: 0;
+}
+
 .hdefine {
   font-style: italic;
   margin: 5px -5px -5px;
@@ -50,7 +54,7 @@
 }
 
 .hgenre.Adventure {
-  background-color: #facc15;
+  background-color: #eab308;
   color: #713f12;
 }
 
@@ -60,7 +64,7 @@
 }
 
 .hgenre.Mystery {
-  background-color: #2563eb;
+  background-color: #1d4ed8;
   color: #dbeafe;
 }
 
@@ -121,12 +125,12 @@ a:visited.playername {
   background-color: #888;
   padding-bottom: 26px;
   color: white;
-  text-shadow: -0.5px 0px 1px black, 0.5px 0px 1px black;
+  text-shadow: -0.5px 0 rgba(0, 0, 0, 0.5), 0.5px 0 rgba(0, 0, 0, 0.5);
 }
 
 .player-name a {
   background-color: #8889;
-  text-shadow: -0.5px 0px 1px black, 0.5px 0px 1px white;
+  text-shadow: -0.5px 0 rgba(0, 0, 0, 0.5), 0.5px 0.5px rgba(255, 255, 255, 0.5);
 }
 
 .player_board_inner {

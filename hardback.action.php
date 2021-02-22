@@ -37,18 +37,26 @@ class action_hardback extends APP_GameAction
     }
   }
 
+  private function getArgIdList(string $name, bool $required): ?array
+  {
+    $value = self::getArg($name, AT_numberlist, $required);
+    return ($value === null) ? null : explode(',', $value);
+  }
+
   /*
    * PHASE 1: SPELL A WORD
    * PHASE 2: DISCARD UNUSED CARDS
    */
-  public function preview()
+  public function previewWord()
   {
     self::setAjaxMode();
-    $this->game->checkAction('confirmWord');
-    $cardId = self::getArg('cardId', AT_posint, true);
-    $location = self::getArg('location', AT_alphanum, true);
-    $order = self::getArg('cardId', AT_posint, true);
-    hardback::$instance->notifyAllPlayers('preview', "card $cardId, location $location, order $order", []);
+    if ($this->game->checkActionCustom('previewWord', false)) {
+      $handIds = $this->getArgIdList('handIds', true);
+      $handMask = self::getArg('handMask', AT_alphanum, true);
+      $tableauIds = $this->getArgIdList('tableauIds', false);
+      $tableauMask = self::getArg('tableauMask', AT_alphanum, false);
+      $this->game->previewWord($handIds, $handMask, $tableauIds, $tableauMask);
+    }
     self::ajaxResponse();
   }
 
@@ -56,7 +64,7 @@ class action_hardback extends APP_GameAction
   {
     self::setAjaxMode();
     $this->game->checkAction('confirmWord');
-    $cardIds = explode(',', self::getArg('cardIds', AT_numberlist, true));
+    $cardIds = $this->getArgIdList('cardIds', true);
     $wildMask = self::getArg('wildMask', AT_alphanum, true);
     $this->game->confirmWord($cardIds, $wildMask);
     self::ajaxResponse();
@@ -227,10 +235,7 @@ class action_hardback extends APP_GameAction
   public function useInk()
   {
     self::setAjaxMode();
-    // Custom access check, non-active players can always do this
-    if ($this->game->isCurrentPlayerActive() && $this->game->gamestate->state()['name'] != 'playerTurn') {
-      throw new BgaUserException('This game action is impossible right now');
-    }
+    $this->game->checkActionCustom('useInk');
     $this->game->useInk();
     self::ajaxResponse();
   }
@@ -238,10 +243,7 @@ class action_hardback extends APP_GameAction
   public function useRemover()
   {
     self::setAjaxMode();
-    // Custom access check, non-active players can always do this
-    if ($this->game->isCurrentPlayerActive() && $this->game->gamestate->state()['name'] != 'playerTurn') {
-      throw new BgaUserException('This game action is impossible right now');
-    }
+    $this->game->checkActionCustom('useInk');
     $cardId = self::getArg('cardId', AT_posint, true);
     $this->game->useRemover($cardId);
     self::ajaxResponse();

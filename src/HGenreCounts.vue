@@ -34,36 +34,17 @@ export default {
         return [];
       }
 
-      return [
-        {
-          genre: "adventure",
-          class: "bg-yellow-400 text-yellow-900",
-          count: this.counts[Constants.ADVENTURE],
-        },
-        {
-          genre: "horror",
-          class: "bg-green-700 text-green-100",
-          count: this.counts[Constants.HORROR],
-        },
-        {
-          genre: "mystery",
-          class: "bg-blue-600 text-blue-100",
-          count: this.counts[Constants.MYSTERY],
-        },
-        {
-          genre: "romance",
-          class: "bg-red-700 text-red-100",
-          count: this.counts[Constants.ROMANCE],
-        },
-        {
-          genre: "starter",
-          class: "bg-gray-600 text-gray-100",
-          count: this.counts[Constants.STARTER],
-        },
-      ].map((x: any) => {
-        x.percent = (x.count / this.genreTotal) * 100;
-        x.title = `${this.i18n(x.genre)}: ${x.count}/${this.genreTotal} (${x.percent.toFixed(0)}%)`;
-        return x;
+      return [Constants.ADVENTURE, Constants.HORROR, Constants.MYSTERY, Constants.ROMANCE, Constants.STARTER].map((id: number) => {
+        const count = this.counts[id];
+        const genre = Constants.GENRES[id];
+        const percent = (count / this.genreTotal) * 100;
+        return {
+          class: `${genre.bg} ${genre.textLight}`,
+          count: count,
+          genre: genre.icon,
+          percent: percent,
+          title: `${this.i18n(genre.icon)}: ${count}/${this.genreTotal} (${percent.toFixed(0)}%)`,
+        };
       });
     },
   },
