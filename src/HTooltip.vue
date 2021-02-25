@@ -1,12 +1,12 @@
 <template>
   <div @mouseover="mouseover" @mouseout="hover = false" ref="holder">
-    <table v-if="hover" class="table-fixed fixed z-top bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-13 text-center" :style="{ top: top, left: left }" ref="table">
+    <table v-if="hover" class="table-fixed fixed z-top bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-15 text-center" :style="{ top: top, left: left }" ref="table">
       <tr>
         <th colspan="2" class="p-2 bg-gray-200 font-bold text-center">{{ header }}</th>
       </tr>
       <tr v-for="(points, key) in table" :key="key">
         <td class="px-2 py-1 border-t border-b border-gray-800">{{ key }}{{ suffix }}</td>
-        <td class="px-2 py-1 border-t border-b border-gray-800">{{ points }}<Icon icon="star" class="inline text-17" /></td>
+        <td class="px-2 py-1 border-t border-b border-gray-800">{{ points }}<Icon icon="star" class="inline text-18" /></td>
       </tr>
     </table>
     <slot />
