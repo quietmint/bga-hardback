@@ -1205,14 +1205,14 @@ class hardback extends Table
         }
 
         $offer = CardMgr::getOffer();
-        $card = reset($offer);
+        $card = end($offer);
         $points = $card->getCost();
         if ($penny->getGenre() == ROMANCE && $card->getGenre() == ROMANCE) {
             // Romance: Penny earns double
             $points *= 2;
         }
 
-        // Discard the first card
+        // Discard the last card
         CardMgr::discard($card, $penny->getDiscardLocation());
         $penny->addPoints($points, '');
         $this->incStat(1, 'coopTurns');

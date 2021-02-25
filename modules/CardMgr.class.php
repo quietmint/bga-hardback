@@ -78,7 +78,7 @@ class CardMgr extends APP_GameClass
 
     public static function drawCards(int $count, string $fromLocation, string $toLocation, string $origin = null): array
     {
-        $order = self::getNextOrderInLocation($toLocation);
+        $order = self::getStartOfLocation($toLocation);
 
         // Draw cards from deck
         $sql = "SELECT `id` FROM card WHERE " . self::getLocationWhereClause($fromLocation) . " ORDER BY `location`, `order` LIMIT $count";
@@ -110,16 +110,16 @@ class CardMgr extends APP_GameClass
         // Populate from database and sort
         $cards = self::getCards($ids);
 
-        // Reposition at the end and update origin
+        // Reposition in front and update origin
         if ($origin == null) {
             $origin = $toLocation;
         }
         foreach ($cards as &$card) {
+            $order--;
             self::DbQuery("UPDATE card SET `origin` = '$origin', `location` = '$toLocation', `order` = $order WHERE `id` = {$card->getId()}");
             $card->setLocation($toLocation);
             $card->setOrigin($origin);
             $card->setOrder($order);
-            $order++;
 
             // Count offer row draws for timeless classic discard condition
             if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO && $fromLocation == 'deck' && $toLocation == 'offer') {
@@ -135,7 +135,7 @@ class CardMgr extends APP_GameClass
         $sql = "SELECT `id` FROM card WHERE " . self::getLocationWhereClause($shuffleLocation);
         $ids = self::getObjectListFromDB($sql, true);
         shuffle($ids);
-        $order = 1;
+        $order = 0;
         foreach ($ids as $id) {
             self::DbQuery("UPDATE card SET `origin` = '$location', `location` = '$location', `order` = $order WHERE `id` = $id");
             $order++;
@@ -289,10 +289,9 @@ class CardMgr extends APP_GameClass
         return intval($count);
     }
 
-    public static function getNextOrderInLocation(string $location): int
+    public static function getStartOfLocation(string $location): int
     {
-        $max = intval(self::getUniqueValueFromDB("SELECT COALESCE(MAX(`order`), -1) FROM card WHERE `location` = '$location'"));
-        return $max + 1;
+        return intval(self::getUniqueValueFromDB("SELECT COALESCE(MIN(`order`), 0) FROM card WHERE `location` = '$location'"));
     }
 
     public static function getHandLocation(int $playerId): string
@@ -522,12 +521,7 @@ class CardMgr extends APP_GameClass
                 $remainder[] = $card;
             }
         }
-        foreach ($remainder as $card) {
-            $card->setOrder(self::getNextOrderInLocation($card->getOrigin()));
-            $sql = "UPDATE card SET `wild` = NULL, `location` = `origin`, `order` = {$card->getOrder()} WHERE `id` = {$card->getId()}";
-            self::DbQuery($sql);
-            $updatedIds[] = $card->getId();
-        }
+        $updatedIds = array_merge($updatedIds, self::discardToOrigin($remainder));
 
         // Notify
         if ($notify) {
@@ -545,12 +539,7 @@ class CardMgr extends APP_GameClass
         $remainder = array_filter(self::getTableau(null), function ($card) use ($ids) {
             return !in_array($card->getId(), $ids);
         });
-        foreach ($remainder as $card) {
-            $card->setOrder(self::getNextOrderInLocation($card->getOrigin()));
-            $sql = "UPDATE card SET `wild` = NULL, `location` = `origin`, `order` = {$card->getOrder()} WHERE `id` = {$card->getId()}";
-            self::DbQuery($sql);
-            $updatedIds[] = $card->getId();
-        }
+        $updatedIds = self::discardToOrigin($remainder);
 
         // Update tableau
         $order = 0;
@@ -596,6 +585,18 @@ class CardMgr extends APP_GameClass
     public static function isGenreActive(int $genre): bool
     {
         return $genre != STARTER && hardback::$instance->getGameStateValue("countActive$genre") >= 2;
+    }
+
+    public static function discardToOrigin($cards): array
+    {
+        $updatedIds = [];
+        foreach ($cards as $card) {
+            $card->setOrder(self::getStartOfLocation($card->getOrigin()) - 1);
+            $sql = "UPDATE card SET `wild` = NULL, `location` = `origin`, `order` = {$card->getOrder()} WHERE `id` = {$card->getId()}";
+            self::DbQuery($sql);
+            $updatedIds[] = $card->getId();
+        }
+        return $updatedIds;
     }
 
     public static function discard($cards, string $location, bool $notify = true): void
