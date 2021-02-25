@@ -133,6 +133,19 @@ const getHtml = (id: string) => {
     return el.outerHTML.replace(/ id=.*? /, " ");
   }
 };
+const transitionEnd = (el: HTMLElement): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    function onTransition(ev: TransitionEvent) {
+      if (ev.target == el) {
+        el.removeEventListener("transitionend", onTransition);
+        el.removeEventListener("transitioncancel", onTransition);
+        resolve();
+      }
+    }
+    el.addEventListener("transitionend", onTransition);
+    el.addEventListener("transitioncancel", onTransition);
+  });
+};
 
 // Genre icons
 import bookmarkIcon from "@iconify-icons/mdi/bookmark";
@@ -499,7 +512,7 @@ export default {
     /*
      * Animation
      */
-    async animateCard(card, changes): Promise<number> {
+    async animateCard(card, changes): Promise<void> {
       if (changes) {
         card = Object.assign({}, card, changes);
       }
@@ -592,49 +605,10 @@ export default {
       }
 
       // Apply reverse transform
-      let diffX = start.left - end.left;
-      let diffY = start.top - end.top;
-      cardEl.style.transition = "none";
-      cardEl.style.transform = "translate(" + diffX + "px, " + diffY + "px)";
-      await repaint();
-
-      // Resolve when the transition ends
-      let promise: Promise<number> = new Promise((resolve) => {
-        // Just in case transitionend never fires
-        const timeout = setTimeout(() => {
-          console.warn(`Animate card ${card.id} ${mode} missing transitionend`);
-          resolve(card.id);
-        }, 2400);
-
-        cardEl.style.transition = "";
-        cardEl.style.transform = "";
-        const t0 = performance.now();
-        cardEl.addEventListener(
-          "transitionend",
-          () => {
-            const t1 = performance.now();
-            clearTimeout(timeout);
-            console.log(`Animate card ${card.id} ${mode} took ${Math.round(t1 - t0)}ms`);
-            resolve(card.id);
-          },
-          { once: true }
-        );
-
-        if (gapEl) {
-          gapEl.style.width = "";
-          gapEl.addEventListener(
-            "transitionend",
-            () => {
-              const t1 = performance.now();
-              clearTimeout(timeout);
-              console.log(`Animate card ${card.id} ${mode} destroy gap`);
-              gapEl.remove();
-              gapEl = null;
-            },
-            { once: true }
-          );
-        }
-      });
+      let promise: Promise<void> = this.animateFlip(cardEl, start, end);
+      if (gapEl) {
+        gapEl.style.width = "";
+      }
 
       if (mode == "leave") {
         const finalizer = async () => {
@@ -642,14 +616,27 @@ export default {
           await nextTick();
           console.log(`Animate card ${card.id} ${mode} destroy card`);
           cardEl.remove();
-          if (gapEl) {
-            gapEl.remove();
-          }
-          return card.id;
+          gapEl.remove();
         };
         promise = promise.then(finalizer, finalizer);
       }
       return promise;
+    },
+
+    async animateFlip(el: HTMLElement, start, end): Promise<void> {
+      // FLIP technique: https://aerotwist.com/blog/flip-your-animations/
+      // Element is already at the end position
+      // Immediately translate it back to the start position
+      // Then run a normal CSS transition in "reverse"
+      const diffX = start.left - end.left;
+      const diffY = start.top - end.top;
+      el.style.transition = "none";
+      el.style.transform = "translate(" + diffX + "px, " + diffY + "px)";
+      await repaint();
+      el.style.transition = "";
+      el.style.transform = "";
+      await repaint();
+      return transitionEnd(el);
     },
 
     /*
@@ -791,7 +778,7 @@ export default {
           text() {
             return this.i18n("doctorButton", this.gamestate.args.advert);
           },
-          color: "gray",
+          color: "blue",
           function() {
             this.takeAction("doctor");
           },

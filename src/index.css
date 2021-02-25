@@ -38,8 +38,7 @@
   transition: transform 0.3s ease-out;
 }
 
-.chevron.collapsed,
-.cj {
+.chevron.collapsed {
   transform: rotate(-90deg);
 }
 
@@ -52,7 +51,7 @@
 }
 
 .button {
-  @apply uppercase px-2 transition-all cursor-pointer font-bold;
+  @apply uppercase px-2 transition-all duration-300 cursor-pointer font-bold;
 }
 
 .button.black {
@@ -61,6 +60,10 @@
 
 .button.blue {
   @apply bg-blue-700 text-white hover:bg-blue-100 hover:text-blue-700;
+}
+
+.button.blue.active {
+  @apply bg-blue-100 text-blue-700;
 }
 
 .button.red {
