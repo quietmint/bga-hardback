@@ -90,10 +90,10 @@
         <div class="title flex-grow" v-text="i18n('offer', { count: offerCards.length })"></div>
 
         <div class="buttongroup grid grid-cols-4">
-          <div @click="sort('offer', 'letter')" class="button blue" :title="i18n('sortLetterTip')">A-Z</div>
-          <div @click="sort('offer', 'cost')" class="button blue text-15" :title="i18n('sortCostTip')">¢</div>
-          <div @click="sort('offer', 'genre')" class="button blue" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
-          <div @click="sort('offer', 'order')" class="button blue" :title="i18n('sortTimeTip')"><Icon icon="clock" class="inline text-17 h-7" /></div>
+          <div @click="sort('offer', 'letter')" class="button blue" :class="{ active: locationOrder.offer == 'letter' }" :title="i18n('sortLetterTip')">A-Z</div>
+          <div @click="sort('offer', 'cost')" class="button blue text-15" :class="{ active: locationOrder.offer == 'cost' }" :title="i18n('sortCostTip')">¢</div>
+          <div @click="sort('offer', 'genre')" class="button blue" :class="{ active: locationOrder.offer == 'genre' }" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
+          <div @click="sort('offer', 'order')" class="button blue" :class="{ active: locationOrder.offer == 'order' }" :title="i18n('sortTimeTip')"><Icon icon="clock" class="inline text-17 h-7" /></div>
         </div>
       </div>
 
@@ -205,6 +205,13 @@ export default {
     this.emitter.on("drag", this.drag);
     this.discardVisible = this.gamestate.name == "gameEnd";
     this.locationOrder[this.discardLocation] = "genre";
+    this.locationOrder.offer = "order";
+    try {
+      var x = localStorage.getItem("hardback.sort.offer");
+      if (x) {
+        this.locationOrder.offer = x;
+      }
+    } catch (ignore) {}
   },
 
   beforeUnmount() {
@@ -912,6 +919,9 @@ export default {
         });
       }
       this.locationOrder[location] = order;
+      try {
+        localStorage.setItem("hardback.sort." + location, order);
+      } catch (ignore) {}
     },
 
     drag(e): void {
