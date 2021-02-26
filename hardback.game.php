@@ -300,7 +300,7 @@ class hardback extends Table
     function previewWord(array $handIds, string $handMask, ?array $tableauIds, ?string $tableauMask): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-        $origins = [$player->getHandLocation(), "timeless"];
+        $origins = [$player->getHandLocation(), 'timeless'];
 
         $hand = CardMgr::getCards($handIds, $handMask);
         $invalid = array_filter($hand, function ($card) use ($origins) {
@@ -334,17 +334,18 @@ class hardback extends Table
         }
 
         $player = PlayerMgr::getPlayer();
-        $cards = CardMgr::getCards($cardIds, $wildMask);
 
         // Inked cards must be used
-        $inked = array_filter($player->getHand(HAS_INK), function ($card) use ($cardIds) {
+        $inked = CardMgr::getCardsInLocation([$player->getHandLocation(), 'tableau'], HAS_INK);
+        $unusedInk = array_filter($inked, function ($card) use ($cardIds) {
             return !in_array($card->getId(), $cardIds);
         });
-        if (!empty($inked)) {
-            throw new BgaUserException(sprintf($this->msg['errorInk'], CardMgr::getString($inked)));
+        if (!empty($unusedInk)) {
+            throw new BgaUserException(sprintf($this->msg['errorInk'], CardMgr::getString($unusedInk)));
         }
 
         // Inked and timeless cards cannot be wild
+        $cards = CardMgr::getCards($cardIds, $wildMask);
         $invalidWilds = array_filter($cards, function ($card) {
             return $card->isWild() && ($card->hasInk() || $card->isOrigin("timeless"));
         });
@@ -353,7 +354,7 @@ class hardback extends Table
         }
 
         // Cards must originate from a valid location
-        $origins = [$player->getHandLocation(), "timeless"];
+        $origins = [$player->getHandLocation(), 'timeless'];
         $invalid = array_filter($cards, function ($card) use ($origins) {
             return !$card->isOrigin($origins);
         });
