@@ -135,15 +135,17 @@ const getHtml = (id: string) => {
 };
 const transitionEnd = (el: HTMLElement): Promise<void> => {
   return new Promise((resolve, reject) => {
-    function onTransition(ev: TransitionEvent) {
+    function onTransition(ev) {
       if (ev.target == el) {
         el.removeEventListener("transitionend", onTransition);
         el.removeEventListener("transitioncancel", onTransition);
+        clearTimeout(timeout);
         resolve();
       }
     }
     el.addEventListener("transitionend", onTransition);
     el.addEventListener("transitioncancel", onTransition);
+    const timeout = setTimeout(() => onTransition({ target: el }), 2400);
   });
 };
 
@@ -517,10 +519,10 @@ export default {
         card = Object.assign({}, card, changes);
       }
 
-      if (this.game.instantaneousMode) {
+      if (this.gamestate.instant) {
         // Instant replay, no animation
         this.gamedatas.cards[card.id] = card;
-        return card.id;
+        return;
       }
 
       const oldCard = this.gamedatas.cards[card.id];
@@ -531,12 +533,11 @@ export default {
         if (oldCard.order != card.order || (oldCard.location == "offer" && card.location == "jail")) {
           await sleep(600);
         }
-        return card.id;
+        return;
       }
 
       // Compute start position
       let cardEl: HTMLElement = null;
-      let gapEl: HTMLElement = null;
       let start = null;
       let end = null;
       if (oldCard != null) {
@@ -549,12 +550,11 @@ export default {
       if (!start && !visible) {
         // Invisible card movement, no animation
         this.gamedatas.cards[card.id] = card;
-        return card.id;
+        return;
       }
 
       let mode = null;
       if (start && !visible) {
-        // Compute end position
         mode = "leave";
         if (card.location.startsWith("discard_") || card.location == "deck_" + this.myself.id) {
           let playerId = card.location.split("_")[1];
@@ -566,36 +566,32 @@ export default {
           end = { top: window.innerHeight + start.height, left: start.left };
         }
 
-        // Insert a gap
-        gapEl = document.createElement("div");
-        gapEl.id = "gap" + card.id;
-        gapEl.className = "gap";
-        gapEl.style.width = start.width + "px";
-        gapEl.style.height = start.height + "px";
-        cardEl.parentNode.insertBefore(gapEl, cardEl);
-
-        // Move card to end
+        // Make a copy attached to the root
         const rootEl = document.getElementById("HGame");
         const root = getRect(rootEl);
         const top = end.top - root.top;
         const left = end.left - root.left;
-        rootEl.appendChild(cardEl);
+        cardEl = cardEl.cloneNode(true) as HTMLElement;
+        cardEl.id = "";
         cardEl.style.position = "absolute";
         cardEl.style.top = top + "px";
         cardEl.style.left = left + "px";
+        rootEl.appendChild(cardEl);
         await repaint();
-
-        // Compute reverse transform
         end = getRect(cardEl);
+
+        // Vue will delete the original
+        this.gamedatas.cards[card.id] = card;
+        await nextTick();
       } else {
-        // Move card to end and compute end position
         mode = "enter";
+        // Vue will create the card
         this.gamedatas.cards[card.id] = card;
         await nextTick();
         cardEl = document.getElementById("card" + card.id);
         if (!cardEl) {
-          console.warn(`Animate card ${card.id} ${mode} element disappeared`);
-          return card.id;
+          console.warn(`Animate card ${card.id} ${mode} element not found`);
+          return;
         }
         end = getRect(cardEl);
         if (start == null) {
@@ -604,23 +600,11 @@ export default {
         }
       }
 
-      // Apply reverse transform
-      let promise: Promise<void> = this.animateFlip(cardEl, start, end);
-      if (gapEl) {
-        gapEl.style.width = "";
-      }
-
+      // Animate
+      await this.animateFlip(cardEl, start, end);
       if (mode == "leave") {
-        const finalizer = async () => {
-          this.gamedatas.cards[card.id] = card;
-          await nextTick();
-          console.log(`Animate card ${card.id} ${mode} destroy card`);
-          cardEl.remove();
-          gapEl.remove();
-        };
-        promise = promise.then(finalizer, finalizer);
+        cardEl.remove();
       }
-      return promise;
     },
 
     async animateFlip(el: HTMLElement, start, end): Promise<void> {
@@ -673,13 +657,12 @@ export default {
         if (args.word) {
           const q = args.word.toLowerCase();
           const links = [
-            `<a target="hdefine" href="https://dictionary.cambridge.org/dictionary/english/${q}">Cambridge</a>`, //
+            `<a target="hdefine" href="https://dictionary.cambridge.org/search/english/direct/?q=${q}">Cambridge</a>`, //
             `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`, //
             `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`, //
             `<a target="hdefine" href="https://www.merriam-webster.com/dictionary/${q}">Merriam-Webster</a>`, //
             `<a target="hdefine" href="https://www.lexico.com/en/definition/${q}">Oxford Lexico</a>`, //
             `<a target="hdefine" href="https://en.wiktionary.org/wiki/${q}">Wiktionary</a>`, //
-            `<a target="hdefine" href="http://wordnetweb.princeton.edu/perl/webwn?s=${q}">WordNet</a>`, //
           ];
           args.word = `<b>${args.word}</b><div class="hdefine">${this.i18n("dictionary")}<ul><li>${links.join("</li><li>")}</li></ul></div>`;
         }
@@ -710,16 +693,15 @@ export default {
     },
 
     onUpdateActionButtons(stateName: string, args): void {
-      const activeId = this.game.getActivePlayerId();
-      console.log(`State ${stateName}, active ${activeId}`, args);
       Object.assign(this.gamestate, this.game.gamedatas.gamestate, {
         active: this.game.isCurrentPlayerActive(),
-        // @ts-ignore
-        replay: typeof g_replayFrom != "undefined",
+        instant: this.game.instantaneousMode,
       });
+      const activeId = this.game.getActivePlayerId();
       if (activeId) {
         this.gamestate.activeId = activeId;
       }
+      console.log(`State ${stateName}`, args);
 
       const actionRef = {
         confirmWord: {
@@ -828,44 +810,39 @@ export default {
     },
 
     onEnteringState(stateName: string, args): void {
-      console.log(`onEnteringState ${stateName}`, args);
       if (args && args.updateGameProgression) {
         this.gamedatas.finalRound = args.updateGameProgression >= 100;
       }
-      if (stateName == "gameEnd") {
+      if (this.gamestate.name == "gameEnd" || (this.gamestate.active && this.gamestate.name == "trashDiscard" && this.gamestate.args && !this.gamestate.args.skip)) {
         this.discardVisible = true;
       }
-      // if (stateName == "trashDiscard" && !args.skip) {
-      //   this.discardVisible = true;
-      // }
     },
 
     onLeavingState(stateName: string): void {
-      // if (stateName == "trashDiscard") {
-      //   this.discardVisible = false;
-      // }
+      if (this.gamestate.active && this.gamestate.name == "trashDiscard" && this.gamestate.args && !this.gamestate.args.skip) {
+        this.discardVisible = false;
+      }
     },
 
     onNotify(notif): void {
       console.log(`Notify ${notif.type}`, notif.args);
       if (notif.type == "cards" || notif.type == "cardsPreview") {
         if (notif.args.ignorePlayerId && notif.args.ignorePlayerId == this.game.player_id) {
-          console.warn("Notification ignored");
-          this.game.notifqueue.setSynchronousDuration(0);
+          this.game.notifqueue.setSynchronousDuration(1);
           return;
         }
         let cards = Object.values(notif.args.cards);
         // @ts-ignore
         cards.sort(firstBy("location").thenBy("order").thenBy("id"));
         Promise.all(cards.map(this.animateCard)).then(() => {
-          this.game.notifqueue.setSynchronousDuration(0);
+          this.game.notifqueue.setSynchronousDuration(1);
         });
       } else if (notif.type == "invalid") {
-        if (this.game.player_id == notif.args.player_id) {
+        if (!this.gamestate.instant && this.game.player_id == notif.args.player_id) {
           this.game.showMessage(this.i18n("invalid", notif.args), "error");
         }
       } else if (notif.type == "pause") {
-        const duration = this.gamestate.replay ? 0 : notif.args.duration;
+        const duration = this.gamestate.instant ? 1 : notif.args.duration;
         this.game.notifqueue.setSynchronousDuration(duration);
       } else if (notif.type == "penny") {
         Object.assign(this.gamedatas.penny, notif.args.penny);

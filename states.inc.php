@@ -247,9 +247,11 @@ $machinestates = [
 
     ST_CLEANUP => [
         'name' => 'cleanup',
-        'description' => '',
-        'type' => 'game',
+        'description' => clienttranslate('${actplayer}\'s turn ends'),
+        'descriptionmyturn' => clienttranslate('${actplayer}\'s turn ends'),
+        'type' => 'activeplayer',
         'action' => 'stCleanup',
+        'possibleactions' => [],
         'transitions' => [
             'next' => ST_COOP_TURN,
         ],
@@ -257,7 +259,7 @@ $machinestates = [
 
     ST_COOP_TURN => [
         'name' => 'coopTurn',
-        'description' => '',
+        'description' => clienttranslate('Penny Dreadful takes a turn'),
         'type' => 'game',
         'action' => 'stCoopTurn',
         'transitions' => [

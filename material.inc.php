@@ -114,7 +114,7 @@ $this->i18n = [
     'timelessTip' => clienttranslate('Timeless Classic: ${player_name} receives benefits each turn'),
     'trashButton' => clienttranslate('Trash'),
     'trashCoinsButton' => clienttranslate('Trash (${coins}¢)'),
-    'uncoverButton' => clienttranslate('Uncover'),
+    'uncoverButton' => clienttranslate('Uncover (${x})'),
     'useRemoverButton' => clienttranslate('Remove Ink'),
     'wildButton' => clienttranslate('Wild'),
 ];

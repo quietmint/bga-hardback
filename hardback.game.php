@@ -149,7 +149,6 @@ class hardback extends Table
 
         // Activate first player
         $this->activeNextPlayer();
-        CardMgr::moveHandToTableau(self::getActivePlayerId());
     }
 
     public function isCurrentPlayerActive(): bool
@@ -279,17 +278,19 @@ class hardback extends Table
                 }
             }
         }
+        $inkCount = 0;
         foreach ($player->getHand(HAS_INK) as $card) {
             $player->notifyInk($card);
-            if ($coopCondition) {
-                // Horror: Penny earns 1 per ink
-                $penny->addPoints(1, '');
-                self::notifyAllPlayers('message', $this->msg['earn'], [
-                    'player_name' => $penny->getName(),
-                    'points' => 1,
-                    'icon' => 'star',
-                ]);
-            }
+            $inkCount++;
+        }
+        if ($coopCondition && $inkCount) {
+            // Horror: Penny earns 1 per ink
+            $penny->addPoints($inkCount);
+            self::notifyAllPlayers('message', $this->msg['earn'], [
+                'player_name' => $penny->getName(),
+                'amount' => $inkCount,
+                'icon' => 'star',
+            ]);
         }
         foreach ($player->getHand(HAS_REMOVER) as $card) {
             $player->notifyRemover($card);
@@ -1086,7 +1087,7 @@ class hardback extends Table
 
         if ($coopCondition) {
             // Adventure: Penny earns 1 per purchase
-            $penny->addPoints(1, '');
+            $penny->addPoints(1);
             self::notifyAllPlayers('message', $this->msg['earn'], [
                 'player_name' => $penny->getName(),
                 'amount' => 1,
@@ -1151,6 +1152,7 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         self::notifyAllPlayers('message', $this->msg['skipWord'], [
             'player_name' => self::getActivePlayerName(),
+            'duration' => 1500,
         ]);
 
         // Reset hand and tableau
@@ -1170,12 +1172,12 @@ class hardback extends Table
             $this->notifyAllPlayers('pause', $this->msg['endTurnInk'], [
                 'player_name' => $player->getName(),
                 'amount' => $amount,
-                'duration' => 2000,
+                'duration' => 1500,
             ]);
         } else {
             $this->notifyAllPlayers('pause', $this->msg['endTurn'], [
                 'player_name' => $player->getName(),
-                'duration' => 2000,
+                'duration' => 1500,
             ]);
         }
 
@@ -1214,7 +1216,7 @@ class hardback extends Table
 
         // Discard the last card
         CardMgr::discard($card, $penny->getDiscardLocation());
-        $penny->addPoints($points, '');
+        $penny->addPoints($points);
         $this->incStat(1, 'coopTurns');
         $turns = $this->getStat('coopTurns');
         $avg = $this->getStat('coopAvg');
@@ -1266,6 +1268,9 @@ class hardback extends Table
             CardMgr::discard($discardIds, $player->getDiscardLocation());
         }
 
+        // Pause
+        $this->notifyAllPlayers('pause', '', ['duration' => 1500]);
+
         // Check for lose
         if ($penny->getScore() >= $this->getGameLength()) {
             $this->gamestate->nextState('end');
@@ -1297,9 +1302,6 @@ class hardback extends Table
         // Give extra time
         $this->giveExtraTime($player->getId());
         $this->gamestate->nextState('playerTurn');
-
-        // Move cards to tableau
-        CardMgr::moveHandToTableau($player->getId());
     }
 
     /*
@@ -1324,7 +1326,7 @@ class hardback extends Table
                 foreach ($offer as $offerCard) {
                     if ($offerCard->getGenre() == HORROR) {
                         // Horror: Penny earns 1 per ink
-                        $penny->addPoints(1, '');
+                        $penny->addPoints(1);
                         self::notifyAllPlayers('message', $this->msg['earn'], [
                             'player_name' => $penny->getName(),
                             'amount' => 1,

@@ -58,6 +58,7 @@ class CardMgr extends APP_GameClass
         }
         shuffle($starterPoints);
         $playerIds = PlayerMgr::getPlayerIds();
+        $firstPlayer = reset($playerIds);
         foreach ($playerIds as $playerId) {
             $two = array_splice($starterPoints, 0, 2);
             sort($two);
@@ -74,6 +75,7 @@ class CardMgr extends APP_GameClass
             self::DbQuery($sql);
             self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId));
         }
+        self::moveHandToTableau($firstPlayer);
     }
 
     public static function drawCards(int $count, string $fromLocation, string $toLocation, string $origin = null): array
@@ -174,33 +176,6 @@ class CardMgr extends APP_GameClass
             throw new BgaVisibleSystemException("sortCards: Invalid sort order: $sort");
         }
     }
-
-    /*
-    public static function positionCard(&$card, $location = null, $order = null)
-    {
-        if ($location == null) {
-            $location = $card->getLocation();
-        }
-        if ($order == null) {
-            $order = self::getCountInLocation($location);
-        }
-        self::DbQuery("UPDATE card SET order = order - 1 WHERE location = '{$card->getLocation()}' AND order > {$card->getOrder()}");
-        self::DbQuery("UPDATE card SET order = order + 1 WHERE location = '$location' AND order >= $order");
-        self::DbQuery("UPDATE card SET location = '$location', order = $order WHERE id = {$card->getId()}");
-        $card->setLocation($location);
-        $card->setOrder($order);
-    }
-
-    public static function positionCards($cardIds, $location, $order = null)
-    {
-        if ($order = null) {
-            $order = self::getCountInLocation($location);
-        }
-        foreach ($cardIds as $cardId) {
-            self::positionCard($cardId, $location, $order++);
-        }
-    }
-*/
 
     /* Query (generic) */
 
@@ -460,12 +435,12 @@ class CardMgr extends APP_GameClass
 
     /* Change (specific) */
 
-    public static function moveHandToTableau(int $playerId): void
+    private static function moveHandToTableau(int $playerId): array
     {
         $location = self::getHandLocation($playerId);
         $sql = "UPDATE card SET `location` = 'tableau' WHERE `location` = '$location'";
         self::DbQuery($sql);
-        self::notifyCards(self::getTableau($playerId));
+        return self::getTableau($playerId);
     }
 
     public static function endGameDiscard(): void
@@ -666,7 +641,13 @@ class CardMgr extends APP_GameClass
         self::notifyCards(self::getCards($updatedIds));
 
         // Draw new hand
-        self::notifyCards(self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId)));
+        $hand = self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId));
+
+        // Move next player's hand to tableau
+        $nextPlayer = hardback::$instance->getPlayerAfter($playerId);
+        $tableau = self::moveHandToTableau($nextPlayer);
+
+        self::notifyCards(array_merge($hand, $tableau));
     }
 
     public static function canFlushOffer(): bool

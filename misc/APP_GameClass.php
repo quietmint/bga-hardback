@@ -214,6 +214,16 @@ class Table extends APP_GameClass
     {
     }
 
+    function getPlayerAfter($player_id)
+    {
+        return 0;
+    }
+
+    function getPlayerBefore($player_id)
+    {
+        return 0;
+    }
+
     /* Notify */
 
     static function notifyAllPlayers($notification_type, $notification_log, $notification_args)

@@ -156,7 +156,7 @@ export default {
         },
         uncover: {
           action: "uncover",
-          text: this.i18n("uncoverButton"),
+          // dynamic text
           class: actionBlue,
         },
         double: {
@@ -227,7 +227,9 @@ export default {
 
       if (this.gamestate.active) {
         if (this.gamestate.name == "uncover" && this.gamestate.args.cardIds.includes(this.card.id)) {
-          return [actionRef.uncover];
+          const text = this.i18n("uncoverButton", { x: this.card.letter });
+          const uncover = Object.assign({ text }, actionRef.uncover);
+          return [uncover];
         } else if (this.gamestate.name == "double" && this.gamestate.args.cardIds.includes(this.card.id)) {
           return [actionRef.double];
         } else if (this.gamestate.name == "trash" && this.gamestate.args.cardIds.includes(this.card.id)) {
