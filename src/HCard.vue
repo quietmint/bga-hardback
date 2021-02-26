@@ -34,9 +34,6 @@
             </div>
           </div>
         </div>
-
-        <!-- ID -->
-        <div class="absolute top-0 right-0 text-12 text-white" style="text-shadow: 1px 1px black">{{ card.id }} / #{{ card.order }} / {{ card.origin }}</div>
       </div>
 
       <!-- Wild -->
