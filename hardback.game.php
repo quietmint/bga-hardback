@@ -670,7 +670,6 @@ class hardback extends Table
             CardMgr::useBenefit($specials[SPECIAL_ADVENTURE], SPECIAL_ADVENTURE);
             $coins = $this->getGameStateValue("countActive" . ADVENTURE) * 2;
             $player->addCoins($coins);
-            $this->notifyAllPlayers('message', "SPECIAL_ADVENTURE coins: $coins", []);
         }
 
         if (isset($specials[SPECIAL_MYSTERY])) {
@@ -683,7 +682,6 @@ class hardback extends Table
                 }
             }
             $player->addPoints($wilds, 'pointsGenre');
-            $this->notifyAllPlayers('message', "SPECIAL_MYSTERY points: $wilds", []);
         }
 
         if (isset($specials[SPECIAL_HORROR])) {
