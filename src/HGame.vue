@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="select-none">
     <!-- Player panels (moved using teleport) -->
     <HPlayerPanel v-for="(player, id) in players" :key="id" :player="player" />
     <HPenny v-if="gamedatas.penny" :penny="gamedatas.penny" />
@@ -16,8 +16,14 @@
       <HKeyboard v-if="keyboardId" />
     </transition>
 
+    <!-- Browser warning (Safari 12, etc.) -->
+    <div v-if="warningVisible" class="m-4 p-3 text-18 font-bold text-center border-2 border-red-700 bg-white bg-opacity-50">
+      <a href="https://browsehappy.com/" target="_blank" class="block text-blue-700" v-text="i18n('browserWarnTitle')"></a>
+      <div class="text-14" v-text="i18n('browserWarnDesc')"></div>
+    </div>
+
     <!-- Final round reminder -->
-    <div v-if="gamedatas.finalRound && !gamedatas.options.coop" class="text-20 text-center font-bold text-red-600 m-4" v-text="i18n('finalRound')"></div>
+    <div v-if="gamedatas.finalRound && !gamedatas.options.coop" class="m-4 p-3 text-18 text-center font-bold border-2 border-red-700 bg-white bg-opacity-50" v-text="i18n('finalRound')"></div>
 
     <!-- Discard -->
     <div v-if="!spectator" class="p-2 border-t-2 border-black bg-black bg-opacity-25">
@@ -52,7 +58,7 @@
         </div>
       </div>
 
-      <HCardList :cards="handCards" :location="handLocation" />
+      <HCardList :cards="handCards" :location="handLocation" :ref="handLocation" />
     </div>
 
     <!-- Tableau -->
@@ -72,16 +78,16 @@
         </div>
       </div>
 
-      <HCardList :cards="tableauCards" location="tableau" />
+      <HCardList :cards="tableauCards" location="tableau" ref="tableau" />
     </div>
 
     <!-- Timeless Classics -->
-    <div v-if="timelessCards.length" class="p-2 border-t-2 border-black">
+    <div v-if="timelessVisible" class="p-2 border-t-2 border-black">
       <div class="flex leading-7 font-bold">
         <div class="title flex-grow" v-text="i18n('timeless', { count: timelessCards.length })"></div>
       </div>
 
-      <HCardList :cards="timelessCards" location="timeless" />
+      <HCardList :cards="timelessCards" location="timeless" ref="timeless" />
     </div>
 
     <!-- Offer -->
@@ -115,17 +121,31 @@ import { debounce } from "lodash-es";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const repaint = () => new Promise((resolve) => requestAnimationFrame(resolve));
-const getRect = (el: Element) => {
+const getRect = (el: HTMLElement, calculateMargin = false) => {
   if (!el) {
     return null;
   }
   const bounds = el.getBoundingClientRect();
-  return {
-    top: bounds.top + window.scrollX,
-    left: bounds.left + window.scrollY,
+  let output = {
+    top: bounds.top + window.scrollY,
+    left: bounds.left + window.scrollX,
     width: bounds.width,
     height: bounds.height,
+    offsetTop: el.offsetTop,
+    offsetLeft: el.offsetLeft,
+    marginTop: 0,
+    marginBottom: 0,
+    marginLeft: 0,
+    marginRight: 0,
   };
+  if (calculateMargin) {
+    const style = getComputedStyle(el);
+    output.marginTop = parseFloat(style.getPropertyValue("margin-top"));
+    output.marginBottom = parseFloat(style.getPropertyValue("margin-bottom"));
+    output.marginLeft = parseFloat(style.getPropertyValue("margin-left"));
+    output.marginRight = parseFloat(style.getPropertyValue("margin-right"));
+  }
+  return output;
 };
 const getHtml = (id: string) => {
   const el = document.getElementById(id);
@@ -185,16 +205,6 @@ addIcon("clock", clockOutline);
 import chevronDown from "@iconify-icons/mdi/chevron-down";
 addIcon("chevron", chevronDown);
 
-// Player panel icons
-import mdiFlaskEmptyPlus from "@iconify-icons/mdi/flask-empty-plus";
-addIcon("ink", mdiFlaskEmptyPlus);
-
-import mdiFlaskEmptyRemoveOutline from "@iconify-icons/mdi/flask-empty-remove-outline";
-addIcon("remover", mdiFlaskEmptyRemoveOutline);
-
-import mdiCards from "@iconify-icons/mdi/cards";
-addIcon("cards", mdiCards);
-
 export default {
   name: "HGame",
   components: { Icon, HCardList, HKeyboard, HPenny, HPlayerPanel },
@@ -217,7 +227,7 @@ export default {
     this.emitter.on("clickCard", this.clickCard);
     this.emitter.on("clickFooter", this.clickFooter);
     this.emitter.on("clickKey", this.clickKey);
-    this.emitter.on("drag", this.drag);
+    this.emitter.on("dragStart", this.dragStart);
     this.discardVisible = this.gamestate.name == "gameEnd";
     this.locationOrder[this.discardLocation] = "genre";
     this.locationOrder.offer = "order";
@@ -233,7 +243,7 @@ export default {
     this.emitter.off("clickCard", this.clickCard);
     this.emitter.off("clickFooter", this.clickFooter);
     this.emitter.off("clickKey", this.clickKey);
-    this.emitter.off("drag", this.drag);
+    this.emitter.off("dragStart", this.dragStart);
   },
 
   data() {
@@ -254,7 +264,9 @@ export default {
         },
       },
       gamestate: {},
+      drag: null,
       discardVisible: false,
+      warningVisible: window.PointerEvent === undefined,
       keyboardId: null,
       locationOrder: {
         timeless: "location",
@@ -312,6 +324,10 @@ export default {
       return this.cardsInLocation("timeless");
     },
 
+    timelessVisible() {
+      return this.timelessCards.length > 0 || this.tableauCards.some((card) => card.origin.startsWith("timeless"));
+    },
+
     offerCards() {
       let cards = this.cardsInLocation("offer");
       let jail = this.cardsInLocation("jail");
@@ -336,6 +352,9 @@ export default {
      */
 
     i18n(msg: string, args): string {
+      if (!msg) {
+        return "";
+      }
       if (this.gamedatas.refs.i18n[msg]) {
         msg = this.gamedatas.refs.i18n[msg];
       }
@@ -347,7 +366,37 @@ export default {
       return msg;
     },
 
+    getLocationEl(location: string): HTMLElement {
+      if (location.startsWith("timeless")) {
+        location = "timeless";
+      }
+      const component = this.$refs[location];
+      if (component) {
+        return component.$refs.cardlist;
+      }
+    },
+
+    getCardEl(card): HTMLElement {
+      if (typeof card == "number") {
+        card = this.gamedatas.cards[card];
+      }
+      return document.getElementById("cardholder_" + card.id);
+      /*
+      // Vue can't nest refs? ("hoisted")
+      const locationComponent = this.$refs[card.location];
+      if (locationComponent) {
+        const cardComponent = locationComponent.$refs[card.id];
+        if (cardComponent) {
+          return cardComponent.$refs.cardholder;
+        }
+      }
+      */
+    },
+
     cardsInLocation(location: string): any[] {
+      if (location.startsWith("timeless")) {
+        location = "timeless";
+      }
       let cards = this.populateCards(
         Object.values(this.gamedatas.cards).filter((card: any) => {
           return card.location.startsWith(location);
@@ -439,9 +488,6 @@ export default {
         const playerId = newCard.origin.split("_")[1];
         newCard.player = this.players[playerId];
       }
-
-      // Draggable
-      newCard.draggable = newCard.location == this.handLocation || (newCard.location == "tableau" && this.gamestate.active && this.gamestate.name == "playerTurn");
 
       return newCard;
     },
@@ -539,7 +585,7 @@ export default {
       let start = null;
       let end = null;
       if (oldCard != null) {
-        cardEl = document.getElementById("card" + oldCard.id);
+        cardEl = this.getCardEl(oldCard);
         start = getRect(cardEl);
       }
 
@@ -564,7 +610,7 @@ export default {
           end = { top: window.innerHeight + start.height, left: start.left };
         }
 
-        // Make a copy attached to the root
+        // Clone, which will be animated
         const rootEl = document.getElementById("HGame");
         const root = getRect(rootEl);
         const top = end.top - root.top;
@@ -586,7 +632,7 @@ export default {
         // Vue will create the card
         this.gamedatas.cards[card.id] = card;
         await nextTick();
-        cardEl = document.getElementById("card" + card.id);
+        cardEl = this.getCardEl(card);
         if (!cardEl) {
           console.warn(`Animate card ${card.id} ${mode} element not found`);
           return;
@@ -601,6 +647,7 @@ export default {
       // Animate
       await this.animateFlip(cardEl, start, end);
       if (mode == "leave") {
+        // Destroy the clone
         cardEl.remove();
       }
     },
@@ -862,7 +909,7 @@ export default {
       const cards = this.cardsInLocation(location);
       if (order == "shuffle") {
         this.shuffleCards(cards);
-      } else {
+      } else if (order != null) {
         this.sortCards(order, cards);
       }
       cards.forEach((card, index) => {
@@ -886,13 +933,17 @@ export default {
       } catch (ignore) {}
     },
 
-    drag(e): void {
-      console.log("got drag", e);
-      let { location, cardIds } = e;
-      cardIds.forEach((id, index) => {
-        this.gamedatas.cards[id].order = index;
-      });
-      this.previewWord();
+    previewWord(): void {
+      let lock = false;
+      let handIds = this.cardIds(this.handCards);
+      let handMask = this.wildMask(this.handCards);
+      let tableauIds = null;
+      let tableauMask = null;
+      if (this.gamestate.active) {
+        tableauIds = this.cardIds(this.tableauCards);
+        tableauMask = this.wildMask(this.tableauCards);
+      }
+      this.takeAction("previewWord", { lock, handIds, handMask, tableauIds, tableauMask });
     },
 
     moveAll(location: string): Promise<any> {
@@ -961,17 +1012,214 @@ export default {
       }
     },
 
-    previewWord(): void {
-      let lock = false;
-      let handIds = this.cardIds(this.handCards);
-      let handMask = this.wildMask(this.handCards);
-      let tableauIds = null;
-      let tableauMask = null;
-      if (this.gamestate.active) {
-        tableauIds = this.cardIds(this.tableauCards);
-        tableauMask = this.wildMask(this.tableauCards);
+    /*
+     * Drag and drop
+     */
+
+    dragStart(e) {
+      if (this.drag) {
+        console.warn("dragStart: Another drag is already in progress");
+        this.dragStop();
       }
-      this.takeAction("previewWord", { lock, handIds, handMask, tableauIds, tableauMask });
+
+      const ev: PointerEvent = e.ev;
+      const el: HTMLElement = e.el;
+      const cardId: number = e.cardId;
+      const card = this.gamedatas.cards[cardId];
+      const locations: string[] = e.locations;
+      ev.preventDefault();
+
+      // Compute drop zones
+      const drops = new Map();
+      for (let location of locations) {
+        const locationEl = this.getLocationEl(location);
+        const locationRect = getRect(locationEl, true);
+        if (!locationRect) {
+          console.warn(`dragStart: No rect for location ${location}`);
+          continue;
+        }
+
+        // Lock the location height
+        locationEl.style.minHeight = locationRect.height + "px";
+
+        // If empty, create a drop zone over the parent
+        const zoneCards = this.cardsInLocation(location);
+        if (zoneCards.length == 0 || location.startsWith("timeless")) {
+          const parentRect = getRect(locationEl.parentElement);
+          if (parentRect) {
+            drops.set(parentRect, { location, order: 0 });
+          }
+        } else {
+          for (const zoneCard of zoneCards) {
+            let zoneEl = this.getCardEl(zoneCard);
+            let rect = getRect(zoneEl, true);
+            if (rect) {
+              // Create a drop zone over the card
+              let order = zoneCard.order + 0.5;
+              if (card.location != zoneCard.location || card.order > zoneCard.order) {
+                order -= 1;
+              }
+              rect.top -= rect.marginTop;
+              rect.left -= rect.marginLeft;
+              rect.height += rect.marginTop + rect.marginBottom;
+              rect.width += rect.marginLeft + rect.marginRight;
+              drops.set(rect, { location, order });
+
+              // If first, create a drop zone over the empty space before
+              if (zoneEl == zoneEl.parentElement.firstElementChild) {
+                const rectFirst = {
+                  top: rect.top,
+                  left: 0,
+                  height: rect.height,
+                  width: rect.left,
+                };
+                drops.set(rectFirst, { location, order: -999 });
+              }
+
+              // If last, create a drop zone over the empty space after
+              if (zoneEl == zoneEl.parentElement.lastElementChild) {
+                const rectLast = {
+                  top: rect.top,
+                  left: rect.left + rect.width,
+                  height: rect.height,
+                  width: window.innerWidth - rect.left - rect.width - (rect.left - rect.offsetLeft),
+                };
+                drops.set(rectLast, { location, order: 999 });
+              }
+            }
+          }
+        }
+      }
+      console.log(`Drag card ${card.id} start location ${card.location}, order ${card.order} (${drops.size} drops)`);
+      //this.debugDrops(drops);
+
+      // Get current postion
+      const elRect = getRect(el, true);
+      const start = { x: ev.pageX, y: ev.pageY };
+      const offset = {
+        x: start.x - elRect.left + elRect.marginLeft,
+        y: start.y - elRect.top + elRect.marginTop,
+      };
+
+      // Clone, which will follow the mouse
+      const cloneEl = el.cloneNode(true) as HTMLElement;
+      cloneEl.id = "clone";
+      cloneEl.style.position = "absolute";
+      cloneEl.style.top = elRect.offsetTop - elRect.marginTop + "px";
+      cloneEl.style.left = elRect.offsetLeft - elRect.marginLeft + "px";
+      cloneEl.style.transition = "none";
+      cloneEl.style.zIndex = "999";
+      el.parentNode.parentNode.appendChild(cloneEl);
+
+      // Hide the original card
+      card.dragging = true;
+      el.classList.add("invisible");
+
+      // Start listening
+      this.drag = { cardId, cloneEl, drops, locations, offset, start };
+      document.addEventListener("pointermove", this.dragMove);
+      document.addEventListener("pointercancel", this.dragStop, { once: true });
+      document.addEventListener("pointerup", this.dragStop, { once: true });
+    },
+
+    /*
+    debugDrops(drops: Map<any, any>) {
+      let boxes = document.getElementById("boxes");
+      if (boxes) {
+        boxes.remove();
+      }
+      boxes = document.createElement("div");
+      boxes.id = "boxes";
+      document.body.appendChild(boxes);
+      for (const [rect, info] of drops) {
+        const box = document.createElement("div");
+        box.style.position = "absolute";
+        box.style.top = rect.top + "px";
+        box.style.left = rect.left + "px";
+        box.style.height = rect.height + "px";
+        box.style.width = rect.width + "px";
+        box.style.border = "1px solid white";
+        box.style.color = "white";
+        box.style.fontWeight = "bold";
+        box.style.wordBreak = "break-word";
+        box.innerHTML = info.order + "<br>" + info.location;
+        boxes.appendChild(box);
+      }
+    },
+    */
+
+    dragMove(ev: PointerEvent) {
+      if (!this.drag) {
+        console.warn("dragMove: No drag is in progress");
+        return;
+      }
+      ev.preventDefault();
+
+      // Make the clone follow the mouse
+      const x = ev.pageX;
+      const y = ev.pageY;
+      const diffX = x - this.drag.start.x;
+      const diffY = y - this.drag.start.y;
+      this.drag.cloneEl.style.transform = "translate(" + diffX + "px, " + diffY + "px)";
+
+      // Check if we've hovering over any drop zone
+      for (const [rect, info] of this.drag.drops) {
+        if (x >= rect.left && x <= rect.left + rect.width && y >= rect.top && y <= rect.top + rect.height) {
+          // Update the card if this zone represents a new location/order
+          if (this.drag.over != info) {
+            this.drag.over = info;
+            const card = this.gamedatas.cards[this.drag.cardId];
+            card.location = info.location;
+            card.order = info.order;
+            console.log(`Drag card ${card.id} set location ${card.location}, order ${card.order}`);
+          }
+          break;
+        }
+      }
+    },
+
+    dragStop(ev: PointerEvent) {
+      if (!this.drag) {
+        console.warn("dragStop: No drag is in progress");
+        return;
+      }
+      ev.preventDefault();
+      console.log(`Drag card ${this.drag.cardId} stop (via ${ev.type})`);
+
+      // Stop listening
+      document.removeEventListener("pointermove", this.dragMove);
+      document.removeEventListener("pointercancel", this.dragStop);
+      document.removeEventListener("pointerup", this.dragStop);
+
+      // Destroy the clone
+      this.drag.cloneEl.remove();
+
+      // Destroy debug
+      /*
+      let boxes = document.getElementById("boxes");
+      if (boxes) {
+        boxes.remove();
+      }
+      */
+
+      // Unlock the location height
+      for (const location of this.drag.locations) {
+        const locationEl = this.getLocationEl(location);
+        if (locationEl) {
+          locationEl.style.minHeight = "";
+          locationEl.classList.remove("dragging");
+        }
+      }
+
+      // Make the card visible
+      const card = this.gamedatas.cards[this.drag.cardId];
+      card.dragging = false;
+
+      // Reindex the location to fix special values -999, 0.5, 999
+      this.sortOnce(card.location);
+
+      // Clear drag state
+      this.drag = null;
     },
   },
 };

@@ -23,9 +23,6 @@ module.exports = {
       borderWidth: {
         3: "3px",
       },
-      cursor: {
-        "ew-resize": "ew-resize",
-      },
       fontSize: {
         12: "12px",
         13: "13px",

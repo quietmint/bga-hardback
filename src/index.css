@@ -33,6 +33,11 @@
 
 @tailwind components;
 @tailwind utilities;
+@layer utilities {
+  .touch-none {
+    touch-action: none;
+  }
+}
 
 .chevron {
   transition: transform 0.3s ease-out;
@@ -80,7 +85,7 @@
   z-index: 1;
 }
 
-.dragInProgress .cardholder {
+.dragging .cardholder {
   transition-duration: 0.3s;
 }
 

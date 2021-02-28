@@ -1,12 +1,12 @@
 <template>
-  <div :id="'card' + this.card.id" class="cardholder relative m-1 mt-2">
+  <div @pointerdown="pointStart" @pointerup="pointStop" @pointercancel="pointStop" class="cardholder relative m-1 mt-2" :class="{ invisible: this.card.dragging }" ref="cardholder" :id="'cardholder_' + this.card.id">
     <!-- Header -->
     <div v-if="header" class="flex items-start justify-evenly text-center text-13 leading-5">
       <div class="px-2 rounded-t-lg z-10" :class="header.class" :title="header.title"><Icon v-if="header.icon" :icon="header.icon" class="inline text-15" /> {{ header.text }}</div>
     </div>
 
     <!-- Card -->
-    <div @click="clickCard()" :class="cardClass" class="card shadow relative rounded-lg select-none">
+    <div @click="clickCard" :class="cardClass" class="card shadow relative rounded-lg">
       <div class="cardface front rounded-lg">
         <!-- Bookmark -->
         <div :class="bookmarkClass" class="bookmark absolute flex items-center text-center font-bold leading-none">
@@ -20,7 +20,7 @@
           {{ card.letter }}
         </div>
 
-        <div :class="benefitClass" class="absolute text-14 overflow-y-auto flex flex-col">
+        <div :class="benefitClass" class="absolute flex flex-col text-14 font-bold overflow-y-auto touch-none">
           <!-- Basic Benefits -->
           <div :title="i18n('basicTip')" class="flex-grow flex flex-col justify-evenly p-1">
             <div v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="hanging" v-html="benefit.html"></div>
@@ -57,7 +57,7 @@ import { Icon } from "@iconify/vue";
 
 export default {
   name: "HCard",
-  emits: ["clickCard", "clickFooter"],
+  emits: ["clickCard", "clickFooter", "dragStart"],
   inject: ["gamestate", "i18n"],
   components: { Icon },
 
@@ -68,10 +68,16 @@ export default {
     },
   },
 
+  data() {
+    return {
+      dragTimer: null,
+    };
+  },
+
   computed: {
     cardClass(): string {
       let c = "card-" + this.card.genreName + " ";
-      c += this.card.draggable ? "cursor-ew-resize " : this.clickAction ? "cursor-pointer " : "cursor-not-allowed ";
+      c += this.dragLocations ? "cursor-move " : this.clickAction ? "cursor-pointer " : "cursor-not-allowed ";
       c += this.card.timeless ? "timeless " : "";
       if (this.card.ink) {
         c += "mx-1 ring ring-black ";
@@ -285,10 +291,24 @@ export default {
         return this.card.ink ? [actionRef.ink] : this.card.wild ? [reset] : [actionRef.wild];
       }
     },
+
+    dragLocations() {
+      if (this.gamestate.active && this.gamestate.name == "playerTurn") {
+        if (this.card.location == "tableau") {
+          return ["tableau", this.card.origin];
+        } else if (this.card.location.startsWith("hand") || this.card.location.startsWith("timeless")) {
+          return ["tableau", this.card.location];
+        }
+      } else if (!this.gamestate.active) {
+        if (this.card.location.startsWith("hand")) {
+          return [this.card.location];
+        }
+      }
+    },
   },
 
   methods: {
-    clickCard(): void {
+    clickCard(ev: MouseEvent): void {
       let action: any = this.clickAction;
       if (action) {
         let card: any = this.card;
@@ -300,6 +320,42 @@ export default {
       if (action.action) {
         let card: any = this.card;
         this.emitter.emit("clickFooter", { action, card });
+      }
+    },
+
+    /*
+     * Drag and drop
+     */
+
+    pointStart(ev: PointerEvent): void {
+      // Start the timer (which prevents click event and starts dragging)
+      if (this.dragLocations) {
+        console.log(`Pre-drag card ${this.card.id} start`);
+        this.dragTimeout = setTimeout(() => this.dragStart(ev), 300);
+      }
+    },
+
+    pointStop(ev: PointerEvent): void {
+      // Stop the timer
+      if (this.dragTimeout) {
+        console.log(`Pre-drag card ${this.card.id} stop (via ${ev.type})`);
+        clearTimeout(this.dragTimeout);
+        this.dragTimeout = null;
+      }
+    },
+
+    dragStart(ev: PointerEvent): void {
+      if (this.dragTimeout) {
+        // Stop the timer
+        clearTimeout(this.dragTimeout);
+        this.dragTimeout = null;
+
+        // Start dragging
+        console.log(`Pre-drag card ${this.card.id}`, this.dragLocations);
+        if (this.dragLocations) {
+          const el: HTMLElement = this.$refs.cardholder;
+          this.emitter.emit("dragStart", { ev, el, cardId: this.card.id, locations: this.dragLocations });
+        }
       }
     },
   },
