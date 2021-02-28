@@ -18,7 +18,7 @@ class PlayerMgr extends APP_GameClass
 
     public static function getPlayerIds()
     {
-        return self::getObjectListFromDb("SELECT player_id FROM player", true);
+        return self::getObjectListFromDb("SELECT player_id FROM player ORDER BY player_no", true);
     }
 
     public static function getPlayer(int $playerId = null): HPlayer
@@ -35,6 +35,7 @@ class PlayerMgr extends APP_GameClass
         if (!empty($playerIds)) {
             $sql .= " WHERE player_id IN (" . implode(", ", $playerIds) . ")";
         }
+        $sql .= " ORDER BY player_no";
         return array_map(function ($dbplayer) {
             return new HPlayer($dbplayer);
         }, self::getCollectionFromDb($sql));
