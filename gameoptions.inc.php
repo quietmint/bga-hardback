@@ -216,3 +216,23 @@ $game_options = [
         ],
     ],
 ];
+
+$game_preferences = [
+    PREF_DRAG_DROP => [
+        'name' => 'Drag and drop',
+        'needReload' => false,
+        'values' => [
+            0 => ['name' => 'Enabled'],
+            1 => ['name' => 'Disabled'],
+        ],
+    ],
+
+    PREF_ZOOM => [
+        'name' => 'Mobile zoom level',
+        'needReload' => false,
+        'values' => [
+            0 => ['name' => 'Large (4 cards per row)'],
+            1 => ['name' => 'Small (5 cards per row)'],
+        ],
+    ],
+];

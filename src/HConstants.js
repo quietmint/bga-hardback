@@ -57,4 +57,12 @@ export default Object.freeze({
   EITHER_BASIC: 3,
   EITHER_GENRE: 4,
   EITHER_INK: 5,
+
+  // Game preferences
+  PREF_DRAG_DROP: 100,
+  DRAG_DROP_ENABLED: 0,
+  DRAG_DROP_DISABLED: 1,
+  PREF_ZOOM: 150,
+  ZOOM_LARGE: 0,
+  ZOOM_SMALL: 1,
 });

@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import Constants from "./constants.js";
+import HConstants from "./HConstants.js";
 import HGenreCounts from "./HGenreCounts.vue";
 import { Icon } from "@iconify/vue";
 
@@ -64,8 +64,8 @@ export default {
     icon() {
       if (this.penny.genre) {
         return {
-          icon: Constants.GENRES[this.penny.genre].icon,
-          color: Constants.GENRES[this.penny.genre].text,
+          icon: HConstants.GENRES[this.penny.genre].icon,
+          color: HConstants.GENRES[this.penny.genre].text,
         };
       }
     },

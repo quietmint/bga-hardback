@@ -23,7 +23,6 @@ define([
 ], function (dojo, declare) {
   return declare("bgagame.hardback", ebg.core.gamegui, {
     constructor: function () {
-      this.default_viewport = "width=920, user-scalable=no";
       this.vue = null;
     },
 
@@ -33,10 +32,19 @@ define([
       dojo.style("page-content", "zoom", "");
       dojo.style("page-title", "zoom", "");
       dojo.style("right-side-first-part", "zoom", "");
+
+      // Hide mobile preference on desktop
+      var display = dojo.hasClass("ebd-body", "mobile_version") ? "" : "none";
+      document
+        .getElementById("preference_control_" + HConstants.PREF_ZOOM)
+        .closest(".preference_choice").style.display = display;
+      document
+        .getElementById("preference_fontrol_" + HConstants.PREF_ZOOM)
+        .closest(".preference_choice").style.display = display;
     },
 
-    setup: function (gamedatas) {
-      console.log("Game setup", gamedatas);
+    setup: function () {
+      console.log("Game setup", this.gamedatas);
 
       // Old browser check
       if (typeof Vue === "undefined") {
@@ -61,7 +69,7 @@ define([
       app.config.globalProperties.game = this;
       app.config.globalProperties.emitter = mitt();
       this.vue = app.mount("#HGame");
-      this.vue.gamedatas = gamedatas;
+      this.vue.gamedatas = this.gamedatas;
 
       // Setup notifications
       dojo.subscribe("cards", this, "onNotify");
@@ -75,6 +83,35 @@ define([
       this.notifqueue.setSynchronous("penny", 1);
       dojo.subscribe("player", this, "onNotify");
       this.notifqueue.setSynchronous("player", 1);
+
+      // Setup preferences
+      this.setupPrefs();
+    },
+
+    setupPrefs: function () {
+      // Extract the ID and value from the UI control
+      var _this = this;
+      function onchange(e) {
+        var match = e.target.id.match(/^preference_[cf]ontrol_(\d+)$/);
+        if (!match) {
+          return;
+        }
+        var id = +match[1];
+        var value = +e.target.value;
+        _this.prefs[id].value = value;
+        _this.onPrefChange(id, value);
+      }
+
+      // Call onPrefChange() when any value changes
+      dojo.query(".preference_control").connect("onchange", onchange);
+
+      // Call onPrefChange() now
+      dojo.forEach(
+        dojo.query("#ingame_menu_content .preference_control"),
+        function (el) {
+          onchange({ target: el });
+        }
+      );
     },
 
     /* @Override */
@@ -100,6 +137,15 @@ define([
 
     onNotify: function (notif) {
       this.vue && this.vue.onNotify(notif);
+    },
+
+    onPrefChange: function (id, value) {
+      if (id == HConstants.PREF_ZOOM) {
+        this.interface_min_width = value == HConstants.ZOOM_SMALL ? 920 : 750;
+        this.default_viewport = "width=" + this.interface_min_width;
+        this.onGameUiWidthChange();
+      }
+      this.vue && this.vue.onPrefChange(id, value);
     },
   });
 });

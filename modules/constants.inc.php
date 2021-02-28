@@ -108,6 +108,10 @@ if (!defined('ELO_OFF')) {
     define('ELO_OFF', 1);
 }
 
+// Game preferences
+define('PREF_DRAG_DROP', 100);
+define('PREF_ZOOM', 150);
+
 // Game states
 define('ST_BGA_GAME_SETUP', 1);
 define('ST_PLAYER_TURN', 2);

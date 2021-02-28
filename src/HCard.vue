@@ -20,7 +20,7 @@
           {{ card.letter }}
         </div>
 
-        <div :class="benefitClass" class="absolute flex flex-col text-14 font-bold overflow-y-auto touch-none">
+        <div :class="benefitClass" class="absolute flex flex-col text-14 font-bold overflow-y-auto">
           <!-- Basic Benefits -->
           <div :title="i18n('basicTip')" class="flex-grow flex flex-col justify-evenly p-1">
             <div v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="hanging" v-html="benefit.html"></div>
@@ -52,13 +52,13 @@
 </template>
 
 <script lang="ts">
-import Constants from "./constants.js";
+import HConstants from "./HConstants.js";
 import { Icon } from "@iconify/vue";
 
 export default {
   name: "HCard",
   emits: ["clickCard", "clickFooter", "dragStart"],
-  inject: ["gamestate", "i18n"],
+  inject: ["gamestate", "i18n", "prefs"],
   components: { Icon },
 
   props: {
@@ -77,7 +77,7 @@ export default {
   computed: {
     cardClass(): string {
       let c = "card-" + this.card.genreName + " ";
-      c += this.dragLocations ? "cursor-move " : this.clickAction ? "cursor-pointer " : "cursor-not-allowed ";
+      c += this.dragLocations ? "touch-none cursor-move " : this.clickAction ? "cursor-pointer " : "cursor-not-allowed ";
       c += this.card.timeless ? "timeless " : "";
       if (this.card.ink) {
         c += "mx-1 ring ring-black ";
@@ -91,7 +91,7 @@ export default {
 
     bookmarkClass(): string {
       let c = this.card.timeless ? "flex-row w-20 h-7 " : "flex-col w-7 h-20 ";
-      return c + Constants.GENRES[this.card.genre].textLight;
+      return c + HConstants.GENRES[this.card.genre].textLight;
     },
 
     letterClass(): string {
@@ -99,11 +99,13 @@ export default {
     },
 
     benefitClass(): string {
-      return this.card.timeless ? "top-6 bottom-0 right-0 w-28" : "bottom-0 left-0 right-0 h-25";
+      let c = this.dragLocations ? "touch-none " : "";
+      c += this.card.timeless ? "top-6 bottom-0 right-0 w-28" : "bottom-0 left-0 right-0 h-25";
+      return c;
     },
 
     textClass(): string {
-      return `${Constants.GENRES[this.card.genre].text} ${Constants.GENRES[this.card.genre].bg} bg-opacity-15`;
+      return `${HConstants.GENRES[this.card.genre].text} ${HConstants.GENRES[this.card.genre].bg} bg-opacity-15`;
     },
 
     header() {
@@ -206,7 +208,7 @@ export default {
         eitherInk: {
           action: "either",
           actionArgs: {
-            benefitId: Constants.EITHER_INK,
+            benefitId: HConstants.EITHER_INK,
             choice: "ink",
           },
           text: this.i18n("ink"),
@@ -215,7 +217,7 @@ export default {
         eitherRemover: {
           action: "either",
           actionArgs: {
-            benefitId: Constants.EITHER_INK,
+            benefitId: HConstants.EITHER_INK,
             choice: "remover",
           },
           text: this.i18n("remover"),
@@ -245,7 +247,7 @@ export default {
           return [trashDiscard];
         } else if (this.gamestate.name.startsWith("either") && this.gamestate.args.possible.hasOwnProperty(this.card.id)) {
           const p = this.gamestate.args.possible[this.card.id];
-          if (p.benefit == Constants.EITHER_INK) {
+          if (p.benefit == HConstants.EITHER_INK) {
             return [actionRef.eitherInk, actionRef.eitherRemover];
           } else {
             const eitherCoins = {
@@ -293,15 +295,17 @@ export default {
     },
 
     dragLocations() {
-      if (this.gamestate.active && this.gamestate.name == "playerTurn") {
-        if (this.card.location == "tableau") {
-          return ["tableau", this.card.origin];
-        } else if (this.card.location.startsWith("hand") || this.card.location.startsWith("timeless")) {
-          return ["tableau", this.card.location];
-        }
-      } else if (!this.gamestate.active) {
-        if (this.card.location.startsWith("hand")) {
-          return [this.card.location];
+      if (this.prefs.value[HConstants.PREF_DRAG_DROP] !== HConstants.DRAG_DROP_DISABLED) {
+        if (this.gamestate.active && this.gamestate.name == "playerTurn") {
+          if (this.card.location == "tableau") {
+            return ["tableau", this.card.origin];
+          } else if (this.card.location.startsWith("hand") || this.card.location.startsWith("timeless")) {
+            return ["tableau", this.card.location];
+          }
+        } else if (!this.gamestate.active) {
+          if (this.card.location.startsWith("hand")) {
+            return [this.card.location];
+          }
         }
       }
     },

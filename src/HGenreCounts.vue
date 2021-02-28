@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import Constants from "./constants.js";
+import HConstants from "./HConstants.js";
 import { Icon } from "@iconify/vue";
 
 export default {
@@ -34,9 +34,9 @@ export default {
         return [];
       }
 
-      return [Constants.ADVENTURE, Constants.HORROR, Constants.MYSTERY, Constants.ROMANCE, Constants.STARTER].map((id: number) => {
+      return [HConstants.ADVENTURE, HConstants.HORROR, HConstants.MYSTERY, HConstants.ROMANCE, HConstants.STARTER].map((id: number) => {
         const count = this.counts[id];
-        const genre = Constants.GENRES[id];
+        const genre = HConstants.GENRES[id];
         const percent = (count / this.genreTotal) * 100;
         return {
           class: `${genre.bg} ${genre.textLight}`,

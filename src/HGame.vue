@@ -1,5 +1,5 @@
 <template>
-  <div class="select-none">
+  <div class="select-none adjust-none">
     <!-- Player panels (moved using teleport) -->
     <HPlayerPanel v-for="(player, id) in players" :key="id" :player="player" />
     <HPenny v-if="gamedatas.penny" :penny="gamedatas.penny" />
@@ -17,13 +17,13 @@
     </transition>
 
     <!-- Browser warning (Safari 12, etc.) -->
-    <div v-if="warningVisible" class="m-4 p-3 text-18 font-bold text-center border-2 border-red-700 bg-white bg-opacity-50">
+    <div v-if="warningVisible" class="m-4 p-3 text-17 font-bold text-center border-2 border-red-700 bg-white bg-opacity-50">
       <a href="https://browsehappy.com/" target="_blank" class="block text-blue-700" v-text="i18n('browserWarnTitle')"></a>
-      <div class="text-14" v-text="i18n('browserWarnDesc')"></div>
+      <div class="text-15" v-text="i18n('browserWarnDesc')"></div>
     </div>
 
     <!-- Final round reminder -->
-    <div v-if="gamedatas.finalRound && !gamedatas.options.coop" class="m-4 p-3 text-18 text-center font-bold border-2 border-red-700 bg-white bg-opacity-50" v-text="i18n('finalRound')"></div>
+    <div v-if="gamedatas.finalRound && !gamedatas.options.coop" class="m-4 p-3 text-17 text-center font-bold border-2 border-red-700 bg-white bg-opacity-50" v-text="i18n('finalRound')"></div>
 
     <!-- Discard -->
     <div v-if="!spectator" class="p-2 border-t-2 border-black bg-black bg-opacity-25">
@@ -109,7 +109,7 @@
 </template>
 
 <script lang="ts">
-import Constants from "./constants.js";
+import HConstants from "./HConstants.js";
 import HCardList from "./HCardList.vue";
 import HKeyboard from "./HKeyboard.vue";
 import HPenny from "./HPenny.vue";
@@ -215,6 +215,7 @@ export default {
       getHtml: getHtml,
       i18n: this.i18n,
       options: computed(() => this.gamedatas.options),
+      prefs: computed(() => this.prefs),
       refs: computed(() => this.gamedatas.refs),
     };
   },
@@ -264,10 +265,11 @@ export default {
         },
       },
       gamestate: {},
-      drag: null,
+
       discardVisible: false,
-      warningVisible: window.PointerEvent === undefined,
+      drag: null,
       keyboardId: null,
+      prefs: {},
       locationOrder: {
         timeless: "location",
       },
@@ -343,6 +345,10 @@ export default {
         moveAllTableau: this.gamestate.active && this.gamestate.name == "playerTurn" && this.tableauCards.length,
         resetAllTableau: this.gamestate.active && this.gamestate.name == "playerTurn" && this.tableauWildCards.length,
       };
+    },
+
+    warningVisible() {
+      return window.PointerEvent === undefined && this.prefs[HConstants.PREF_DRAG_DROP] !== HConstants.DRAG_DROP_DISABLED;
     },
   },
 
@@ -469,17 +475,7 @@ export default {
       }
 
       // Genre name
-      if (newCard.genre == Constants.ADVENTURE) {
-        newCard.genreName = "adventure";
-      } else if (newCard.genre == Constants.HORROR) {
-        newCard.genreName = "horror";
-      } else if (newCard.genre == Constants.ROMANCE) {
-        newCard.genreName = "romance";
-      } else if (newCard.genre == Constants.MYSTERY) {
-        newCard.genreName = "mystery";
-      } else if (newCard.genre == Constants.STARTER) {
-        newCard.genreName = "starter";
-      }
+      newCard.genreName = HConstants.GENRES[newCard.genre].icon;
 
       // Owning player
       if (newCard.location == "jail") {
@@ -904,6 +900,10 @@ export default {
           this.game.scoreCtrl[notif.args.player.id].setValue(notif.args.player.score);
         }
       }
+    },
+
+    onPrefChange(id: number, value: number) {
+      this.prefs[id] = value;
     },
 
     /*

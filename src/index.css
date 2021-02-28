@@ -37,6 +37,9 @@
   .touch-none {
     touch-action: none;
   }
+  .adjust-none {
+    text-size-adjust: none;
+  }
 }
 
 .chevron {

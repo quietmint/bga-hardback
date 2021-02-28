@@ -112,20 +112,8 @@ $gameinfos = [
     'disable_player_order_swap_on_rematch' => false,
 
     // Game interface width range (pixels)
-    // Note: game interface = space on the left side, without the column on the right
     'game_interface_width' => [
-
-        // Minimum width
-        //  default: 740
-        //  maximum possible value: 740 (ie: your game interface should fit with a 740px width (correspond to a 1024px screen)
-        //  minimum possible value: 320 (the lowest value you specify, the better the display is on mobile)
-        'min' => 800,
-
-
-        // Maximum width
-        //  default: null (ie: no limit, the game interface is as big as the player's screen allows it).
-        //  maximum possible value: unlimited
-        //  minimum possible value: 740
+        'min' => 750,
         'max' => null
     ],
 
@@ -134,10 +122,9 @@ $gameinfos = [
     // Each paragraph must be wrapped with totranslate() for translation and should not contain html (plain text without formatting).
     // A good length for this text is between 100 and 150 words (about 6 to 9 lines on a standard display)
     'presentation' => [
-        totranslate('Hardback is a deck-building word game.'),
-        totranslate("As an aspiring 19th-century novelist, you're paid by the word to complete romance, mystery, adventure, and horror novels. You start with your own personal deck of cards, using them to acquire new cards, and reshuffle your deck throughout the game."),
-        totranslate('Specialize your deck in certain genres to exploit card combinations, and press your luck to draw extra cards - but make sure you can still string a word together!'),
-        totranslate('Earn enough prestige to complete your masterpiece and be recognized as the finest novelist of the age!'),
+        totranslate("As an aspiring 19th-century novelist, you're paid by the word to complete romance, mystery, adventure, and horror novels. Start with your own personal deck of letter cards, use them to acquire new cards, and reshuffle your deck throughout the game."),
+        totranslate('Specialize your deck in certain genres to exploit card combinations, and press your luck with ink to draw extra cards - but make sure you can still string a word together!'),
+        totranslate('Earn enough prestige to complete your masterpiece and be recognized as the finest novelist of the age.'),
     ],
 
     // Games categories

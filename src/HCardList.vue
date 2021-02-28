@@ -1,5 +1,5 @@
 <template>
-  <div class="cardlist flex flex-wrap items-center justify-center touch-none" ref="cardlist">
+  <div class="cardlist flex flex-wrap items-center justify-center" ref="cardlist">
     <transition-group :css="false">
       <HCard v-for="card in cards" :key="card.id" :card="card" />
     </transition-group>
