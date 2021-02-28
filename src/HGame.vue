@@ -385,24 +385,22 @@ export default {
     populateCard(card) {
       const star = getHtml("benefit_star");
       const adventure = getHtml("benefit_adventure");
-      let newCard = Object.assign({}, this.gamedatas.refs.cards[card.refId], card);
+      let newCard = Object.assign({ factor: 1 }, this.gamedatas.refs.cards[card.refId], card);
+
       // Basic benefits
       newCard.basicBenefitsList = [];
-      newCard.factor = newCard.factor || 1;
-      if (newCard.basicBenefits) {
-        for (const id in newCard.basicBenefits) {
-          let value = newCard.basicBenefits[id];
-          if (newCard.factor > 1) {
-            value = `<span class="font-bold px-1 bg-yellow-400">${value * newCard.factor}</span>`;
-          }
-          let newBenefit = {
-            id: parseInt(id),
-            html: this.i18n(this.gamedatas.refs.benefits[id], { value, star, adventure }),
-          };
-          newCard.basicBenefitsList.push(newBenefit);
+      for (const id in newCard.basicBenefits) {
+        let value = newCard.basicBenefits[id];
+        if (newCard.factor > 1) {
+          value = `<span class="font-bold px-1 bg-yellow-400">${value * newCard.factor}</span>`;
         }
-        newCard.basicBenefitsList.sort(firstBy("id"));
+        let newBenefit = {
+          id: parseInt(id),
+          html: this.i18n(this.gamedatas.refs.benefits[id], { value, star, adventure }),
+        };
+        newCard.basicBenefitsList.push(newBenefit);
       }
+      newCard.basicBenefitsList.sort(firstBy("id"));
 
       // Genre benefits
       newCard.genreBenefitsList = [];
