@@ -23,7 +23,16 @@ define([
 ], function (dojo, declare) {
   return declare("bgagame.hardback", ebg.core.gamegui, {
     constructor: function () {
+      this.default_viewport = "width=920, user-scalable=no";
       this.vue = null;
+    },
+
+    onScreenWidthChange: function () {
+      // Remove broken "zoom" property added by BGA framework
+      this.gameinterface_zoomFactor = 1;
+      dojo.style("page-content", "zoom", "");
+      dojo.style("page-title", "zoom", "");
+      dojo.style("right-side-first-part", "zoom", "");
     },
 
     setup: function (gamedatas) {
