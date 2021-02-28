@@ -771,11 +771,16 @@ export default {
             });
           },
         },
-        skip: {
-          text() {
-            return this.gamestate.name == "purchase" ? "skipPurchaseButton" : "skipButton";
+        skipPurchase: {
+          text: "skipPurchaseButton",
+          color: "blue",
+          function() {
+            this.takeAction("skipPurchase");
           },
-          color: this.gamestate.name == "purchase" ? "blue" : "gray",
+        },
+        skip: {
+          text: "skipButton",
+          color: "gray",
           function() {
             this.takeAction("skip");
           },

@@ -1148,16 +1148,21 @@ class hardback extends Table
 
     function skipWord(): void
     {
+        $this->gamestate->nextState('skip');
+    }
+
+    function stSkipTurn(): void
+    {
         $player = PlayerMgr::getPlayer();
         self::notifyAllPlayers('message', $this->msg['skipWord'], [
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => $player->getName(),
             'duration' => 1500,
         ]);
 
         // Reset hand and tableau
         CardMgr::reset($player->getId(), true);
         $player->notifyPanel();
-        $this->gamestate->nextState('skip');
+        $this->gamestate->nextState('next');
     }
 
     function stCleanup(): void

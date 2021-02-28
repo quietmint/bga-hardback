@@ -177,6 +177,14 @@ class action_hardback extends APP_GameAction
    * PHASE 4: PURCHASE NEW CARDS AND INK
    */
 
+  public function skipPurchase()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('skipPurchase');
+    $this->game->skip();
+    self::ajaxResponse();
+  }
+
   public function flush()
   {
     self::setAjaxMode();
@@ -214,9 +222,6 @@ class action_hardback extends APP_GameAction
   /*
    * PHASE 5: DISCARD USED CARDS AND INK
    * PHASE 6: DISCARD USED TIMELESS CLASSIC CARDS
-   */
-
-  /*
    * PHASE 7: DRAW YOUR NEXT HAND
    */
 

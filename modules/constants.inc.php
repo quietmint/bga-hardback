@@ -125,6 +125,7 @@ define('ST_JAIL', 17);
 define('ST_FLUSH', 20);
 define('ST_PURCHASE', 21);
 define('ST_CLEANUP', 90);
+define('ST_SKIP_TURN', 92);
 define('ST_NEXT_PLAYER', 91);
 define('ST_END', 98);
 define('ST_BGA_GAME_END', 99);

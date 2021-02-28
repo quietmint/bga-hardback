@@ -73,8 +73,8 @@ $machinestates = [
         'possibleactions' => ['confirmWord', 'skipWord'],
         'transitions' => [
             'next' => ST_UNCOVER,
-            'skip' => ST_COOP_TURN,
-            'zombie' => ST_NEXT_PLAYER,
+            'skip' => ST_SKIP_TURN,
+            'zombie' => ST_SKIP_TURN,
         ],
         'updateGameProgression' => true,
     ],
@@ -236,7 +236,7 @@ $machinestates = [
         'type' => 'activeplayer',
         'args' => 'argPurchase',
         'action' => 'stAutoSkip',
-        'possibleactions' => ['purchase', 'skip', 'doctor', 'convert'],
+        'possibleactions' => ['purchase', 'skipPurchase', 'doctor', 'convert'],
         'transitions' => [
             'again' => ST_PURCHASE,
             'next' => ST_CLEANUP,
@@ -251,6 +251,18 @@ $machinestates = [
         'descriptionmyturn' => clienttranslate('${actplayer}\'s turn ends'),
         'type' => 'activeplayer',
         'action' => 'stCleanup',
+        'possibleactions' => [],
+        'transitions' => [
+            'next' => ST_COOP_TURN,
+        ],
+    ],
+
+    ST_SKIP_TURN => [
+        'name' => 'skipTurn',
+        'description' => clienttranslate('${actplayer}\'s turn ends'),
+        'descriptionmyturn' => clienttranslate('${actplayer}\'s turn ends'),
+        'type' => 'activeplayer',
+        'action' => 'stSkipTurn',
         'possibleactions' => [],
         'transitions' => [
             'next' => ST_COOP_TURN,
