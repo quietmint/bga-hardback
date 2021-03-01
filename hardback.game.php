@@ -261,7 +261,7 @@ class hardback extends Table
 
         // Reset draw counts
         $penny = PlayerMgr::getPenny();
-        if ($this->gamestate->table_globals[OPTION_COOP] == COOP_SIGNATURE) {
+        if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
             foreach ([ADVENTURE, HORROR, MYSTERY, ROMANCE] as $genre) {
                 hardback::$instance->setGameStateValue("countOffer$genre", 0);
             }
