@@ -1449,4 +1449,49 @@ class hardback extends Table
         // For example, if the game was running with a release of your game named "140430-1345",
         // $from_version is equal to 1404301345
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////:
+    ////////// Production bug report handler
+    //////////
+
+    public function loadBug($reportId)
+    {
+        $db = explode('_', self::getUniqueValueFromDB("SELECT SUBSTRING_INDEX(DATABASE(), '_', -2)"));
+        $game = $db[0];
+        $tableId = $db[1];
+        self::notifyAllPlayers('loadBug', "Trying to load <a href='https://boardgamearena.com/bug?id=$reportId' target='_blank'>bug report $reportId</a>", [
+            'urls' => [
+                "https://studio.boardgamearena.com/admin/studio/getSavedGameStateFromProduction.html?game=$game&report_id=$reportId&table_id=$tableId",
+                "https://studio.boardgamearena.com/table/table/loadSaveState.html?table=$tableId&state=1",
+                "https://studio.boardgamearena.com/1/$game/$game/loadBugSQL.html?table=$tableId&report_id=$reportId",
+                "https://studio.boardgamearena.com/admin/studio/clearGameserverPhpCache.html?game=$game",
+            ]
+        ]);
+    }
+
+    public function loadBugSQL($reportId)
+    {
+        $studioPlayer = self::getCurrentPlayerId();
+        $playerIds = self::getObjectListFromDb("SELECT player_id FROM player", true);
+
+        $sql = [
+            "UPDATE global SET global_value=2 WHERE global_id=1 AND global_value=99"
+        ];
+        foreach ($playerIds as $pId) {
+            $sql[] = "UPDATE player SET player_id=$studioPlayer WHERE player_id=$pId";
+            $sql[] = "UPDATE global SET global_value=$studioPlayer WHERE global_value=$pId";
+            $sql[] = "UPDATE stats SET stats_player_id=$studioPlayer WHERE stats_player_id=$pId";
+            $sql[] = "UPDATE card SET `location`=REPLACE(`location`, $pId, $studioPlayer)";
+            $sql[] = "UPDATE card SET `origin`=REPLACE(`origin`, $pId, $studioPlayer)";
+            $studioPlayer++;
+        }
+        $msg = "<b>Loaded <a href='https://boardgamearena.com/bug?id=$reportId' target='_blank'>bug report $reportId</a></b><hr><ul><li>" . implode(';</li><li>', $sql) . ';</li></ul>';
+        self::warn($msg);
+        self::notifyAllPlayers('message', $msg, []);
+
+        foreach ($sql as $q) {
+            self::DbQuery($q);
+        }
+        self::reloadPlayersBasicInfos();
+    }
 }

@@ -86,6 +86,28 @@ define([
 
       // Setup preferences
       this.setupPrefs();
+
+      // Production bug report handler
+      dojo.subscribe("loadBug", this, function loadBug(n) {
+        function fetchNextUrl() {
+          var url = n.args.urls.shift();
+          console.log("Fetching URL", url);
+          dojo.xhrGet({
+            url: url,
+            load: function (success) {
+              console.log("Success for URL", url, success);
+              if (n.args.urls.length > 0) {
+                fetchNextUrl();
+              } else {
+                console.log("Done, reloading page");
+                window.location.reload();
+              }
+            },
+          });
+        }
+        console.log("Notif: load bug", n.args);
+        fetchNextUrl();
+      });
     },
 
     setupPrefs: function () {
