@@ -63,6 +63,4 @@ export default Object.freeze({
   DRAG_DROP_ENABLED: 0,
   DRAG_DROP_DISABLED: 1,
   PREF_ZOOM: 150,
-  ZOOM_LARGE: 0,
-  ZOOM_SMALL: 1,
 });

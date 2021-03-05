@@ -163,8 +163,13 @@ define([
 
     onPrefChange: function (id, value) {
       if (id == HConstants.PREF_ZOOM) {
-        this.interface_min_width = value == HConstants.ZOOM_SMALL ? 920 : 750;
-        this.default_viewport = "width=" + this.interface_min_width;
+        if (value == 0) {
+          value = 750;
+        } else if (value == 1) {
+          value = 920;
+        }
+        this.interface_min_width = value;
+        this.default_viewport = "width=" + value;
         this.onGameUiWidthChange();
       }
       this.vue && this.vue.onPrefChange(id, value);
