@@ -58,7 +58,7 @@ import { Icon } from "@iconify/vue";
 export default {
   name: "HCard",
   emits: ["clickCard", "clickFooter", "dragStart"],
-  inject: ["gamestate", "i18n", "prefs"],
+  inject: ["gamestate", "i18n", "myself", "prefs"],
   components: { Icon },
 
   props: {
@@ -123,6 +123,13 @@ export default {
           title: this.i18n("jailTip", { player_name: this.card.player.name }),
           class: `${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
         };
+      } else if (this.card.player && this.card.player.id === 0) {
+        return {
+          text: this.card.player.name,
+          icon: "jail",
+          title: this.i18n("jailTip", { player_name: this.card.player.name }),
+          class: `${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
+        };
       }
     },
 
@@ -149,7 +156,11 @@ export default {
       const actionBlue = "button blue shadow";
       const actionRed = "button red shadow";
       const actionRef = {
-        ink: {
+        inkText: {
+          text: this.i18n("ink"),
+          class: "uppercase font-bold px-2 rounded-t-lg z-10 bg-black text-white leading-5",
+        },
+        inkButton: {
           action: "useRemover",
           text: this.i18n("useRemoverButton"),
           class: actionBlack,
@@ -284,13 +295,21 @@ export default {
         return [actionRef.purchase];
       }
 
+      if (this.card.ink) {
+        if (this.myself.value.remover > 0 && (this.card.location.startsWith("hand") || (this.card.location == "tableau" && this.gamestate.active && this.gamestate.name == "playerTurn"))) {
+          return [actionRef.inkButton];
+        } else {
+          return [actionRef.inkText];
+        }
+      }
+
       if (!this.card.origin.startsWith("timeless") && (this.card.location.startsWith("hand") || (this.card.location == "tableau" && this.gamestate.active && this.gamestate.name == "playerTurn"))) {
         let reset = {
           action: "reset",
           text: this.i18n("resetButton", { x: this.card.letter }),
           class: actionBlue,
         };
-        return this.card.ink ? [actionRef.ink] : this.card.wild ? [reset] : [actionRef.wild];
+        return this.card.wild ? [reset] : [actionRef.wild];
       }
     },
 

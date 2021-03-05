@@ -48,7 +48,7 @@
         <div class="buttongroup flex">
           <div @click="buttonEnabled['useInk'] && takeAction('useInk')" class="button" :class="buttonEnabled['useInk'] ? 'blue' : 'disabled'" v-text="i18n('draw', { count: myself.ink })"></div>
           <div @click="buttonEnabled['resetAll'] && resetAll(handLocation)" class="button" :class="buttonEnabled['resetAll'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
-          <div @click="buttonEnabled['moveAll'] && moveAll(handLocation)" class="button" :class="buttonEnabled['moveAll'] ? 'blue' : 'disabled'" v-text="i18n('moveAll')"></div>
+          <div @click="buttonEnabled['moveAll'] && moveAll(handLocation)" class="button" :class="buttonEnabled['moveAll'] ? 'blue' : 'disabled'" v-text="i18n('playAll')"></div>
         </div>
 
         <div class="buttongroup grid grid-cols-3">
@@ -59,6 +59,7 @@
       </div>
 
       <HCardList :cards="handCards" :location="handLocation" :ref="handLocation" />
+      <div v-if="handReminder" class="py-12 text-18 text-center italic" v-text="i18n('handReminder')"></div>
     </div>
 
     <!-- Tableau -->
@@ -68,7 +69,7 @@
 
         <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup flex">
           <div @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')" class="button" :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
-          <div @click="buttonEnabled['moveAllTableau'] && moveAll('tableau')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('moveAll')"></div>
+          <div @click="buttonEnabled['moveAllTableau'] && moveAll('tableau')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('returnAll')"></div>
         </div>
 
         <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup grid grid-cols-3">
@@ -93,7 +94,7 @@
     <!-- Offer -->
     <div class="p-2 border-t-2 border-black">
       <div class="flex leading-7 font-bold">
-        <div class="title flex-grow" v-text="i18n('offer', { count: offerCards.length })"></div>
+        <div class="title flex-grow" v-text="i18n('offer')"></div>
 
         <div class="buttongroup grid grid-cols-4">
           <div @click="sort('offer', 'letter')" class="button blue" :class="{ active: locationOrder.offer == 'letter' }" :title="i18n('sortLetterTip')">A-Z</div>
@@ -214,6 +215,7 @@ export default {
       gamestate: this.gamestate,
       getHtml: getHtml,
       i18n: this.i18n,
+      myself: computed(() => this.myself),
       options: computed(() => this.gamedatas.options),
       prefs: computed(() => this.prefs),
       refs: computed(() => this.gamedatas.refs),
@@ -304,6 +306,10 @@ export default {
 
     handWildCards() {
       return this.handCards.filter((card) => card.wild);
+    },
+
+    handReminder() {
+      return this.handCards.length == 0 && this.gamestate.active && this.gamestate.name == "playerTurn";
     },
 
     discardLocation() {
@@ -811,17 +817,19 @@ export default {
             this.takeAction("doctor");
           },
           condition() {
-            return this.gamestate.args && this.gamestate.args.advert && this.myself.coins >= this.gamestate.args.advert.coins;
+            return this.gamestate.args && this.gamestate.args.advert;
           },
         },
         convert: {
-          text: "convertButton",
-          color: "red",
+          text() {
+            return this.i18n("convertButton", this.gamestate.args.convert);
+          },
+          color: "gray",
           function() {
             this.takeAction("convert");
           },
           condition() {
-            return this.myself.ink >= 3;
+            return this.gamestate.args && this.gamestate.args.convert;
           },
         },
       };

@@ -1036,12 +1036,30 @@ class hardback extends Table
                 }
             }
         }
+        $convert = null;
+        $marginal = 999;
+        foreach ($offer as $card) {
+            $diff = $card->getCost() - $player->getCoins();
+            if ($diff > 0 && $diff <= $marginal) {
+                $marginal = $diff;
+            }
+        };
+        if ($advert && $advert['coins'] > $player->getCoins()) {
+            $diff = $advert['coins'] - $player->getCoins();
+            if ($diff > 0 && $diff <= $marginal) {
+                $marginal = $diff;
+            }
+            $advert = null;
+        }
+        if ($player->getInk() >= $marginal * 3) {
+            $convert = ['coins' => $marginal, 'ink' => $marginal * 3];
+        }
         return [
-            'cardIds' => $cardIds,
-            'convert' => $player->getInk() >= 3,
-            'coins' => $player->getCoins(),
             'advert' => $advert,
-            'skip' => empty($cardIds) && $player->getInk() < 3,
+            'cardIds' => $cardIds,
+            'coins' => $player->getCoins(),
+            'convert' => $convert,
+            'skip' => $advert == null && $convert == null && empty($cardIds),
         ];
     }
 
@@ -1104,11 +1122,17 @@ class hardback extends Table
     function convert(): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-        $player->spendInk(3, false);
-        $player->addCoins(1);
+        $convert = $this->gamestate->state()['args']['convert'];
+        if ($convert == null) {
+            throw new BgaVisibleSystemException("convert: Not possible for $player to convert ink");
+        }
+
+        $player->spendInk($convert['ink'], false);
+        $player->addCoins($convert['coins']);
         self::notifyAllPlayers('message', $this->msg['convert'], [
             'player_name' => $player->getName(),
-            'amount' => 1,
+            'ink' => $convert['ink'],
+            'amount' => $convert['coins'],
             'icon' => '¢',
         ]);
         $this->gamestate->nextState('again');
@@ -1116,24 +1140,21 @@ class hardback extends Table
 
     function advert(): void
     {
-        if ($this->gamestate->table_globals[OPTION_ADVERTS]) {
-            $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-            foreach ($this->adverts as $coins => $points) {
-                if ($points > $player->getAdvert()) {
-                    $player->buyAdvert($points, $coins);
-                    $this->notifyAllPlayers('message', $this->msg['purchaseAdvert'], [
-                        'player_name' => $player->getName(),
-                        'points' => $points,
-                        'iconPoints' => 'star',
-                        'coins' => $coins,
-                        'iconCoins' => '¢',
-                    ]);
-                    $this->gamestate->nextState('again');
-                    return;
-                }
-            }
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $advert = $this->gamestate->state()['args']['advert'];
+        if ($advert == null) {
+            throw new BgaVisibleSystemException("advert: Not possible for $player to buy any advert");
         }
-        throw new BgaVisibleSystemException("advert: Not possible for $player to purchase an advertisement");
+
+        $player->buyAdvert($advert['points'], $advert['coins']);
+        $this->notifyAllPlayers('message', $this->msg['purchaseAdvert'], [
+            'player_name' => $player->getName(),
+            'points' => $advert['points'],
+            'iconPoints' => 'star',
+            'coins' => $advert['coins'],
+            'iconCoins' => '¢',
+        ]);
+        $this->gamestate->nextState('again');
     }
 
     function skip(): void
