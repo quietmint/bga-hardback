@@ -31,6 +31,24 @@ class HPenny extends APP_GameClass implements JsonSerializable
         return intval(hardback::$instance->getStat('coopGenre'));
     }
 
+    public function isGenreActive(int $genre): bool
+    {
+        if ($this->getGenre() == $genre) {
+            if ($genre == ADVENTURE || $genre == HORROR) {
+                $offer = CardMgr::getOffer();
+                foreach ($offer as $offerCard) {
+                    if ($offerCard->getGenre() == $genre) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function getGenreCounts(): array
     {
         return CardMgr::getGenreCounts(CardMgr::getDiscard(0), true);

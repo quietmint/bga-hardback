@@ -300,7 +300,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         self::DbQuery("UPDATE player SET coins = coins - $amount WHERE player_id = {$this->id} AND coins >= $amount");
         $this->coins -= $amount;
         if (self::DbAffectedRow() == 0) {
-            throw new BgaUserException("You do not have {$amount}¢");
+            throw new BgaVisibleSystemException("spendCoins: $this does not have {$amount}¢");
         }
         if ($notifyPanel) {
             $this->notifyPanel();
@@ -315,7 +315,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         self::DbQuery("UPDATE player SET ink = ink - $amount WHERE player_id = {$this->id} AND ink >= $amount");
         $this->ink -= $amount;
         if (self::DbAffectedRow() == 0) {
-            throw new BgaUserException("You do not have $amount ink");
+            throw new BgaVisibleSystemException("spendInk: $this does not have $amount ink");
         }
         if ($notifyPanel) {
             $this->notifyPanel();
@@ -330,7 +330,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         self::DbQuery("UPDATE player SET remover = remover - $amount WHERE player_id = {$this->id} AND remover >= $amount");
         $this->remover -= $amount;
         if (self::DbAffectedRow() == 0) {
-            throw new BgaUserException("You do not have $amount remover");
+            throw new BgaVisibleSystemException("spendRemover: $this does not have $amount remover");
         }
         if ($notifyPanel) {
             $this->notifyPanel();

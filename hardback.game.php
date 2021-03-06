@@ -260,7 +260,6 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
 
         // Reset draw counts
-        $penny = PlayerMgr::getPenny();
         if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
             foreach ([ADVENTURE, HORROR, MYSTERY, ROMANCE] as $genre) {
                 hardback::$instance->setGameStateValue("countOffer$genre", 0);
@@ -268,22 +267,13 @@ class hardback extends Table
         }
 
         // Notify about ink used out-of-turn
-        $coopCondition = false;
-        if ($penny->getGenre() == HORROR) {
-            $offer = CardMgr::getOffer();
-            foreach ($offer as $offerCard) {
-                if ($offerCard->getGenre() == HORROR) {
-                    $coopCondition = true;
-                    break;
-                }
-            }
-        }
         $inkCount = 0;
         foreach ($player->getHand(HAS_INK) as $card) {
             $player->notifyInk($card);
             $inkCount++;
         }
-        if ($coopCondition && $inkCount) {
+        $penny = PlayerMgr::getPenny();
+        if ($inkCount && $penny->isGenreActive(HORROR)) {
             // Horror: Penny earns 1 per ink
             $penny->addPoints($inkCount);
             self::notifyAllPlayers('message', $this->msg['earn'], [
@@ -1013,9 +1003,13 @@ class hardback extends Table
 
     function flush(): void
     {
+        $player = PlayerMgr::getPlayer();
         if ($this->gamestate->state()['args']['possible']) {
             CardMgr::flushOffer();
         }
+        self::notifyAllPlayers('message', $this->msg['flush'], [
+            'player_name' => $player->getName(),
+        ]);
         $this->skip();
     }
 
@@ -1070,18 +1064,6 @@ class hardback extends Table
             throw new BgaVisibleSystemException("purchase: Not possible for $player to use card ID $cardId");
         }
 
-        $penny = PlayerMgr::getPenny();
-        $coopCondition = false;
-        if ($penny->getGenre() == ADVENTURE) {
-            $offer = CardMgr::getOffer();
-            foreach ($offer as $offerCard) {
-                if ($offerCard->getGenre() == ADVENTURE) {
-                    $coopCondition = true;
-                    break;
-                }
-            }
-        }
-
         $card = CardMgr::getCard($cardId);
         $oldLocation = $card->getLocation();
         CardMgr::discard($card, $player->getDiscardLocation());
@@ -1102,7 +1084,8 @@ class hardback extends Table
         $player->spendCoins($card->getCost());
         self::notifyAllPlayers('message', $this->msg[$msg], $args);
 
-        if ($coopCondition) {
+        $penny = PlayerMgr::getPenny();
+        if ($penny->isGenreActive(ADVENTURE)) {
             // Adventure: Penny earns 1 per purchase
             $penny->addPoints(1);
             self::notifyAllPlayers('message', $this->msg['earn'], [
@@ -1135,6 +1118,18 @@ class hardback extends Table
             'amount' => $convert['coins'],
             'icon' => '¢',
         ]);
+
+        $penny = PlayerMgr::getPenny();
+        if ($penny->isGenreActive(HORROR)) {
+            // Horror: Penny earns 1 per ink
+            $penny->addPoints($convert['ink']);
+            self::notifyAllPlayers('message', $this->msg['earn'], [
+                'player_name' => $penny->getName(),
+                'amount' => $convert['ink'],
+                'icon' => 'star',
+            ]);
+        }
+
         $this->gamestate->nextState('again');
     }
 
@@ -1340,26 +1335,20 @@ class hardback extends Table
         $location = $player->isActive() ? 'tableau' : $player->getHandLocation();
         $cards = CardMgr::drawCards(1, $player->getDeckLocation(), $location, $player->getHandLocation());
         if (empty($cards)) {
-            throw new BgaUserException("Your deck is empty");
+            throw new BgaUserException($this->msg['errorEmpty']);
         }
         $card = reset($cards);
         if ($player->isActive()) {
             $player->notifyInk($card);
             $penny = PlayerMgr::getPenny();
-            if ($penny->getGenre() == HORROR) {
-                $offer = CardMgr::getOffer();
-                foreach ($offer as $offerCard) {
-                    if ($offerCard->getGenre() == HORROR) {
-                        // Horror: Penny earns 1 per ink
-                        $penny->addPoints(1);
-                        self::notifyAllPlayers('message', $this->msg['earn'], [
-                            'player_name' => $penny->getName(),
-                            'amount' => 1,
-                            'icon' => 'star',
-                        ]);
-                        break;
-                    }
-                }
+            if ($penny->isGenreActive(HORROR)) {
+                // Horror: Penny earns 1 per ink
+                $penny->addPoints(1);
+                self::notifyAllPlayers('message', $this->msg['earn'], [
+                    'player_name' => $penny->getName(),
+                    'amount' => 1,
+                    'icon' => 'star',
+                ]);
             }
         }
         CardMgr::inkCard($card);
@@ -1372,7 +1361,7 @@ class hardback extends Table
         $player->spendRemover();
         $card = CardMgr::getCard($cardId);
         if ($card == null || !$card->isLocation($player->getHandLocation(), 'tableau')) {
-            throw new BgaUserException("Card $card is unavailable to $player");
+            throw new BgaVisibleSystemException("useRemover: Card $card is unavailable to $player");
         }
         if ($player->isActive()) {
             $player->notifyRemover($card);
