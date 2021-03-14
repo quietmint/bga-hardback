@@ -422,7 +422,7 @@ class hardback extends Table
     function stAutoSkip(): void
     {
         $name = $this->gamestate->state()['name'];
-        $skip = $this->gamestate->state()['args']['skip'];
+        $skip = $this->gamestate->state()['args']['skip'] ?? false;
         $auto = $this->gamestate->state()['args']['auto'] ?? false;
         if ($skip) {
             $this->skip();
@@ -442,38 +442,39 @@ class hardback extends Table
     function argUncover(): array
     {
         $cardIds = [];
-        $sources = [];
+        $source = null;
         $tableau = CardMgr::getTableau(self::getActivePlayerId());
         foreach ($tableau as $card) {
             if ($card->hasBenefit(UNCOVER_ADJ)) {
                 if ($card->getPrevious() != null && $card->getPrevious()->isWild()) {
-                    $id = $card->getPrevious()->getId();
-                    $cardIds[] = $id;
-                    $sources[$id][] = $card->getId();
+                    $cardIds[] = $card->getPrevious()->getId();
                 }
                 if ($card->getNext() != null && $card->getNext()->isWild()) {
-                    $id = $card->getNext()->getId();
-                    $cardIds[] = $id;
-                    $sources[$id][] = $card->getId();
+                    $cardIds[] = $card->getNext()->getId();
+                }
+                if (!empty($cardIds)) {
+                    $source = $card;
+                    break;
                 }
             }
         }
         return [
-            'cardIds' => array_values(array_unique($cardIds)),
-            'sources' => $sources,
-            'skip' => empty($sources),
-            'auto' => count($sources) == 1 ? key($sources) : null,
+            'auto' => count($cardIds) === 1 ? reset($cardIds) : null,
+            'cardIds' => $cardIds,
+            'genre' => $source !== null ?  $source->getGenreName() : '',
+            'letter' => $source !== null ? $source->getLetter() : '',
+            'skip' => $source === null,
+            'sourceId' => $source !== null ? $source->getId() : null,
         ];
     }
 
     function uncover(int $cardId): void
     {
         $player = PlayerMgr::getPlayer();
-        $sourceIds = $this->gamestate->state()['args']['sources'][$cardId] ?? null;
-        if (!$sourceIds || empty($sourceIds)) {
-            throw new BgaVisibleSystemException("uncover: Not possible for $player to use card ID $cardId");
+        if (!in_array($cardId, $this->gamestate->state()['args']['cardIds'])) {
+            throw new BgaVisibleSystemException("uncover: Not possible for $player to uncover card ID $cardId");
         }
-        $sourceId = reset($sourceIds);
+        $sourceId = $this->gamestate->state()['args']['sourceId'];
         $cards = CardMgr::getCards([$cardId, $sourceId]);
         $card = $cards[$cardId];
         $source = $cards[$sourceId];
@@ -494,38 +495,39 @@ class hardback extends Table
     function argDouble(): array
     {
         $cardIds = [];
-        $sources = [];
+        $source = null;
         $tableau = CardMgr::getTableau(self::getActivePlayerId());
         foreach ($tableau as $card) {
             if ($card->hasBenefit(DOUBLE_ADJ)) {
                 if ($card->getPrevious() != null && !$card->getPrevious()->isWild()) {
-                    $id = $card->getPrevious()->getId();
-                    $cardIds[] = $id;
-                    $sources[$id][] = $card->getId();
+                    $cardIds[] = $card->getPrevious()->getId();
                 }
                 if ($card->getNext() != null && !$card->getNext()->isWild()) {
-                    $id = $card->getNext()->getId();
-                    $cardIds[] = $id;
-                    $sources[$id][] = $card->getId();
+                    $cardIds[] = $card->getNext()->getId();
+                }
+                if (!empty($cardIds)) {
+                    $source = $card;
+                    break;
                 }
             }
         }
         return [
-            'cardIds' => array_values(array_unique($cardIds)),
-            'sources' => $sources,
-            'skip' => empty($sources),
-            'auto' => count($sources) == 1 ? key($sources) : null,
+            'auto' => count($cardIds) === 1 ? reset($cardIds) : null,
+            'cardIds' => $cardIds,
+            'genre' => $source !== null ?  $source->getGenreName() : '',
+            'letter' => $source !== null ? $source->getLetter() : '',
+            'skip' => $source === null,
+            'sourceId' => $source !== null ? $source->getId() : null,
         ];
     }
 
     function double(int $cardId): void
     {
         $player = PlayerMgr::getPlayer();
-        $sourceIds = $this->gamestate->state()['args']['sources'][$cardId] ?? null;
-        if (!$sourceIds || empty($sourceIds)) {
-            throw new BgaVisibleSystemException("double: Not possible for $player to use card ID $cardId");
+        if (!in_array($cardId, $this->gamestate->state()['args']['cardIds'])) {
+            throw new BgaVisibleSystemException("double: Not possible for $player to double card ID $cardId");
         }
-        $sourceId = reset($sourceIds);
+        $sourceId = $this->gamestate->state()['args']['sourceId'];
         $cards = CardMgr::getCards([$cardId, $sourceId]);
         $card = $cards[$cardId];
         $source = $cards[$sourceId];
@@ -546,54 +548,65 @@ class hardback extends Table
     function argEither(): array
     {
         $player = PlayerMgr::getPlayer();
-        $possible = [];
+        $source = null;
+        $amount = null;
+        $benefit = null;
         $tableau = CardMgr::getTableau($player->getId());
         foreach ($tableau as $card) {
-            $p = null;
             $benefits = $card->getBenefits(EITHER_BASIC);
             if (!empty($benefits)) {
-                $p = ['benefit' => EITHER_BASIC, 'amount' => $benefits[0]['value']];
+                $benefit = EITHER_BASIC;
+                $amount = $benefits[0]['value'];
             } else {
                 $benefits = $card->getBenefits(EITHER_GENRE);
                 if (!empty($benefits)) {
-                    $p = ['benefit' => EITHER_GENRE, 'amount' => $benefits[0]['value']];
+                    $benefit = EITHER_GENRE;
+                    $amount = $benefits[0]['value'];
                 } else {
                     $benefits = $card->getBenefits(EITHER_INK);
                     if (!empty($benefits)) {
-                        $p = ['benefit' => EITHER_INK, 'amount' => 1];
+                        $benefit = EITHER_INK;
+                        $amount =  1;
                     }
                 }
             }
-            if ($p) {
-                $possible[$card->getId()] = $p;
+            if ($benefit) {
+                $source = $card;
+                break;
             }
         }
         return [
-            'possible' => $possible,
-            'skip' => empty($possible),
+            'amount' => $amount,
+            'benefit' => $benefit,
             'coins' => $player->getCoins(),
-            'points' => $player->getScore() - $this->getGameStateValue('startScore'),
+            'genre' => $source !== null ?  $source->getGenreName() : '',
             'icon' => 'star',
+            'letter' => $source !== null ? $source->getLetter() : '',
+            'points' => $player->getScore() - $this->getGameStateValue('startScore'),
+            'skip' => $source === null,
+            'sourceId' => $source !== null ? $source->getId() : null,
         ];
     }
 
     function either(int $cardId, int $benefitId, string $choice): void
     {
         $player = PlayerMgr::getPlayer();
-        $state = $this->gamestate->state();
-        $p = $state['args']['possible'][$cardId] ?? null;
+        if ($cardId != $this->gamestate->state()['args']['sourceId'] || $benefitId != $this->gamestate->state()['args']['benefit']) {
+            throw new BgaVisibleSystemException("either: Not possible for $player to choose benefit $benefitId for card $cardId");
+        }
         $card = CardMgr::getCard($cardId);
         $benefits = $card->getBenefits($benefitId);
-        if (!$p || empty($benefits)) {
+        if (empty($benefits)) {
             throw new BgaVisibleSystemException("either: Not possible for $player to choose benefit $benefitId for card $card");
         }
 
         CardMgr::useBenefit($card, $benefitId);
+        $amount = $this->gamestate->state()['args']['amount'];
         if (($benefitId == EITHER_BASIC || $benefitId == EITHER_GENRE) && $choice == 'coins') {
-            $player->addCoins($p['amount']);
+            $player->addCoins($amount);
         } else if (($benefitId == EITHER_BASIC || $benefitId == EITHER_GENRE) && $choice == 'points') {
             $stat = $benefits[0]['activation'] == FROM_GENRE ? 'pointsGenre' : 'pointsBasic';
-            $player->addPoints($p['amount'], $stat);
+            $player->addPoints($amount, $stat);
         } else if ($benefitId == EITHER_INK && $choice == 'ink') {
             $player->addInk();
         } else if ($benefitId == EITHER_INK && $choice = 'remover') {
@@ -972,8 +985,8 @@ class hardback extends Table
         // Summary of all earnings
         $player = PlayerMgr::getPlayer();
         $earnings = [
-            'star' => $player->getScore() - $this->getGameStateValue('startScore'),
             '¢' => $player->getCoins(),
+            'star' => $player->getScore() - $this->getGameStateValue('startScore'),
             'ink' => $player->getInk() - $this->getGameStateValue('startInk'),
             'remover' => $player->getRemover() - $this->getGameStateValue('startRemover'),
         ];

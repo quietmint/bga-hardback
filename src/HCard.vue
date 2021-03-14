@@ -256,27 +256,26 @@ export default {
           const text = this.i18n("trashCoinsButton", { coins: this.gamestate.args.amount });
           const trashDiscard = Object.assign({ text }, actionRef.trashDiscard);
           return [trashDiscard];
-        } else if (this.gamestate.name.startsWith("either") && this.gamestate.args.possible.hasOwnProperty(this.card.id)) {
-          const p = this.gamestate.args.possible[this.card.id];
-          if (p.benefit == HConstants.EITHER_INK) {
+        } else if (this.gamestate.name.startsWith("either") && this.gamestate.args.sourceId == this.card.id) {
+          if (this.gamestate.args.benefit == HConstants.EITHER_INK) {
             return [actionRef.eitherInk, actionRef.eitherRemover];
           } else {
             const eitherCoins = {
               action: "either",
               actionArgs: {
-                benefitId: p.benefit,
+                benefitId: this.gamestate.args.benefit,
                 choice: "coins",
               },
-              text: `${p.amount}¢`,
+              text: `${this.gamestate.args.amount}¢`,
               class: actionBlue,
             };
             const eitherPoints = {
               action: "either",
               actionArgs: {
-                benefitId: p.benefit,
+                benefitId: this.gamestate.args.benefit,
                 choice: "points",
               },
-              text: p.amount,
+              text: this.gamestate.args.amount,
               icon: "star",
               class: actionBlue,
             };

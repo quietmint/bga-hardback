@@ -36,16 +36,20 @@
 }
 
 .hicon {
-  font-size: 20px;
-  vertical-align: -5px;
+  font-size: 1.4em;
+  vertical-align: -0.25em;
+  padding-right: 1px;
 }
 
 .hgenre {
+  display: inline-block;
   white-space: nowrap;
   font-weight: bold;
-  padding: 4px 4px 4px 2px;
+  padding: 2px 4px 2px 2px;
   border-radius: 4px;
   background: #e8e8e8;
+  height: 1.4em;
+  line-height: 1.4em;
 }
 
 .hgenre.Starter {
