@@ -16,7 +16,7 @@
         </div>
 
         <!-- Letter -->
-        <div :class="letterClass" class="absolute letter text-center leading-none" :title="card.letter">
+        <div :class="letterClass" class="absolute letter text-center leading-none" :title="i18n(card.genreName) + ' ' + card.letter">
           {{ card.letter }}
         </div>
 

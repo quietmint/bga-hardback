@@ -30,7 +30,7 @@ class HCard extends APP_GameClass implements JsonSerializable
 
     public function __toString(): string
     {
-        return $this->getGenreName() . ' ' . $this->getLetter();
+        return ucfirst($this->getGenreName()) . ' ' . $this->getLetter();
     }
 
     public function jsonSerialize(): array
@@ -233,15 +233,15 @@ class HCard extends APP_GameClass implements JsonSerializable
     {
         switch ($this->getGenre()) {
             case STARTER:
-                return 'Starter';
+                return 'starter';
             case ADVENTURE:
-                return 'Adventure';
+                return 'adventure';
             case HORROR:
-                return 'Horror';
+                return 'horror';
             case MYSTERY:
-                return 'Mystery';
+                return 'mystery';
             case ROMANCE:
-                return 'Romance';
+                return 'romance';
         }
     }
 

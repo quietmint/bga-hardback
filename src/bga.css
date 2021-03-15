@@ -52,27 +52,27 @@
   line-height: 1.4em;
 }
 
-.hgenre.Starter {
+.hgenre.starter {
   background-color: #525252;
   color: #f5f5f5;
 }
 
-.hgenre.Adventure {
+.hgenre.adventure {
   background-color: #eab308;
   color: #713f12;
 }
 
-.hgenre.Horror {
+.hgenre.horror {
   background-color: #4d7c0f;
   color: #ecfccb;
 }
 
-.hgenre.Mystery {
+.hgenre.mystery {
   background-color: #1d4ed8;
   color: #dbeafe;
 }
 
-.hgenre.Romance {
+.hgenre.romance {
   background-color: #b91c1c;
   color: #fee2e2;
 }

@@ -718,7 +718,7 @@ export default {
         }
         if (args.genre) {
           const html = getHtml("hicon_" + args.genre.toLowerCase().trim());
-          args.genre = `<span class="hgenre ${args.genre}">${html ? html : args.genre}`;
+          args.genre = `<span class="hgenre ${args.genre}" title="${this.i18n(args.genre)} ${args.letter}">${html ? html : args.genre}`;
         }
         if (args.letter) {
           args.letter = `${args.letter}</span>`;
