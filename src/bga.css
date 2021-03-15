@@ -132,6 +132,15 @@ a:visited.playername {
   text-shadow: -0.5px 0 rgba(0, 0, 0, 0.5), 0.5px 0 rgba(0, 0, 0, 0.5);
 }
 
+.roundedbox .roundedbox_top,
+.roundedbox .roundedbox_bottom {
+  display: none;
+}
+
+.roundedbox .roundedbox_main {
+  background: none;
+}
+
 .boardblock {
   background-color: #8889;
 }
