@@ -282,7 +282,12 @@ export default {
             return [eitherCoins, eitherPoints];
           }
         } else if (this.gamestate.name == "jail" && this.card.location == "offer") {
-          return [actionRef.jailJail, actionRef.jailTrash];
+          let jailJail = actionRef.jailJail;
+          if (this.gamestate.args.jail) {
+            const confirmation = this.i18n("jailWarning", this.gamestate.args.jail);
+            jailJail = Object.assign({ confirmation }, actionRef.jailJail);
+          }
+          return [jailJail, actionRef.jailTrash];
         } else if (this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
           const text = this.i18n("purchaseButton", { coins: this.card.cost });
           const purchase = Object.assign({ text }, actionRef.purchase);

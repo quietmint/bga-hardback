@@ -192,6 +192,11 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         return CardMgr::getDiscardLocation($this->id);
     }
 
+    public function getJail(): ?HCard
+    {
+        return CardMgr::getJail($this->id);
+    }
+
     public function getTimeless(): array
     {
         return CardMgr::getTimeless($this->id);

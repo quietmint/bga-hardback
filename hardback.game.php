@@ -967,12 +967,15 @@ class hardback extends Table
                 $sourceIds[] = $card->getId();
             }
         }
+        $jailCard = CardMgr::getJail($player->getId());
+        $jail = $jailCard ? ['genre' => $jailCard->getGenreName(), 'letter' => $jailCard->getLetter()] : null;
         return [
             'sourceIds' => $sourceIds,
             'skip' => empty($sourceIds),
             'coins' => $player->getCoins(),
             'points' => $player->getScore() - $this->getGameStateValue('startScore'),
             'icon' => 'star',
+            'jail' => $jail,
         ];
     }
 

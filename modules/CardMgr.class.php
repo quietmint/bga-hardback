@@ -334,12 +334,22 @@ class CardMgr extends APP_GameClass
     {
         $cards = self::getCardsInLocation('offer');
         if ($playerId) {
-            $jailId = self::getJailId($playerId);
-            if ($jailId) {
-                $cards[$jailId] = self::getCard($jailId);
+            $jail = self::getJail($playerId);
+            if ($jail) {
+                $cards[$jail->getId()] = $jail;
             }
         }
         return $cards;
+    }
+
+    public static function getJail(int $playerId): ?HCard
+    {
+        $card = null;
+        $jailId = self::getJailId($playerId);
+        if ($jailId) {
+            $card = self::getCard($jailId);
+        }
+        return $card;
     }
 
     private static function getJailId(int $playerId): int

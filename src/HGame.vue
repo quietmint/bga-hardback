@@ -1013,7 +1013,13 @@ export default {
         if (action.actionArgs) {
           Object.assign(args, action.actionArgs);
         }
-        this.takeAction(action.action, args);
+        if (action.confirmation) {
+          this.game.confirmationDialog(action.confirmation, () => {
+            this.takeAction(action.action, args);
+          });
+        } else {
+          this.takeAction(action.action, args);
+        }
       }
     },
 

@@ -98,6 +98,7 @@ $this->i18n = [
     'jailButton' => clienttranslate('Jail'),
     'jailButton' => clienttranslate('Jail'),
     'jailTip' => clienttranslate('Jailed: Only ${player_name} may purchase'),
+    'jailWarning' => clienttranslate('${genre}${letter} currently in jail will be trashed'),
     'keyboard' => clienttranslate('Click or type the wild letter'),
     'myDiscard' => clienttranslate('My Discard Pile (${count})'),
     'myHand' => clienttranslate('My Hand (${count})'),
