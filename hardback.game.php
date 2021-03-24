@@ -363,9 +363,11 @@ class hardback extends Table
             $this->incStat(1, 'invalidWords');
             $this->incStat(1, 'invalidWords', $player->getId());
             self::notifyAllPlayers('invalid', $this->msg['invalidWord'], [
+                'i18n' => ['dict'],
                 'player_id' => $player->getId(),
                 'player_name' => $player->getName(),
                 'invalid' => $word,
+                'dict' => $this->dicts[$this->gamestate->table_globals[OPTION_DICTIONARY]],
             ]);
             return;
         }
@@ -418,6 +420,8 @@ class hardback extends Table
         $tableau = CardMgr::getTableau($player->getId());
         $this->computeSpecialMystery($tableau);
 
+        // Give extra time
+        $this->giveExtraTime($player->getId());
         $this->gamestate->nextState('next');
     }
 
@@ -1382,13 +1386,13 @@ class hardback extends Table
     function useInk(): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-        $player->spendInk();
         $location = $player->isActive() ? 'tableau' : $player->getHandLocation();
         $cards = CardMgr::drawCards(1, $player->getDeckLocation(), $location, $player->getHandLocation());
         if (empty($cards)) {
             throw new BgaUserException($this->msg['errorEmpty']);
         }
         $card = reset($cards);
+        $player->spendInk();
         if ($player->isActive()) {
             $player->notifyInk($card);
             $penny = PlayerMgr::getPenny();
@@ -1409,11 +1413,11 @@ class hardback extends Table
     function useRemover(int $cardId): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-        $player->spendRemover();
         $card = CardMgr::getCard($cardId);
         if ($card == null || !$card->isLocation($player->getHandLocation(), 'tableau')) {
             throw new BgaVisibleSystemException("useRemover: Card $card is unavailable to $player");
         }
+        $player->spendRemover();
         if ($player->isActive()) {
             $player->notifyRemover($card);
         }

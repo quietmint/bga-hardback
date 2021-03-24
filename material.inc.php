@@ -60,6 +60,12 @@ $this->signatures = [
     ],
 ];
 
+$this->dicts = [
+    TWELVEDICTS => clienttranslate('12dicts'),
+    US  => clienttranslate('American Scrabble'),
+    UK => clienttranslate('British Scrabble'),
+];
+
 $this->i18n = [
     'starter' => clienttranslate('Starter'),
     'adventure' => clienttranslate('Adventure'),
@@ -88,7 +94,7 @@ $this->i18n = [
     'genreTip' => clienttranslate('Genre benefits activate if you play multiple ${x} cards'),
     'handReminder' => clienttranslate('All your cards are already in play'),
     'ink' => clienttranslate('Ink'),
-    'invalid' => clienttranslate('${invalid} is not a valid word'),
+    'invalid' => clienttranslate('${invalid} is not a valid word in the ${dict} dictionary'),
     'jailButton' => clienttranslate('Jail'),
     'jailButton' => clienttranslate('Jail'),
     'jailTip' => clienttranslate('Jailed: Only ${player_name} may purchase'),
@@ -141,7 +147,7 @@ $this->msg = [
     'flush' => clienttranslate('${player_name} flushes the offer row'),
     'forceDiscard' => clienttranslate('${player_name} forces ${player_name2} to discard ${amount}${icon}'),
     'forceTimeless' => clienttranslate('${player_name} forces ${player_name2} to discard Timeless Classic ${genre}${letter}'),
-    'invalidWord' => clienttranslate('${player_name} spells an invalid word, ${invalid}'),
+    'invalidWord' => clienttranslate('${player_name} spells ${invalid}, an invalid word not in the ${dict} dictionary'),
     'jailOffer' => clienttranslate('${player_name} jails ${genre}${letter} from the offer row'),
     'purchase' => clienttranslate('${player_name} purchases ${genre}${letter} for ${coins}${iconCoins}'),
     'purchase2' => clienttranslate('${player_name} purchases ${genre}${letter} for ${coins}${iconCoins} and earns ${points}${iconPoints}'),
