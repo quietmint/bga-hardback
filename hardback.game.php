@@ -1324,6 +1324,7 @@ class hardback extends Table
                 'letter' => $card->getLetter(),
             ]);
             CardMgr::discard($card, $penny->getDiscardLocation());
+            $penny->notifyPanel();
             CardMgr::notifyCards(CardMgr::drawCards(1, 'deck', 'offer'));
         }
 
@@ -1344,6 +1345,7 @@ class hardback extends Table
         }
         if (!empty($discardIds)) {
             CardMgr::discard($discardIds, $player->getDiscardLocation());
+            $player->notifyPanel();
         }
 
         // Pause
