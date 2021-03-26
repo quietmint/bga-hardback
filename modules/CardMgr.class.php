@@ -98,15 +98,17 @@ class CardMgr extends APP_GameClass
             $ids = array_merge($ids, self::getObjectListFromDB($sql, true));
 
             // Required to notify reshuffled cards as "unknown"
-            $unknownIds = array_values(array_diff($shuffleIds, $ids));
-            $unknown = [];
-            foreach ($unknownIds as $id) {
-                $unknown[intval($id)] = [
-                    'id' => intval($id),
-                    'location' => 'unknown',
-                ];
+            if ($fromLocation != 'deck') {
+                $unknownIds = array_values(array_diff($shuffleIds, $ids));
+                $unknown = [];
+                foreach ($unknownIds as $id) {
+                    $unknown[intval($id)] = [
+                        'id' => intval($id),
+                        'location' => 'unknown',
+                    ];
+                }
+                self::notifyCards($unknown);
             }
-            self::notifyCards($unknown);
         }
 
         // Populate from database and sort
@@ -681,7 +683,7 @@ class CardMgr extends APP_GameClass
         $updatedIds = self::getIds(self::getCardsInLocation('offer'));
 
         // Trash offer and notify
-        self::discard($updatedIds, 'trash');
+        self::discard($updatedIds, 'discard');
         hardback::$instance->incStat(1, 'flush');
 
         // Draw new offer and notify
@@ -726,7 +728,7 @@ class CardMgr extends APP_GameClass
         $updatedIds = [$card->getId()];
         $jailId = self::getJailId($playerId);
         if ($jailId) {
-            self::discard($jailId, 'trash', false);
+            self::discard($jailId, 'discard', false);
             $updatedIds[] = $jailId;
         }
         self::DbQuery("UPDATE card SET `origin` = 'jail', `location` = 'jail', `order` = '$playerId' WHERE `id` = {$card->getId()}");

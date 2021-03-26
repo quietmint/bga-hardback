@@ -878,7 +878,7 @@ class hardback extends Table
         }
 
         CardMgr::useBenefit($card, $benefits[0]['id']);
-        CardMgr::discard($card, 'trash');
+        CardMgr::discard($card, 'discard');
         $icon = null;
         $amount = $benefits[0]['value'];
         if ($benefits[0]['id'] == TRASH_POINTS) {
@@ -940,7 +940,7 @@ class hardback extends Table
 
         $amount = $this->gamestate->state()['args']['amount'];
         CardMgr::useBenefit($source, TRASH_DISCARD);
-        CardMgr::discard($card, 'trash');
+        CardMgr::discard($card, 'discard');
         $player->addCoins($amount);
         self::notifyAllPlayers('message', $this->msg['trash'], [
             'player_name' => $player->getName(),
@@ -999,7 +999,7 @@ class hardback extends Table
                 'genre' => $card->getGenreName(),
                 'letter' => $card->getLetter(),
             ]);
-            CardMgr::discard($card, 'trash');
+            CardMgr::discard($card, 'discard');
         } else {
             self::notifyAllPlayers('message', $this->msg['jailOffer'], [
                 'player_name' => $player->getName(),
@@ -1523,6 +1523,9 @@ class hardback extends Table
         // $from_version is the current version of this game database, in numerical form.
         // For example, if the game was running with a release of your game named "140430-1345",
         // $from_version is equal to 1404301345
+        if ($from_version <= 2103240527) {
+            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_card SET `location` = 'discard', `origin` = 'discard' WHERE `location` = 'trash'");
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////:
