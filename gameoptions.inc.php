@@ -89,7 +89,7 @@ $game_options = [
 
     OPTION_ADVERTS => [
         'name' => totranslate('Adverts'),
-        'default' => NO,
+        'default' => YES,
         'values' => [
             NO => [
                 'name' => totranslate('No'),
