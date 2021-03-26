@@ -11,11 +11,11 @@
 
         <div v-if="player.id == game.player_id" class="panel-cards flex items-center text-24 font-bold text-noshadow">
           <div class="flex-1" :title="i18n('deck') + ': ' + player.deckCount">{{ player.deckCount }}</div>
-          <div class="flex-1" :title="i18n('discardButton') + ': ' + player.discardCount">{{ player.discardCount }}</div>
+          <div class="flex-1 cursor-pointer" @click="clickDiscard" :title="i18n('discardButton') + ': ' + player.discardCount">{{ player.discardCount }}</div>
         </div>
         <div v-if="player.id == game.player_id" class="flex items-center text-12">
           <div class="flex-1" v-text="i18n('deck')"></div>
-          <div class="flex-1" v-text="i18n('discardButton')"></div>
+          <div class="flex-1 cursor-pointer" @click="clickDiscard" v-text="i18n('discardButton')"></div>
         </div>
       </div>
 
@@ -57,6 +57,12 @@ export default {
   computed: {
     teleportTo() {
       return "#player_board_" + this.player.id;
+    },
+  },
+
+  methods: {
+    clickDiscard() {
+      this.emitter.emit("clickDiscard");
     },
   },
 };

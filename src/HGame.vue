@@ -228,6 +228,7 @@ export default {
 
   mounted() {
     this.emitter.on("clickCard", this.clickCard);
+    this.emitter.on("clickDiscard", this.clickDiscard);
     this.emitter.on("clickFooter", this.clickFooter);
     this.emitter.on("clickKey", this.clickKey);
     this.emitter.on("dragStart", this.dragStart);
@@ -244,6 +245,7 @@ export default {
 
   beforeUnmount() {
     this.emitter.off("clickCard", this.clickCard);
+    this.emitter.off("clickDiscard", this.clickDiscard);
     this.emitter.off("clickFooter", this.clickFooter);
     this.emitter.off("clickKey", this.clickKey);
     this.emitter.off("dragStart", this.dragStart);
@@ -1029,6 +1031,10 @@ export default {
         this.keyboardId = null;
         this.previewWord();
       }
+    },
+
+    clickDiscard(): void {
+      this.discardVisible = true;
     },
 
     /*
