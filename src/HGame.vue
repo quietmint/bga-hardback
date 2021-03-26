@@ -706,14 +706,21 @@ export default {
         if (args.word) {
           const q = args.word.toLowerCase();
           const links = [
-            `<a target="hdefine" href="https://dictionary.cambridge.org/search/english/direct/?q=${q}">Cambridge</a>`, //
-            `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`, //
-            `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`, //
-            `<a target="hdefine" href="https://www.merriam-webster.com/dictionary/${q}">Merriam-Webster</a>`, //
-            `<a target="hdefine" href="https://www.lexico.com/en/definition/${q}">Oxford Lexico</a>`, //
-            `<a target="hdefine" href="https://en.wiktionary.org/wiki/${q}">Wiktionary</a>`, //
+            [
+              `<a target="hdefine" href="https://dictionary.cambridge.org/search/english/direct/?q=${q}">Cambridge</a>`, //
+              `<a target="hdefine" href="https://www.merriam-webster.com/dictionary/${q}">Merriam-Webster</a>`, //
+            ],
+            [
+              `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`, //
+              `<a target="hdefine" href="https://www.lexico.com/en/definition/${q}">Oxford Lexico</a>`, //
+            ],
+            [
+              `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`, //
+              `<a target="hdefine" href="https://en.wiktionary.org/wiki/${q}">Wiktionary</a>`, //
+            ],
           ];
-          args.word = `<b>${args.word}</b><div class="hdefine">${this.i18n("dictionary")}<ul><li>${links.join("</li><li>")}</li></ul></div>`;
+          const table = "<table><tr>" + links.map((o) => `<td>• ${o.join("</td><td>• ")}</td>`).join("</tr><tr>") + "</tr></table>";
+          args.word = `<b>${args.word}</b><div class="hdefine">${this.i18n("dictionary")}${table}</div>`;
         }
         if (args.invalid) {
           args.invalid = `<b>${args.invalid}</b>`;

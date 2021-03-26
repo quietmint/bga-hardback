@@ -30,9 +30,8 @@
   background: rgba(0, 0, 0, 0.1);
 }
 
-.hdefine li {
-  list-style: inside square;
-  padding-left: 1em;
+.hdefine table {
+  width: 100%;
 }
 
 .hicon {
