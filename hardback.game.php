@@ -1444,6 +1444,11 @@ class hardback extends Table
                 $points = $this->awards[$length];
                 $player = PlayerMgr::getPlayer($winner);
                 $player->addPoints($points, 'pointsAward');
+                self::notifyAllPlayers('message', $this->msg['awardEnd'], [
+                    'player_name' => $player->getName(),
+                    'amount' => $points,
+                    'icon' => 'star',
+                ]);
             }
         }
 

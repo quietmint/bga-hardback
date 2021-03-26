@@ -131,6 +131,7 @@ $this->i18n = [
 ];
 
 $this->msg = [
+    'awardEnd' => clienttranslate('${player_name} earns ${amount}${icon} for the literary award'),
     'awardFirst' => clienttranslate('${player_name} spells the first ${length}-letter word and takes the literary award (worth ${points}${iconPoints} at game end)${award}'),
     'awardSecond' => clienttranslate('${player_name} spells the first ${length}-letter word and takes the literary award from ${player_name2} (worth ${points}${iconPoints} at game end)${award}'),
     'confirmWord' => clienttranslate('${player_name} spells ${word}'),
