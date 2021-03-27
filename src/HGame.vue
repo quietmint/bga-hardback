@@ -118,7 +118,7 @@ import HPlayerPanel from "./HPlayerPanel.vue";
 import { Icon, addIcon } from "@iconify/vue";
 import { firstBy } from "thenby";
 import { nextTick, computed } from "vue";
-import { debounce } from "lodash-es";
+import { throttle } from "lodash-es";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const repaint = () => new Promise((resolve) => requestAnimationFrame(resolve));
@@ -223,7 +223,7 @@ export default {
   },
 
   created() {
-    this.previewWord = debounce(this.previewWord, 1000, { maxWait: 1000 });
+    this.previewWord = throttle(this.previewWord, 1500);
   },
 
   mounted() {
@@ -905,7 +905,8 @@ export default {
           this.game.showMessage(this.i18n("invalid", notif.args), "error");
         }
       } else if (notif.type == "pause") {
-        const duration = this.gamestate.instant ? 1 : notif.args.duration;
+        // @ts-ignore
+        const duration = this.gamestate.instant || window.g_archive_mode ? 1 : notif.args.duration;
         this.game.notifqueue.setSynchronousDuration(duration);
       } else if (notif.type == "penny") {
         Object.assign(this.gamedatas.penny, notif.args.penny);
