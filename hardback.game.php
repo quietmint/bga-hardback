@@ -878,7 +878,7 @@ class hardback extends Table
         }
 
         CardMgr::useBenefit($card, $benefits[0]['id']);
-        CardMgr::discard($card, 'discard');
+        CardMgr::discard($card, CardMgr::getTrashLocation($card));
         $icon = null;
         $amount = $benefits[0]['value'];
         if ($benefits[0]['id'] == TRASH_POINTS) {
@@ -940,7 +940,7 @@ class hardback extends Table
 
         $amount = $this->gamestate->state()['args']['amount'];
         CardMgr::useBenefit($source, TRASH_DISCARD);
-        CardMgr::discard($card, 'discard');
+        CardMgr::discard($card, CardMgr::getTrashLocation($card));
         $player->addCoins($amount);
         self::notifyAllPlayers('message', $this->msg['trash'], [
             'player_name' => $player->getName(),
@@ -1293,7 +1293,7 @@ class hardback extends Table
         }
 
         // Discard the last card
-        CardMgr::discard($card, $penny->getDiscardLocation());
+        CardMgr::discard($card, 'discard');
         $penny->addPoints($points);
         $this->incStat(1, 'coopTurns');
         $turns = $this->getStat('coopTurns');
@@ -1323,7 +1323,7 @@ class hardback extends Table
                 'genre' => $card->getGenreName(),
                 'letter' => $card->getLetter(),
             ]);
-            CardMgr::discard($card, $penny->getDiscardLocation());
+            CardMgr::discard($card, 'discard');
             $penny->notifyPanel();
             CardMgr::notifyCards(CardMgr::drawCards(1, 'deck', 'offer'));
         }
@@ -1524,7 +1524,7 @@ class hardback extends Table
         // For example, if the game was running with a release of your game named "140430-1345",
         // $from_version is equal to 1404301345
         if ($from_version <= 2103240527) {
-            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_card SET `location` = 'discard', `origin` = 'discard' WHERE `location` = 'trash'");
+            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_card SET `location` = 'discard', `origin` = 'discard' WHERE `location` IN ('discard_0', 'trash') AND `refId` <= 140");
         }
     }
 

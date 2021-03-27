@@ -7,7 +7,6 @@ class HPenny extends APP_GameClass implements JsonSerializable
         return [
             'gameLength' => hardback::$instance->getGameLength(),
             'genre' => $this->getGenre(),
-            'genreCounts' => $this->getGenreCounts(),
             'score' => $this->getScore(),
         ];
     }
@@ -19,11 +18,6 @@ class HPenny extends APP_GameClass implements JsonSerializable
         hardback::$instance->notifyAllPlayers('penny', '', [
             'penny' => $this,
         ]);
-    }
-
-    public function getDiscardLocation(): string
-    {
-        return CardMgr::getDiscardLocation(0);
     }
 
     public function getGenre(): int
@@ -47,11 +41,6 @@ class HPenny extends APP_GameClass implements JsonSerializable
             }
         }
         return false;
-    }
-
-    public function getGenreCounts(): array
-    {
-        return CardMgr::getGenreCounts(CardMgr::getDiscard(0), true);
     }
 
     public function getName(): string

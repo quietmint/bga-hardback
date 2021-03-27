@@ -459,7 +459,7 @@ class CardMgr extends APP_GameClass
     {
         $locations = [];
         foreach (PlayerMgr::getPlayers() as $player) {
-            $location = $player->getDiscardLocation();;
+            $location = $player->getDiscardLocation();
             $locations[] = $location;
             $sql = "UPDATE card SET `ink` = NULL, `wild` = NULL, `factor` = 1, `origin` = '$location', `location` = '$location', `order` = -1 WHERE `origin` LIKE '%_{$player->getId()}'";
             self::DbQuery($sql);
@@ -568,7 +568,6 @@ class CardMgr extends APP_GameClass
         self::notifyCards(self::getCards($updatedIds));
     }
 
-
     public static function isGenreActive(int $genre): bool
     {
         return $genre != STARTER && hardback::$instance->getGameStateValue("countActive$genre") >= 2;
@@ -584,6 +583,13 @@ class CardMgr extends APP_GameClass
             $updatedIds[] = $card->getId();
         }
         return $updatedIds;
+    }
+
+    public static function getTrashLocation(HCard $card): string
+    {
+        // Starter cards are trashed forever
+        // Non-starter cards can eventually reshuffle
+        return $card->getGenre() == STARTER ? "trash" : "discard";
     }
 
     public static function discard($cards, string $location, bool $notify = true): void

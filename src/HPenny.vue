@@ -21,7 +21,6 @@
               <div class="text-14 ml-1" v-html="description"></div>
             </div>
             <div v-if="title" class="panel-novel text-center text-20">{{ title }}</div>
-            <HGenreCounts :counts="penny.genreCounts" />
           </div>
         </div>
         <div id="player_panel_content_000000" class="player_panel_content"></div>
@@ -32,13 +31,12 @@
 
 <script lang="ts">
 import HConstants from "./HConstants.js";
-import HGenreCounts from "./HGenreCounts.vue";
 import { Icon } from "@iconify/vue";
 
 export default {
   name: "HPenny",
   inject: ["getHtml", "i18n", "refs"],
-  components: { Icon, HGenreCounts },
+  components: { Icon },
 
   props: {
     penny: {

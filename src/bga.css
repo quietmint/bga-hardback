@@ -181,6 +181,7 @@ a:visited.playername {
   background-image: url(penny.png), url(wood.jpg);
   background-position: top right, top center;
   background-size: 100px, cover;
+  padding-bottom: 5px;
 }
 
 #player_board_inner_000000 .player-name,
