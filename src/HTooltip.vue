@@ -1,6 +1,6 @@
 <template>
-  <div @mouseover="mouseover" @mouseout="hover = false" ref="holder">
-    <table v-if="hover" class="table-fixed fixed z-top bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-15 text-center" :style="{ top: top, left: left }" ref="table">
+  <div @mouseover="show" @mouseout="hover = false" @pointerdown="toggle" ref="holder">
+    <table v-if="hover" class="table-fixed fixed z-top bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-center" :style="{ top: top, left: left }" ref="table">
       <tr>
         <th colspan="2" class="p-2 bg-gray-200 font-bold text-center">{{ header }}</th>
       </tr>
@@ -42,19 +42,29 @@ export default {
     return {
       hover: false,
       top: 0,
-      left: 0,
+      left: -999,
     };
   },
 
   methods: {
-    async mouseover(evt: MouseEvent) {
+    async show() {
       this.hover = true;
+      this.top = 0;
+      this.left = -999;
       await nextTick();
       const table: HTMLElement = this.$refs.table;
       const holder: HTMLElement = this.$refs.holder;
       const h = holder.getBoundingClientRect();
       this.top = Math.max(h.top - table.clientHeight / 2, 0) + "px";
       this.left = Math.max(h.left - table.clientWidth - 10, 0) + "px";
+    },
+
+    async toggle() {
+      if (this.hover) {
+        this.hover = false;
+      } else {
+        this.show();
+      }
     },
   },
 };
