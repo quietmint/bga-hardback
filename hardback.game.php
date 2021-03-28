@@ -393,9 +393,11 @@ class hardback extends Table
         $longest = $this->getStat('longestWord');
         if ($length > $longest) {
             $this->setStat($length, 'longestWord');
-            if ($length >= 7 && $this->gamestate->table_globals[OPTION_AWARDS]) {
+            $length = min($length, 12);
+            $longest = min($longest, 12);
+            if ($length > $longest && $length >= 7 && $this->gamestate->table_globals[OPTION_AWARDS]) {
                 $msg = $this->msg['awardFirst'];
-                $points = $this->awards[min($length, 12)];
+                $points = $this->awards[$length];
                 $args = [
                     'player_name' => $player->getName(),
                     'points' => $points,

@@ -186,8 +186,7 @@ $this->benefits = [
     UNCOVER_ADJ => clienttranslate('Uncover adjacent wild'),
 ];
 
-// Timeless: UPDATE card SET `location` = 'hand_2305326', `origin` = 'hand_2305326' WHERE `refId` IN (5, 12, 23, 31, 40, 42, 53, 64, 73, 86, 92, 96, 107, 113, 123, 134)
-// Special: UPDATE card SET `location` = 'hand_2305326', `origin` = 'hand_2305326' WHERE `refId` IN (1, 7, 21, 26, 36, 43, 46, 71, 76, 95, 106, 111, 124)
+// UPDATE card SET `location` = 'hand_2305326', `origin` = 'hand_2305326' WHERE `refId` IN (5, 12, 23, 31, 40, 42, 53, 64, 73, 86, 92, 96, 107, 113, 123, 134) OR `refId` IN (1, 7, 21, 26, 36, 43, 46, 71, 76, 95, 106, 111, 124);
 
 $this->cards = [
     1 => ['genre' => ADVENTURE, 'letter' => 'A', 'cost' => 5, 'points' => 1, 'basicBenefits' => [POINTS => 2, TRASH_COINS => 3], 'genreBenefits' => [POINTS => 1]],
