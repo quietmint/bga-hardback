@@ -83,6 +83,7 @@ define([
       this.notifqueue.setSynchronous("penny", 1);
       dojo.subscribe("player", this, "onNotify");
       this.notifqueue.setSynchronous("player", 1);
+      dojo.subscribe("word", this, "onNotify");
 
       // Setup preferences
       this.setupPrefs();

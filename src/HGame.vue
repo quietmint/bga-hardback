@@ -65,7 +65,7 @@
     <!-- Tableau -->
     <div v-if="gamestate.name != 'gameEnd'" class="p-2 border-t-2 border-black bg-opacity-30 transition-colors duration-1000" :class="author.colorBg || 'bg-white'">
       <div class="flex leading-7 font-bold">
-        <div class="title flex-grow" v-html="i18n('tableau', { player_name: '<span class=\'transition-colors duration-1000 ' + (author.colorText || 'text-black') + '\'>' + author.name + '</span>', count: tableauCards.length })"></div>
+        <div class="title flex-grow" v-html="i18n('tableau', { player_name: '<span class=\'transition-colors duration-1000 ' + (author.colorText || 'text-black') + '\'>' + author.name + '</span>', count: tableauCards.length }) + (gamedatas.word ? ' — ' + gamedatas.word : '')"></div>
 
         <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup flex">
           <div @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')" class="button" :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
@@ -267,6 +267,7 @@ export default {
           i18n: {},
           signatures: {},
         },
+        word: null,
       },
       gamestate: {},
 
@@ -720,6 +721,7 @@ export default {
             ],
           ];
           const table = "<table><tr>" + links.map((o) => `<td>• ${o.join("</td><td>• ")}</td>`).join("</tr><tr>") + "</tr></table>";
+          args.wordRaw = args.word;
           args.word = `<b>${args.word}</b><div class="hdefine">${this.i18n("dictionary")}${table}</div>`;
         }
         if (args.invalid) {
@@ -882,7 +884,9 @@ export default {
     },
 
     onLeavingState(stateName: string): void {
-      if (this.gamestate.active && this.gamestate.name == "trashDiscard" && this.gamestate.args && !this.gamestate.args.skip) {
+      if (this.gamestate.name == "cleanup") {
+        this.gamedatas.word = null;
+      } else if (this.gamestate.active && this.gamestate.name == "trashDiscard" && this.gamestate.args && !this.gamestate.args.skip) {
         this.discardVisible = false;
       }
     },
@@ -900,6 +904,8 @@ export default {
         Promise.all(cards.map(this.animateCard)).then(() => {
           this.game.notifqueue.setSynchronousDuration(1);
         });
+      } else if (notif.type == "word") {
+        this.gamedatas.word = notif.args.wordRaw;
       } else if (notif.type == "invalid") {
         if (!this.gamestate.instant && this.game.player_id == notif.args.player_id) {
           this.game.showMessage(this.i18n("invalid", notif.args), "error");

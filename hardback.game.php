@@ -180,6 +180,7 @@ class hardback extends Table
     protected function getAllDatas(): array
     {
         $playerId = self::getCurrentPlayerId();
+        $activePlayer = PlayerMgr::getPlayer();
 
         // BGA requires 'players' to be an array
         $playersAsArray = array_map(function ($player) {
@@ -213,6 +214,7 @@ class hardback extends Table
                 'cards' => $cards,
                 'i18n' => $this->i18n,
             ],
+            'word' => $activePlayer->getWord(),
         ];
         if ($this->gamestate->table_globals[OPTION_ADVERTS]) {
             $data['refs']['adverts'] = $this->adverts;
@@ -373,13 +375,14 @@ class hardback extends Table
         }
         $this->incStat(1, 'words');
         $this->incStat(1, 'words', $player->getId());
-        self::notifyAllPlayers('message', $this->msg['confirmWord'], [
+        self::notifyAllPlayers('word', $this->msg['confirmWord'], [
             'player_name' => $player->getName(),
             'word' => $word,
         ]);
 
         // Database commit
         CardMgr::commitWord($player->getId(), $cards);
+        $player->setWord($word);
         $this->setGameStateValue('startInk', $player->getInk());
         $this->setGameStateValue('startRemover', $player->getRemover());
         $this->setGameStateValue('startScore', $player->getScore());
@@ -1232,7 +1235,7 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         self::notifyAllPlayers('message', $this->msg['skipWord'], [
             'player_name' => $player->getName(),
-            'duration' => 2000,
+            'duration' => 1500,
         ]);
 
         // Reset hand and tableau
@@ -1252,17 +1255,18 @@ class hardback extends Table
             $this->notifyAllPlayers('pause', $this->msg['endTurnInk'], [
                 'player_name' => $player->getName(),
                 'amount' => $amount,
-                'duration' => 2000,
+                'duration' => 1500,
             ]);
         } else {
             $this->notifyAllPlayers('pause', $this->msg['endTurn'], [
                 'player_name' => $player->getName(),
-                'duration' => 2000,
+                'duration' => 1500,
             ]);
         }
 
         // Reset hand and tableau
         CardMgr::reset($player->getId());
+        $player->setWord('');
         $player->notifyPanel();
         $this->gamestate->nextState('next');
     }
@@ -1351,7 +1355,7 @@ class hardback extends Table
         }
 
         // Pause
-        $this->notifyAllPlayers('pause', '', ['duration' => 2000]);
+        $this->notifyAllPlayers('pause', '', ['duration' => 1500]);
 
         // Check for lose
         if ($penny->getScore() >= $this->getGameLength()) {
@@ -1527,6 +1531,9 @@ class hardback extends Table
         // $from_version is equal to 1404301345
         if ($from_version <= 2103240527) {
             self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_card SET `location` = 'discard', `origin` = 'discard' WHERE `location` IN ('discard_0', 'trash') AND `refId` <= 140");
+        }
+        if ($from_version <= 2103270523) {
+            self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_player ADD `word` VARCHAR(32)");
         }
     }
 

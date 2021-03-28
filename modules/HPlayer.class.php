@@ -12,6 +12,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     protected $order;
     protected $remover;
     protected $score;
+    protected $word;
     protected $zombie;
 
     public function __construct($dbplayer)
@@ -26,6 +27,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->order = intval($dbplayer['player_no']);
         $this->remover = intval($dbplayer['remover']);
         $this->score = intval($dbplayer['player_score']);
+        $this->word = $dbplayer['word'];
         $this->zombie = intval($dbplayer['player_zombie']);
     }
 
@@ -143,6 +145,11 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     public function getScore(): int
     {
         return $this->score;
+    }
+
+    public function getWord(): string
+    {
+        return $this->word ?? '';
     }
 
     public function isZombie(): bool
@@ -348,5 +355,11 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->advert = $points;
         $this->spendCoins($coins, false);
         $this->addPoints($points, 'pointsAdvert');
+    }
+
+    public function setWord(string $word): void
+    {
+        self::DbQuery("UPDATE player SET word = '$word' WHERE player_id = {$this->id}");
+        $this->word = $word;
     }
 }
