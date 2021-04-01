@@ -142,6 +142,11 @@ class hardback extends Table
         self::initStat('player', 'pointsPurchase', 0);
         self::initStat('player', 'starterCard1', 0);
         self::initStat('player', 'starterCard2', 0);
+        self::initStat('player', 'deck' . STARTER, 10);
+        self::initStat('player', 'deck' . ADVENTURE, 0);
+        self::initStat('player', 'deck' . HORROR, 0);
+        self::initStat('player', 'deck' . MYSTERY, 0);
+        self::initStat('player', 'deck' . ROMANCE, 0);
         self::initStat('player', 'useInk', 0);
         self::initStat('player', 'useRemover', 0);
         self::initStat('player', 'words', 0);
@@ -902,6 +907,7 @@ class hardback extends Table
             'icon' => $icon,
         ]);
         $this->incStat(1, 'cardsTrash', $player->getId());
+        $this->incStat(-1, 'deck' . $card->getGenre(), $player->getId());
         $this->gamestate->nextState('again');
     }
 
@@ -955,6 +961,7 @@ class hardback extends Table
             'icon' => '¢',
         ]);
         $this->incStat(1, 'cardsTrash', $player->getId());
+        $this->incStat(-1, 'deck' . $card->getGenre(), $player->getId());
         $this->gamestate->nextState('again');
     }
 
@@ -1162,6 +1169,7 @@ class hardback extends Table
             CardMgr::notifyCards(CardMgr::drawCards(1, 'deck', 'offer'));
         }
         $this->incStat(1, 'cardsPurchase', $player->getId());
+        $this->incStat(1, 'deck' . $card->getGenre(), $player->getId());
         $this->gamestate->nextState('again');
     }
 

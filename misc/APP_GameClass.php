@@ -15,13 +15,19 @@ define('AT_int', 0);
 define('AT_numberlist', 0);
 define('AT_posint', 0);
 
-function clienttranslate($text): string
+function totranslate(string $text): string
 {
     return $text;
 }
 
-function _($text)
+function clienttranslate(string $text): string
 {
+    return $text;
+}
+
+function _(string $text): string
+{
+    return $text;
 }
 
 
@@ -60,6 +66,10 @@ class APP_GameClass
     /* Database */
 
     static function DbQuery($sql)
+    {
+    }
+
+    static function applyDbUpgradeToAllDB($sql)
     {
     }
 
