@@ -120,6 +120,47 @@ import { firstBy } from "thenby";
 import { nextTick, computed } from "vue";
 import { throttle } from "lodash-es";
 
+const queue = (callable) => {
+  let busy = false;
+  const q = [];
+  const execute = function () {
+    if (busy) {
+      return; // queue is busy
+    }
+    busy = true;
+    const item = q.shift();
+    if (!item) {
+      busy = false;
+      return; // queue is empty
+    }
+    try {
+      callable
+        .apply(this, item.args)
+        .then((value) => {
+          item.resolve(value);
+          busy = false;
+          execute();
+        })
+        .catch((err) => {
+          item.reject(err);
+          busy = false;
+          execute();
+        });
+    } catch (err) {
+      item.reject(err);
+      busy = false;
+      execute();
+    }
+  };
+
+  return (...args) => {
+    return new Promise((resolve, reject) => {
+      q.push({ args, resolve, reject });
+      execute();
+    });
+  };
+};
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const repaint = () => new Promise((resolve) => requestAnimationFrame(resolve));
 const getRect = (el: HTMLElement, calculateMargin = false) => {
@@ -155,7 +196,7 @@ const getHtml = (id: string) => {
   }
 };
 const transitionEnd = (el: HTMLElement): Promise<void> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     function onTransition(ev) {
       if (ev.target == el) {
         el.removeEventListener("transitionend", onTransition);
@@ -224,6 +265,7 @@ export default {
 
   created() {
     this.previewWord = throttle(this.previewWord, 1500);
+    this.takeActionAjax = queue(this.takeActionAjax);
   },
 
   mounted() {
@@ -676,7 +718,7 @@ export default {
     /*
      * BGA framework methods
      */
-    takeAction(action: string, data): Promise<any> {
+    takeAction(action: string, data): Promise<void> {
       data = data || {};
       if (data.lock === false) {
         delete data.lock;
@@ -688,11 +730,32 @@ export default {
           data[key] = data[key].join(",");
         }
       }
-      console.log(`Take action ${action}`, data);
-      return new Promise((resolve, reject) => {
-        this.game.ajaxcall("/hardback/hardback/" + action + ".html", data, this, resolve, (error) => {
-          error ? reject(error) : resolve(error);
-        });
+      if (action != "previewWord") {
+        // Cancel any pending preview
+        this.previewWord.cancel();
+      }
+      return this.takeActionAjax(action, data);
+    },
+
+    takeActionAjax(action: string, data): Promise<void> {
+      return new Promise((resolve) => {
+        const start = Date.now();
+        console.log(`Take action ${action}`, data);
+        this.game.ajaxcall(
+          "/hardback/hardback/" + action + ".html",
+          data,
+          this,
+          () => {},
+          (error) => {
+            const duration = Date.now() - start;
+            if (error) {
+              console.error(`Take action ${action} error in ${duration}ms`, error);
+            } else {
+              console.log(`Take action ${action} done in ${duration}ms`);
+            }
+            resolve();
+          }
+        );
       });
     },
 
