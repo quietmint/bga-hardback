@@ -91,6 +91,7 @@ $this->i18n = [
     'finalRound' => clienttranslate('This is the final round!'),
     'first' => clienttranslate('First Player'),
     'flushButton' => clienttranslate('Flush Offer Row'),
+    'genreCountsTip' => clienttranslate('${player_name}\'s deck'),
     'genreTip' => clienttranslate('Genre benefits activate if you play multiple ${x} cards'),
     'handReminder' => clienttranslate('All your cards are already in play'),
     'ink' => clienttranslate('Ink'),

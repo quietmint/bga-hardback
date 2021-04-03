@@ -65,7 +65,7 @@
     <!-- Tableau -->
     <div v-if="gamestate.name != 'gameEnd'" class="p-2 border-t-2 border-black bg-opacity-30 transition-colors duration-1000" :class="author.colorBg || 'bg-white'">
       <div class="flex leading-7 font-bold">
-        <div class="title flex-grow" v-html="i18n('tableau', { player_name: '<span class=\'transition-colors duration-1000 ' + (author.colorText || 'text-black') + '\'>' + author.name + '</span>', count: tableauCards.length }) + (gamedatas.word ? ' — ' + gamedatas.word : '')"></div>
+        <div class="title flex-grow" v-html="i18n('tableau', { player_name: `<span class='transition-colors duration-1000 ${author.colorText || 'text-black'}'>${author.name}</span>`, count: tableauCards.length }) + (gamedatas.word ? ' — ' + gamedatas.word : '')"></div>
 
         <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup flex">
           <div @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')" class="button" :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
@@ -521,7 +521,7 @@ export default {
           player.colorRing = "ring-red-700";
           player.colorBg = "bg-red-700";
           player.colorTextLight = "text-red-100";
-          player.colorText = "text-red-700";
+          player.colorText = "text-red-600";
           break;
         case "green":
           player.colorRing = "ring-green-700";
@@ -533,13 +533,13 @@ export default {
           player.colorRing = "ring-blue-700";
           player.colorBg = "bg-blue-700";
           player.colorTextLight = "text-blue-100";
-          player.colorText = "text-blue-700";
+          player.colorText = "text-blue-600";
           break;
         case "yellow":
           player.colorRing = "ring-yellow-500";
           player.colorBg = "bg-yellow-500";
           player.colorTextLight = "text-yellow-900";
-          player.colorText = "text-yellow-700";
+          player.colorText = "text-yellow-600";
           break;
         case "purple":
           player.colorRing = "ring-purple-700";
