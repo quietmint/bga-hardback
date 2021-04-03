@@ -1,6 +1,6 @@
 /*! @import */
 
-@import url("https://fonts.googleapis.com/css2?family=Almendra+Display&family=Big+Shoulders+Inline+Text:wght@900&family=Bodoni+Moda:wght@700&family=New+Rocker&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Almendra+Display&family=Big+Shoulders+Inline+Text:wght@900&family=Bodoni+Moda:wght@700&family=Finger+Paint&family=New+Rocker&display=swap");
 @font-face {
   font-family: "Deutsch Gothic";
   src: url("Deutsch-Gothic.woff2") format("woff2"),
@@ -204,31 +204,41 @@
 
 .card-horror .letter {
   @apply text-green-400;
-  font-size: 91px;
-  font-family: "Deutsch Gothic", serif;
+  font-size: 96px;
+  line-height: 0.8em;
+  font-family: "Finger Paint", serif;
   text-shadow: -2px 2px theme("colors.green.700"),
     1px -1px theme("colors.green.200");
 }
 
-.card-horror .letter.letter-E {
-  margin-left: -6px;
-}
-
-.card-horror .letter.letter-J,
-.card-horror .letter.letter-T {
-  margin-top: -6px;
-}
-
-.card-horror .letter.letter-Q {
-  margin-top: -8px;
-}
-
-.card-horror .letter.letter-W {
+.card-horror .letter.letter-C,
+.card-horror .letter.letter-F,
+.card-horror .letter.letter-T,
+.card-horror .letter.letter-V {
   margin-top: 4px;
 }
 
+.card-horror .letter.letter-E {
+  margin-top: 2px;
+}
+
+.card-horror .letter.letter-I,
+.card-horror .letter.letter-R {
+  margin-top: 6px;
+}
+
+.card-horror .letter.letter-J,
+.card-horror .letter.letter-Z {
+  margin-top: -4px;
+}
+
+.card-horror .letter.letter-Q {
+  font-size: 88px;
+  margin-top: 6px;
+}
+
 .card-horror.timeless .letter {
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .card-romance .cardface.front {
