@@ -17,7 +17,7 @@
 
         <!-- Letter -->
         <div :class="letterClass" class="absolute letter text-center leading-none" :title="i18n(card.genreName) + ' ' + card.letter">
-          {{ card.letter }}
+          {{ letterDisplay }}
         </div>
 
         <div :class="benefitClass" class="absolute flex flex-col text-14 font-bold overflow-y-auto">
@@ -75,6 +75,13 @@ export default {
   },
 
   computed: {
+    letterDisplay(): string {
+      if (this.card.letter == "I" && this.card.genre == HConstants.ROMANCE) {
+        return "|";
+      }
+      return this.card.letter;
+    },
+
     cardClass(): string {
       let c = "card-" + this.card.genreName + " ";
       c += this.dragLocations ? "touch-none cursor-move " : this.clickAction ? "cursor-pointer " : "cursor-not-allowed ";

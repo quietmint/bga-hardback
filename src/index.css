@@ -262,14 +262,18 @@
 
 .card-romance .letter.letter-A,
 .card-romance .letter.letter-M,
-.card-romance .letter.letter-K,
-.card-romance .letter.letter-J {
+.card-romance .letter.letter-K {
   margin-top: -12px;
 }
 
 .card-romance .letter.letter-G,
 .card-romance .letter.letter-Q {
   margin-top: -16px;
+}
+
+.card-romance .letter.letter-I,
+.card-romance .letter.letter-J {
+  font-size: 95px;
 }
 
 .card-romance.timeless .letter {
