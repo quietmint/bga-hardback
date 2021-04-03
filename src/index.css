@@ -353,7 +353,7 @@
 .hanging {
   text-indent: -1rem;
   margin-left: 1rem;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .fade-enter-active,

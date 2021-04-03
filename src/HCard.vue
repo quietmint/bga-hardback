@@ -107,7 +107,7 @@ export default {
 
     benefitClass(): string {
       let c = this.dragLocations ? "touch-none " : "";
-      c += this.card.timeless ? "top-6 bottom-0 right-0 w-28" : "bottom-0 left-0 right-0 h-25";
+      c += this.card.timeless ? "top-6 bottom-0 right-0 w-28" : "bottom-1 left-0 right-0 h-25";
       return c;
     },
 
