@@ -621,7 +621,7 @@ class CardMgr extends APP_GameClass
         $discardIds = $updatedIds;
 
         // Clear used benefits
-        self::DbQuery('TRUNCATE resolve');
+        self::DbQuery('DELETE FROM resolve');
 
         // Discard timeless cards
         $timeless = array_filter($cards, function (HCard $card) use ($skipWord) {
