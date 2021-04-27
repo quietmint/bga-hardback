@@ -62,7 +62,6 @@ class hardback extends Table
             'startInk' => START_INK,
             'startRemover' => START_REMOVER,
             'startScore' => START_SCORE,
-            'bestSpecialMystery' => BEST_SPECIAL_MYSTERY,
         ]);
     }
 
@@ -97,7 +96,6 @@ class hardback extends Table
 
         // Init global values with their initial values
         self::setGameStateInitialValue('awardWinner', 0);
-        self::setGameStateInitialValue('bestSpecialMystery', 0);
         self::setGameStateInitialValue('countActive' . ADVENTURE, 0);
         self::setGameStateInitialValue('countActive' . HORROR, 0);
         self::setGameStateInitialValue('countActive' . MYSTERY, 0);
@@ -426,10 +424,6 @@ class hardback extends Table
             }
         }
 
-        // Compute best score for Special Mystery
-        $tableau = CardMgr::getTableau($player->getId());
-        $this->computeSpecialMystery($tableau);
-
         // Give extra time
         $this->giveExtraTime($player->getId());
         $this->gamestate->nextState('next');
@@ -506,10 +500,6 @@ class hardback extends Table
             'letter' => $card->getLetter(),
         ]);
 
-        // Recompute best score for Special Mystery
-        $tableau = CardMgr::getTableau($player->getId());
-        $this->computeSpecialMystery($tableau);
-
         $this->gamestate->nextState('again');
     }
 
@@ -563,12 +553,6 @@ class hardback extends Table
             'genre' => $card->getGenreName(),
             'letter' => $card->getLetter(),
         ]);
-
-        // Recompute best score for Special Mystery
-        if ($card->hasBenefit(SPECIAL_MYSTERY)) {
-            $tableau = CardMgr::getTableau($player->getId());
-            $this->computeSpecialMystery($tableau);
-        }
 
         $this->gamestate->nextState('again');
     }
@@ -710,12 +694,19 @@ class hardback extends Table
         }
 
         if (isset($specials[SPECIAL_MYSTERY])) {
-            // Mystery: 1 point per wild
-            $score = $this->getGameStateValue('bestSpecialMystery');
+            // Mystery: 1 point per wild, including uncovered wilds
+            $benefits = $specials[SPECIAL_MYSTERY]->getBenefits(SPECIAL_MYSTERY);
+            $benefit = reset($benefits);
+            $wilds = 0;
+            foreach ($tableau as $card) {
+                if ($card->isWild() || $card->isUncovered()) {
+                    $wilds++;
+                }
+            }
             CardMgr::useBenefit($specials[SPECIAL_MYSTERY], SPECIAL_MYSTERY);
+            $score = $wilds * $benefit['value'];
             $player->addPoints($score, 'pointsGenre');
         }
-        $this->setGameStateValue('bestSpecialMystery', 0);
 
         if (isset($specials[SPECIAL_HORROR])) {
             // Horror: Opponents discard ink/remover
@@ -766,28 +757,6 @@ class hardback extends Table
         }
 
         $this->gamestate->nextState('next');
-    }
-
-    function computeSpecialMystery(array $tableau): void
-    {
-        foreach ($tableau as $card) {
-            $benefits = $card->getBenefits(SPECIAL_MYSTERY);
-            if (!empty($benefits)) {
-                $benefit = reset($benefits);
-                $specials[SPECIAL_MYSTERY] = $card;
-                $wilds = 0;
-                foreach ($tableau as $card) {
-                    if ($card->isWild()) {
-                        $wilds++;
-                    }
-                }
-                $score = $wilds * $benefit['value'];
-                $best = $this->getGameStateValue('bestSpecialMystery');
-                if ($score > $best) {
-                    $this->setGameStateValue('bestSpecialMystery', $score);
-                }
-            }
-        }
     }
 
     function discardInk(): void

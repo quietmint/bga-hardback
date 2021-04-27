@@ -43,7 +43,7 @@ class HCard extends APP_GameClass implements JsonSerializable
             'order' => $this->order,
             'origin' => $this->origin,
             'refId' => $this->refId,
-            'wild' => $this->wild,
+            'wild' => $this->isWild() ? $this->wild : null,
         ];
     }
 
@@ -140,7 +140,12 @@ class HCard extends APP_GameClass implements JsonSerializable
 
     public function isWild(): bool
     {
-        return $this->wild != null;
+        return $this->wild != null && !$this->isUncovered();
+    }
+
+    public function isUncovered(): bool
+    {
+        return $this->wild == '_';
     }
 
     public function setWild(?string $wild): void
@@ -176,7 +181,7 @@ class HCard extends APP_GameClass implements JsonSerializable
     public function getBenefits(int $benefitId = null): array
     {
         $benefits = [];
-        if (!$this->wild && !in_array(ALL_BENEFITS, $this->resolve)) {
+        if (!$this->isWild() && !in_array(ALL_BENEFITS, $this->resolve)) {
             // Basic benefits
             $basicBenefits = hardback::$instance->cards[$this->refId]['basicBenefits'] ?? [];
             foreach ($basicBenefits as $k => $v) {
@@ -247,7 +252,7 @@ class HCard extends APP_GameClass implements JsonSerializable
 
     public function getLetter(): string
     {
-        return $this->wild ?? hardback::$instance->cards[$this->refId]['letter'];
+        return $this->isWild() ? $this->wild : hardback::$instance->cards[$this->refId]['letter'];
     }
 
     public function getCost(): int

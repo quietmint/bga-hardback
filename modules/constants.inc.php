@@ -50,7 +50,6 @@ define('COUNT_OFFER_ADVENTURE', 15);
 define('COUNT_OFFER_HORROR', 16);
 define('COUNT_OFFER_MYSTERY', 17);
 define('COUNT_OFFER_ROMANCE', 18);
-define('BEST_SPECIAL_MYSTERY', 19);
 define('START_SCORE', 20);
 define('START_INK', 21);
 define('START_REMOVER', 22);

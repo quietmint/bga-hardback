@@ -709,8 +709,8 @@ class CardMgr extends APP_GameClass
     public static function uncover(HCard &$card, HCard $source): void
     {
         self::useBenefit($source, UNCOVER_ADJ);
-        self::DbQuery("UPDATE card SET `wild` = NULL WHERE `id` = {$card->getId()}");
-        $card->setWild(null);
+        self::DbQuery("UPDATE card SET `wild` = '_' WHERE `id` = {$card->getId()}");
+        $card->setWild('_');
         if ($card->getGenre() != STARTER) {
             hardback::$instance->incGameStateValue("countActive{$card->getGenre()}", 1);
         }
