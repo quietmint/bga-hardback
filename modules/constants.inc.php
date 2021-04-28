@@ -20,7 +20,7 @@ define('TRASH_COINS', 10);
 define('TRASH_POINTS', 11);
 define('TRASH_DISCARD', 12);
 define('SPECIAL_ADVENTURE', 20); // 2 coins for each adventure
-define('SPECIAL_HORROR', 21); // opponents return ink
+define('SPECIAL_HORROR', 21); // 1 star for each inked card
 define('SPECIAL_MYSTERY', 22); // 1 star for each wild
 define('SPECIAL_ROMANCE', 23); // peek top 3 cards
 define('ALL_BENEFITS', 99);
@@ -125,7 +125,6 @@ define('ST_UNCOVER', 10);
 define('ST_DOUBLE', 11);
 define('ST_BASIC', 12);
 define('ST_SPECIAL', 30);
-define('ST_SPECIAL_HORROR', 31);
 define('ST_SPECIAL_ROMANCE', 32);
 define('ST_TRASH', 14);
 define('ST_TRASH_DISCARD', 15);

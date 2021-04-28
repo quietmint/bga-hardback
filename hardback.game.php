@@ -196,11 +196,6 @@ class hardback extends Table
         }
 
         $cards = $this->cards;
-        if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
-            // Hide Special Horror benefit for co-op games
-            unset($cards[46]['genreBenefits'][SPECIAL_HORROR]);
-        }
-
         $data = [
             'players' => $playersAsArray,
             'cards' => CardMgr::getCardsInLocation($locations),
@@ -675,7 +670,7 @@ class hardback extends Table
         foreach ($tableau as $card) {
             if ($card->hasBenefit(SPECIAL_ADVENTURE)) {
                 $specials[SPECIAL_ADVENTURE] = $card;
-            } else if ($card->hasBenefit(SPECIAL_HORROR) && $this->gamestate->table_globals[OPTION_COOP] == NO) {
+            } else if ($card->hasBenefit(SPECIAL_HORROR)) {
                 $specials[SPECIAL_HORROR] = $card;
             } else if ($card->hasBenefit(SPECIAL_MYSTERY)) {
                 $specials[SPECIAL_MYSTERY] = $card;
@@ -709,40 +704,19 @@ class hardback extends Table
         }
 
         if (isset($specials[SPECIAL_HORROR])) {
-            // Horror: Opponents discard ink/remover
+            // Horror: 1 point per inked card
+            $benefits = $specials[SPECIAL_HORROR]->getBenefits(SPECIAL_HORROR);
+            $benefit = reset($benefits);
+            $inked = 0;
+            foreach ($tableau as $card) {
+                if ($card->hasInk()) {
+                    $inked++;
+                }
+            }
             CardMgr::useBenefit($specials[SPECIAL_HORROR], SPECIAL_HORROR);
-            $multi = [];
-            foreach (PlayerMgr::getPlayers() as $opponent) {
-                if ($opponent->getId() == $player->getId()) {
-                    continue;
-                }
-                if ($opponent->getInk() > 0 && $opponent->getRemover() > 0) {
-                    $multi[] = $opponent->getId();
-                } else if ($opponent->getInk() > 0) {
-                    $opponent->spendInk();
-                    $this->notifyAllPlayers('message', $this->msg['forceDiscard'], [
-                        'i18n' => ['icon'],
-                        'player_name' => $player->getName(),
-                        'player_name2' => $opponent->getName(),
-                        'amount' => 1,
-                        'icon' => 'ink',
-                    ]);
-                } else if ($opponent->getRemover() > 0) {
-                    $opponent->spendRemover();
-                    $this->notifyAllPlayers('message', $this->msg['forceDiscard'], [
-                        'i18n' => ['icon'],
-                        'player_name' => $player->getName(),
-                        'player_name2' => $opponent->getName(),
-                        'amount' => 1,
-                        'icon' => 'remover',
-                    ]);
-                }
-            }
-            if (!empty($multi)) {
-                $this->gamestate->setPlayersMultiactive($multi, '', true);
-                $this->gamestate->nextState('horror');
-                return;
-            }
+            $score = $inked * $benefit['value'];
+            self::notifyAllPlayers('message', "SPECIAL_HORROR: inked = $inked and score = $score", []);
+            $player->addPoints($score, 'pointsGenre');
         }
 
         if (isset($specials[SPECIAL_ROMANCE])) {
@@ -758,36 +732,6 @@ class hardback extends Table
         }
 
         $this->gamestate->nextState('next');
-    }
-
-    function discardInk(): void
-    {
-        $active = PlayerMgr::getPlayer();
-        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-        $player->spendInk();
-        $this->notifyAllPlayers('message', $this->msg['forceDiscard'], [
-            'i18n' => ['icon'],
-            'player_name' => $active->getName(),
-            'player_name2' => $player->getName(),
-            'amount' => 1,
-            'icon' => 'ink',
-        ]);
-        $this->gamestate->setPlayerNonMultiactive($player->getId(), 'next');
-    }
-
-    function discardRemover(): void
-    {
-        $active = PlayerMgr::getPlayer();
-        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-        $player->spendRemover();
-        $this->notifyAllPlayers('message', $this->msg['forceDiscard'], [
-            'i18n' => ['icon'],
-            'player_name' => $active->getName(),
-            'player_name2' => $player->getName(),
-            'amount' => 1,
-            'icon' => 'remover',
-        ]);
-        $this->gamestate->setPlayerNonMultiactive($player->getId(), 'next');
     }
 
     function previewReturn(int $cardId): void

@@ -868,20 +868,6 @@ export default {
             this.takeAction("skip");
           },
         },
-        discardInk: {
-          text: "discardInkButton",
-          color: "blue",
-          function() {
-            this.takeAction("discardInk");
-          },
-        },
-        discardRemover: {
-          text: "discardRemoverButton",
-          color: "blue",
-          function() {
-            this.takeAction("discardRemover");
-          },
-        },
         flush: {
           text: "flushButton",
           color: "blue",

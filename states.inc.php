@@ -126,20 +126,8 @@ $machinestates = [
         'action' => 'stSpecial',
         'transitions' => [
             'again' => ST_SPECIAL,
-            'horror' => ST_SPECIAL_HORROR,
             'romance' => ST_SPECIAL_ROMANCE,
             'next' => ST_TRASH,
-        ],
-    ],
-
-    ST_SPECIAL_HORROR => [
-        'name' => 'specialHorror',
-        'description' => clienttranslate('Other players must choose to discard ink or remover'),
-        'descriptionmyturn' => clienttranslate('${you} must choose to discard ink or remover'),
-        'type' => 'multipleactiveplayer',
-        'possibleactions' => ['discardInk', 'discardRemover'],
-        'transitions' => [
-            'next' => ST_SPECIAL,
         ],
     ],
 
