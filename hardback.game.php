@@ -715,7 +715,6 @@ class hardback extends Table
             }
             CardMgr::useBenefit($specials[SPECIAL_HORROR], SPECIAL_HORROR);
             $score = $inked * $benefit['value'];
-            self::notifyAllPlayers('message', "SPECIAL_HORROR: inked = $inked and score = $score", []);
             $player->addPoints($score, 'pointsGenre');
         }
 
