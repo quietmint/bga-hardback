@@ -293,6 +293,12 @@ class CardMgr extends APP_GameClass
 
     /* Query (specific) */
 
+    public static function getActiveCount(int $playerId): int
+    {
+        $location = self::getHandLocation($playerId);
+        return intval(self::getUniqueValueFromDB("SELECT COUNT(*) FROM card WHERE `location` = '$location' OR (`location` = 'tableau' AND `origin` = '$location')"));
+    }
+
     public static function getHand(int $playerId, int $inkValue = null): array
     {
         return self::getCardsInLocation(self::getHandLocation($playerId), $inkValue);

@@ -93,6 +93,7 @@ $this->i18n = [
     'flushButton' => clienttranslate('Flush Offer Row'),
     'genreCountsTip' => clienttranslate('${player_name}\'s deck'),
     'genreTip' => clienttranslate('Genre benefits activate if you play multiple ${x} cards'),
+    'hand' => clienttranslate('Hand'),
     'handReminder' => clienttranslate('All your cards are already in play'),
     'ink' => clienttranslate('Ink'),
     'invalid' => clienttranslate('${invalid} is not a valid word in the ${dict} dictionary'),

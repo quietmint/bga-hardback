@@ -750,6 +750,7 @@ class hardback extends Table
             CardMgr::useBenefit($specials[SPECIAL_ROMANCE], SPECIAL_ROMANCE);
             $preview = CardMgr::drawCards(3, $player->getDeckLocation(), $player->getHandLocation());
             if (!empty($preview)) {
+                $player->notifyPanel();
                 CardMgr::notifyCards($preview);
                 $this->gamestate->nextState('romance');
                 return;

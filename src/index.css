@@ -373,6 +373,7 @@
   display: grid;
   grid-template:
     "left . right" auto
+    "bottom bottom bottom" auto
     / 110px auto 115px;
 }
 
@@ -388,16 +389,14 @@
   grid-area: right;
 }
 
+.panel-bottom {
+  grid-area: bottom;
+}
+
 .panel-ink {
   background: no-repeat url(panel-ink.png);
   height: 62px;
   padding: 0 3px 6px;
-}
-
-.panel-cards {
-  background: no-repeat url(panel-cards.png);
-  height: 70px;
-  padding: 2px 4px 0;
 }
 
 .panel-opt {

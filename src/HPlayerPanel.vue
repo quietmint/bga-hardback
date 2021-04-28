@@ -8,24 +8,21 @@
           <div class="flex-1" :title="i18n('ink') + ': ' + player.ink">{{ player.ink }}</div>
           <div class="flex-1 text-black" :title="i18n('remover') + ': ' + player.remover">{{ player.remover }}</div>
         </div>
-
-        <div v-if="player.id == game.player_id" class="panel-cards flex items-center text-24 font-bold text-noshadow">
-          <div class="flex-1" :title="i18n('deck') + ': ' + player.deckCount">{{ player.deckCount }}</div>
-          <div class="flex-1 cursor-pointer" @click="clickDiscard" :title="i18n('discardButton') + ': ' + player.discardCount">{{ player.discardCount }}</div>
-        </div>
-        <div v-if="player.id == game.player_id" class="flex items-center text-12">
-          <div class="flex-1" v-text="i18n('deck')"></div>
-          <div class="flex-1 cursor-pointer" @click="clickDiscard" v-text="i18n('discardButton')"></div>
-        </div>
       </div>
 
-      <div class="panel-right flex items-end justify-around text-noshadow">
+      <div class="panel-right flex items-center justify-around text-noshadow">
         <HTooltip v-if="options.value.awards" :header="i18n('award')" :table="refs.value.awards" valueIcon="star">
           <div class="panel-opt" :title="i18n('award') + ': ' + player.award">{{ player.award || "" }}<Icon v-if="player.award" class="inline text-20" icon="star" /></div>
         </HTooltip>
         <HTooltip v-if="options.value.adverts" :header="i18n('adverts')" :table="refs.value.adverts" keySuffix="¢" valueIcon="star">
           <div class="panel-opt" :title="i18n('adverts') + ': ' + player.advert">{{ player.advert || "" }}<Icon v-if="player.advert" class="inline text-20" icon="star" /></div>
         </HTooltip>
+      </div>
+
+      <div class="panel-bottom mt-1 text-white flex text-noshadow">
+        <div class="rounded-lg bg-black bg-opacity-40 px-2 ml-1" :title="i18n('hand') + ': ' + player.activeCount"><Icon icon="hand" class="inline" /> {{ player.activeCount }}</div>
+        <div class="rounded-lg bg-black bg-opacity-40 px-2 ml-1" :title="i18n('deck') + ': ' + player.deckCount"><Icon icon="deck" class="inline" /> {{ player.deckCount }}</div>
+        <div class="rounded-lg bg-black bg-opacity-40 px-2 ml-1" :class="{ 'cursor-pointer': player.id == game.player_id }" @click="player.id == game.player_id ? clickDiscard() : null" :title="i18n('discardButton') + ': ' + player.discardCount"><Icon icon="shuffle" class="inline" /> {{ player.discardCount }}</div>
       </div>
 
       <HTooltip class="genreCounts text-noshadow" :header="i18n('genreCountsTip', { player_name: `<span class='${player.colorText}'>${player.name}</span>` })" :table="genreTable">

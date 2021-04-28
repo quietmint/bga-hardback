@@ -28,7 +28,7 @@
     <!-- Discard -->
     <div v-if="!spectator" class="p-2 border-t-2 border-black bg-black bg-opacity-25">
       <div class="flex leading-7 font-bold">
-        <div @click="discardVisible = !discardVisible" class="title flex-grow cursor-pointer"><Icon icon="chevron" class="chevron float-left h-7 text-24" :class="{ collapsed: !discardVisible }" /> <span v-text="i18n('myDiscard', { count: discardCards.length })"></span></div>
+        <div @click="clickDiscard" class="title flex-grow cursor-pointer"><Icon icon="chevron" class="chevron float-left h-7 text-24" :class="{ collapsed: !discardVisible }" /> <span v-text="i18n('myDiscard', { count: discardCards.length })"></span></div>
 
         <div v-if="discardVisible" class="buttongroup grid grid-cols-3">
           <div @click="sort(discardLocation, 'letter')" class="button" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
@@ -246,6 +246,13 @@ addIcon("clock", clockOutline);
 
 import chevronDown from "@iconify-icons/mdi/chevron-down";
 addIcon("chevron", chevronDown);
+
+// Player panel icons
+import handRight from "@iconify-icons/mdi/hand-right";
+addIcon("hand", handRight);
+
+import cardsIcon from "@iconify-icons/mdi/cards";
+addIcon("deck", cardsIcon);
 
 export default {
   name: "HGame",
@@ -1111,7 +1118,7 @@ export default {
     },
 
     clickDiscard(): void {
-      this.discardVisible = true;
+      this.discardVisible = !this.discardVisible;
     },
 
     /*

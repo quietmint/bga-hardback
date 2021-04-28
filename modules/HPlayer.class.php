@@ -52,6 +52,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     {
         $json = [
             'id' => $this->id,
+            'activeCount' => $this->getActiveCount(),
             'coins' => $this->coins,
             'deckCount' => $this->getDeckCount(),
             'discardCount' => $this->getDiscardCount(),
@@ -158,6 +159,11 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     }
 
     /***** Card Functions *****/
+
+    public function getActiveCount(): int
+    {
+        return CardMgr::getActiveCount($this->id);
+    }
 
     public function getHand(int $inkValue = null): array
     {
