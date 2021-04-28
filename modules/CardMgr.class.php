@@ -435,14 +435,16 @@ class CardMgr extends APP_GameClass
                 $cards->getId() => $cards
             ];
         }
-        $action = 'cards';
-        $args = ['cards' => $cards];
-        if ($ignorePlayerId) {
-            $action = 'cardsPreview';
-            $args['ignorePlayerId'] = $ignorePlayerId;
-            hardback::$instance->not_a_move_notification = true;
+        if (!empty($cards)) {
+            $action = 'cards';
+            $args = ['cards' => $cards];
+            if ($ignorePlayerId) {
+                $action = 'cardsPreview';
+                $args['ignorePlayerId'] = $ignorePlayerId;
+                hardback::$instance->not_a_move_notification = true;
+            }
+            hardback::$instance->notifyAllPlayers($action, '', $args);
         }
-        hardback::$instance->notifyAllPlayers($action, '', $args);
     }
 
     public static function deletePreviewNotifications(): void
@@ -629,28 +631,35 @@ class CardMgr extends APP_GameClass
         // Clear used benefits
         self::DbQuery('DELETE FROM resolve');
 
-        // Discard timeless cards
-        $timeless = array_filter($cards, function (HCard $card) use ($skipWord) {
-            return $card->isTimeless() && !$card->isWild() && $card->isLocation('tableau') && (!$skipWord || !$card->isOrigin('hand'));
-        });
-        if (!empty($timeless)) {
-            $owners = [];
-            foreach ($timeless as $card) {
-                if (hardback::$instance->gamestate->table_globals[OPTION_COOP] == NO && $card->isOrigin('timeless') && !$card->isOrigin(self::getTimelessLocation($playerId))) {
-                    // Discard to owner
-                    self::discard($card, self::getDiscardLocation($card->getOwner()), false);
-                    $owners[$card->getOwner()] = true;
+        // Disposition cards
+        $discardIds = [];
+        $owners = [];
+        foreach ($cards as $card) {
+            if ($card->isTimeless() && !$card->isWild() && $card->isLocation('tableau')) {
+                $owner = $card->getOwner() ?? $playerId;
+                $keep = false;
+                if ($skipWord) {
+                    $keep = $card->isOrigin('timeless'); // keep already-played
+                } else if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO) {
+                    $keep = $owner == $playerId || $card->isOrigin('timeless'); // keep mine and already-played
                 } else {
-                    // Remain in play for owner
-                    $owner = $card->getOwner() ?? $playerId;
-                    self::discard($card, self::getTimelessLocation($owner), false);
+                    $keep = $owner == $playerId; // keep mine
                 }
+                if ($keep) {
+                    // Remain in play for owner
+                    self::discard($card, self::getTimelessLocation($owner), false);
+                } else {
+                    // Discard to owner
+                    self::discard($card, self::getDiscardLocation($owner), false);
+                    $owners[$owner] = true;
+                }
+            } else {
+                // Discard normally
+                $discardIds[] = $card->getId();
             }
-            foreach ($owners as $ownerId => $true) {
-                PlayerMgr::getPlayer($ownerId)->notifyPanel();
-            }
-            $timelessIds = self::getIds($timeless);
-            $discardIds = array_diff($updatedIds, $timelessIds);
+        }
+        foreach ($owners as $ownerId => $true) {
+            PlayerMgr::getPlayer($ownerId)->notifyPanel();
         }
 
         // Discard remaining cards
