@@ -2,7 +2,7 @@
   <teleport :to="teleportTo">
     <div class="tailwind panelbg">
       <div class="panel-left text-center">
-        <div v-if="player.order == 1" class="text-13 text-left pl-1 pt-1" v-text="i18n('first')"></div>
+        <div v-if="player.order == 1" class="text-14 text-left pl-1 pt-1" v-text="i18n('first')"></div>
 
         <div class="panel-ink flex items-center text-20 font-bold text-noshadow">
           <div class="flex-1" :title="i18n('ink') + ': ' + player.ink">{{ player.ink }}</div>
@@ -11,24 +11,60 @@
       </div>
 
       <div class="panel-right flex items-center justify-around text-noshadow">
-        <HTooltip v-if="options.value.awards" :header="i18n('award')" :table="refs.value.awards" valueIcon="star">
-          <div class="panel-opt" :title="i18n('award') + ': ' + player.award">{{ player.award || "" }}<Icon v-if="player.award" class="inline text-20" icon="star" /></div>
+        <!-- Literary Award -->
+        <HTooltip v-if="options.value.awards" position="left">
+          <template v-slot:tip>
+            <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-center whitespace-nowrap">
+              <div class="p-2 bg-gray-200 font-bold">{{ i18n("award") }}</div>
+              <div v-for="(value, key) in refs.value.awards" :key="key" class="px-2 py-1 border-t border-black border-opacity-30">
+                {{ key }}
+                <span class="pl-4">{{ value }}<Icon icon="star" class="inline text-18" /></span>
+              </div>
+            </div>
+          </template>
+          <template v-slot:default>
+            <div class="panel-opt">{{ player.award || "" }}<Icon v-if="player.award" class="inline text-20" icon="star" /></div>
+          </template>
         </HTooltip>
-        <HTooltip v-if="options.value.adverts" :header="i18n('adverts')" :table="refs.value.adverts" keySuffix="¢" valueIcon="star">
-          <div class="panel-opt" :title="i18n('adverts') + ': ' + player.advert">{{ player.advert || "" }}<Icon v-if="player.advert" class="inline text-20" icon="star" /></div>
+
+        <!-- Adverts -->
+        <HTooltip v-if="options.value.adverts" position="left">
+          <template v-slot:tip>
+            <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-center whitespace-nowrap">
+              <div class="p-2 bg-gray-200 font-bold">{{ i18n("adverts") }}</div>
+              <div v-for="(value, key) in refs.value.adverts" :key="key" class="px-2 py-1 border-t border-black border-opacity-30">
+                {{ key }}¢
+                <span class="pl-4">{{ value }}<Icon icon="star" class="inline text-18" /></span>
+              </div>
+            </div>
+          </template>
+          <template v-slot:default>
+            <div class="panel-opt">{{ player.advert || "" }}<Icon v-if="player.advert" class="inline text-20" icon="star" /></div>
+          </template>
         </HTooltip>
       </div>
 
-      <div class="panel-bottom mt-1 text-white flex text-noshadow">
-        <div class="rounded-lg bg-black bg-opacity-40 px-2 ml-1" :title="i18n('hand') + ': ' + player.activeCount"><Icon icon="hand" class="inline" /> {{ player.activeCount }}</div>
-        <div class="rounded-lg bg-black bg-opacity-40 px-2 ml-1" :title="i18n('deck') + ': ' + player.deckCount"><Icon icon="deck" class="inline" /> {{ player.deckCount }}</div>
-        <div class="rounded-lg bg-black bg-opacity-40 px-2 ml-1" :class="{ 'cursor-pointer': player.id == game.player_id }" @click="player.id == game.player_id ? clickDiscard() : null" :title="i18n('discardButton') + ': ' + player.discardCount"><Icon icon="shuffle" class="inline" /> {{ player.discardCount }}</div>
+      <div class="panel-bottom mt-1 text-white text-17 font-bold flex text-noshadow">
+        <div class="rounded-lg bg-black bg-opacity-50 px-2 ml-1" :title="i18n('hand') + ': ' + player.activeCount"><Icon icon="hand" class="inline" /> {{ player.activeCount }}</div>
+        <div class="rounded-lg bg-black bg-opacity-50 px-2 ml-1" :title="i18n('deck') + ': ' + player.deckCount"><Icon icon="deck" class="inline" /> {{ player.deckCount }}</div>
+        <div class="rounded-lg bg-black bg-opacity-50 px-2 ml-1" :class="{ 'cursor-pointer': player.id == game.player_id }" @click="player.id == game.player_id ? clickDiscard() : null" :title="i18n('discardButton') + ': ' + player.discardCount"><Icon icon="shuffle" class="inline" /> {{ player.discardCount }}</div>
       </div>
 
-      <HTooltip class="genreCounts text-noshadow" :header="i18n('genreCountsTip', { player_name: `<span class='${player.colorText}'>${player.name}</span>` })" :table="genreTable">
-        <div class="rounded-bl-lg flex flex-grow overflow-hidden text-center">
-          <div v-for="gc in genreCounts" :key="gc.genre" :style="{ width: gc.percent + '%' }" :class="gc.class"><Icon class="inline" :icon="gc.genre" /></div>
-        </div>
+      <HTooltip class="genreCounts text-noshadow" position="left">
+        <template v-slot:tip>
+          <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-left whitespace-nowrap">
+            <div class="p-2 bg-gray-200 font-bold text-center" v-html="i18n('genreCountsTip', { player_name: `<span class='${player.colorText}'>${player.name}</span>` })"></div>
+            <div v-for="gc in genreCounts" :key="gc.genre" class="px-2 py-1 border-t border-black border-opacity-30" :class="gc.class">
+              <Icon class="inline text-20" :icon="gc.genre" /> {{ i18n(gc.genre) }}
+              <div class="float-right pt-1 pl-4">{{ gc.display }}</div>
+            </div>
+          </div>
+        </template>
+        <template v-slot:default>
+          <div class="rounded-bl-lg flex flex-grow overflow-hidden text-center">
+            <div v-for="gc in genreCounts" :key="gc.genre" :style="{ width: gc.percent + '%' }" :class="gc.class"><Icon class="inline" :icon="gc.genre" /></div>
+          </div>
+        </template>
       </HTooltip>
     </div>
   </teleport>
@@ -78,21 +114,11 @@ export default {
         return {
           class: `${genre.bg} ${genre.textLight}`,
           count: count,
+          display: `${count}/${this.genreTotal} (${percent.toFixed(0)}%)`,
           genre: genre.icon,
           percent: percent,
         };
       });
-    },
-
-    genreTable() {
-      return this.genreCounts.reduce((table, gc) => {
-        if (gc.count > 0) {
-          const key = this.i18n(gc.genre);
-          const value = `${gc.count}/${this.genreTotal} (${gc.percent.toFixed(0)}%)`;
-          table[key] = value;
-        }
-        return table;
-      }, {});
     },
   },
 

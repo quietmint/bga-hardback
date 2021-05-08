@@ -19,6 +19,10 @@
   padding: 10px;
 }
 
+#topbar {
+  z-index: unset;
+}
+
 #game_play_area {
   margin: 0;
 }
@@ -122,6 +126,7 @@ a:visited.playername {
 /* Player boards */
 
 .player-board {
+  user-select: none;
   background-repeat: no-repeat;
   background-position: top -15px right -5px, top center;
   background-size: auto, cover;

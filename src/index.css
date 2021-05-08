@@ -55,7 +55,7 @@
 }
 
 .buttongroup {
-  @apply mb-1 ml-2 rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer text-13 text-center divide-x divide-white;
+  @apply mb-1 ml-2 rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer text-14 text-center divide-x divide-white;
 }
 
 .button {
@@ -100,13 +100,13 @@
 .card {
   transition: transform 0.6s cubic-bezier(0.7, 1.2, 1, 1), all 0.6s ease-out;
   transform-style: preserve-3d;
-  width: 160px;
-  height: 224px;
+  width: 140px;
+  height: 170px;
 }
 
 .card.timeless:not(.wild) {
-  width: 224px;
-  height: 160px;
+  width: 170px;
+  height: 140px;
 }
 
 .card.wild {
@@ -125,6 +125,7 @@
   background-image: url(wild.jpg);
   background-size: cover;
   background-repeat: no-repeat;
+  background-position: center center;
   transform: rotateY(180deg);
 }
 
@@ -138,7 +139,8 @@
 
 .wildletter {
   @apply text-blue-100;
-  font-size: 9rem;
+  font-size: 120px;
+  line-height: 170px;
   font-family: "Bodoni Moda", serif;
   text-shadow: -2px 2px theme("colors.blue.400"),
     1px -1px theme("colors.blue.700"), 0 0 4px #0008;
@@ -154,7 +156,7 @@
 .card-starter .letter {
   @apply text-yellow-500;
   margin-top: 2px;
-  font-size: 85px;
+  font-size: 74px;
   font-family: "Bodoni Moda", serif;
   text-shadow: -1px 1px white, 1px -1px black, 0 0 4px black;
 }
@@ -172,23 +174,22 @@
 
 .card-adventure .letter {
   @apply text-yellow-400;
-  margin-top: -1px;
   margin-left: -3px;
-  font-size: 89px;
+  font-size: 78px;
   font-family: "Big Shoulders Inline Text", serif;
   text-shadow: -2px 0px 8px theme("colors.red.500"),
-    6px 3px theme("colors.yellow.900");
+    6px 2px theme("colors.yellow.900");
 }
 
 .card-adventure .letter.letter-Q {
-  font-size: 77px;
+  font-size: 67px;
 }
 
 .card-adventure .letter.letter-M,
 .card-adventure .letter.letter-N,
 .card-adventure .letter.letter-W {
-  font-size: 80px;
-  line-height: 89px;
+  font-size: 72px;
+  line-height: 78px;
 }
 
 .card-horror .cardface.front {
@@ -204,7 +205,7 @@
 
 .card-horror .letter {
   @apply text-green-400;
-  font-size: 96px;
+  font-size: 84px;
   line-height: 0.8em;
   font-family: "Finger Paint", serif;
   text-shadow: -2px 2px theme("colors.green.700"),
@@ -233,7 +234,7 @@
 }
 
 .card-horror .letter.letter-Q {
-  font-size: 88px;
+  font-size: 77px;
   margin-top: 6px;
 }
 
@@ -254,8 +255,8 @@
 
 .card-romance .letter {
   @apply text-yellow-300;
-  margin-top: -8px;
-  font-size: 110px;
+  margin-top: -6px;
+  font-size: 96px;
   font-family: "Almendra Display", serif;
   text-shadow: 1px 0px theme("colors.red.300"), 1px 1px theme("colors.red.500");
 }
@@ -263,21 +264,21 @@
 .card-romance .letter.letter-A,
 .card-romance .letter.letter-M,
 .card-romance .letter.letter-K {
-  margin-top: -12px;
+  margin-top: -10px;
 }
 
 .card-romance .letter.letter-G,
 .card-romance .letter.letter-Q {
-  margin-top: -16px;
+  margin-top: -14px;
 }
 
 .card-romance .letter.letter-I,
 .card-romance .letter.letter-J {
-  font-size: 95px;
+  font-size: 84px;
 }
 
 .card-romance.timeless .letter {
-  margin-top: 1px;
+  margin-top: 0;
 }
 
 .card-mystery .cardface.front {
@@ -294,7 +295,7 @@
 .card-mystery .letter {
   @apply text-blue-800;
   margin-top: -3px;
-  font-size: 95px;
+  font-size: 84px;
   font-family: "New Rocker", serif;
   text-shadow: -1px 1px theme("colors.blue.100"),
     1px -1px theme("colors.gray.900");
@@ -303,12 +304,12 @@
 .card-mystery .letter.letter-J,
 .card-mystery .letter.letter-L,
 .card-mystery .letter.letter-Q {
-  font-size: 90px;
-  margin-top: -8px;
+  font-size: 78px;
+  margin-top: -7px;
 }
 
 .card-mystery .letter.letter-N {
-  font-size: 90px;
+  font-size: 78px;
   margin-top: -4px;
 }
 
@@ -317,43 +318,38 @@
 }
 
 .bookmark {
-  transform: rotate(2deg);
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-  top: 1px;
-  left: 6px;
+  top: 0;
+  left: 3px;
+}
+
+.bookmark .icon {
+  margin-left: 2px;
+  margin-bottom: 4px;
 }
 
 .timeless .bookmark {
   left: 0;
   top: unset;
-  bottom: 6px;
+  bottom: 3px;
+}
+
+.timeless .bookmark .icon {
+  margin-left: 0;
+  margin-bottom: 2px;
 }
 
 .timeless .bookmark div:last-child {
   @apply pl-1;
-}
-
-.bookmark .icon {
-  font-size: 1.75rem;
-  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+  padding-top: 2px;
 }
 
 .card-adventure .bookmark {
   text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
 }
 
-.card-adventure .bookmark .icon {
-  filter: drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.5));
-}
-
 .bookmark .star {
   margin-left: -2px;
-}
-
-.hanging {
-  text-indent: -1rem;
-  margin-left: 1rem;
-  overflow-wrap: anywhere;
 }
 
 .fade-enter-active,
@@ -400,7 +396,7 @@
 }
 
 .panel-opt {
-  @apply rounded-full bg-white bg-opacity-80 text-black border-3 border-dashed border-gray-800 text-17 text-center font-bold shadow;
+  @apply rounded-full bg-white bg-opacity-75 text-black border-3 border-dashed border-gray-800 text-17 text-center font-bold shadow;
   width: 45px;
   height: 45px;
   line-height: 39px;
@@ -428,4 +424,9 @@
 
 .genreCounts svg {
   height: 22px;
+}
+
+.icon-left,
+.icon-right {
+  width: 0.7em;
 }

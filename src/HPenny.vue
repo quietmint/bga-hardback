@@ -35,7 +35,7 @@ import { Icon } from "@iconify/vue";
 
 export default {
   name: "HPenny",
-  inject: ["getHtml", "i18n", "refs"],
+  inject: ["getIcon", "i18n", "refs"],
   components: { Icon },
 
   props: {
@@ -53,7 +53,7 @@ export default {
     },
 
     description() {
-      const star = this.getHtml("benefit_star");
+      const star = this.getIcon("star", "inline text-17");
       if (this.penny.genre) {
         return this.i18n(this.refs.value.signatures[this.penny.genre].description, { star });
       }

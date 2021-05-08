@@ -75,7 +75,6 @@ $this->i18n = [
 
     'adverts' => clienttranslate('Adverts'),
     'award' => clienttranslate('Literary Awards'),
-    'basicTip' => clienttranslate('Basic benefits always activate'),
     'browserWarnDesc' => clienttranslate('Some game features are unavailable'),
     'browserWarnTitle' => clienttranslate('Update your browser for a better experience'),
     'confirmButton' => clienttranslate('Confirm Word'),
@@ -90,7 +89,7 @@ $this->i18n = [
     'first' => clienttranslate('First Player'),
     'flushButton' => clienttranslate('Flush Offer Row'),
     'genreCountsTip' => clienttranslate('${player_name}\'s deck'),
-    'genreTip' => clienttranslate('Genre benefits activate if you play multiple ${x} cards'),
+    'genreTip' => clienttranslate('With multiple ${x} cards'),
     'hand' => clienttranslate('Hand'),
     'handReminder' => clienttranslate('All your cards are already in play'),
     'ink' => clienttranslate('Ink'),
@@ -169,21 +168,66 @@ $this->msg = [
 ];
 
 $this->benefits = [
-    COINS => clienttranslate('${value}¢'),
-    DOUBLE_ADJ => clienttranslate('Double adjacent card'),
-    EITHER_BASIC => clienttranslate('${value}¢ or ${value}${star}'),
-    EITHER_GENRE => clienttranslate('${value}¢ or ${value}${star}'),
-    EITHER_INK => clienttranslate('1 ink or remover'),
-    JAIL => clienttranslate('Jail offer card'),
-    POINTS => clienttranslate('${value}${star}'),
-    SPECIAL_ADVENTURE => clienttranslate('${value}¢ for each ${adventure}'),
-    SPECIAL_HORROR => clienttranslate('${value}${star} for each inked card'),
-    SPECIAL_MYSTERY => clienttranslate('${value}${star} for each wild'),
-    SPECIAL_ROMANCE => clienttranslate('Preview your next 3 cards'),
-    TRASH_COINS => clienttranslate('Trash this for ${value}¢'),
-    TRASH_DISCARD => clienttranslate('Trash discard for ${value}¢'),
-    TRASH_POINTS => clienttranslate('Trash this for ${value}${star}'),
-    UNCOVER_ADJ => clienttranslate('Uncover adjacent wild'),
+    COINS => [
+        'short' => '${value}¢',
+        'long' => clienttranslate('Gain ${value}¢'),
+    ],
+    DOUBLE_ADJ => [
+        'short' => '${left}${double}${right}',
+        'long' => clienttranslate('Double the ¢ and ${star} values of an adjacent card'),
+    ],
+    EITHER_BASIC => [
+        'short' => '${value}¢/${value}${star}',
+        'long' => clienttranslate('Gain ${value}¢ or ${value}${star}'),
+    ],
+    EITHER_GENRE => [
+        'short' => '${value}¢/${value}${star}',
+        'long' => clienttranslate('Gain ${value}¢ or ${value}${star}'),
+    ],
+    EITHER_INK => [
+        'short' => '${inkBottle}/${removerBottle}',
+        'long' => clienttranslate('Gain an ink or remover'),
+    ],
+    JAIL => [
+        'short' => '${jail}',
+        'long' => clienttranslate('Jail (or trash) an offer row card so others cannot purchase it'),
+    ],
+    POINTS => [
+        'short' => '${value}${star}',
+        'long' => clienttranslate('Gain ${value}${star}'),
+    ],
+    SPECIAL_ADVENTURE => [
+        'short' => '${value}¢/${adventure}',
+        'long' => clienttranslate('Gain ${value}¢ for each ${adventure} card in play'),
+    ],
+    SPECIAL_HORROR => [
+        'short' => '${value}${star}/${inkBottle}',
+        'long' => clienttranslate('Gain ${value}${star} for each inked card in play'),
+    ],
+    SPECIAL_MYSTERY => [
+        'short' => '${value}${star}/${wild}',
+        'long' => clienttranslate('Gain ${value}${star} for each wild card in play'),
+    ],
+    SPECIAL_ROMANCE => [
+        'short' => '${peek} 3',
+        'long' => clienttranslate('Preview 3 cards from your deck. Return or discard each.'),
+    ],
+    TRASH_COINS => [
+        'short' => '${trash} ${value}¢',
+        'long' => clienttranslate('Trash this card to gain ${value}¢'),
+    ],
+    TRASH_DISCARD => [
+        'short' => '${cut} ${value}¢',
+        'long' => clienttranslate('Trash a card from your discard pile to gain ${value}¢'),
+    ],
+    TRASH_POINTS => [
+        'short' => '${trash} ${value}${star}',
+        'long' => clienttranslate('Trash this card to gain ${value}${star}'),
+    ],
+    UNCOVER_ADJ => [
+        'short' => '${left}${uncover}${right}',
+        'long' => clienttranslate('Uncover an adjacent wild card'),
+    ],
 ];
 
 // UPDATE card SET `location` = 'hand_2305326', `origin` = 'hand_2305326' WHERE `refId` IN (5, 12, 23, 31, 40, 42, 53, 64, 73, 86, 92, 96, 107, 113, 123, 134) OR `refId` IN (1, 7, 21, 26, 36, 43, 46, 71, 76, 95, 106, 111, 124);

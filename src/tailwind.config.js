@@ -31,11 +31,14 @@ module.exports = {
         16: "16px",
         17: "17px",
         18: "18px",
+        19: "19px",
         20: "20px",
         24: "24px",
         32: "32px",
       },
       height: {
+        13: "3.25rem",
+        15: "3.75rem",
         25: "6.25rem",
       },
       lineHeight: {
@@ -52,6 +55,9 @@ module.exports = {
       },
       ringWidth: {
         DEFAULT: "6px",
+      },
+      width: {
+        18: "4.5rem",
       },
       zIndex: {
         top: "2000",

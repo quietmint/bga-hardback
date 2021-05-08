@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed z-10 inset-0 bg-white bg-opacity-70 dark:bg-black dark:bg-opacity-70" @click="click(null)">
+  <div class="fixed z-10 inset-0 bg-white bg-opacity-75 dark:bg-black dark:bg-opacity-75" @click="click(null)">
     <div class="flex items-center justify-center min-h-screen">
       <div class="flex flex-col items-center justify-center bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow p-4" @click.stop>
         <div class="text-20 mb-4" v-text="i18n('keyboard')"></div>
