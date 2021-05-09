@@ -28,7 +28,7 @@
               <table class="w-full">
                 <tr v-for="benefit in card.basicBenefitsList" :key="benefit.id">
                   <td class="px-2 py-1 whitespace-nowrap text-center">
-                    <div class="text-19 font-bold rounded-lg px-2 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
+                    <div class="text-19 font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
                   </td>
                   <td class="pr-2 py-1 w-full text-16" v-html="benefit.htmlLong"></td>
                 </tr>
@@ -37,7 +37,7 @@
                 </tr>
                 <tr v-for="benefit in card.genreBenefitsList" :key="benefit.id" :class="genreTooltipClass">
                   <td class="px-2 py-1 whitespace-nowrap text-center">
-                    <div class="text-19 font-bold rounded-lg px-2 bg-opacity-50 border border-opacity-30 bg-white border-black" :class="genreBubbleClass" v-html="benefit.html"></div>
+                    <div class="text-19 font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" :class="genreBubbleClass" v-html="benefit.html"></div>
                   </td>
                   <td class="pr-2 py-1 w-full text-16" v-html="benefit.htmlLong"></td>
                 </tr>
@@ -49,12 +49,12 @@
             <div :class="benefitClass" class="absolute text-19 font-bold text-center flex flex-col flex-grow whitespace-nowrap">
               <!-- Basic Benefits -->
               <div :class="basicSectionClass" class="flex-grow flex items-center justify-evenly">
-                <div v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="rounded-lg px-2 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
+                <div v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
               </div>
 
               <!-- Genre Benefits -->
               <div v-if="card.genreBenefitsList.length" :class="genreSectionClass" class="flex-grow flex items-center justify-evenly border-t-2 border-black">
-                <div v-for="benefit in card.genreBenefitsList" :key="benefit.id" :class="genreBubbleClass" class="rounded-lg px-2 bg-opacity-50 border border-opacity-30 bg-white" v-html="benefit.html"></div>
+                <div v-for="benefit in card.genreBenefitsList" :key="benefit.id" :class="genreBubbleClass" class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white" v-html="benefit.html"></div>
               </div>
             </div>
           </template>
