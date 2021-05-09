@@ -267,26 +267,6 @@ class hardback extends Table
                 hardback::$instance->setGameStateValue("countOffer$genre", 0);
             }
         }
-
-        // Notify about ink used out-of-turn
-        $inkCount = 0;
-        foreach ($player->getHand(HAS_INK) as $card) {
-            $player->notifyInk($card);
-            $inkCount++;
-        }
-        $penny = PlayerMgr::getPenny();
-        if ($inkCount && $penny->isGenreActive(HORROR)) {
-            // Horror: Penny earns 1 per ink
-            $penny->addPoints($inkCount);
-            self::notifyAllPlayers('message', $this->msg['earn'], [
-                'player_name' => $penny->getName(),
-                'amount' => $inkCount,
-                'icon' => 'star',
-            ]);
-        }
-        foreach ($player->getHand(HAS_REMOVER) as $card) {
-            $player->notifyRemover($card);
-        }
     }
 
     function previewWord(array $handIds, string $handMask, ?array $tableauIds, ?string $tableauMask): void
@@ -1328,21 +1308,20 @@ class hardback extends Table
         }
         $card = reset($cards);
         $player->spendInk();
-        if ($player->isActive()) {
-            $player->notifyInk($card);
-            $penny = PlayerMgr::getPenny();
-            if ($penny->isGenreActive(HORROR)) {
-                // Horror: Penny earns 1 per ink
-                $penny->addPoints(1);
-                self::notifyAllPlayers('message', $this->msg['earn'], [
-                    'player_name' => $penny->getName(),
-                    'amount' => 1,
-                    'icon' => 'star',
-                ]);
-            }
-        }
+        $player->notifyInk($card);
         CardMgr::inkCard($card);
         $this->incStat(1, 'useInk', $player->getId());
+
+        $penny = PlayerMgr::getPenny();
+        if ($penny->isGenreActive(HORROR)) {
+            // Horror: Penny earns 1 per ink
+            $penny->addPoints(1);
+            self::notifyAllPlayers('message', $this->msg['earn'], [
+                'player_name' => $penny->getName(),
+                'amount' => 1,
+                'icon' => 'star',
+            ]);
+        }
     }
 
     function useRemover(int $cardId): void
@@ -1353,9 +1332,7 @@ class hardback extends Table
             throw new BgaVisibleSystemException("useRemover: Card $card is unavailable to $player");
         }
         $player->spendRemover();
-        if ($player->isActive()) {
-            $player->notifyRemover($card);
-        }
+        $player->notifyRemover($card);
         CardMgr::inkCard($card, HAS_REMOVER);
         $this->incStat(1, 'useRemover', $player->getId());
     }
