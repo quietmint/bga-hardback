@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS `card` (
   `factor` int(1) NOT NULL DEFAULT 1,
   `ink` int(1),
   `wild` char(1),
+  `age` timestamp(6) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 

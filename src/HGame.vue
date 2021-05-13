@@ -817,24 +817,22 @@ export default {
         if (args.invalid) {
           args.invalid = `<b>${args.invalid}</b>`;
         }
-        if (args.genre) {
-          const html = getIcon(args.genre.toLowerCase().trim(), "hicon");
-          args.genre = `<span class="hgenre ${args.genre}" title="${this.i18n(args.genre)} ${args.letter}">${html ? html : args.genre}`;
-        }
-        if (args.letter) {
-          args.letter = `${args.letter}</span>`;
-        }
         for (const k in args) {
+          let v = args[k];
           if (k.startsWith("icon")) {
-            let v = args[k];
             const html = getIcon(v.toLowerCase().trim(), "hicon");
             if (html) {
               v = html;
             } else if (v != "¢") {
               v = ` ${this.i18n(v)}`;
             }
-            args[k] = v;
+          } else if (k.startsWith("genre")) {
+            const html = getIcon(v.toLowerCase().trim(), "hicon");
+            v = `<span class="hgenre ${v}">${html ? html : v}`;
+          } else if (k.startsWith("letter")) {
+            v = `${v}</span>`;
           }
+          args[k] = v;
         }
       }
       return log;

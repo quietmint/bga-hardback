@@ -51,10 +51,6 @@ class hardback extends Table
             'countActive' . HORROR => COUNT_ACTIVE_HORROR,
             'countActive' . MYSTERY => COUNT_ACTIVE_MYSTERY,
             'countActive' . ROMANCE => COUNT_ACTIVE_ROMANCE,
-            'countOffer' . ADVENTURE => COUNT_OFFER_ADVENTURE,
-            'countOffer' . HORROR => COUNT_OFFER_HORROR,
-            'countOffer' . MYSTERY => COUNT_OFFER_MYSTERY,
-            'countOffer' . ROMANCE => COUNT_OFFER_ROMANCE,
             'dictionary' => OPTION_DICTIONARY,
             // 'events' => OPTION_EVENTS,
             'length' => OPTION_LENGTH,
@@ -100,10 +96,6 @@ class hardback extends Table
         self::setGameStateInitialValue('countActive' . HORROR, 0);
         self::setGameStateInitialValue('countActive' . MYSTERY, 0);
         self::setGameStateInitialValue('countActive' . ROMANCE, 0);
-        self::setGameStateInitialValue('countOffer' . ADVENTURE, 0);
-        self::setGameStateInitialValue('countOffer' . HORROR, 0);
-        self::setGameStateInitialValue('countOffer' . MYSTERY, 0);
-        self::setGameStateInitialValue('countOffer' . ROMANCE, 0);
         self::setGameStateInitialValue('startInk', 0);
         self::setGameStateInitialValue('startRemover', 0);
         self::setGameStateInitialValue('startScore', 0);
@@ -256,18 +248,6 @@ class hardback extends Table
      * PHASE 1: SPELL A WORD
      * PHASE 2: DISCARD UNUSED CARDS
      */
-
-    function stPlayerTurn()
-    {
-        $player = PlayerMgr::getPlayer();
-
-        // Reset draw counts
-        if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
-            foreach ([ADVENTURE, HORROR, MYSTERY, ROMANCE] as $genre) {
-                hardback::$instance->setGameStateValue("countOffer$genre", 0);
-            }
-        }
-    }
 
     function previewWord(array $handIds, string $handMask, ?array $tableauIds, ?string $tableauMask): void
     {
@@ -916,7 +896,7 @@ class hardback extends Table
             ]);
             CardMgr::jail($player->getId(), $card);
         }
-        CardMgr::notifyCards(CardMgr::drawCards(1, 'deck', 'offer'));
+        $this->drawOfferRow();
         $this->gamestate->nextState('again');
     }
 
@@ -1062,7 +1042,7 @@ class hardback extends Table
         }
 
         if ($oldLocation == 'offer') {
-            CardMgr::notifyCards(CardMgr::drawCards(1, 'deck', 'offer'));
+            $this->drawOfferRow();
         }
         $this->incStat(1, 'cardsPurchase', $player->getId());
         $this->incStat(1, 'deck' . $card->getGenre(), $player->getId());
@@ -1219,9 +1199,7 @@ class hardback extends Table
         ]);
 
         // Draw a new card
-        $draw = CardMgr::drawCards(1, 'deck', 'offer');
-        CardMgr::notifyCards($draw);
-        $draw = reset($draw);
+        $draw = $this->drawOfferRow();
         unset($offer[$card->getId()]);
         $offer[$draw->getId()] = $draw;
         if ($penny->getGenre() == MYSTERY && $card->getGenre() == MYSTERY) {
@@ -1235,27 +1213,7 @@ class hardback extends Table
             ]);
             CardMgr::discard($card, 'discard');
             $penny->notifyPanel();
-            CardMgr::notifyCards(CardMgr::drawCards(1, 'deck', 'offer'));
-        }
-
-        // Discard timeless cards
-        $timeless = $player->getTimeless();
-        $discardIds = [];
-        foreach ($timeless as $card) {
-            $countOffer = $this->getGameStateValue("countOffer{$card->getGenre()}");
-            if ($countOffer > 0) {
-                $discardIds[] = $card->getId();
-                self::notifyAllPlayers('message', $this->msg['forceTimeless'], [
-                    'player_name' => $penny->getName(),
-                    'player_name2' => $player->getName(),
-                    'genre' => $card->getGenreName(),
-                    'letter' => $card->getLetter(),
-                ]);
-            }
-        }
-        if (!empty($discardIds)) {
-            CardMgr::discard($discardIds, $player->getDiscardLocation());
-            $player->notifyPanel();
+            $this->drawOfferRow();
         }
 
         // Pause
@@ -1267,6 +1225,46 @@ class hardback extends Table
         } else {
             $this->gamestate->nextState('next');
         }
+    }
+
+    function drawOfferRow(): HCard
+    {
+        $draw = CardMgr::drawCards(1, 'deck', 'offer');
+        $draw = reset($draw);
+
+        if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
+            // Discard the oldest matching timeless card
+            $penny = PlayerMgr::getPenny();
+            $player = PlayerMgr::getPlayer();
+            $timeless = $player->getTimeless(true);
+            foreach ($timeless as $discard) {
+                if ($draw->getGenre() == $discard->getGenre()) {
+                    self::notifyAllPlayers('message', $this->msg['drawDiscard'], [
+                        'player_name' => $penny->getName(),
+                        'player_name2' => $player->getName(),
+                        'genre' => $draw->getGenreName(),
+                        'letter' => $draw->getLetter(),
+                        'genre2' => $discard->getGenreName(),
+                        'letter2' => $discard->getLetter(),
+                    ]);
+                    CardMgr::discard($discard, $player->getDiscardLocation(), false);
+                    $discard = CardMgr::getCard($discard->getId());
+                    $player->notifyPanel();
+                    CardMgr::notifyCards([
+                        $draw->getId() => $draw,
+                        $discard->getId() => $discard,
+                    ]);
+                    return $draw;
+                }
+            }
+        }
+
+        self::notifyAllPlayers('message', $this->msg['draw'], [
+            'genre' => $draw->getGenreName(),
+            'letter' => $draw->getLetter(),
+        ]);
+        CardMgr::notifyCards($draw);
+        return $draw;
     }
 
     /*
@@ -1435,6 +1433,9 @@ class hardback extends Table
         }
         if ($from_version <= 2103270523) {
             self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_player ADD `word` VARCHAR(32)");
+        }
+        if ($from_version <= 2104280652) {
+            self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_card ADD `age` timestamp(6) NULL DEFAULT NULL");
         }
     }
 

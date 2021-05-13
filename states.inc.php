@@ -69,7 +69,6 @@ $machinestates = [
         'description' => clienttranslate('${actplayer} must spell a word'),
         'descriptionmyturn' => clienttranslate('${you} must spell a word'),
         'type' => 'activeplayer',
-        'action' => 'stPlayerTurn',
         'possibleactions' => ['confirmWord', 'skipWord'],
         'transitions' => [
             'next' => ST_UNCOVER,

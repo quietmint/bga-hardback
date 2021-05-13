@@ -124,11 +124,6 @@ class CardMgr extends APP_GameClass
             $card->setLocation($toLocation);
             $card->setOrigin($origin);
             $card->setOrder($order);
-
-            // Count offer row draws for timeless classic discard condition
-            if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO && $fromLocation == 'deck' && $toLocation == 'offer') {
-                hardback::$instance->incGameStateValue("countOffer{$card->getGenre()}", 1);
-            }
         }
         return $cards;
     }
@@ -333,9 +328,16 @@ class CardMgr extends APP_GameClass
         return self::getCardsInLocation($locations);
     }
 
-    public static function getTimeless(int $playerId): array
+    public static function getTimeless(int $playerId, bool $origin = false): array
     {
-        return self::getCardsInLocation(self::getTimelessLocation($playerId));
+        $location = self::getTimelessLocation($playerId);
+        if ($origin) {
+            $sql = "SELECT `id` FROM card WHERE `origin` = '$location' ORDER BY `age`";
+            $cardIds = self::getObjectListFromDB($sql, true);
+            return self::getCards($cardIds);
+        } else {
+            return self::getCardsInLocation($location, null);
+        }
     }
 
     public static function getOffer(int $playerId = null): array
@@ -540,7 +542,7 @@ class CardMgr extends APP_GameClass
         $order = 0;
         $opponent = [];
         foreach ($cards as $card) {
-            $sql = "UPDATE card SET `wild` = " . ($card->isWild() ? "'{$card->getLetter()}'" : "NULL") . ", `location` = 'tableau', `order` = $order WHERE `id` = {$card->getId()}";
+            $sql = "UPDATE card SET `wild` = " . ($card->isWild() ? "'{$card->getLetter()}'" : "NULL") . ", `location` = 'tableau', `order` = $order, `age` = COALESCE(`age`, SYSDATE(6)) WHERE `id` = {$card->getId()}";
             self::DbQuery($sql);
             $order++;
             $updatedIds[] = $card->getId();
@@ -604,7 +606,12 @@ class CardMgr extends APP_GameClass
     {
         $updatedIds = self::getIds($cards);
         if (!empty($updatedIds)) {
-            self::DbQuery("UPDATE card SET `ink` = NULL, `wild` = NULL, `factor` = 1, `origin` = '$location', `location` = '$location', `order` = -1 WHERE `id` IN (" . implode(',', $updatedIds) . ")");
+            $sql = "UPDATE card SET ";
+            if (strpos($location, 'discard') !== false) {
+                $sql .= "`age` = NULL, ";
+            }
+            $sql .= "`ink` = NULL, `wild` = NULL, `factor` = 1, `origin` = '$location', `location` = '$location', `order` = -1 WHERE `id` IN (" . implode(',', $updatedIds) . ")";
+            self::DbQuery($sql);
 
             // Notify
             if ($notify) {
