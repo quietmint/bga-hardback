@@ -33,14 +33,17 @@ $game_options = [
         'values' => [
             TWELVEDICTS => [
                 'name' => totranslate('12dicts'),
+                'tmdisplay' => totranslate('12dicts'),
                 'description' => totranslate('85,000 words (2016 edition)'),
             ],
             US => [
                 'name' => totranslate('American Scrabble'),
+                'tmdisplay' => totranslate('American Scrabble'),
                 'description' => totranslate('190,000 words (2020 edition)'),
             ],
             UK => [
                 'name' => totranslate('British Scrabble'),
+                'tmdisplay' => totranslate('British Scrabble'),
                 'description' => totranslate('280,000 words (2019 edition)'),
             ],
         ]
