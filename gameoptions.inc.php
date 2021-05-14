@@ -229,13 +229,17 @@ $game_preferences = [
         ],
     ],
 
-    PREF_ZOOM => [
-        'name' => totranslate('Mobile zoom level'),
+    PREF_CARD_SIZE => [
+        'name' => totranslate('Card size'),
         'needReload' => false,
-        'default' => 770,
+        'default' => 4,
         'values' => [
-            620 => ['name' => totranslate('Large (4 cards per row)')],
-            770 => ['name' => totranslate('Small (5 cards per row)')],
+            1 => ['name' => ''],
+            2 => ['name' => ''],
+            3 => ['name' => ''],
+            4 => ['name' => ''],
+            5 => ['name' => ''],
+            6 => ['name' => ''],
         ],
     ],
 ];

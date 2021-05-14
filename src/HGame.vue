@@ -511,10 +511,8 @@ export default {
 
     populateCard(card) {
       const cardIcons = {};
-      const cardIconsLong = {};
       for (var key in this.icons) {
-        cardIcons[key] = getIcon(key, "inline text-20");
-        cardIconsLong[key] = getIcon(key, "inline text-17");
+        cardIcons[key] = getIcon(key, "inline text-105");
       }
       let newCard = Object.assign({ factor: 1 }, this.gamedatas.refs.cards[card.refId], card);
 
@@ -528,7 +526,7 @@ export default {
         let newBenefit = {
           id: parseInt(id),
           html: this.i18n(this.gamedatas.refs.benefits[id].short, { value, ...cardIcons }),
-          htmlLong: this.i18n(this.gamedatas.refs.benefits[id].long, { value, ...cardIconsLong }),
+          htmlLong: this.i18n(this.gamedatas.refs.benefits[id].long, { value, ...cardIcons }),
         };
         newCard.basicBenefitsList.push(newBenefit);
       }
@@ -545,7 +543,7 @@ export default {
           let newBenefit = {
             id: parseInt(id),
             html: this.i18n(this.gamedatas.refs.benefits[id].short, { value, ...cardIcons }),
-            htmlLong: this.i18n(this.gamedatas.refs.benefits[id].long, { value, ...cardIconsLong }),
+            htmlLong: this.i18n(this.gamedatas.refs.benefits[id].long, { value, ...cardIcons }),
           };
           newCard.genreBenefitsList.push(newBenefit);
         }

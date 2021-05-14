@@ -27,6 +27,20 @@
   margin: 0;
 }
 
+#ingame_menu_content {
+  opacity: 0.95;
+  width: 600px;
+}
+
+.preference_range {
+  width: 97%;
+  display: block;
+}
+
+#HGame {
+  user-select: none;
+}
+
 .hdefine {
   font-style: italic;
   margin: 5px -5px -5px;

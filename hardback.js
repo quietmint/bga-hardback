@@ -18,9 +18,10 @@
 define([
   "dojo",
   "dojo/_base/declare",
+  "dojo/on",
   "ebg/core/gamegui",
   "ebg/counter",
-], function (dojo, declare) {
+], function (dojo, declare, on) {
   return declare("bgagame.hardback", ebg.core.gamegui, {
     constructor: function () {
       this.vue = null;
@@ -33,14 +34,11 @@ define([
       dojo.style("page-title", "zoom", "");
       dojo.style("right-side-first-part", "zoom", "");
 
-      // Hide mobile preference on desktop
-      var display = dojo.hasClass("ebd-body", "mobile_version") ? "" : "none";
-      document
-        .getElementById("preference_control_" + HConstants.PREF_ZOOM)
-        .closest(".preference_choice").style.display = display;
-      document
-        .getElementById("preference_fontrol_" + HConstants.PREF_ZOOM)
-        .closest(".preference_choice").style.display = display;
+      // Force mobile view in landscape orientation
+      var landscape = window.orientation === -90 || window.orientation === 90;
+      var width = landscape ? 980 : 740;
+      this.interface_min_width = width;
+      this.default_viewport = "width=" + width;
     },
 
     setup: function () {
@@ -135,6 +133,52 @@ define([
           onchange({ target: el });
         }
       );
+
+      // Convert card size preference to slider
+      var selectTop = document.getElementById(
+        "preference_control_" + HConstants.PREF_CARD_SIZE
+      );
+      var selectBottom = document.getElementById(
+        "preference_fontrol_" + HConstants.PREF_CARD_SIZE
+      );
+      selectTop.style.visibility = "hidden";
+      selectBottom.style.visibility = "hidden";
+      dojo.place(
+        '<input id="preference_range_' +
+          HConstants.PREF_CARD_SIZE +
+          '" class="preference_range" type="range" min="1" max="6" value="' +
+          this.prefs[HConstants.PREF_CARD_SIZE].value +
+          '"><small style="float: left">' +
+          _("Small") +
+          '</small><small style="float: right">' +
+          _("Large") +
+          "</small>",
+        selectTop,
+        "before"
+      );
+      dojo.place(
+        '<input id="preference_fange_' +
+          HConstants.PREF_CARD_SIZE +
+          '" class="preference_range" type="range" min="1" max="6" value="' +
+          this.prefs[HConstants.PREF_CARD_SIZE].value +
+          '"><small style="float: left">' +
+          _("Small") +
+          '</small><small style="float: right">' +
+          _("Large") +
+          "</small>",
+        selectBottom,
+        "before"
+      );
+      dojo.query(".preference_range").connect("onclick", this, function (evt) {
+        dojo.stopEvent(evt);
+      });
+      dojo.query(".preference_range").connect("oninput", this, function (evt) {
+        selectTop.value = evt.currentTarget.value;
+        on.emit(selectTop, "change", {
+          bubbles: false,
+          cancelable: false,
+        });
+      });
     },
 
     /* @Override */
@@ -163,15 +207,13 @@ define([
     },
 
     onPrefChange: function (id, value) {
-      if (id == HConstants.PREF_ZOOM) {
-        if (value == 0) {
-          value = 750;
-        } else if (value == 1) {
-          value = 920;
-        }
-        this.interface_min_width = value;
-        this.default_viewport = "width=" + value;
-        this.onGameUiWidthChange();
+      console.log("Preference changed", id, value);
+      if (id == HConstants.PREF_CARD_SIZE) {
+        dojo.removeClass(
+          "HGame",
+          "cardsize-1 cardsize-2 cardsize-3 cardsize-4 cardsize-5 cardsize-6"
+        );
+        dojo.addClass("HGame", "cardsize-" + value);
       }
       this.vue && this.vue.onPrefChange(id, value);
     },

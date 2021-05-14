@@ -111,7 +111,7 @@ if (!defined('ELO_OFF')) {
 
 // Game preferences
 define('PREF_DRAG_DROP', 100);
-define('PREF_ZOOM', 150);
+define('PREF_CARD_SIZE', 151);
 
 // Game states
 define('ST_BGA_GAME_SETUP', 1);

@@ -1,5 +1,5 @@
 <template>
-  <div @pointerdown="pointStart" @pointerup="pointStop" @pointercancel="pointStop" class="cardholder relative m-1 mt-2" :class="{ invisible: this.card.dragging }" ref="cardholder" :id="'cardholder_' + this.card.id">
+  <div @pointerdown="pointStart" @pointerup="pointStop" @pointercancel="pointStop" class="cardholder relative" :class="holderClass" ref="cardholder" :id="'cardholder_' + this.card.id">
     <!-- Header -->
     <div v-if="header" class="flex items-start justify-evenly text-center text-14 whitespace-nowrap leading-5">
       <div class="px-2 rounded-t-lg z-10" :class="header.class" :title="header.title"><Icon v-if="header.icon" :icon="header.icon" class="inline text-15" /> {{ header.text }}</div>
@@ -10,7 +10,7 @@
       <div class="cardface front rounded-lg">
         <!-- Bookmark -->
         <div :class="bookmarkClass" class="bookmark absolute flex items-center text-center font-bold leading-none whitespace-nowrap">
-          <Icon v-if="card.genreName != 'starter'" :icon="card.genreName" class="icon text-24" />
+          <Icon v-if="card.genreName != 'starter'" :icon="card.genreName" class="icon" />
           <div v-if="card.cost">{{ card.cost }}¢</div>
           <div v-if="card.points">{{ card.points }}<Icon icon="star" class="inline star" /></div>
         </div>
@@ -28,7 +28,7 @@
               <table class="w-full">
                 <tr v-for="benefit in card.basicBenefitsList" :key="benefit.id">
                   <td class="px-2 py-1 whitespace-nowrap text-center">
-                    <div class="text-19 font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
+                    <div class="text-120 font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
                   </td>
                   <td class="pr-2 py-1 w-full text-16" v-html="benefit.htmlLong"></td>
                 </tr>
@@ -37,7 +37,7 @@
                 </tr>
                 <tr v-for="benefit in card.genreBenefitsList" :key="benefit.id" :class="genreTooltipClass">
                   <td class="px-2 py-1 whitespace-nowrap text-center">
-                    <div class="text-19 font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" :class="genreBubbleClass" v-html="benefit.html"></div>
+                    <div class="text-120 font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" :class="genreBubbleClass" v-html="benefit.html"></div>
                   </td>
                   <td class="pr-2 py-1 w-full text-16" v-html="benefit.htmlLong"></td>
                 </tr>
@@ -46,7 +46,7 @@
           </template>
 
           <template v-slot:default>
-            <div :class="benefitClass" class="absolute text-19 font-bold text-center flex flex-col flex-grow whitespace-nowrap">
+            <div class="benefits absolute text-120 font-bold text-center flex flex-col flex-grow whitespace-nowrap">
               <!-- Basic Benefits -->
               <div :class="basicSectionClass" class="flex-grow flex items-center justify-evenly">
                 <div v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
@@ -108,14 +108,20 @@ export default {
       return this.card.letter;
     },
 
+    holderClass(): string {
+      let c = this.card.dragging ? "invisible " : "";
+      c += this.card.ink || this.card.location == "jail" || this.card.origin.startsWith("timeless") ? "mx-2 mb-1 mt-2" : "m-1 mt-2";
+      return c;
+    },
+
     cardClass(): string {
       let c = "card-" + this.card.genreName + " ";
       c += this.dragLocations ? "touch-none cursor-move " : this.clickAction ? "cursor-pointer " : "cursor-not-allowed ";
       c += this.card.timeless ? "timeless " : "";
       if (this.card.ink) {
-        c += "mx-1 ring ring-black ";
+        c += "ring ring-black ";
       } else if (this.card.location == "jail" || this.card.origin.startsWith("timeless")) {
-        c += `mx-1 ring ${this.card.player.colorRing} `;
+        c += `ring ${this.card.player.colorRing} `;
       } else if (this.card.wild) {
         c += "wild ";
       }
@@ -127,16 +133,12 @@ export default {
     },
 
     bookmarkClass(): string {
-      let c = this.card.timeless ? "flex-row w-16 h-7 " : "flex-col w-7 h-16 ";
+      let c = this.card.timeless ? "flex-row " : "flex-col ";
       return c + HConstants.GENRES[this.card.genre].textLight;
     },
 
     letterClass(): string {
-      return "letter-" + this.card.letter + (this.card.timeless ? " top-0 w-24" : " top-6 w-full");
-    },
-
-    benefitClass(): string {
-      return this.card.timeless ? "top-5 bottom-0 right-0 w-18" : "bottom-0 left-0 right-0 h-15";
+      return "letter-" + this.card.letter;
     },
 
     basicSectionClass(): string {
@@ -199,9 +201,9 @@ export default {
     },
 
     footerActions(): any[] {
-      const actionBlack = "button black shadow";
-      const actionBlue = "button blue shadow";
-      const actionRed = "button red shadow";
+      const actionBlack = "button mx-1 black shadow";
+      const actionBlue = "button mx-1 blue shadow";
+      const actionRed = "button mx-1 red shadow";
       const actionRef = {
         inkText: {
           text: this.i18n("ink"),
