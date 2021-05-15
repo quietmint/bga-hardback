@@ -672,7 +672,7 @@ export default {
       let mode = null;
       if (start && !visible) {
         mode = "leave";
-        if (card.location.startsWith("discard_") || card.location == "deck_" + this.myself.id) {
+        if (card.location.startsWith("discard_") || card.location == "deck_" + this.game.player_id) {
           let playerId = card.location.split("_")[1];
           let parentEl = document.getElementById("overall_player_board_" + playerId);
           end = getRect(parentEl);
@@ -976,8 +976,8 @@ export default {
         Promise.all(cards.map(this.animateCard)).then(() => {
           this.game.notifqueue.setSynchronousDuration(1);
         });
-      } else if (notif.type == "word") {
-        this.gamedatas.word = notif.args.wordRaw;
+      } else if (notif.type == "ink" && this.game.player_id != notif.args.player_id) {
+        this.game.disableNextMoveSound();
       } else if (notif.type == "invalid") {
         if (!this.gamestate.instant && this.game.player_id == notif.args.player_id) {
           this.game.showMessage(this.i18n("invalid", notif.args), "error");
@@ -995,6 +995,8 @@ export default {
         } else {
           this.game.scoreCtrl[notif.args.player.id].setValue(notif.args.player.score);
         }
+      } else if (notif.type == "word") {
+        this.gamedatas.word = notif.args.wordRaw;
       }
     },
 

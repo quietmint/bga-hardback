@@ -74,6 +74,7 @@ define([
       this.notifqueue.setSynchronous("cards");
       dojo.subscribe("cardsPreview", this, "onNotify");
       this.notifqueue.setSynchronous("cardsPreview");
+      dojo.subscribe("ink", this, "onNotify");
       dojo.subscribe("invalid", this, "onNotify");
       dojo.subscribe("pause", this, "onNotify");
       this.notifqueue.setSynchronous("pause");

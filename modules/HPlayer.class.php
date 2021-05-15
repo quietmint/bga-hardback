@@ -246,6 +246,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     public function notifyInk(HCard $card): void
     {
         hardback::$instance->notifyAllPlayers('ink', hardback::$instance->msg['useInk'], [
+            'player_id' => $this->id,
             'player_name' => $this->name,
             'genre' => $card->getGenreName(),
             'letter' => $card->getLetter(),
@@ -254,8 +255,8 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     public function notifyRemover(HCard $card): void
     {
-
         hardback::$instance->notifyAllPlayers('ink', hardback::$instance->msg['useRemover'], [
+            'player_id' => $this->id,
             'player_name' => $this->name,
             'genre' => $card->getGenreName(),
             'letter' => $card->getLetter(),
