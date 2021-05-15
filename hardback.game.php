@@ -1361,7 +1361,7 @@ class hardback extends Table
             $penny = PlayerMgr::getPenny();
             if ($penny->getScore() >= PlayerMgr::getMaxScore()) {
                 // Coop lose
-                self::DbQuery("UPDATE player SET player_score = player_score - {$this->getGameLength()}");
+                self::DbQuery("UPDATE player SET player_score = LEAST(-1, player_score - {$this->getGameLength()})");
                 self::notifyAllPlayers('message', $this->msg['coopLose'], [
                     'player_name' => $penny->getName(),
                 ]);
