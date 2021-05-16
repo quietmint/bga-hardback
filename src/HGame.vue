@@ -63,7 +63,7 @@
     <!-- Tableau -->
     <div v-if="gamestate.name != 'gameEnd'" class="py-2 border-t-2 border-black bg-opacity-30 transition-colors duration-1000" :class="author.colorBg || 'bg-white'">
       <div class="flex leading-7 font-bold">
-        <div class="title ml-2 flex-grow" v-html="i18n('tableau', { player_name: `<span class='transition-colors duration-1000 ${author.colorText || 'text-black'}'>${author.name}</span>`, count: tableauCards.length }) + (gamedatas.word ? ' — <b>' + gamedatas.word + '</b>': '')"></div>
+        <div class="title ml-2 flex-grow" v-html="i18n('tableau', { player_name: `<span class='transition-colors duration-1000 ${author.colorText || 'text-black'}'>${author.name}</span>`, count: tableauCards.length }) + (gamedatas.word ? ' — <b>' + gamedatas.word + '</b>' : '')"></div>
 
         <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup flex">
           <div @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')" class="button" :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
@@ -238,7 +238,6 @@ export default {
     return {
       gamestate: this.gamestate,
       getRect: getRect,
-      getIcon: getIcon,
       i18n: this.i18n,
       myself: computed(() => this.myself),
       options: computed(() => this.gamedatas.options),
@@ -270,6 +269,10 @@ export default {
         this.locationOrder.offer = x;
       }
     } catch (ignore) {}
+
+    for (const key in this.icons) {
+      this.icons105[key] = getIcon(key, "inline text-105");
+    }
   },
 
   beforeUnmount() {
@@ -322,6 +325,7 @@ export default {
         starter: bookmarkIcon,
         timeless: cachedIcon,
       },
+      icons105: {},
     };
   },
 
@@ -416,11 +420,9 @@ export default {
       if (this.gamedatas.refs.i18n[msg]) {
         msg = this.gamedatas.refs.i18n[msg];
       }
+      const argsWithIcons = args ? { ...this.icons105, ...args } : { ...this.icons105 };
       // @ts-ignore
-      msg = window._(msg);
-      if (args) {
-        msg = this.game.format_string_recursive(msg, args);
-      }
+      msg = this.game.format_string_recursive(window._(msg), argsWithIcons);
       return msg;
     },
 
@@ -490,47 +492,7 @@ export default {
     },
 
     populateCard(card) {
-      const cardIcons = {};
-      for (var key in this.icons) {
-        cardIcons[key] = getIcon(key, "inline text-105");
-      }
       let newCard = Object.assign({ factor: 1 }, this.gamedatas.refs.cards[card.refId], card);
-
-      // Basic benefits
-      newCard.basicBenefitsList = [];
-      for (const id in newCard.basicBenefits) {
-        let value = newCard.basicBenefits[id];
-        if (newCard.factor > 1) {
-          value = `<span class="font-bold px-1 bg-yellow-400">${value * newCard.factor}</span>`;
-        }
-        let newBenefit = {
-          id: parseInt(id),
-          html: this.i18n(this.gamedatas.refs.benefits[id].short, { value, ...cardIcons }),
-          htmlLong: this.i18n(this.gamedatas.refs.benefits[id].long, { value, ...cardIcons }),
-        };
-        newCard.basicBenefitsList.push(newBenefit);
-      }
-      newCard.basicBenefitsList.sort(firstBy("id"));
-
-      // Genre benefits
-      newCard.genreBenefitsList = [];
-      if (newCard.genreBenefits) {
-        for (const id in newCard.genreBenefits) {
-          let value = newCard.genreBenefits[id];
-          if (newCard.factor > 1) {
-            value = `<span class="font-bold px-1 bg-yellow-400">${value * newCard.factor}</span>`;
-          }
-          let newBenefit = {
-            id: parseInt(id),
-            html: this.i18n(this.gamedatas.refs.benefits[id].short, { value, ...cardIcons }),
-            htmlLong: this.i18n(this.gamedatas.refs.benefits[id].long, { value, ...cardIcons }),
-          };
-          newCard.genreBenefitsList.push(newBenefit);
-        }
-        newCard.genreBenefitsList.sort(firstBy("id"));
-      }
-
-      // Genre name
       newCard.genreName = HConstants.GENRES[newCard.genre].icon;
 
       // Owning player

@@ -22,20 +22,20 @@
 
         <!-- Benefits -->
         <HTooltip>
-          <template v-slot:tip>
+          <template #tip>
             <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden" style="width: 240px">
               <div :class="titleClass" class="px-2 py-1 text-18 font-bold border-b-2 border-black"><Icon :icon="card.genreName" class="inline text-24" /> {{ i18n(card.genreName) }} {{ card.letter }}</div>
               <table class="w-full">
-                <tr v-for="benefit in card.basicBenefitsList" :key="benefit.id">
+                <tr v-for="benefit in basicBenefitsList" :key="benefit.id">
                   <td class="px-2 py-1 whitespace-nowrap text-center">
                     <div class="text-115 leading-120 tracking-tight font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
                   </td>
                   <td class="pr-2 py-1 w-full text-16" v-html="benefit.htmlLong"></td>
                 </tr>
-                <tr v-if="card.genreBenefitsList.length">
+                <tr v-if="genreBenefitsList.length">
                   <td class="px-2 py-1 italic text-14 border-t-2 border-black" colspan="2" :class="genreTooltipClass" v-text="i18n('genreTip', { x: i18n(card.genreName) })"></td>
                 </tr>
-                <tr v-for="benefit in card.genreBenefitsList" :key="benefit.id" :class="genreTooltipClass">
+                <tr v-for="benefit in genreBenefitsList" :key="benefit.id" :class="genreTooltipClass">
                   <td class="px-2 py-1 whitespace-nowrap text-center">
                     <div class="text-115 leading-120 tracking-tight font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" :class="genreBubbleClass" v-html="benefit.html"></div>
                   </td>
@@ -45,16 +45,16 @@
             </div>
           </template>
 
-          <template v-slot:default>
+          <template #default>
             <div class="benefits absolute text-115 leading-120 tracking-tight font-bold text-center flex flex-col flex-grow whitespace-nowrap">
               <!-- Basic Benefits -->
               <div :class="basicSectionClass" class="flex-grow flex items-center justify-evenly">
-                <div v-for="benefit in card.basicBenefitsList" :key="benefit.id" class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
+                <div v-for="benefit in basicBenefitsList" :key="benefit.id" class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
               </div>
 
               <!-- Genre Benefits -->
-              <div v-if="card.genreBenefitsList.length" :class="genreSectionClass" class="flex-grow flex items-center justify-evenly border-t-2 border-black">
-                <div v-for="benefit in card.genreBenefitsList" :key="benefit.id" :class="genreBubbleClass" class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white" v-html="benefit.html"></div>
+              <div v-if="genreBenefitsList.length" :class="genreSectionClass" class="flex-grow flex items-center justify-evenly border-t-2 border-black">
+                <div v-for="benefit in genreBenefitsList" :key="benefit.id" :class="genreBubbleClass" class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white" v-html="benefit.html"></div>
               </div>
             </div>
           </template>
@@ -80,11 +80,12 @@
 import HConstants from "./HConstants.js";
 import HTooltip from "./HTooltip.vue";
 import { Icon } from "@iconify/vue";
+import { firstBy } from "thenby";
 
 export default {
   name: "HCard",
   emits: ["clickCard", "clickFooter", "dragStart"],
-  inject: ["gamestate", "i18n", "myself", "prefs"],
+  inject: ["gamestate", "i18n", "myself", "prefs", "refs"],
   components: { HTooltip, Icon },
 
   props: {
@@ -101,6 +102,40 @@ export default {
   },
 
   computed: {
+    basicBenefitsList() {
+      let list = [];
+      for (const id in this.card.basicBenefits) {
+        let value = this.card.basicBenefits[id];
+        if (this.card.factor > 1) {
+          value = `<span class="font-bold px-1 bg-yellow-400">${value * this.card.factor}</span>`;
+        }
+        list.push({
+          id: parseInt(id),
+          html: this.i18n(this.refs.value.benefits[id].short, { value }),
+          htmlLong: this.i18n(this.refs.value.benefits[id].long, { value }),
+        });
+      }
+      list.sort(firstBy("id"));
+      return list;
+    },
+
+    genreBenefitsList() {
+      let list = [];
+      for (const id in this.card.genreBenefits) {
+        let value = this.card.genreBenefits[id];
+        if (this.card.factor > 1) {
+          value = `<span class="font-bold px-1 bg-yellow-400">${value * this.card.factor}</span>`;
+        }
+        list.push({
+          id: parseInt(id),
+          html: this.i18n(this.refs.value.benefits[id].short, { value }),
+          htmlLong: this.i18n(this.refs.value.benefits[id].long, { value }),
+        });
+      }
+      list.sort(firstBy("id"));
+      return list;
+    },
+
     letterDisplay(): string {
       if (this.card.letter == "I" && this.card.genre == HConstants.ROMANCE) {
         return "|";
