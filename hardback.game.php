@@ -324,6 +324,7 @@ class hardback extends Table
         self::notifyAllPlayers('word', $this->msg['confirmWord'], [
             'player_name' => $player->getName(),
             'word' => $word,
+            'definitions' => '',
         ]);
 
         $dict = $this->gamestate->table_globals[OPTION_DICTIONARY];
