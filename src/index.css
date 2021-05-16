@@ -101,7 +101,7 @@
   transition: transform 0.6s cubic-bezier(0.7, 1.2, 1, 1), all 0.6s ease-out;
   transform-style: preserve-3d;
   width: 8.75em;
-  height: 10.625em;
+  height: 11em;
   margin-left: auto;
   margin-right: auto;
 }
@@ -126,7 +126,7 @@
 }
 
 .card.timeless:not(.wild) {
-  width: 10.625em;
+  width: 11em;
   height: 8.75em;
 }
 
@@ -180,15 +180,16 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 36%;
+  height: 37%;
+  overflow: hidden;
 }
 
 .card.timeless .benefits {
-  top: 16%;
+  top: 15%;
   bottom: 0;
   left: unset;
   right: 0;
-  width: 43%;
+  width: 45%;
   height: unset;
 }
 
@@ -323,6 +324,10 @@
 .card-romance .letter.letter-I,
 .card-romance .letter.letter-J {
   font-size: 5.25em;
+}
+
+.card-romance.timeless .letter {
+  margin-top: 0;
 }
 
 .card-mystery .cardface.front {

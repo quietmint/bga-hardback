@@ -217,19 +217,9 @@ import mdiHeart from "@iconify-icons/mdi/heart";
 import mdiSkull from "@iconify-icons/mdi/skull";
 
 // Card icons
-import arrowLeft from "@iconify-icons/mdi/arrow-left";
-import arrowRight from "@iconify-icons/mdi/arrow-right";
 import cachedIcon from "@iconify-icons/mdi/cached";
-import contentCut from "@iconify-icons/mdi/content-cut";
-import eye from "@iconify-icons/mdi/eye";
-import flaskEmptyMinusOutline from "@iconify-icons/mdi/flask-empty-minus-outline";
-import flaskEmptyPlus from "@iconify-icons/mdi/flask-empty-plus";
-import helpIcon from "@iconify-icons/mdi/help";
 import lockIcon from "@iconify-icons/mdi/lock";
-import numeric2BoxMultipleOutline from "@iconify-icons/mdi/numeric-2-box-multiple-outline";
-import refreshIcon from "@iconify-icons/mdi/refresh";
 import starOutlined from "@iconify-icons/ant-design/star-outlined";
-import trashCanOutline from "@iconify-icons/mdi/trash-can-outline";
 
 // Sorter icons
 import chevronDown from "@iconify-icons/mdi/chevron-down";
@@ -321,26 +311,16 @@ export default {
         adventure: mdiCompass,
         chevron: chevronDown,
         clock: clockOutline,
-        cut: contentCut,
         deck: cardsIcon,
-        double: numeric2BoxMultipleOutline,
         hand: handRight,
         horror: mdiSkull,
-        inkBottle: flaskEmptyPlus,
         jail: lockIcon,
-        left: arrowLeft,
         mystery: magnifyingGlass,
-        peek: eye,
-        removerBottle: flaskEmptyMinusOutline,
-        right: arrowRight,
         romance: mdiHeart,
         shuffle: shuffleVariant,
         star: starOutlined,
         starter: bookmarkIcon,
         timeless: cachedIcon,
-        trash: trashCanOutline,
-        uncover: refreshIcon,
-        wild: helpIcon,
       },
     };
   },

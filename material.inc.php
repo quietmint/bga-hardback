@@ -173,23 +173,23 @@ $this->benefits = [
         'long' => clienttranslate('Gain ${value}¢'),
     ],
     DOUBLE_ADJ => [
-        'short' => '${left}${double}${right}',
+        'short' => clienttranslate('Double'),
         'long' => clienttranslate('Double the ¢ and ${star} values of an adjacent card'),
     ],
     EITHER_BASIC => [
-        'short' => '${value}¢/${value}${star}',
+        'short' => clienttranslate('${value}¢ or ${star}'),
         'long' => clienttranslate('Gain ${value}¢ or ${value}${star}'),
     ],
     EITHER_GENRE => [
-        'short' => '${value}¢/${value}${star}',
+        'short' => clienttranslate('${value}¢ or ${star}'),
         'long' => clienttranslate('Gain ${value}¢ or ${value}${star}'),
     ],
     EITHER_INK => [
-        'short' => '${inkBottle}/${removerBottle}',
+        'short' => clienttranslate('Ink'),
         'long' => clienttranslate('Gain an ink or remover'),
     ],
     JAIL => [
-        'short' => '${jail}',
+        'short' => clienttranslate('Jail'),
         'long' => clienttranslate('Jail (or trash) an offer row card so others cannot purchase it'),
     ],
     POINTS => [
@@ -201,31 +201,31 @@ $this->benefits = [
         'long' => clienttranslate('Gain ${value}¢ for each ${adventure} card in play'),
     ],
     SPECIAL_HORROR => [
-        'short' => '${value}${star}/${inkBottle}',
+        'short' => clienttranslate('${value}${star}/Ink'),
         'long' => clienttranslate('Gain ${value}${star} for each inked card in play'),
     ],
     SPECIAL_MYSTERY => [
-        'short' => '${value}${star}/${wild}',
+        'short' => clienttranslate('${value}${star}/Wild'),
         'long' => clienttranslate('Gain ${value}${star} for each wild card in play'),
     ],
     SPECIAL_ROMANCE => [
-        'short' => '${peek} 3',
+        'short' => clienttranslate('Preview'),
         'long' => clienttranslate('Preview 3 cards from your deck. Return or discard each.'),
     ],
     TRASH_COINS => [
-        'short' => '${trash} ${value}¢',
+        'short' => clienttranslate('Trash: ${value}¢'),
         'long' => clienttranslate('Trash this card to gain ${value}¢'),
     ],
     TRASH_DISCARD => [
-        'short' => '${cut} ${value}¢',
+        'short' => clienttranslate('Cull: ${value}¢'),
         'long' => clienttranslate('Trash a card from your discard pile to gain ${value}¢'),
     ],
     TRASH_POINTS => [
-        'short' => '${trash} ${value}${star}',
+        'short' => clienttranslate('Trash: ${value}${star}'),
         'long' => clienttranslate('Trash this card to gain ${value}${star}'),
     ],
     UNCOVER_ADJ => [
-        'short' => '${left}${uncover}${right}',
+        'short' => clienttranslate('Uncover'),
         'long' => clienttranslate('Uncover an adjacent wild card'),
     ],
 ];
