@@ -79,6 +79,15 @@ class action_hardback extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function voteWord()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('voteAccept');
+    $vote = self::getArg('vote', AT_bool, true);
+    $this->game->voteWord($vote);
+    self::ajaxResponse();
+  }
+
   /*
    * PHASE 3: RESOLVE CARD BENEFITS
    */

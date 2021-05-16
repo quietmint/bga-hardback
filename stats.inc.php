@@ -166,6 +166,16 @@ $stats_type = [
             'name' => totranslate('Invalid words'),
             'type' => 'int',
         ],
+        'votesAccept' => [
+            'id' => STAT_VOTES_ACCEPT,
+            'name' => totranslate('Votes to accept'),
+            'type' => 'int',
+        ],
+        'votesReject' => [
+            'id' => STAT_VOTES_REJECT,
+            'name' => totranslate('Votes to reject'),
+            'type' => 'int',
+        ],
         'useInk' => [
             'id' => STAT_USE_INK,
             'name' => totranslate('Ink used'),

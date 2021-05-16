@@ -526,7 +526,7 @@ class CardMgr extends APP_GameClass
         }
     }
 
-    public static function commitWord(int $playerId, array $cards): void
+    public static function preCommitWord(array $cards): array
     {
         self::deletePreviewNotifications();
 
@@ -540,13 +540,20 @@ class CardMgr extends APP_GameClass
 
         // Update tableau
         $order = 0;
-        $opponent = [];
         foreach ($cards as $card) {
             $sql = "UPDATE card SET `wild` = " . ($card->isWild() ? "'{$card->getLetter()}'" : "NULL") . ", `location` = 'tableau', `order` = $order, `age` = COALESCE(`age`, SYSDATE(6)) WHERE `id` = {$card->getId()}";
             self::DbQuery($sql);
             $order++;
             $updatedIds[] = $card->getId();
+        }
+        return $updatedIds;
+    }
 
+    public static function commitWord(int $playerId, array $cards): void
+    {
+        $updatedIds = self::preCommitWord($cards);
+        $opponent = [];
+        foreach ($cards as $card) {
             // Cancel all benefits on opponent timeless cards
             if ($card->isOrigin('timeless') && !$card->isOrigin(self::getTimelessLocation($playerId))) {
                 self::useBenefit($card, ALL_BENEFITS);

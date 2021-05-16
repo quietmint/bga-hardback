@@ -27,6 +27,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->order = intval($dbplayer['player_no']);
         $this->remover = intval($dbplayer['remover']);
         $this->score = intval($dbplayer['player_score']);
+        $this->vote = $dbplayer['vote'] == null ? null : boolval($dbplayer['vote']);
         $this->word = $dbplayer['word'];
         $this->zombie = intval($dbplayer['player_zombie']);
     }
@@ -146,6 +147,11 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     public function getScore(): int
     {
         return $this->score;
+    }
+
+    public function getVote(): ?bool
+    {
+        return $this->vote;
     }
 
     public function getWord(): string
@@ -364,9 +370,16 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->addPoints($points, 'pointsAdvert');
     }
 
-    public function setWord(string $word): void
+    public function setVote(bool $vote): void
     {
-        self::DbQuery("UPDATE player SET word = '$word' WHERE player_id = {$this->id}");
+        self::DbQuery("UPDATE player SET vote = " . intval($vote) . " WHERE player_id = {$this->id}");
+        hardback::$instance->incStat(1, $vote ? 'votesAccept' : 'votesReject', $this->id);
+        $this->vote = $vote;
+    }
+
+    public function setWord(?string $word): void
+    {
+        self::DbQuery("UPDATE player SET word = " . ($word == null ? "NULL" : "'$word'") . " WHERE player_id = {$this->id}");
         $this->word = $word;
     }
 }

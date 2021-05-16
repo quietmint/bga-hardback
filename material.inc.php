@@ -64,6 +64,8 @@ $this->dicts = [
     TWELVEDICTS => clienttranslate('12dicts'),
     US  => clienttranslate('American Scrabble'),
     UK => clienttranslate('British Scrabble'),
+    VOTE_50 => clienttranslate('the players'),
+    VOTE_100 => clienttranslate('the players'),
 ];
 
 $this->i18n = [
@@ -93,7 +95,7 @@ $this->i18n = [
     'hand' => clienttranslate('Hand'),
     'handReminder' => clienttranslate('All your cards are already in play'),
     'ink' => clienttranslate('Ink'),
-    'invalid' => clienttranslate('${invalid} is not a valid word in the ${dict} dictionary'),
+    'invalid' => clienttranslate('${word} is rejected by ${dict}'),
     'jailButton' => clienttranslate('Jail'),
     'jailButton' => clienttranslate('Jail'),
     'jailTip' => clienttranslate('Jailed: Only ${player_name} may purchase'),
@@ -127,13 +129,16 @@ $this->i18n = [
     'uncoverButton' => clienttranslate('Uncover (${x})'),
     'useRemoverButton' => clienttranslate('Remove Ink'),
     'wildButton' => clienttranslate('Wild'),
+    'voteAcceptButton' => clientTranslate('Accept ${word}'),
+    'voteRejectButton' => clientTranslate('Reject ${word}'),
 ];
 
 $this->msg = [
+    'acceptedWord' => clienttranslate('${word} is accepted by ${dict}'),
     'awardEnd' => clienttranslate('${player_name} earns ${amount}${icon} for the literary award'),
     'awardFirst' => clienttranslate('${player_name} spells the first ${length}-letter word and takes the literary award (worth ${points}${iconPoints} at game end)${award}'),
     'awardSecond' => clienttranslate('${player_name} spells the first ${length}-letter word and takes the literary award from ${player_name2} (worth ${points}${iconPoints} at game end)${award}'),
-    'confirmWord' => clienttranslate('${player_name} spells ${word}'),
+    'confirmWord' => clienttranslate('${player_name} spells ${word}${definitions}'),
     'convert' => clienttranslate('${player_name} converts ${ink} ink to ${amount}${icon}'),
     'coopLose' => clienttranslate('Failure! The players are defeated and ${player_name} wins!'),
     'coopWin' => clienttranslate('Success! ${player_name} is defeated and the players win!'),
@@ -148,12 +153,12 @@ $this->msg = [
     'errorLength' => self::_('Must use at least 2 letters'),
     'errorWild' => self::_('Cards cannot be wild: %s'),
     'flush' => clienttranslate('${player_name} flushes the offer row'),
-    'invalidWord' => clienttranslate('${player_name} spells ${invalid}, an invalid word not in the ${dict} dictionary'),
     'jailOffer' => clienttranslate('${player_name} jails ${genre}${letter} from the offer row'),
     'purchase' => clienttranslate('${player_name} purchases ${genre}${letter} for ${coins}${iconCoins}'),
     'purchase2' => clienttranslate('${player_name} purchases ${genre}${letter} for ${coins}${iconCoins} and earns ${points}${iconPoints}'),
     'purchaseAdvert' => clienttranslate('${player_name} purchases the ${points}${iconPoints} advertisement for ${coins}${iconCoins}'),
     'purchaseCoop' => clienttranslate('${player_name} purchases ${genre}${letter} and earns ${points}${iconPoints}'),
+    'rejectedWord' => clienttranslate('${word} is rejected by ${dict}'),
     'skipWord' => clienttranslate('${player_name} is stymied by writer\'s block and skips their turn.'),
     'summary0' => clienttranslate('${player_name} earns nothing this round'),
     'summary1' => clienttranslate('${player_name} earns ${amount1}${icon1} this round'),
@@ -165,6 +170,7 @@ $this->msg = [
     'uncover' => clienttranslate('${player_name} uncovers ${genre}${letter}'),
     'useInk' => clienttranslate('${player_name} spends ink to draw ${genre}${letter}'),
     'useRemover' => clienttranslate('${player_name} spends remover to avoid ${genre}${letter}'),
+    'votesReject' => clienttranslate('${player_name} rejects ${word}'),
 ];
 
 $this->benefits = [

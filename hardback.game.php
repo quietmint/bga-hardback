@@ -140,6 +140,10 @@ class hardback extends Table
         self::initStat('player', 'useInk', 0);
         self::initStat('player', 'useRemover', 0);
         self::initStat('player', 'words', 0);
+        if ($this->gamestate->table_globals[OPTION_DICTIONARY] == VOTE_50 || $this->gamestate->table_globals[OPTION_DICTIONARY] == VOTE_100) {
+            self::initStat('player', 'votesAccept', 0);
+            self::initStat('player', 'votesReject', 0);
+        }
 
         // Deal the cards
         CardMgr::setup();
@@ -314,33 +318,47 @@ class hardback extends Table
             throw new BgaVisibleSystemException("confirmWord: Not possible for $player to use cards " .  CardMgr::getString($invalid));
         }
 
-        // Word must be valid
         $word = implode('', array_map(function ($card) {
             return $card->getLetter();
         }, $cards));
-        $valid = WordMgr::isWord($word);
-        if (!$valid) {
-            $this->incStat(1, 'invalidWords');
-            $this->incStat(1, 'invalidWords', $player->getId());
-            self::notifyAllPlayers('invalid', $this->msg['invalidWord'], [
-                'i18n' => ['dict'],
-                'player_id' => $player->getId(),
-                'player_name' => $player->getName(),
-                'invalid' => $word,
-                'dict' => $this->dicts[$this->gamestate->table_globals[OPTION_DICTIONARY]],
-            ]);
-            return;
-        }
-        $this->incStat(1, 'words');
-        $this->incStat(1, 'words', $player->getId());
         self::notifyAllPlayers('word', $this->msg['confirmWord'], [
             'player_name' => $player->getName(),
             'word' => $word,
         ]);
 
+        $dict = $this->gamestate->table_globals[OPTION_DICTIONARY];
+        if ($dict == VOTE_50 || $dict == VOTE_100) {
+            // Database pre-commit 
+            $updatedIds = CardMgr::preCommitWord($cards);
+            CardMgr::notifyCards(CardMgr::getCards($updatedIds));
+            $player->setWord($word);
+
+            // Start the vote
+            PlayerMgr::resetVoteResult();
+            $this->gamestate->nextState('vote');
+        } else {
+            // Word must be valid
+            $valid = WordMgr::isWord($word);
+            if (!$valid) {
+                $this->rejectWord($player, $word);
+                return;
+            }
+            $player->setWord($word);
+            $this->acceptWord($cards);
+            $this->gamestate->nextState('next');
+        }
+    }
+
+    function acceptWord(array $cards)
+    {
+        $player = PlayerMgr::getPlayer();
+        $word = $player->getWord();
+
+        $this->incStat(1, 'words');
+        $this->incStat(1, 'words', $player->getId());
+
         // Database commit
         CardMgr::commitWord($player->getId(), $cards);
-        $player->setWord($word);
         $this->setGameStateValue('startInk', $player->getInk());
         $this->setGameStateValue('startRemover', $player->getRemover());
         $this->setGameStateValue('startScore', $player->getScore());
@@ -381,7 +399,72 @@ class hardback extends Table
 
         // Give extra time
         $this->giveExtraTime($player->getId());
-        $this->gamestate->nextState('next');
+    }
+
+    function rejectWord(HPlayer $player, string $word): void
+    {
+        $this->incStat(1, 'invalidWords');
+        $this->incStat(1, 'invalidWords', $player->getId());
+        $dict = $this->gamestate->table_globals[OPTION_DICTIONARY];
+        self::notifyAllPlayers('invalid', $this->msg['rejectedWord'], [
+            'i18n' => ['dict'],
+            'player_id' => $player->getId(),
+            'player_name' => $player->getName(),
+            'word' => $word,
+            'dict' => $this->dicts[$dict],
+        ]);
+    }
+
+    function argVote()
+    {
+        $player = PlayerMgr::getPlayer();
+        return [
+            'player_id' => $player->getId(),
+            'player_name' => $player->getName(),
+            'word' => $player->getWord(),
+        ];
+    }
+
+    function stVote()
+    {
+        $voters = PlayerMgr::getPlayerIds(self::getActivePlayerId());
+        foreach ($voters as $voter) {
+            $this->giveExtraTime($voter);
+        }
+        $this->gamestate->setPlayersMultiactive($voters, '', true);
+    }
+
+    function voteWord(bool $vote, int $currentId = null)
+    {
+        $current = PlayerMgr::getPlayer($currentId ?? self::getCurrentPlayerId());
+        $current->setVote($vote);
+        if (!$vote) {
+            $this->notifyAllPlayers('message', $this->msg['votesReject'], [
+                'player_name' => $current->getName(),
+                'word' => $this->gamestate->state()['args']['word'],
+            ]);
+        }
+
+        $result = PlayerMgr::getVoteResult();
+        if ($result == 'accept') {
+            $player = PlayerMgr::getPlayer();
+            $dict = $this->gamestate->table_globals[OPTION_DICTIONARY];
+            self::notifyAllPlayers('word', $this->msg['acceptedWord'], [
+                'i18n' => ['dict'],
+                'word' => $player->getWord(),
+                'dict' => $this->dicts[$dict],
+            ]);
+            $cards = CardMgr::getTableau(null);
+            $this->acceptWord($cards);
+            $this->gamestate->setAllPlayersNonMultiactive('accept');
+        } else if ($result == 'reject') {
+            $player = PlayerMgr::getPlayer();
+            $this->rejectWord($player, $player->getWord());
+            $player->setWord(null);
+            $this->gamestate->setAllPlayersNonMultiactive('reject');
+        } else {
+            $this->gamestate->setPlayerNonMultiactive($current->getId(), '');
+        }
     }
 
     /*
@@ -1150,7 +1233,7 @@ class hardback extends Table
 
         // Reset hand and tableau
         CardMgr::reset($player->getId());
-        $player->setWord('');
+        $player->setWord(null);
         $player->notifyPanel();
         $this->gamestate->nextState('next');
     }
@@ -1401,8 +1484,8 @@ class hardback extends Table
 
     function zombieTurn($state, $active_player): void
     {
-        if ($state['type'] == 'multipleactiveplayer') {
-            $this->gamestate->setPlayerNonMultiactive($active_player, 'next');
+        if ($state['name'] == 'vote') {
+            $this->voteWord(true, $active_player);
         } else {
             $this->gamestate->nextState('zombie');
         }
@@ -1436,6 +1519,9 @@ class hardback extends Table
         }
         if ($from_version <= 2104280652) {
             self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_card ADD `age` timestamp(6) NULL DEFAULT NULL");
+        }
+        if ($from_version <= 2105150216) {
+            self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_player ADD `vote` INT(1) NULL DEFAULT NULL");
         }
     }
 

@@ -2,7 +2,7 @@
 
 class PlayerMgr extends APP_GameClass
 {
-    public static function getMaxScore()
+    public static function getMaxScore(): int
     {
         $max = intval(self::getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_eliminated = 0 AND player_zombie = 0"));
         if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO) {
@@ -11,14 +11,19 @@ class PlayerMgr extends APP_GameClass
         return $max;
     }
 
-    public static function getPlayerCount()
+    public static function getPlayerCount(): int
     {
         return intval(self::getUniqueValueFromDB("SELECT COUNT(*) FROM player"));
     }
 
-    public static function getPlayerIds()
+    public static function getPlayerIds(int $exclude = null): array
     {
-        return self::getObjectListFromDb("SELECT player_id FROM player ORDER BY player_no", true);
+        $sql = "SELECT player_id FROM player";
+        if ($exclude != null) {
+            $sql .= " WHERE player_id != $exclude";
+        }
+        $sql .= " ORDER BY player_no";
+        return self::getObjectListFromDb($sql, true);
     }
 
     public static function getPlayer(int $playerId = null): HPlayer
@@ -31,7 +36,7 @@ class PlayerMgr extends APP_GameClass
 
     public static function getPlayers(array $playerIds = []): array
     {
-        $sql = "SELECT player_id, player_no, player_name, player_color, player_eliminated, player_zombie, player_score, coins, ink, remover, advert, word FROM player";
+        $sql = "SELECT player_id, player_no, player_name, player_color, player_eliminated, player_zombie, player_score, coins, ink, remover, advert, word, vote FROM player";
         if (!empty($playerIds)) {
             $sql .= " WHERE player_id IN (" . implode(", ", $playerIds) . ")";
         }
@@ -44,5 +49,37 @@ class PlayerMgr extends APP_GameClass
     public static function getPenny(): HPenny
     {
         return new HPenny();
+    }
+
+    public static function getVoteResult(): ?string
+    {
+        $accept = intval(self::getUniqueValueFromDB("SELECT COUNT(*) FROM player WHERE vote = 1"));
+        $reject = intval(self::getUniqueValueFromDB("SELECT COUNT(*) FROM player WHERE vote = 0"));
+        $max = self::getPlayerCount() - 1;
+        $majority = $max / 2;
+        $dict = hardback::$instance->gamestate->table_globals[OPTION_DICTIONARY];
+        if ($dict == VOTE_50) {
+            if ($accept >= $majority) {
+                // 50% accepts (includes ties)
+                return 'accept';
+            } else if ($reject > $majority || $accept + $reject == $max) {
+                // >50% rejects or voting is complete
+                return 'reject';
+            }
+        } else if ($dict == VOTE_100) {
+            if ($reject > 0) {
+                // Any voter rejects
+                return 'reject';
+            } else if ($accept == $max) {
+                // All voters accept
+                return 'accept';
+            }
+        }
+        return null;
+    }
+
+    public static function resetVoteResult(): void
+    {
+        self::DbQuery("UPDATE player SET vote = NULL");
     }
 }

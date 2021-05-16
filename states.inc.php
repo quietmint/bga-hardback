@@ -72,10 +72,25 @@ $machinestates = [
         'possibleactions' => ['confirmWord', 'skipWord'],
         'transitions' => [
             'next' => ST_UNCOVER,
+            'vote' => ST_VOTE,
             'skip' => ST_SKIP_TURN,
             'zombie' => ST_SKIP_TURN,
         ],
         'updateGameProgression' => true,
+    ],
+
+    ST_VOTE => [
+        'name' => 'vote',
+        'description' => clienttranslate('Others must vote on ${player_name}\'s word: ${word}'),
+        'descriptionmyturn' => clienttranslate('${you} must vote on ${player_name}\'s word: ${word}'),
+        'type' => 'multipleactiveplayer',
+        'args' => 'argVote',
+        'action' => 'stVote',
+        'possibleactions' => ['voteAccept', 'voteReject'],
+        'transitions' => [
+            'accept' => ST_UNCOVER,
+            'reject' => ST_PLAYER_TURN,
+        ],
     ],
 
     ST_UNCOVER => [

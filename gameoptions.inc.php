@@ -46,6 +46,34 @@ $game_options = [
                 'tmdisplay' => totranslate('British Scrabble'),
                 'description' => totranslate('280,000 words (2019 edition)'),
             ],
+            VOTE_50 => [
+                'name' => totranslate('Majority Vote'),
+                'tmdisplay' => totranslate('Majority Vote'),
+                'description' => totranslate('Instead of a dictionary, words must be accepted by half of the other players. Recommended with friends only.'),
+                'nobeginner' => true,
+            ],
+            VOTE_100 => [
+                'name' => totranslate('Unanamous Vote'),
+                'tmdisplay' => totranslate('Unanamous Vote'),
+                'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
+                'nobeginner' => true,
+            ],
+        ],
+        'startcondition' => [
+            VOTE_50 => [
+                [
+                    'type' => 'minplayers',
+                    'value' => 2,
+                    'message' => totranslate('Cannot use a voting dictionary to play solo'),
+                ],
+            ],
+            VOTE_100 => [
+                [
+                    'type' => 'minplayers',
+                    'value' => 2,
+                    'message' => totranslate('Cannot use a voting dictionary to play solo'),
+                ],
+            ],
         ]
     ],
 

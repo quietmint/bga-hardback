@@ -63,7 +63,7 @@
     <!-- Tableau -->
     <div v-if="gamestate.name != 'gameEnd'" class="py-2 border-t-2 border-black bg-opacity-30 transition-colors duration-1000" :class="author.colorBg || 'bg-white'">
       <div class="flex leading-7 font-bold">
-        <div class="title ml-2 flex-grow" v-html="i18n('tableau', { player_name: `<span class='transition-colors duration-1000 ${author.colorText || 'text-black'}'>${author.name}</span>`, count: tableauCards.length }) + (gamedatas.word ? ' — ' + gamedatas.word : '')"></div>
+        <div class="title ml-2 flex-grow" v-html="i18n('tableau', { player_name: `<span class='transition-colors duration-1000 ${author.colorText || 'text-black'}'>${author.name}</span>`, count: tableauCards.length }) + (gamedatas.word ? ' — <b>' + gamedatas.word + '</b>': '')"></div>
 
         <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup flex">
           <div @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')" class="button" :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
@@ -789,11 +789,8 @@ export default {
             ],
           ];
           const table = "<table><tr>" + links.map((o) => `<td>• ${o.join("</td><td>• ")}</td>`).join("</tr><tr>") + "</tr></table>";
-          args.wordRaw = args.word;
-          args.word = `<b>${args.word}</b><div class="hdefine">${this.i18n("dictionary")}${table}</div>`;
-        }
-        if (args.invalid) {
-          args.invalid = `<b>${args.invalid}</b>`;
+          args.word = `<b>${args.word}</b>`;
+          args.definitions = `<div class="hdefine">${this.i18n("dictionary")}${table}</div>`;
         }
         for (const k in args) {
           let v = args[k];
@@ -821,7 +818,10 @@ export default {
         active: this.game.isCurrentPlayerActive(),
         instant: this.game.instantaneousMode,
       });
-      const activeId = this.game.getActivePlayerId();
+      let activeId = this.game.getActivePlayerId();
+      if (stateName == "vote") {
+        activeId = args.player_id;
+      }
       if (activeId) {
         this.gamestate.activeId = activeId;
       }
@@ -839,6 +839,20 @@ export default {
             let cardIds = this.cardIds(this.tableauCards);
             let wildMask = this.wildMask(this.tableauCards);
             this.takeAction("confirmWord", { cardIds, wildMask });
+          },
+        },
+        voteAccept: {
+          text: "voteAcceptButton",
+          color: "blue",
+          function() {
+            this.takeAction("voteWord", { vote: true });
+          },
+        },
+        voteReject: {
+          text: "voteRejectButton",
+          color: "red",
+          function() {
+            this.takeAction("voteWord", { vote: false });
           },
         },
         skipWord: {
@@ -959,8 +973,9 @@ export default {
       } else if (notif.type == "ink" && this.game.player_id != notif.args.player_id) {
         this.game.disableNextMoveSound();
       } else if (notif.type == "invalid") {
+        this.gamedatas.word = null;
         if (!this.gamestate.instant && this.game.player_id == notif.args.player_id) {
-          this.game.showMessage(this.i18n("invalid", notif.args), "error");
+          this.game.showMessage(this.i18n("invalid", notif.args), "error no_log");
         }
       } else if (notif.type == "pause") {
         // @ts-ignore
@@ -976,7 +991,7 @@ export default {
           this.game.scoreCtrl[notif.args.player.id].setValue(notif.args.player.score);
         }
       } else if (notif.type == "word") {
-        this.gamedatas.word = notif.args.wordRaw;
+        this.gamedatas.word = notif.args.word;
       }
     },
 
