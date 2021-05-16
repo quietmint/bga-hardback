@@ -54,7 +54,7 @@
         <template v-slot:tip>
           <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-left whitespace-nowrap">
             <div class="p-2 bg-gray-200 font-bold text-center" v-html="i18n('genreCountsTip', { player_name: `<span class='${player.colorText}'>${player.name}</span>` })"></div>
-            <div v-for="gc in genreCounts" :key="gc.genre" class="px-2 py-1 border-t border-black border-opacity-30" :class="gc.class">
+            <div v-for="gc in genreCountsNonEmpty" :key="gc.genre" class="px-2 py-1 border-t border-black border-opacity-30" :class="gc.class">
               <Icon class="inline text-20" :icon="gc.genre" /> {{ i18n(gc.genre) }}
               <div class="float-right pt-1 pl-4">{{ gc.display }}</div>
             </div>
@@ -119,6 +119,10 @@ export default {
           percent: percent,
         };
       });
+    },
+
+    genreCountsNonEmpty() {
+      return this.genreCounts.filter((gc) => gc.count > 0);
     },
   },
 
