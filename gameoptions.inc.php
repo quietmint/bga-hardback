@@ -53,8 +53,8 @@ $game_options = [
                 'nobeginner' => true,
             ],
             VOTE_100 => [
-                'name' => totranslate('Unanamous Vote'),
-                'tmdisplay' => totranslate('Unanamous Vote'),
+                'name' => totranslate('Unanimous Vote'),
+                'tmdisplay' => totranslate('Unanimous Vote'),
                 'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
                 'nobeginner' => true,
             ],
