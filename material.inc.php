@@ -129,8 +129,8 @@ $this->i18n = [
     'uncoverButton' => clienttranslate('Uncover (${x})'),
     'useRemoverButton' => clienttranslate('Remove Ink'),
     'wildButton' => clienttranslate('Wild'),
-    'voteAcceptButton' => clientTranslate('Accept ${word}'),
-    'voteRejectButton' => clientTranslate('Reject ${word}'),
+    'voteAcceptButton' => clienttranslate('Accept ${word}'),
+    'voteRejectButton' => clienttranslate('Reject ${word}'),
 ];
 
 $this->msg = [
