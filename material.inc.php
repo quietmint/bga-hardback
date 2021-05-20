@@ -196,7 +196,7 @@ $this->benefits = [
     ],
     JAIL => [
         'short' => clienttranslate('Jail'),
-        'long' => clienttranslate('Jail (or trash) an offer row card so others cannot purchase it'),
+        'long' => clienttranslate('Reserve or remove an offer row card so others cannot purchase it'),
     ],
     POINTS => [
         'short' => '${value}${star}',
@@ -220,15 +220,15 @@ $this->benefits = [
     ],
     TRASH_COINS => [
         'short' => clienttranslate('Trash: ${value}¢'),
-        'long' => clienttranslate('Trash this card to gain ${value}¢'),
+        'long' => clienttranslate('Remove this card to gain ${value}¢'),
     ],
     TRASH_DISCARD => [
-        'short' => clienttranslate('Cull: ${value}¢'),
-        'long' => clienttranslate('Trash a card from your discard pile to gain ${value}¢'),
+        'short' => clienttranslate('Dump: ${value}¢'),
+        'long' => clienttranslate('Remove a discarded card to gain ${value}¢'),
     ],
     TRASH_POINTS => [
         'short' => clienttranslate('Trash: ${value}${star}'),
-        'long' => clienttranslate('Trash this card to gain ${value}${star}'),
+        'long' => clienttranslate('Remove this card to gain ${value}${star}'),
     ],
     UNCOVER_ADJ => [
         'short' => clienttranslate('Uncover'),
