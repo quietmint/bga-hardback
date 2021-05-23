@@ -360,6 +360,7 @@ class hardback extends Table
 
         // Database commit
         CardMgr::commitWord($player->getId(), $cards);
+        $player->notifyPanel();
         $this->setGameStateValue('startInk', $player->getInk());
         $this->setGameStateValue('startRemover', $player->getRemover());
         $this->setGameStateValue('startScore', $player->getScore());
@@ -710,71 +711,87 @@ class hardback extends Table
     {
         $player = PlayerMgr::getPlayer();
         $tableau = CardMgr::getTableau($player->getId());
-        $specials = [];
         foreach ($tableau as $card) {
             if ($card->hasBenefit(SPECIAL_ADVENTURE)) {
-                $specials[SPECIAL_ADVENTURE] = $card;
+                // Adventure: 2 coins per adventure
+                $benefits = $card->getBenefits(SPECIAL_ADVENTURE);
+                $benefit = reset($benefits);
+                CardMgr::useBenefit($card, SPECIAL_ADVENTURE);
+                $coins = $this->getGameStateValue('countActive' . ADVENTURE) * $benefit['value'];
+                $player->addCoins($coins);
             } else if ($card->hasBenefit(SPECIAL_HORROR)) {
-                $specials[SPECIAL_HORROR] = $card;
+                // Horror: 1 point per inked card
+                $benefits = $card->getBenefits(SPECIAL_HORROR);
+                $benefit = reset($benefits);
+                $inked = 0;
+                foreach ($tableau as $card) {
+                    if ($card->hasInk()) {
+                        $inked++;
+                    }
+                }
+                CardMgr::useBenefit($card, SPECIAL_HORROR);
+                $score = $inked * $benefit['value'];
+                $player->addPoints($score, 'pointsGenre');
             } else if ($card->hasBenefit(SPECIAL_MYSTERY)) {
-                $specials[SPECIAL_MYSTERY] = $card;
-            } else if ($card->hasBenefit(SPECIAL_ROMANCE)) {
-                $specials[SPECIAL_ROMANCE] = $card;
-            }
-        }
-
-        if (isset($specials[SPECIAL_ADVENTURE])) {
-            // Adventure: 2 coins per adventure
-            $benefits = $specials[SPECIAL_ADVENTURE]->getBenefits(SPECIAL_ADVENTURE);
-            $benefit = reset($benefits);
-            CardMgr::useBenefit($specials[SPECIAL_ADVENTURE], SPECIAL_ADVENTURE);
-            $coins = $this->getGameStateValue('countActive' . ADVENTURE) * $benefit['value'];
-            $player->addCoins($coins);
-        }
-
-        if (isset($specials[SPECIAL_MYSTERY])) {
-            // Mystery: 1 point per wild, including uncovered wilds
-            $benefits = $specials[SPECIAL_MYSTERY]->getBenefits(SPECIAL_MYSTERY);
-            $benefit = reset($benefits);
-            $wilds = 0;
-            foreach ($tableau as $card) {
-                if ($card->isWild() || $card->isUncovered()) {
-                    $wilds++;
+                // Mystery: 1 point per wild, including uncovered wilds
+                $benefits = $card->getBenefits(SPECIAL_MYSTERY);
+                $benefit = reset($benefits);
+                $wilds = 0;
+                foreach ($tableau as $card) {
+                    if ($card->isWild() || $card->isUncovered()) {
+                        $wilds++;
+                    }
                 }
-            }
-            CardMgr::useBenefit($specials[SPECIAL_MYSTERY], SPECIAL_MYSTERY);
-            $score = $wilds * $benefit['value'];
-            $player->addPoints($score, 'pointsGenre');
-        }
-
-        if (isset($specials[SPECIAL_HORROR])) {
-            // Horror: 1 point per inked card
-            $benefits = $specials[SPECIAL_HORROR]->getBenefits(SPECIAL_HORROR);
-            $benefit = reset($benefits);
-            $inked = 0;
-            foreach ($tableau as $card) {
-                if ($card->hasInk()) {
-                    $inked++;
-                }
-            }
-            CardMgr::useBenefit($specials[SPECIAL_HORROR], SPECIAL_HORROR);
-            $score = $inked * $benefit['value'];
-            $player->addPoints($score, 'pointsGenre');
-        }
-
-        if (isset($specials[SPECIAL_ROMANCE])) {
-            // Romance: Draw 3 and return or discard
-            CardMgr::useBenefit($specials[SPECIAL_ROMANCE], SPECIAL_ROMANCE);
-            $preview = CardMgr::drawCards(3, $player->getDeckLocation(), $player->getHandLocation());
-            if (!empty($preview)) {
-                $player->notifyPanel();
-                CardMgr::notifyCards($preview);
-                $this->gamestate->nextState('romance');
-                return;
+                CardMgr::useBenefit($card, SPECIAL_MYSTERY);
+                $score = $wilds * $benefit['value'];
+                $player->addPoints($score, 'pointsGenre');
             }
         }
-
         $this->gamestate->nextState('next');
+    }
+
+    function argSpecialRomancePrompt(): array
+    {
+        $player = PlayerMgr::getPlayer();
+        $tableau = CardMgr::getTableau($player->getId());
+        $cardId = $this->checkPreviewDraw($player, $tableau);
+        return [
+            'previewDraw' => $cardId,
+            'skip' => $cardId == null,
+        ];
+    }
+
+    function checkPreviewDraw(HPlayer $player, array $tableau): ?int
+    {
+        $player = PlayerMgr::getPlayer();
+        $count = $player->getDeckCount() + $player->getDiscardCount();
+        if ($count > 0) {
+            foreach ($tableau as $card) {
+                if ($card->hasBenefit(SPECIAL_ROMANCE)) {
+                    return $card->getId();
+                }
+            }
+        }
+        return null;
+    }
+
+    function previewDraw(): void
+    {
+        $player = PlayerMgr::getPlayer();
+        $tableau = CardMgr::getTableau($player->getId());
+        $cardId = $this->checkPreviewDraw($player, $tableau);
+        if ($cardId == null) {
+        }
+        // Romance: Draw 3 and return or discard
+        CardMgr::useBenefit($cardId, SPECIAL_ROMANCE);
+        $preview = CardMgr::drawCards(3, $player->getDeckLocation(), $player->getHandLocation());
+        self::notifyAllPlayers('message', $this->msg['preview'], [
+            'player_name' => $player->getName(),
+            'count' => count($preview),
+        ]);
+        $player->notifyPanel();
+        CardMgr::notifyCards($preview);
+        $this->gamestate->nextState('romance');
     }
 
     function previewReturn(int $cardId): void
@@ -820,6 +837,7 @@ class hardback extends Table
             }
         }
         return [
+            'previewDraw' => $this->checkPreviewDraw($player, $tableau),
             'cardIds' => $cardIds,
             'skip' => empty($cardIds),
             'coins' => $player->getCoins(),
@@ -887,6 +905,7 @@ class hardback extends Table
             arsort($sources);
         }
         return [
+            'previewDraw' => $this->checkPreviewDraw($player, $tableau),
             'sourceIds' => array_keys($sources),
             'skip' => empty($sources),
             'amount' => reset($sources),

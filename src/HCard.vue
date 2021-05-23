@@ -264,6 +264,11 @@ export default {
           text: this.i18n("doubleButton"),
           class: actionBlue,
         },
+        previewDraw: {
+          action: "previewDraw",
+          text: this.i18n("previewButton"),
+          class: actionBlue,
+        },
         previewReturn: {
           action: "previewReturn",
           text: this.i18n("returnButton"),
@@ -334,12 +339,14 @@ export default {
           return [actionRef.double];
         } else if (this.gamestate.name == "trash" && this.gamestate.args.cardIds.includes(this.card.id)) {
           return [actionRef.trash];
-        } else if (this.gamestate.name == "specialRomance" && this.card.location.startsWith("hand")) {
-          return [actionRef.previewReturn, actionRef.previewDiscard];
         } else if (this.gamestate.name == "trashDiscard" && this.card.location.startsWith("discard")) {
           const text = this.i18n("trashCoinsButton", { coins: this.gamestate.args.amount });
           const trashDiscard = Object.assign({ text }, actionRef.trashDiscard);
           return [trashDiscard];
+        } else if ((this.gamestate.name == "trash" || this.gamestate.name == "trashDiscard" || this.gamestate.name == "specialRomancePrompt") && this.gamestate.args.previewDraw == this.card.id) {
+          return [actionRef.previewDraw];
+        } else if (this.gamestate.name == "specialRomance" && this.card.location.startsWith("hand")) {
+          return [actionRef.previewReturn, actionRef.previewDiscard];
         } else if (this.gamestate.name.startsWith("either") && this.gamestate.args.sourceId == this.card.id) {
           if (this.gamestate.args.benefit == HConstants.EITHER_INK) {
             return [actionRef.eitherInk, actionRef.eitherRemover];

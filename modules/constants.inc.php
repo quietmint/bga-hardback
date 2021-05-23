@@ -125,6 +125,7 @@ define('ST_UNCOVER', 10);
 define('ST_DOUBLE', 11);
 define('ST_BASIC', 12);
 define('ST_SPECIAL', 30);
+define('ST_SPECIAL_ROMANCE_PROMPT', 31);
 define('ST_SPECIAL_ROMANCE', 32);
 define('ST_TRASH', 14);
 define('ST_TRASH_DISCARD', 15);

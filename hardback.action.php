@@ -118,6 +118,14 @@ class action_hardback extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function previewDraw()
+  {
+    self::setAjaxMode();
+    $this->game->checkAction('previewDraw');
+    $this->game->previewDraw();
+    self::ajaxResponse();
+  }
+
   public function previewReturn()
   {
     self::setAjaxMode();

@@ -139,21 +139,7 @@ $machinestates = [
         'type' => 'game',
         'action' => 'stSpecial',
         'transitions' => [
-            'again' => ST_SPECIAL,
-            'romance' => ST_SPECIAL_ROMANCE,
             'next' => ST_TRASH,
-        ],
-    ],
-
-    ST_SPECIAL_ROMANCE => [
-        'name' => 'specialRomance',
-        'description' => clienttranslate('${actplayer} must return or discard previewed cards'),
-        'descriptionmyturn' => clienttranslate('${you} must return or discard previewed cards'),
-        'type' => 'activeplayer',
-        'possibleactions' => ['previewReturn', 'previewDiscard'],
-        'transitions' => [
-            'next' => ST_SPECIAL,
-            'zombie' => ST_CLEANUP,
         ],
     ],
 
@@ -164,8 +150,9 @@ $machinestates = [
         'type' => 'activeplayer',
         'args' => 'argTrash',
         'action' => 'stAutoSkip',
-        'possibleactions' => ['trash', 'skip'],
+        'possibleactions' => ['trash', 'previewDraw', 'skip'],
         'transitions' => [
+            'romance' => ST_SPECIAL_ROMANCE,
             'again' => ST_TRASH,
             'next' => ST_TRASH_DISCARD,
             'zombie' => ST_CLEANUP,
@@ -179,10 +166,37 @@ $machinestates = [
         'type' => 'activeplayer',
         'args' => 'argTrashDiscard',
         'action' => 'stAutoSkip',
-        'possibleactions' => ['trashDiscard', 'skip'],
+        'possibleactions' => ['trashDiscard', 'previewDraw', 'skip'],
         'transitions' => [
+            'romance' => ST_SPECIAL_ROMANCE,
             'again' => ST_TRASH_DISCARD,
+            'next' => ST_SPECIAL_ROMANCE_PROMPT,
+            'zombie' => ST_CLEANUP,
+        ],
+    ],
+
+    ST_SPECIAL_ROMANCE_PROMPT => [
+        'name' => 'specialRomancePrompt',
+        'description' => clienttranslate('${actplayer} may preview cards'),
+        'descriptionmyturn' => clienttranslate('${you} may preview cards'),
+        'type' => 'activeplayer',
+        'args' => 'argSpecialRomancePrompt',
+        'action' => 'stAutoSkip',
+        'possibleactions' => ['previewDraw', 'skip'],
+        'transitions' => [
+            'romance' => ST_SPECIAL_ROMANCE,
             'next' => ST_EITHER,
+        ],
+    ],
+
+    ST_SPECIAL_ROMANCE => [
+        'name' => 'specialRomance',
+        'description' => clienttranslate('${actplayer} must return or discard previewed cards'),
+        'descriptionmyturn' => clienttranslate('${you} must return or discard previewed cards'),
+        'type' => 'activeplayer',
+        'possibleactions' => ['previewReturn', 'previewDiscard'],
+        'transitions' => [
+            'next' => ST_TRASH,
             'zombie' => ST_CLEANUP,
         ],
     ],
