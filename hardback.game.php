@@ -894,8 +894,8 @@ class hardback extends Table
     {
         $player = PlayerMgr::getPlayer();
         $sources = [];
+        $tableau = CardMgr::getTableau($player->getId());
         if ($player->getDiscardCount() > 0) {
-            $tableau = CardMgr::getTableau($player->getId());
             foreach ($tableau as $card) {
                 $benefits = $card->getBenefits(TRASH_DISCARD);
                 if (!empty($benefits)) {
