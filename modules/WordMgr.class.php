@@ -59,7 +59,7 @@ class WordMgr extends APP_GameClass
                     throw new Exception("Missing key");
                 }
 
-                $url = "https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=$key&lang=$langPair&flags=4&text=$word";
+                $svc = "https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=$key&lang=$langPair&flags=4&text=$word";
                 $context = stream_context_create([
                     'http' => [
                         'method' => 'GET',
@@ -68,15 +68,18 @@ class WordMgr extends APP_GameClass
                         'ignore_errors' => true,
                     ]
                 ]);
-                $json = file_get_contents($url, false, $context);
-                self::trace("$dictName reply from $url: $json");
+                $data = file($svc, 0, $context);
+                if ($data !== false) {
+                    $data = implode("", $data);
+                }
+                self::trace("$dictName reply from $svc: $data");
 
-                if ($json === false) {
+                if ($data === false) {
                     // Handle HTTP timeout
                     throw new Exception("Service unavailable");
                 }
 
-                $result = json_decode($json, true, 512, JSON_INVALID_UTF8_IGNORE);
+                $result = json_decode($data, true, 512, JSON_INVALID_UTF8_IGNORE);
                 if ($result === null) {
                     // Handle invalid JSON
                     throw new Exception("Invalid response");
@@ -103,7 +106,7 @@ class WordMgr extends APP_GameClass
                 }
                 return !empty($result['def']);
             } catch (Exception $e) {
-                self::error("$dictName reply from $url: $json");
+                self::error("$dictName reply from $svc: $data");
                 throw new BgaVisibleSystemException("$dictName error: " . $e->getMessage());
             }
         } else {
