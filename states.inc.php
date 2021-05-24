@@ -60,7 +60,17 @@ $machinestates = [
         'type' => 'manager',
         'action' => 'stGameSetup',
         'transitions' => [
-            '' => ST_PLAYER_TURN,
+            '' => ST_START,
+        ],
+    ],
+
+    ST_START => [
+        'name' => 'start',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stStart',
+        'transitions' => [
+            'next' => ST_PLAYER_TURN,
         ],
     ],
 

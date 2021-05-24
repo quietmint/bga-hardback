@@ -62,10 +62,11 @@ $this->signatures = [
 
 $this->dicts = [
     TWELVEDICTS => clienttranslate('12dicts'),
-    US  => clienttranslate('American Scrabble'),
+    US => clienttranslate('American Scrabble'),
     UK => clienttranslate('British Scrabble'),
-    VOTE_50 => clienttranslate('the players'),
-    VOTE_100 => clienttranslate('the players'),
+    YANDEX => clienttranslate('Yandex.Dictionary'),
+    VOTE_50 => clienttranslate('Majority Vote'),
+    VOTE_100 => clienttranslate('Unanimous Vote'),
 ];
 
 $this->i18n = [
@@ -143,6 +144,7 @@ $this->msg = [
     'convert' => clienttranslate('${player_name} converts ${ink} ink to ${amount}${icon}'),
     'coopLose' => clienttranslate('Failure! The players are defeated and ${player_name} wins!'),
     'coopWin' => clienttranslate('Success! ${player_name} is defeated and the players win!'),
+    'dictionary' => clienttranslate('The dictionary selected for this game is ${dict}'),
     'double' => clienttranslate('${player_name} doubles ${genre}${letter}'),
     'draw' => clienttranslate('${genre}${letter} is added to the offer row'),
     'drawDiscard' => clienttranslate('${genre}${letter} is added to the offer row and ${player_name} forces ${player_name2} to discard Timeless Classic ${genre2}${letter2}'),

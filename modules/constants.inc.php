@@ -85,9 +85,11 @@ define('STAT_COOP_GENRE', 89);
 
 // Game options
 define('OPTION_DICTIONARY', 100);
+define('OPTION_DICTIONARY_FR', 120);
 define('TWELVEDICTS', 1);
 define('US', 2);
 define('UK', 3);
+define('YANDEX', 4);
 define('VOTE_50', 90);
 define('VOTE_100', 91);
 
@@ -112,6 +114,9 @@ if (!defined('GAMESTATE_RATING_MODE')) {
 if (!defined('ELO_OFF')) {
     define('ELO_OFF', 1);
 }
+define('OPTION_LANG', 207);
+define('LANG_EN', 1);
+define('LANG_FR', 2);
 
 // Game preferences
 define('PREF_DRAG_DROP', 100);
@@ -137,5 +142,6 @@ define('ST_VOTE', 80);
 define('ST_CLEANUP', 90);
 define('ST_SKIP_TURN', 92);
 define('ST_NEXT_PLAYER', 91);
+define('ST_START', 97);
 define('ST_END', 98);
 define('ST_BGA_GAME_END', 99);

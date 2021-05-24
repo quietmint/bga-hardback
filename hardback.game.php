@@ -52,6 +52,7 @@ class hardback extends Table
             'countActive' . MYSTERY => COUNT_ACTIVE_MYSTERY,
             'countActive' . ROMANCE => COUNT_ACTIVE_ROMANCE,
             'dictionary' => OPTION_DICTIONARY,
+            'dictionaryFr' => OPTION_DICTIONARY_FR,
             // 'events' => OPTION_EVENTS,
             'length' => OPTION_LENGTH,
             // 'powers' => OPTION_POWERS,
@@ -140,7 +141,8 @@ class hardback extends Table
         self::initStat('player', 'useInk', 0);
         self::initStat('player', 'useRemover', 0);
         self::initStat('player', 'words', 0);
-        if ($this->gamestate->table_globals[OPTION_DICTIONARY] == VOTE_50 || $this->gamestate->table_globals[OPTION_DICTIONARY] == VOTE_100) {
+        $dict = WordMgr::getDictionaryId();
+        if ($dict == VOTE_50 || $dict == VOTE_100) {
             self::initStat('player', 'votesAccept', 0);
             self::initStat('player', 'votesReject', 0);
         }
@@ -200,6 +202,7 @@ class hardback extends Table
                 'adverts' => $this->gamestate->table_globals[OPTION_ADVERTS] > 0,
                 'awards' => $this->gamestate->table_globals[OPTION_AWARDS] > 0,
                 'coop' => $this->gamestate->table_globals[OPTION_COOP] > 0,
+                'lang' => WordMgr::getLanguageId(),
                 // 'events' => $this->gamestate->table_globals[OPTION_EVENTS] > 0,
                 // 'powers' => $this->gamestate->table_globals[OPTION_POWERS] > 0,
             ],
@@ -246,6 +249,12 @@ class hardback extends Table
         } else {
             return $this->gamestate->table_globals[OPTION_LENGTH];
         }
+    }
+
+    function stStart(): void
+    {
+        $this->notifyAllPlayers('message', $this->msg['dictionary'], WordMgr::getDictionaryInfo());
+        $this->gamestate->nextState('next');
     }
 
     /*
@@ -327,7 +336,7 @@ class hardback extends Table
             'definitions' => '',
         ]);
 
-        $dict = $this->gamestate->table_globals[OPTION_DICTIONARY];
+        $dict = WordMgr::getDictionaryId();
         if ($dict == VOTE_50 || $dict == VOTE_100) {
             // Database pre-commit 
             $updatedIds = CardMgr::preCommitWord($cards);
@@ -407,7 +416,7 @@ class hardback extends Table
     {
         $this->incStat(1, 'invalidWords');
         $this->incStat(1, 'invalidWords', $player->getId());
-        $dict = $this->gamestate->table_globals[OPTION_DICTIONARY];
+        $dict = WordMgr::getDictionaryId();
         self::notifyAllPlayers('invalid', $this->msg['rejectedWord'], [
             'i18n' => ['dict'],
             'player_id' => $player->getId(),
@@ -450,7 +459,7 @@ class hardback extends Table
         $result = PlayerMgr::getVoteResult();
         if ($result == 'accept') {
             $player = PlayerMgr::getPlayer();
-            $dict = $this->gamestate->table_globals[OPTION_DICTIONARY];
+            $dict = WordMgr::getDictionaryId();
             self::notifyAllPlayers('word', $this->msg['acceptedWord'], [
                 'i18n' => ['dict'],
                 'word' => $player->getWord(),

@@ -734,25 +734,46 @@ export default {
         if (args.award) {
           args.award = `<div class="haward length${args.award}"></div>`;
         }
+        if (args.dict && args.link) {
+          args.dict = `<a target="hdefine" href="${args.link}">${args.dict}</a>`;
+        }
         if (args.word) {
           const q = args.word.toLowerCase();
-          const links = [
-            [
-              `<a target="hdefine" href="https://dictionary.cambridge.org/search/english/direct/?q=${q}">Cambridge</a>`, //
-              `<a target="hdefine" href="https://www.merriam-webster.com/dictionary/${q}">Merriam-Webster</a>`, //
-            ],
-            [
-              `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`, //
-              `<a target="hdefine" href="https://www.lexico.com/en/definition/${q}">Oxford Lexico</a>`, //
-            ],
-            [
-              `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`, //
-              `<a target="hdefine" href="https://en.wiktionary.org/wiki/${q}">Wiktionary</a>`, //
-            ],
-          ];
-          const table = "<table><tr>" + links.map((o) => `<td>• ${o.join("</td><td>• ")}</td>`).join("</tr><tr>") + "</tr></table>";
+          let links = [];
+          if (this.gamedatas.options.lang == HConstants.LANG_EN) {
+            links = [
+              [
+                `<a target="hdefine" href="https://dictionary.cambridge.org/search/english/direct/?q=${q}">Cambridge</a>`, //
+                `<a target="hdefine" href="https://www.merriam-webster.com/dictionary/${q}">Merriam-Webster</a>`, //
+              ],
+              [
+                `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`, //
+                `<a target="hdefine" href="https://www.lexico.com/en/definition/${q}">Oxford Lexico</a>`, //
+              ],
+              [
+                `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`, //
+                `<a target="hdefine" href="https://en.wiktionary.org/wiki/${q}">Wiktionary</a>`, //
+              ],
+            ];
+          } else if (this.gamedatas.options.lang == HConstants.LANG_FR) {
+            links = [
+              [
+                `<a target="hdefine" href="https://www.cnrtl.fr/definition/academie9/${q}">Académie Française</a>`, //
+                `<a target="hdefine" href="https://www.larousse.fr/dictionnaires/francais/${q}">Larousse</a>`, //
+              ],
+              [
+                `<a target="hdefine" href="https://dictionnaire.lerobert.com/definition/${q}">Le Robert</a>`, //
+                `<a target="hdefine" href="https://www.cnrtl.fr/definition/${q}">Trésor</a>`, //
+              ],
+            ];
+          }
+          if (links.length) {
+            const table = "<table><tr>" + links.map((o) => `<td>• ${o.join("</td><td>• ")}</td>`).join("</tr><tr>") + "</tr></table>";
+            args.definitions = `<div class="hdefine">${this.i18n("dictionary")}${table}</div>`;
+          } else {
+            args.definitions = "";
+          }
           args.word = `<b>${args.word}</b>`;
-          args.definitions = `<div class="hdefine">${this.i18n("dictionary")}${table}</div>`;
         }
         for (const k in args) {
           let v = args[k];

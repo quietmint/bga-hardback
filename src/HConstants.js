@@ -63,6 +63,10 @@ export default Object.freeze({
   EITHER_GENRE: 4,
   EITHER_INK: 5,
 
+  // Languages
+  LANG_EN: 1,
+  LANG_FR: 2,
+
   // Game preferences
   PREF_DRAG_DROP: 100,
   DRAG_DROP_ENABLED: 0,

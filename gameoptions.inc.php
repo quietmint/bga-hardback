@@ -46,6 +46,12 @@ $game_options = [
                 'tmdisplay' => totranslate('British Scrabble'),
                 'description' => totranslate('280,000 words (2019 edition)'),
             ],
+            YANDEX => [
+                'name' => totranslate('Yandex.Dictionary'),
+                'tmdisplay' => totranslate('Yandex.Dictionary'),
+                'description' => totranslate('Powered by machine learning from Yandex, a Russian technology company'),
+                'beta' => true,
+            ],
             VOTE_50 => [
                 'name' => totranslate('Majority Vote'),
                 'tmdisplay' => totranslate('Majority Vote'),
@@ -57,6 +63,63 @@ $game_options = [
                 'tmdisplay' => totranslate('Unanimous Vote'),
                 'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
                 'nobeginner' => true,
+            ],
+        ],
+        'displaycondition' => [
+            [
+                'type' => 'otheroption',
+                'id' => OPTION_LANG,
+                'value' => LANG_EN,
+            ],
+        ],
+        'startcondition' => [
+            VOTE_50 => [
+                [
+                    'type' => 'minplayers',
+                    'value' => 2,
+                    'message' => totranslate('Cannot use a voting dictionary to play solo'),
+                ],
+            ],
+            VOTE_100 => [
+                [
+                    'type' => 'minplayers',
+                    'value' => 2,
+                    'message' => totranslate('Cannot use a voting dictionary to play solo'),
+                ],
+            ],
+        ]
+    ],
+
+    OPTION_DICTIONARY_FR => [
+        'name' => totranslate('Dictionary'),
+        'default' => YANDEX,
+        'values' => [
+            YANDEX => [
+                'name' => totranslate('Yandex.Dictionary'),
+                'tmdisplay' => totranslate('Yandex.Dictionary'),
+                'description' => totranslate('Powered by machine learning from Yandex, a Russian technology company'),
+                'beta' => true,
+            ],
+            VOTE_50 => [
+                'name' => totranslate('Majority Vote'),
+                'tmdisplay' => totranslate('Majority Vote'),
+                'description' => totranslate('Instead of a dictionary, words must be accepted by half of the other players. Recommended with friends only.'),
+                'beta' => true,
+                'nobeginner' => true,
+            ],
+            VOTE_100 => [
+                'name' => totranslate('Unanimous Vote'),
+                'tmdisplay' => totranslate('Unanimous Vote'),
+                'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
+                'beta' => true,
+                'nobeginner' => true,
+            ],
+        ],
+        'displaycondition' => [
+            [
+                'type' => 'otheroption',
+                'id' => OPTION_LANG,
+                'value' => LANG_FR,
             ],
         ],
         'startcondition' => [
