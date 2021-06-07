@@ -21,44 +21,41 @@
         </div>
 
         <!-- Benefits -->
-        <HTooltip>
-          <template #tip>
-            <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden" style="width: 240px">
-              <div :class="titleClass" class="px-2 py-1 text-18 font-bold border-b-2 border-black"><Icon :icon="card.genreName" class="inline text-24" /> {{ i18n(card.genreName) }} {{ card.letter }}</div>
-              <table class="w-full">
-                <tr v-for="benefit in basicBenefitsList" :key="benefit.id">
-                  <td class="px-2 py-1 whitespace-nowrap text-center">
-                    <div class="text-115 leading-120 tracking-tight font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
-                  </td>
-                  <td class="pr-2 py-1 w-full text-16" v-html="benefit.htmlLong"></td>
-                </tr>
-                <tr v-if="genreBenefitsList.length">
-                  <td class="px-2 py-1 italic text-14 border-t-2 border-black" colspan="2" :class="genreTooltipClass" v-text="i18n('genreTip', { x: i18n(card.genreName) })"></td>
-                </tr>
-                <tr v-for="benefit in genreBenefitsList" :key="benefit.id" :class="genreTooltipClass">
-                  <td class="px-2 py-1 whitespace-nowrap text-center">
-                    <div class="text-115 leading-120 tracking-tight font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" :class="genreBubbleClass" v-html="benefit.html"></div>
-                  </td>
-                  <td class="pr-2 py-1 w-full text-16" v-html="benefit.htmlLong"></td>
-                </tr>
-              </table>
-            </div>
-          </template>
+        <div @pointerenter="tooltipEnter" @pointerleave="tooltipLeave" class="benefits absolute text-115 leading-120 tracking-tight font-bold text-center flex flex-col flex-grow whitespace-nowrap" ref="benefits">
+          <!-- Basic Benefits -->
+          <div :class="basicSectionClass" class="flex-grow flex items-center justify-evenly">
+            <div v-for="benefit in basicBenefitsList" :key="benefit.id" class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
+          </div>
 
-          <template #default>
-            <div class="benefits absolute text-115 leading-120 tracking-tight font-bold text-center flex flex-col flex-grow whitespace-nowrap">
-              <!-- Basic Benefits -->
-              <div :class="basicSectionClass" class="flex-grow flex items-center justify-evenly">
-                <div v-for="benefit in basicBenefitsList" :key="benefit.id" class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
-              </div>
+          <!-- Genre Benefits -->
+          <div v-if="genreBenefitsList.length" :class="genreSectionClass" class="flex-grow flex items-center justify-evenly border-t-2 border-black">
+            <div v-for="benefit in genreBenefitsList" :key="benefit.id" :class="genreBubbleClass" class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white" v-html="benefit.html"></div>
+          </div>
+        </div>
 
-              <!-- Genre Benefits -->
-              <div v-if="genreBenefitsList.length" :class="genreSectionClass" class="flex-grow flex items-center justify-evenly border-t-2 border-black">
-                <div v-for="benefit in genreBenefitsList" :key="benefit.id" :class="genreBubbleClass" class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white" v-html="benefit.html"></div>
-              </div>
-            </div>
-          </template>
-        </HTooltip>
+        <!-- Tooltip -->
+        <teleport to="#HGame" v-if="tooltip.visible">
+          <div class="absolute z-top shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden" :style="{ top: tooltip.top, left: tooltip.left, maxWidth: '240px' }" ref="tooltip">
+            <div :class="titleClass" class="px-2 py-1 text-110 font-bold border-b-2 border-black"><Icon :icon="card.genreName" class="inline text-125" /> {{ i18n(card.genreName) }} {{ card.letter }}</div>
+            <table>
+              <tr v-for="benefit in basicBenefitsList" :key="benefit.id">
+                <td class="px-2 py-1 whitespace-nowrap text-center">
+                  <div class="text-110 leading-120 tracking-tight font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
+                </td>
+                <td class="pr-2 py-1" v-html="benefit.htmlLong"></td>
+              </tr>
+              <tr v-if="genreBenefitsList.length">
+                <td class="px-2 py-1 italic border-t-2 border-black" colspan="2" :class="genreTooltipClass" v-text="i18n('genreTip', { x: i18n(card.genreName) })"></td>
+              </tr>
+              <tr v-for="benefit in genreBenefitsList" :key="benefit.id" :class="genreTooltipClass">
+                <td class="px-2 py-1 whitespace-nowrap text-center">
+                  <div class="text-110 leading-120 tracking-tight font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" :class="genreBubbleClass" v-html="benefit.html"></div>
+                </td>
+                <td class="pr-2 py-1" v-html="benefit.htmlLong"></td>
+              </tr>
+            </table>
+          </div>
+        </teleport>
       </div>
 
       <!-- Wild -->
@@ -78,15 +75,15 @@
 
 <script lang="ts">
 import HConstants from "./HConstants.js";
-import HTooltip from "./HTooltip.vue";
 import { Icon } from "@iconify/vue";
 import { firstBy } from "thenby";
+import { nextTick } from "vue";
 
 export default {
   name: "HCard",
   emits: ["clickCard", "clickFooter", "dragStart"],
-  inject: ["gamestate", "i18n", "myself", "prefs", "refs"],
-  components: { HTooltip, Icon },
+  inject: ["gamestate", "getRect", "i18n", "myself", "prefs", "refs"],
+  components: { Icon },
 
   props: {
     card: {
@@ -98,7 +95,31 @@ export default {
   data() {
     return {
       dragTimer: null,
+      tooltip: {
+        timeout: null,
+        visible: false,
+        top: "0px",
+        left: "-999px",
+      },
     };
+  },
+
+  mounted() {
+    const holder: HTMLElement = this.$refs.benefits;
+    if (!window.PointerEvent) {
+      // Old Safari?
+      holder.addEventListener("mouseenter", this.tooltipEnter, false);
+      holder.addEventListener("mouseleave", this.tooltipLeave, false);
+    }
+  },
+
+  beforeUnmount() {
+    const holder: HTMLElement = this.$refs.benefits;
+    if (!window.PointerEvent) {
+      // Old Safari?
+      holder.removeEventListener("mouseenter", this.tooltipEnter, false);
+      holder.removeEventListener("mouseleave", this.tooltipLeave, false);
+    }
   },
 
   computed: {
@@ -475,6 +496,54 @@ export default {
           this.emitter.emit("dragStart", { ev, el, cardId: this.card.id, locations: this.dragLocations });
         }
       }
+    },
+
+    /*
+     * Tooltip
+     */
+    tooltipEnter(ev: MouseEvent) {
+      if (this.prefs.value[HConstants.PREF_TOOLTIPS] == HConstants.TOOLTIPS_ENABLED) {
+        this.tooltip.timeout = setTimeout(() => this.tooltipShow(), 250);
+      }
+    },
+
+    tooltipLeave(ev: MouseEvent) {
+      clearTimeout(this.tooltip.timeout);
+      this.tooltip.timeout = null;
+      this.tooltip.visible = false;
+    },
+
+    async tooltipShow() {
+      this.tooltip.visible = true;
+      this.tooltip.top = "0px";
+      this.tooltip.left = "-999px";
+      await nextTick();
+      const tip: HTMLElement = this.$refs.tooltip;
+      const holder: HTMLElement = this.$refs.benefits;
+      const holderRect = this.getRect(holder);
+      const tipRect = this.getRect(tip);
+      const parentRect = this.getRect(tip.offsetParent);
+      const padding = 8;
+
+      // Compute tooltip coords relative to document
+      let top = holderRect.top - tipRect.height - padding * 3;
+      let left = holderRect.left + (holderRect.width - tipRect.width) / 2;
+
+      // Adjust coords relative to offset parent
+      top -= parentRect.top;
+      left -= parentRect.left;
+
+      // Adjust coords to prevent overflow
+      const overflowLeft = left - padding;
+      const overflowRight = document.documentElement.clientWidth - (left + tipRect.width + padding);
+      if (overflowLeft < 0) {
+        left -= overflowLeft;
+      } else if (overflowRight < 0) {
+        left += overflowRight;
+      }
+
+      this.tooltip.top = top + "px";
+      this.tooltip.left = left + "px";
     },
   },
 };
