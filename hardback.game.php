@@ -1441,6 +1441,9 @@ class hardback extends Table
         if ($card == null || !$card->isLocation($player->getHandLocation(), 'tableau')) {
             throw new BgaVisibleSystemException("useRemover: Card $card is unavailable to $player");
         }
+        if (!$card->hasInk()) {
+            throw new BgaVisibleSystemException("useRemover: Card $card is not inked");
+        }
         $player->spendRemover();
         $player->notifyRemover($card);
         CardMgr::inkCard($card, HAS_REMOVER);

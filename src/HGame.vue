@@ -691,6 +691,9 @@ export default {
         delete data.lock;
       } else {
         data.lock = true;
+        if (this.game.isInterfaceLocked()) {
+          throw `Take action ${action} ignored by interface lock`;
+        }
       }
       for (const key in data) {
         if (Array.isArray(data[key])) {
