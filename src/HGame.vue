@@ -8,7 +8,7 @@
     <div class="hidden">
       <Icon v-for="(icon, key) in icons" :key="key" :id="'icon_' + key" :icon="icon" />
     </div>
-
+    
     <!-- Keyboard popup -->
     <transition name="fade">
       <HKeyboard v-if="keyboardId" />

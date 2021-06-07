@@ -4,9 +4,8 @@
 <div id="HGame" class="tailwind"></div>
 
 <script type="text/javascript">
-const rand = Date.now();
 const URL = dojoConfig.packages.reduce((r,p) => p.name == "bgagame" ? p.location : r, null);
-document.write('<script src="' + URL + '/modules/HardbackVue.js?' + rand + '" type="module"><\/script>');
+document.write('<script type="module" src="' + URL + '/modules/index.js"><\/script><link rel="modulepreload" href="' + URL + '/modules/vendor.js">');
 </script>
 
 {OVERALL_GAME_FOOTER}
