@@ -26,6 +26,35 @@
 
 require_once('modules/constants.inc.php');
 
+$dictionaryStartCond = [
+    VOTE_50 => [
+        [
+            'type' => 'minplayers',
+            'value' => 2,
+            'message' => totranslate('Cannot use a voting dictionary to play solo'),
+        ],
+        [
+            'type' => 'otheroptionisnot',
+            'id' => GAMESTATE_RATING_MODE,
+            'value' => ARENA_MODE,
+            'message' => totranslate('Cannot use a voting dictionary in Arena Mode'),
+        ],
+    ],
+    VOTE_100 => [
+        [
+            'type' => 'minplayers',
+            'value' => 2,
+            'message' => totranslate('Cannot use a voting dictionary to play solo'),
+        ],
+        [
+            'type' => 'otheroptionisnot',
+            'id' => GAMESTATE_RATING_MODE,
+            'value' => ARENA_MODE,
+            'message' => totranslate('Cannot use a voting dictionary in Arena Mode'),
+        ],
+    ],
+];
+
 $game_options = [
     OPTION_DICTIONARY => [
         'name' => totranslate('Dictionary'),
@@ -72,22 +101,43 @@ $game_options = [
                 'value' => LANG_EN,
             ],
         ],
-        'startcondition' => [
+        'startcondition' => $dictionaryStartCond,
+        'notdisplayedmessage' => totranslate('IMPORTANT: Currently, the language option changes only the dictionary and does NOT affect the cards (letter frequency, cost, benefits)'),
+    ],
+
+    OPTION_DICTIONARY_DE => [
+        'name' => totranslate('Dictionary'),
+        'default' => YANDEX,
+        'values' => [
+            YANDEX => [
+                'name' => totranslate('Yandex.Dictionary'),
+                'tmdisplay' => totranslate('Yandex.Dictionary'),
+                'description' => totranslate('Powered by machine learning from Yandex, a Russian technology company'),
+                'beta' => true,
+            ],
             VOTE_50 => [
-                [
-                    'type' => 'minplayers',
-                    'value' => 2,
-                    'message' => totranslate('Cannot use a voting dictionary to play solo'),
-                ],
+                'name' => totranslate('Majority Vote'),
+                'tmdisplay' => totranslate('Majority Vote'),
+                'description' => totranslate('Instead of a dictionary, words must be accepted by half of the other players. Recommended with friends only.'),
+                'beta' => true,
+                'nobeginner' => true,
             ],
             VOTE_100 => [
-                [
-                    'type' => 'minplayers',
-                    'value' => 2,
-                    'message' => totranslate('Cannot use a voting dictionary to play solo'),
-                ],
+                'name' => totranslate('Unanimous Vote'),
+                'tmdisplay' => totranslate('Unanimous Vote'),
+                'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
+                'beta' => true,
+                'nobeginner' => true,
             ],
-        ]
+        ],
+        'displaycondition' => [
+            [
+                'type' => 'otheroption',
+                'id' => OPTION_LANG,
+                'value' => LANG_DE,
+            ],
+        ],
+        'startcondition' => $dictionaryStartCond,
     ],
 
     OPTION_DICTIONARY_FR => [
@@ -122,22 +172,77 @@ $game_options = [
                 'value' => LANG_FR,
             ],
         ],
-        'startcondition' => [
+        'startcondition' => $dictionaryStartCond,
+    ],
+
+    OPTION_DICTIONARY_ES => [
+        'name' => totranslate('Dictionary'),
+        'default' => YANDEX,
+        'values' => [
+            YANDEX => [
+                'name' => totranslate('Yandex.Dictionary'),
+                'tmdisplay' => totranslate('Yandex.Dictionary'),
+                'description' => totranslate('Powered by machine learning from Yandex, a Russian technology company'),
+                'beta' => true,
+            ],
             VOTE_50 => [
-                [
-                    'type' => 'minplayers',
-                    'value' => 2,
-                    'message' => totranslate('Cannot use a voting dictionary to play solo'),
-                ],
+                'name' => totranslate('Majority Vote'),
+                'tmdisplay' => totranslate('Majority Vote'),
+                'description' => totranslate('Instead of a dictionary, words must be accepted by half of the other players. Recommended with friends only.'),
+                'beta' => true,
+                'nobeginner' => true,
             ],
             VOTE_100 => [
-                [
-                    'type' => 'minplayers',
-                    'value' => 2,
-                    'message' => totranslate('Cannot use a voting dictionary to play solo'),
-                ],
+                'name' => totranslate('Unanimous Vote'),
+                'tmdisplay' => totranslate('Unanimous Vote'),
+                'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
+                'beta' => true,
+                'nobeginner' => true,
             ],
-        ]
+        ],
+        'displaycondition' => [
+            [
+                'type' => 'otheroption',
+                'id' => OPTION_LANG,
+                'value' => LANG_ES,
+            ],
+        ],
+        'startcondition' => $dictionaryStartCond,
+    ],
+
+    OPTION_DICTIONARY_IT => [
+        'name' => totranslate('Dictionary'),
+        'default' => YANDEX,
+        'values' => [
+            YANDEX => [
+                'name' => totranslate('Yandex.Dictionary'),
+                'tmdisplay' => totranslate('Yandex.Dictionary'),
+                'description' => totranslate('Powered by machine learning from Yandex, a Russian technology company'),
+                'beta' => true,
+            ],
+            VOTE_50 => [
+                'name' => totranslate('Majority Vote'),
+                'tmdisplay' => totranslate('Majority Vote'),
+                'description' => totranslate('Instead of a dictionary, words must be accepted by half of the other players. Recommended with friends only.'),
+                'beta' => true,
+                'nobeginner' => true,
+            ],
+            VOTE_100 => [
+                'name' => totranslate('Unanimous Vote'),
+                'tmdisplay' => totranslate('Unanimous Vote'),
+                'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
+                'beta' => true,
+                'nobeginner' => true,
+            ],
+        ],
+        'displaycondition' => [
+            [
+                'type' => 'otheroption',
+                'id' => OPTION_LANG,
+                'value' => LANG_IT,
+            ],
+        ],
+        'startcondition' => $dictionaryStartCond,
     ],
 
     OPTION_LENGTH => [
@@ -178,7 +283,7 @@ $game_options = [
                 'tmdisplay' => totranslate('Literary Awards'),
                 'description' => totranslate('Bonus points for the longest word'),
             ]
-        ]
+        ],
     ],
 
     OPTION_ADVERTS => [
@@ -193,7 +298,7 @@ $game_options = [
                 'tmdisplay' => totranslate('Adverts'),
                 'description' => totranslate('Purchase points with coins'),
             ]
-        ]
+        ],
     ],
 
     /*
@@ -209,8 +314,8 @@ $game_options = [
                 'tmdisplay' => totranslate('Events'),
                 'description' => totranslate('Word restrictions (challenging)'),
                 'nobeginner' => true,
-            ]
-        ]
+            ],
+        ],
     ],
 
     OPTION_POWERS => [

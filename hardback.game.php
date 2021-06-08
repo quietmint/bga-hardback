@@ -52,7 +52,10 @@ class hardback extends Table
             'countActive' . MYSTERY => COUNT_ACTIVE_MYSTERY,
             'countActive' . ROMANCE => COUNT_ACTIVE_ROMANCE,
             'dictionary' => OPTION_DICTIONARY,
+            'dictionaryDe' => OPTION_DICTIONARY_DE,
             'dictionaryFr' => OPTION_DICTIONARY_FR,
+            'dictionaryEs' => OPTION_DICTIONARY_ES,
+            'dictionaryIt' => OPTION_DICTIONARY_IT,
             // 'events' => OPTION_EVENTS,
             'length' => OPTION_LENGTH,
             // 'powers' => OPTION_POWERS,
@@ -416,13 +419,14 @@ class hardback extends Table
     {
         $this->incStat(1, 'invalidWords');
         $this->incStat(1, 'invalidWords', $player->getId());
-        $dict = WordMgr::getDictionaryId();
+        $info = WordMgr::getDictionaryInfo();
         self::notifyAllPlayers('invalid', $this->msg['rejectedWord'], [
             'i18n' => ['dict'],
             'player_id' => $player->getId(),
             'player_name' => $player->getName(),
             'word' => $word,
-            'dict' => $this->dicts[$dict],
+            'dict' => $info['dict'],
+            'lang' => $info['lang'],
         ]);
     }
 
@@ -1554,6 +1558,10 @@ class hardback extends Table
         }
         if ($from_version <= 2105150216) {
             self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_player ADD `vote` INT(1) NULL DEFAULT NULL");
+        }
+        if ($from_version <= 2105240722) {
+            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 3 WHERE global_id = 207 AND global_value = 2");
+            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_id = 123 WHERE global_id = 120");
         }
     }
 

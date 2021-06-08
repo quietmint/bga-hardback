@@ -8,7 +8,7 @@
     <div class="hidden">
       <Icon v-for="(icon, key) in icons" :key="key" :id="'icon_' + key" :icon="icon" />
     </div>
-    
+
     <!-- Keyboard popup -->
     <transition name="fade">
       <HKeyboard v-if="keyboardId" />
@@ -758,15 +758,37 @@ export default {
                 `<a target="hdefine" href="https://en.wiktionary.org/wiki/${q}">Wiktionary</a>`, //
               ],
             ];
+          } else if (this.gamedatas.options.lang == HConstants.LANG_DE) {
+            links = [
+              [
+                `<a target="hdefine" href="https://www.duden.de/suchen/dudenonline/${q}">Duden</a>`, //
+              ],
+            ];
           } else if (this.gamedatas.options.lang == HConstants.LANG_FR) {
             links = [
               [
                 `<a target="hdefine" href="https://www.cnrtl.fr/definition/academie9/${q}">Académie Française</a>`, //
-                `<a target="hdefine" href="https://www.larousse.fr/dictionnaires/francais/${q}">Larousse</a>`, //
+                `<a target="hdefine" href="https://dictionnaire.lerobert.com/definition/${q}">Le Robert</a>`, //
               ],
               [
-                `<a target="hdefine" href="https://dictionnaire.lerobert.com/definition/${q}">Le Robert</a>`, //
+                `<a target="hdefine" href="https://www.larousse.fr/dictionnaires/francais/${q}">Larousse</a>`, //
                 `<a target="hdefine" href="https://www.cnrtl.fr/definition/${q}">Trésor</a>`, //
+              ],
+            ];
+          } else if (this.gamedatas.options.lang == HConstants.LANG_ES) {
+            links = [
+              [
+                `<a target="hdefine" href="https://dle.rae.es/${q}">Real Academia Española</a>`, //
+              ],
+            ];
+          } else if (this.gamedatas.options.lang == HConstants.LANG_IT) {
+            links = [
+              [
+                `<a target="hdefine" href="https://www.grandidizionari.it/Dizionario_Italiano/cerca.aspx?query=${q}">HOEPLI</a>`, //
+                `<a target="hdefine" href="https://www.treccani.it/vocabolario/ricerca/${q}/">Treccani</a>`, //
+              ],
+              [
+                `<a target="hdefine" href="https://www.sapere.it/sapere/search.html?q=${q}&tipo_dizionario=Italiano">Sapere</a>`, //
               ],
             ];
           }

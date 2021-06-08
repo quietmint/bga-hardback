@@ -12,18 +12,21 @@ class WordMgr extends APP_GameClass
         $lang = self::getLanguageId();
         if ($lang == LANG_EN) {
             return hardback::$instance->gamestate->table_globals[OPTION_DICTIONARY];
-        } else if ($lang == LANG_FR) {
-            return hardback::$instance->gamestate->table_globals[OPTION_DICTIONARY_FR];
+        } else {
+            $opt = 120 + $lang;
+            return hardback::$instance->gamestate->table_globals[$opt];
         }
     }
 
     public static function getDictionaryInfo(): array
     {
         $dict = self::getDictionaryId();
+        $lang = self::getLanguageId();
         $info = [
             'i18n' => ['dict'],
             'preserve' => ['link'],
             'dict' => hardback::$instance->dicts[$dict],
+            'lang' => hardback::$instance->langs[$lang],
         ];
         if ($dict == TWELVEDICTS) {
             $info['link'] = 'http://wordlist.aspell.net/12dicts-readme/';
@@ -37,20 +40,28 @@ class WordMgr extends APP_GameClass
     {
         $word = trim(strtolower($word));
         $dict = self::getDictionaryId();
-        $dictName = hardback::$instance->dicts[$dict];
         if ($dict == YANDEX) {
             // Web-based dictionary
+            // Supported languages: be, cs, de, en, es, fi, fr, hu, it, lt, ru, uk
+            $svc = null;
+            $data = null;
             try {
                 $lang = self::getLanguageId();
                 if ($lang == LANG_EN) {
                     $langPair = "en-en";
+                } else if ($lang == LANG_DE) {
+                    $langPair = "de-de";
                 } else if ($lang == LANG_FR) {
                     $langPair = "fr-fr";
+                } else if ($lang == LANG_ES) {
+                    $langPair = "es-es";
+                } else if ($lang == LANG_IT) {
+                    $langPair = "it-it";
                 } else {
                     throw new Exception("Unsupported language $lang");
                 }
 
-                $path = __DIR__ . "/wordlist/$dict/key.inc.php";
+                $path = __DIR__ . "/wordlist/$dict/$langPair.inc.php";
                 if (!is_readable($path)) {
                     throw new Exception("Missing file $path");
                 }
@@ -72,7 +83,7 @@ class WordMgr extends APP_GameClass
                 if ($data !== false) {
                     $data = implode("", $data);
                 }
-                self::trace("$dictName reply from $svc: $data");
+                self::trace("Reply from $svc: $data");
 
                 if ($data === false) {
                     // Handle HTTP timeout
@@ -106,8 +117,9 @@ class WordMgr extends APP_GameClass
                 }
                 return !empty($result['def']);
             } catch (Exception $e) {
-                self::error("$dictName reply from $svc: $data");
-                throw new BgaVisibleSystemException("$dictName error: " . $e->getMessage());
+                self::error("Reply from $svc: $data");
+                $info = self::getDictionaryInfo();
+                throw new BgaVisibleSystemException("{$info['dict']} ({$info['lang']}) error: " . $e->getMessage());
             }
         } else {
             // File-based dictionary
@@ -120,8 +132,8 @@ class WordMgr extends APP_GameClass
                 $dictionary = array_flip(file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
                 return isset($dictionary[$word]);
             } catch (Exception $e) {
-                $dictName = hardback::$instance->dicts[$dict];
-                throw new BgaVisibleSystemException("$dictName error: " . $e->getMessage());
+                $info = self::getDictionaryInfo();
+                throw new BgaVisibleSystemException("{$info['dict']} ({$info['lang']}) error: " . $e->getMessage());
             }
         }
     }

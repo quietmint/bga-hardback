@@ -69,6 +69,14 @@ $this->dicts = [
     VOTE_100 => clienttranslate('Unanimous Vote'),
 ];
 
+$this->langs = [
+    LANG_EN => 'English',
+    LANG_DE => 'Deutsch',
+    LANG_FR => 'Français',
+    LANG_ES => 'Español',
+    LANG_IT => 'Italiano',
+];
+
 $this->i18n = [
     'starter' => clienttranslate('Starter'),
     'adventure' => clienttranslate('Adventure'),
@@ -96,7 +104,7 @@ $this->i18n = [
     'hand' => clienttranslate('Hand'),
     'handReminder' => clienttranslate('All your cards are already in play'),
     'ink' => clienttranslate('Ink'),
-    'invalid' => clienttranslate('${word} is rejected by ${dict}'),
+    'invalid' => clienttranslate('${word} is rejected by ${dict} (${lang})'),
     'jailButton' => clienttranslate('Jail'),
     'jailButton' => clienttranslate('Jail'),
     'jailTip' => clienttranslate('Jailed: Only ${player_name} may purchase'),
@@ -144,7 +152,7 @@ $this->msg = [
     'convert' => clienttranslate('${player_name} converts ${ink} ink to ${amount}${icon}'),
     'coopLose' => clienttranslate('Failure! The players are defeated and ${player_name} wins!'),
     'coopWin' => clienttranslate('Success! ${player_name} is defeated and the players win!'),
-    'dictionary' => clienttranslate('The dictionary selected for this game is ${dict}'),
+    'dictionary' => clienttranslate('The dictionary selected for this game is ${dict} (${lang})'),
     'double' => clienttranslate('${player_name} doubles ${genre}${letter}'),
     'draw' => clienttranslate('${genre}${letter} is added to the offer row'),
     'drawDiscard' => clienttranslate('${genre}${letter} is added to the offer row and ${player_name} forces ${player_name2} to discard Timeless Classic ${genre2}${letter2}'),
@@ -162,7 +170,7 @@ $this->msg = [
     'purchase2' => clienttranslate('${player_name} purchases ${genre}${letter} for ${coins}${iconCoins} and earns ${points}${iconPoints}'),
     'purchaseAdvert' => clienttranslate('${player_name} purchases the ${points}${iconPoints} advertisement for ${coins}${iconCoins}'),
     'purchaseCoop' => clienttranslate('${player_name} purchases ${genre}${letter} and earns ${points}${iconPoints}'),
-    'rejectedWord' => clienttranslate('${word} is rejected by ${dict}'),
+    'rejectedWord' => $this->i18n['invalid'],
     'skipWord' => clienttranslate('${player_name} is stymied by writer\'s block and skips their turn.'),
     'summary0' => clienttranslate('${player_name} earns nothing this round'),
     'summary1' => clienttranslate('${player_name} earns ${amount1}${icon1} this round'),
