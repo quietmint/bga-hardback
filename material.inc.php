@@ -64,6 +64,7 @@ $this->dicts = [
     TWELVEDICTS => clienttranslate('12dicts'),
     US => clienttranslate('American Scrabble'),
     UK => clienttranslate('British Scrabble'),
+    MORPHALOU => clienttranslate('Morphalou'),
     YANDEX => clienttranslate('Yandex.Dictionary'),
     VOTE_50 => clienttranslate('Majority Vote'),
     VOTE_100 => clienttranslate('Unanimous Vote'),

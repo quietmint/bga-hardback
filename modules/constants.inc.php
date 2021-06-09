@@ -92,7 +92,8 @@ define('OPTION_DICTIONARY_IT', 125);
 define('TWELVEDICTS', 1);
 define('US', 2);
 define('UK', 3);
-define('YANDEX', 4);
+define('MORPHALOU', 30);
+define('YANDEX', 80);
 define('VOTE_50', 90);
 define('VOTE_100', 91);
 

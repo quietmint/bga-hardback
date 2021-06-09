@@ -142,8 +142,13 @@ $game_options = [
 
     OPTION_DICTIONARY_FR => [
         'name' => totranslate('Dictionary'),
-        'default' => YANDEX,
+        'default' => MORPHALOU,
         'values' => [
+            MORPHALOU => [
+                'name' => totranslate('Morphalou'),
+                'tmdisplay' => totranslate('Morphalou'),
+                'description' => totranslate('680,000 words (2019 edition)'),
+            ],
             YANDEX => [
                 'name' => totranslate('Yandex.Dictionary'),
                 'tmdisplay' => totranslate('Yandex.Dictionary'),

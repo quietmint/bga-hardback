@@ -32,6 +32,8 @@ class WordMgr extends APP_GameClass
             $info['link'] = 'http://wordlist.aspell.net/12dicts-readme/';
         } else if ($dict == YANDEX) {
             $info['link'] = 'https://yandex.com/dev/dictionary/';
+        } else if ($dict == MORPHALOU) {
+            $info['link'] = 'https://www.ortolang.fr/market/lexicons/morphalou/v3.1';
         }
         return $info;
     }

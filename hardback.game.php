@@ -1563,6 +1563,9 @@ class hardback extends Table
             self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 3 WHERE global_id = 207 AND global_value = 2");
             self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_id = 123 WHERE global_id = 120");
         }
+        if ($from_version <= 2106080338) {
+            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 80 WHERE global_id IN (100, 122, 123, 124, 125) AND global_value = 4");
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////:
