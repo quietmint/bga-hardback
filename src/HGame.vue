@@ -604,7 +604,6 @@ export default {
       }
 
       let visible = card.location == this.handLocation || card.location == "tableau" || card.location == "offer" || card.location == "jail" || (this.discardVisible && card.location == this.discardLocation) || card.location.startsWith("timeless");
-      console.log(`Animate card ${card.id} new location ${card.location} is visible? ${visible}`);
       if (!start && !visible) {
         // Invisible card movement, no animation
         this.gamedatas.cards[card.id] = card;
