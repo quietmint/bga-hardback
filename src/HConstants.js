@@ -78,4 +78,5 @@ export default Object.freeze({
   PREF_TOOLTIPS: 200,
   TOOLTIPS_ENABLED: 0,
   TOOLTIPS_DISABLED: 1,
+  TOOLTIP_TIMEOUT: 500, // ms
 });

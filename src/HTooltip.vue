@@ -52,7 +52,7 @@ export default {
   methods: {
     enter(ev: MouseEvent) {
       if (this.prefs.value[HConstants.PREF_TOOLTIPS] == HConstants.TOOLTIPS_ENABLED) {
-        this.timeout = setTimeout(() => this.show(), 250);
+        this.timeout = setTimeout(() => this.show(), HConstants.TOOLTIP_TIMEOUT);
       }
     },
 

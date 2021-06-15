@@ -503,7 +503,7 @@ export default {
      */
     tooltipEnter(ev: MouseEvent) {
       if (this.prefs.value[HConstants.PREF_TOOLTIPS] == HConstants.TOOLTIPS_ENABLED) {
-        this.tooltip.timeout = setTimeout(() => this.tooltipShow(), 250);
+        this.tooltip.timeout = setTimeout(() => this.tooltipShow(), HConstants.TOOLTIP_TIMEOUT);
       }
     },
 
