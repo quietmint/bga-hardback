@@ -148,6 +148,7 @@ $game_options = [
                 'name' => totranslate('Morphalou'),
                 'tmdisplay' => totranslate('Morphalou'),
                 'description' => totranslate('680,000 words (2019 edition)'),
+                'beta' => true,
             ],
             YANDEX => [
                 'name' => totranslate('Yandex.Dictionary'),
