@@ -41,6 +41,10 @@ class WordMgr extends APP_GameClass
     public static function isWord(string $word): bool
     {
         $word = trim(strtolower($word));
+        if (empty($word)) {
+            return false;
+        }
+
         $dict = self::getDictionaryId();
         if ($dict == YANDEX) {
             // Web-based dictionary
