@@ -41,9 +41,16 @@ class PlayerMgr extends APP_GameClass
             $sql .= " WHERE player_id IN (" . implode(", ", $playerIds) . ")";
         }
         $sql .= " ORDER BY player_no";
-        return array_map(function ($dbplayer) {
+        $players = array_map(function ($dbplayer) {
             return new HPlayer($dbplayer);
         }, self::getCollectionFromDb($sql));
+        if (!empty($playerIds) && count($players) != count($playerIds)) {
+            $expected = array_map('intval', $playerIds);
+            $actual = array_map('intval', array_keys($players));
+            $invalid = array_diff($expected, $actual);
+            throw new BgaVisibleSystemException("Invalid player IDs: " . implode(", ", $invalid));
+        }
+        return $players;
     }
 
     public static function getPenny(): HPenny
