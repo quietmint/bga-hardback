@@ -70,7 +70,7 @@ $machinestates = [
         'type' => 'game',
         'action' => 'stStart',
         'transitions' => [
-            'next' => ST_PLAYER_TURN,
+            'next' => ST_NEXT_PLAYER,
         ],
     ],
 

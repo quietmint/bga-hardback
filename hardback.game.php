@@ -152,9 +152,6 @@ class hardback extends Table
 
         // Deal the cards
         CardMgr::setup();
-
-        // Activate first player
-        $this->activeNextPlayer();
     }
 
     public function isCurrentPlayerActive(): bool
@@ -1411,7 +1408,6 @@ class hardback extends Table
             // Check for game end
             $this->incStat(1, 'turns');
             if ($this->getGameProgression() >= 100) {
-                self::DbQuery('UPDATE player SET player_score_aux = ink');
                 $this->gamestate->nextState('end');
                 return;
             }
