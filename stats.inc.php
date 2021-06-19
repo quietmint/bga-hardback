@@ -78,6 +78,11 @@ $stats_type = [
             'name' => totranslate('Longest word'),
             'type' => 'int',
         ],
+        'bestWord' => [
+            'id' => STAT_BEST_WORD,
+            'name' => totranslate('Highest-scoring word'),
+            'type' => 'int',
+        ],
         'invalidWords' => [
             'id' => STAT_INVALID_WORDS,
             'name' => totranslate('Invalid words'),
@@ -159,6 +164,11 @@ $stats_type = [
         'longestWord' => [
             'id' => STAT_LONGEST_WORD,
             'name' => totranslate('Longest word'),
+            'type' => 'int',
+        ],
+        'bestWord' => [
+            'id' => STAT_BEST_WORD,
+            'name' => totranslate('Highest-scoring word'),
             'type' => 'int',
         ],
         'invalidWords' => [

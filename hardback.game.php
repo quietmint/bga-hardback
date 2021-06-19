@@ -108,7 +108,8 @@ class hardback extends Table
             self::initStat('table', 'coopGenre', $genre);
         }
 
-        // Init game statistics
+        // Init table statistics
+        self::initStat('table', 'bestWord', 0);
         self::initStat('table', 'invalidWords', 0);
         self::initStat('table', 'longestWord', 0);
         self::initStat('table', 'turns', 0);
@@ -120,30 +121,33 @@ class hardback extends Table
         } else {
             self::initStat('table', 'flush', 0);
         }
+
+        // Init player statistics
+        self::initStat('player', 'bestWord', 0);
         self::initStat('player', 'cardsPurchase', 0);
         self::initStat('player', 'cardsTrash', 0);
         self::initStat('player', 'coins', 0);
+        self::initStat('player', 'deck' . ADVENTURE, 0);
+        self::initStat('player', 'deck' . HORROR, 0);
+        self::initStat('player', 'deck' . MYSTERY, 0);
+        self::initStat('player', 'deck' . ROMANCE, 0);
+        self::initStat('player', 'deck' . STARTER, 10);
         self::initStat('player', 'invalidWords', 0);
         self::initStat('player', 'longestWord', 0);
+        self::initStat('player', 'pointsBasic', 0);
+        self::initStat('player', 'pointsGenre', 0);
+        self::initStat('player', 'pointsPurchase', 0);
+        self::initStat('player', 'starterCard1', 0);
+        self::initStat('player', 'starterCard2', 0);
+        self::initStat('player', 'useInk', 0);
+        self::initStat('player', 'useRemover', 0);
+        self::initStat('player', 'words', 0);
         if ($this->gamestate->table_globals[OPTION_ADVERTS]) {
             self::initStat('player', 'pointsAdvert', 0);
         }
         if ($this->gamestate->table_globals[OPTION_AWARDS]) {
             self::initStat('player', 'pointsAward', 0);
         }
-        self::initStat('player', 'pointsBasic', 0);
-        self::initStat('player', 'pointsGenre', 0);
-        self::initStat('player', 'pointsPurchase', 0);
-        self::initStat('player', 'starterCard1', 0);
-        self::initStat('player', 'starterCard2', 0);
-        self::initStat('player', 'deck' . STARTER, 10);
-        self::initStat('player', 'deck' . ADVENTURE, 0);
-        self::initStat('player', 'deck' . HORROR, 0);
-        self::initStat('player', 'deck' . MYSTERY, 0);
-        self::initStat('player', 'deck' . ROMANCE, 0);
-        self::initStat('player', 'useInk', 0);
-        self::initStat('player', 'useRemover', 0);
-        self::initStat('player', 'words', 0);
         $dict = WordMgr::getDictionaryId();
         if ($dict == VOTE_50 || $dict == VOTE_100) {
             self::initStat('player', 'votesAccept', 0);
@@ -1044,9 +1048,10 @@ class hardback extends Table
     {
         // Summary of all earnings
         $player = PlayerMgr::getPlayer();
+        $points = $player->getScore() - $this->getGameStateValue('startScore');
         $earnings = [
             '¢' => $player->getCoins(),
-            'star' => $player->getScore() - $this->getGameStateValue('startScore'),
+            'star' => $points,
             'ink' => $player->getInk() - $this->getGameStateValue('startInk'),
             'remover' => $player->getRemover() - $this->getGameStateValue('startRemover'),
         ];
@@ -1068,6 +1073,16 @@ class hardback extends Table
             }
         }
         self::notifyAllPlayers('message', $this->msg["summary$i"], $args);
+
+        // Highest-scoring word
+        $best = $this->getStat('bestWord', $player->getId());
+        if ($points > $best) {
+            $this->setStat($points, 'bestWord', $player->getId());
+        }
+        $best = $this->getStat('bestWord');
+        if ($points > $best) {
+            $this->setStat($points, 'bestWord');
+        }
 
         if (!$this->gamestate->state()['args']['possible']) {
             $this->skip();

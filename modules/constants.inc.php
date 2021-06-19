@@ -67,6 +67,7 @@ define('STAT_INVALID_WORDS', 52);
 define('STAT_FLUSH', 53);
 define('STAT_VOTES_ACCEPT', 54);
 define('STAT_VOTES_REJECT', 55);
+define('STAT_BEST_WORD', 56);
 define('STAT_USE_INK', 60);
 define('STAT_USE_REMOVER', 61);
 define('STAT_STARTER_CARD1', 70);
