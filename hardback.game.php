@@ -112,7 +112,7 @@ class hardback extends Table
         self::initStat('table', 'bestWord', 0);
         self::initStat('table', 'invalidWords', 0);
         self::initStat('table', 'longestWord', 0);
-        self::initStat('table', 'turns', 0);
+        self::initStat('table', 'turns', 1);
         self::initStat('table', 'words', 0);
         if ($this->gamestate->table_globals[OPTION_COOP]) {
             self::initStat('table', 'coopAvg', 0);
@@ -156,6 +156,9 @@ class hardback extends Table
 
         // Deal the cards
         CardMgr::setup();
+
+        // Activate first player
+        $this->activeNextPlayer();
     }
 
     public function isCurrentPlayerActive(): bool
