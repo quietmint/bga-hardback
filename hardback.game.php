@@ -304,12 +304,6 @@ class hardback extends Table
 
         // Minimum 2 letters
         if (count($cardIds) < 2) {
-            // 42762 debugging
-            $_ids = implode(", ", $cardIds);
-            $_hand = implode(", ", CardMgr::getIds(CardMgr::getCardsInLocation($player->getHandLocation())));
-            $_tableau = implode(", ", CardMgr::getIds(CardMgr::getCardsInLocation($player->getHandLocation())));
-            self::error("confirmWord($_ids, $wildMask): Hand: $_hand, Tableau: $_tableau, Length < 2");
-
             throw new BgaUserException($this->msg['errorLength']);
         }
 
@@ -319,14 +313,6 @@ class hardback extends Table
             return !in_array($card->getId(), $cardIds);
         });
         if (!empty($unusedInk)) {
-            // 42762 debugging
-            $_ids = implode(", ", $cardIds);
-            $_hand = implode(", ", CardMgr::getIds(CardMgr::getCardsInLocation($player->getHandLocation())));
-            $_tableau = implode(", ", CardMgr::getIds(CardMgr::getCardsInLocation($player->getHandLocation())));
-            $_inked = implode(", ", CardMgr::getIds($inked));
-            $_unused = implode(", ", CardMgr::getIds($unusedInk));
-            self::error("confirmWord($_ids, $wildMask): Hand: $_hand, Tableau: $_tableau, Inked: $_inked, Unused: $_unused");
-
             throw new BgaUserException(sprintf($this->msg['errorInk'], CardMgr::getString($unusedInk)));
         }
 
