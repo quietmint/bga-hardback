@@ -1410,11 +1410,13 @@ class hardback extends Table
 
         if ($player->getOrder() == 1) {
             // Check for game end
-            $this->incStat(1, 'turns');
             if ($this->getGameProgression() >= 100) {
                 $this->gamestate->nextState('end');
                 return;
             }
+
+            // Increment turn counter
+            $this->incStat(1, 'turns');
         }
 
         // Give extra time
