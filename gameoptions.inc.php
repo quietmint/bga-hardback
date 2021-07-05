@@ -308,22 +308,6 @@ $game_options = [
     ],
 
     /*
-    OPTION_EVENTS => [
-        'name' => totranslate('Events'),
-        'default' => NO,
-        'values' => [
-            NO => [
-                'name' => totranslate('No'),
-            ],
-            YES => [
-                'name' => totranslate('Yes'),
-                'tmdisplay' => totranslate('Events'),
-                'description' => totranslate('Word restrictions (challenging)'),
-                'nobeginner' => true,
-            ],
-        ],
-    ],
-
     OPTION_POWERS => [
         'name' => totranslate('Player Powers'),
         'default' => NO,

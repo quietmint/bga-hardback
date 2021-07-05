@@ -101,7 +101,6 @@ define('VOTE_100', 91);
 define('OPTION_LENGTH', 105);
 define('OPTION_AWARDS', 101);
 define('OPTION_ADVERTS', 102);
-define('OPTION_EVENTS', 103);
 define('OPTION_POWERS', 104);
 define('NO', 0);
 define('YES', 1);

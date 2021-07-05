@@ -56,7 +56,6 @@ class hardback extends Table
             'dictionaryFr' => OPTION_DICTIONARY_FR,
             'dictionaryEs' => OPTION_DICTIONARY_ES,
             'dictionaryIt' => OPTION_DICTIONARY_IT,
-            // 'events' => OPTION_EVENTS,
             'length' => OPTION_LENGTH,
             // 'powers' => OPTION_POWERS,
             'startInk' => START_INK,
@@ -210,7 +209,6 @@ class hardback extends Table
                 'awards' => $this->gamestate->table_globals[OPTION_AWARDS] > 0,
                 'coop' => $this->gamestate->table_globals[OPTION_COOP] > 0,
                 'lang' => WordMgr::getLanguageId(),
-                // 'events' => $this->gamestate->table_globals[OPTION_EVENTS] > 0,
                 // 'powers' => $this->gamestate->table_globals[OPTION_POWERS] > 0,
             ],
             'refs' => [
