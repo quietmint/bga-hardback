@@ -27,7 +27,7 @@
 require_once('modules/constants.inc.php');
 
 $dictionaryStartCond = [
-    VOTE_50 => [
+    H_VOTE_50 => [
         [
             'type' => 'minplayers',
             'value' => 2,
@@ -35,12 +35,12 @@ $dictionaryStartCond = [
         ],
         [
             'type' => 'otheroptionisnot',
-            'id' => GAMESTATE_RATING_MODE,
-            'value' => ARENA_MODE,
+            'id' => H_OPTION_GAME_MODE,
+            'value' => H_ARENA_MODE,
             'message' => totranslate('Cannot use a voting dictionary in Arena Mode'),
         ],
     ],
-    VOTE_100 => [
+    H_VOTE_100 => [
         [
             'type' => 'minplayers',
             'value' => 2,
@@ -48,46 +48,40 @@ $dictionaryStartCond = [
         ],
         [
             'type' => 'otheroptionisnot',
-            'id' => GAMESTATE_RATING_MODE,
-            'value' => ARENA_MODE,
+            'id' => H_OPTION_GAME_MODE,
+            'value' => H_ARENA_MODE,
             'message' => totranslate('Cannot use a voting dictionary in Arena Mode'),
         ],
     ],
 ];
 
 $game_options = [
-    OPTION_DICTIONARY => [
+    H_OPTION_DICTIONARY => [
         'name' => totranslate('Dictionary'),
-        'default' => TWELVEDICTS,
+        'default' => H_TWELVEDICTS,
         'values' => [
-            TWELVEDICTS => [
+            H_TWELVEDICTS => [
                 'name' => totranslate('12dicts'),
                 'tmdisplay' => totranslate('12dicts'),
                 'description' => totranslate('85,000 words (2016 edition)'),
             ],
-            US => [
+            H_US => [
                 'name' => totranslate('American Scrabble'),
                 'tmdisplay' => totranslate('American Scrabble'),
                 'description' => totranslate('190,000 words (2020 edition)'),
             ],
-            UK => [
+            H_UK => [
                 'name' => totranslate('British Scrabble'),
                 'tmdisplay' => totranslate('British Scrabble'),
                 'description' => totranslate('280,000 words (2019 edition)'),
             ],
-            YANDEX => [
-                'name' => totranslate('Yandex.Dictionary'),
-                'tmdisplay' => totranslate('Yandex.Dictionary'),
-                'description' => totranslate('Powered by machine learning from Yandex, a Russian technology company'),
-                'beta' => true,
-            ],
-            VOTE_50 => [
+            H_VOTE_50 => [
                 'name' => totranslate('Majority Vote'),
                 'tmdisplay' => totranslate('Majority Vote'),
                 'description' => totranslate('Instead of a dictionary, words must be accepted by half of the other players. Recommended with friends only.'),
                 'nobeginner' => true,
             ],
-            VOTE_100 => [
+            H_VOTE_100 => [
                 'name' => totranslate('Unanimous Vote'),
                 'tmdisplay' => totranslate('Unanimous Vote'),
                 'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
@@ -97,32 +91,32 @@ $game_options = [
         'displaycondition' => [
             [
                 'type' => 'otheroption',
-                'id' => OPTION_LANG,
-                'value' => LANG_EN,
+                'id' => H_OPTION_LANG,
+                'value' => H_LANG_EN,
             ],
         ],
         'startcondition' => $dictionaryStartCond,
         'notdisplayedmessage' => totranslate('IMPORTANT: Currently, the language option changes only the dictionary and does NOT affect the cards (letter frequency, cost, benefits)'),
     ],
 
-    OPTION_DICTIONARY_DE => [
+    H_OPTION_DICTIONARY_DE => [
         'name' => totranslate('Dictionary'),
-        'default' => YANDEX,
+        'default' => H_YANDEX,
         'values' => [
-            YANDEX => [
+            H_YANDEX => [
                 'name' => totranslate('Yandex.Dictionary'),
                 'tmdisplay' => totranslate('Yandex.Dictionary'),
                 'description' => totranslate('Powered by machine learning from Yandex, a Russian technology company'),
                 'beta' => true,
             ],
-            VOTE_50 => [
+            H_VOTE_50 => [
                 'name' => totranslate('Majority Vote'),
                 'tmdisplay' => totranslate('Majority Vote'),
                 'description' => totranslate('Instead of a dictionary, words must be accepted by half of the other players. Recommended with friends only.'),
                 'beta' => true,
                 'nobeginner' => true,
             ],
-            VOTE_100 => [
+            H_VOTE_100 => [
                 'name' => totranslate('Unanimous Vote'),
                 'tmdisplay' => totranslate('Unanimous Vote'),
                 'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
@@ -133,37 +127,37 @@ $game_options = [
         'displaycondition' => [
             [
                 'type' => 'otheroption',
-                'id' => OPTION_LANG,
-                'value' => LANG_DE,
+                'id' => H_OPTION_LANG,
+                'value' => H_LANG_DE,
             ],
         ],
         'startcondition' => $dictionaryStartCond,
     ],
 
-    OPTION_DICTIONARY_FR => [
+    H_OPTION_DICTIONARY_FR => [
         'name' => totranslate('Dictionary'),
-        'default' => MORPHALOU,
+        'default' => H_MORPHALOU,
         'values' => [
-            MORPHALOU => [
+            H_MORPHALOU => [
                 'name' => totranslate('Morphalou'),
                 'tmdisplay' => totranslate('Morphalou'),
                 'description' => totranslate('680,000 words (2019 edition)'),
                 'beta' => true,
             ],
-            YANDEX => [
+            H_YANDEX => [
                 'name' => totranslate('Yandex.Dictionary'),
                 'tmdisplay' => totranslate('Yandex.Dictionary'),
                 'description' => totranslate('Powered by machine learning from Yandex, a Russian technology company'),
                 'beta' => true,
             ],
-            VOTE_50 => [
+            H_VOTE_50 => [
                 'name' => totranslate('Majority Vote'),
                 'tmdisplay' => totranslate('Majority Vote'),
                 'description' => totranslate('Instead of a dictionary, words must be accepted by half of the other players. Recommended with friends only.'),
                 'beta' => true,
                 'nobeginner' => true,
             ],
-            VOTE_100 => [
+            H_VOTE_100 => [
                 'name' => totranslate('Unanimous Vote'),
                 'tmdisplay' => totranslate('Unanimous Vote'),
                 'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
@@ -174,31 +168,31 @@ $game_options = [
         'displaycondition' => [
             [
                 'type' => 'otheroption',
-                'id' => OPTION_LANG,
-                'value' => LANG_FR,
+                'id' => H_OPTION_LANG,
+                'value' => H_LANG_FR,
             ],
         ],
         'startcondition' => $dictionaryStartCond,
     ],
 
-    OPTION_DICTIONARY_ES => [
+    H_OPTION_DICTIONARY_ES => [
         'name' => totranslate('Dictionary'),
-        'default' => YANDEX,
+        'default' => H_YANDEX,
         'values' => [
-            YANDEX => [
+            H_YANDEX => [
                 'name' => totranslate('Yandex.Dictionary'),
                 'tmdisplay' => totranslate('Yandex.Dictionary'),
                 'description' => totranslate('Powered by machine learning from Yandex, a Russian technology company'),
                 'beta' => true,
             ],
-            VOTE_50 => [
+            H_VOTE_50 => [
                 'name' => totranslate('Majority Vote'),
                 'tmdisplay' => totranslate('Majority Vote'),
                 'description' => totranslate('Instead of a dictionary, words must be accepted by half of the other players. Recommended with friends only.'),
                 'beta' => true,
                 'nobeginner' => true,
             ],
-            VOTE_100 => [
+            H_VOTE_100 => [
                 'name' => totranslate('Unanimous Vote'),
                 'tmdisplay' => totranslate('Unanimous Vote'),
                 'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
@@ -209,31 +203,31 @@ $game_options = [
         'displaycondition' => [
             [
                 'type' => 'otheroption',
-                'id' => OPTION_LANG,
-                'value' => LANG_ES,
+                'id' => H_OPTION_LANG,
+                'value' => H_LANG_ES,
             ],
         ],
         'startcondition' => $dictionaryStartCond,
     ],
 
-    OPTION_DICTIONARY_IT => [
+    H_OPTION_DICTIONARY_IT => [
         'name' => totranslate('Dictionary'),
-        'default' => YANDEX,
+        'default' => H_YANDEX,
         'values' => [
-            YANDEX => [
+            H_YANDEX => [
                 'name' => totranslate('Yandex.Dictionary'),
                 'tmdisplay' => totranslate('Yandex.Dictionary'),
                 'description' => totranslate('Powered by machine learning from Yandex, a Russian technology company'),
                 'beta' => true,
             ],
-            VOTE_50 => [
+            H_VOTE_50 => [
                 'name' => totranslate('Majority Vote'),
                 'tmdisplay' => totranslate('Majority Vote'),
                 'description' => totranslate('Instead of a dictionary, words must be accepted by half of the other players. Recommended with friends only.'),
                 'beta' => true,
                 'nobeginner' => true,
             ],
-            VOTE_100 => [
+            H_VOTE_100 => [
                 'name' => totranslate('Unanimous Vote'),
                 'tmdisplay' => totranslate('Unanimous Vote'),
                 'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
@@ -244,14 +238,14 @@ $game_options = [
         'displaycondition' => [
             [
                 'type' => 'otheroption',
-                'id' => OPTION_LANG,
-                'value' => LANG_IT,
+                'id' => H_OPTION_LANG,
+                'value' => H_LANG_IT,
             ],
         ],
         'startcondition' => $dictionaryStartCond,
     ],
 
-    OPTION_LENGTH => [
+    H_OPTION_LENGTH => [
         'name' => totranslate('Game Length'),
         'default' => 60,
         'values' => [
@@ -270,21 +264,21 @@ $game_options = [
         'displaycondition' => [
             [
                 'type' => 'otheroption',
-                'id' => OPTION_COOP,
-                'value' => NO,
+                'id' => H_OPTION_COOP,
+                'value' => H_NO,
             ],
         ],
         'notdisplayedmessage' => totranslate('Standard (60 Points)'),
     ],
 
-    OPTION_AWARDS => [
+    H_OPTION_AWARDS => [
         'name' => totranslate('Literary Awards'),
-        'default' => YES,
+        'default' => H_YES,
         'values' => [
-            NO => [
+            H_NO => [
                 'name' => totranslate('No'),
             ],
-            YES => [
+            H_YES => [
                 'name' => totranslate('Yes'),
                 'tmdisplay' => totranslate('Literary Awards'),
                 'description' => totranslate('Bonus points for the longest word'),
@@ -292,14 +286,14 @@ $game_options = [
         ],
     ],
 
-    OPTION_ADVERTS => [
+    H_OPTION_ADVERTS => [
         'name' => totranslate('Adverts'),
-        'default' => YES,
+        'default' => H_YES,
         'values' => [
-            NO => [
+            H_NO => [
                 'name' => totranslate('No'),
             ],
-            YES => [
+            H_YES => [
                 'name' => totranslate('Yes'),
                 'tmdisplay' => totranslate('Adverts'),
                 'description' => totranslate('Purchase points with coins'),
@@ -308,26 +302,26 @@ $game_options = [
     ],
 
     /*
-    OPTION_POWERS => [
+    H_OPTION_POWERS => [
         'name' => totranslate('Player Powers'),
-        'default' => NO,
+        'default' => H_NO,
         'values' => [
-            NO => [
+            H_NO => [
                 'name' => totranslate('No'),
             ],
-            YES => [
+            H_YES => [
                 'name' => totranslate('Yes'),
                 'tmdisplay' => totranslate('Powers'),
                 'description' => totranslate('Unique powers to either out-wit or penalize opponents (everyone receives the same type)',
                 'nobeginner' => true,
             ],
-            PASSIVE => [
+            H_PASSIVE => [
                 'name' => totranslate('Passive Powers'),
                 'tmdisplay' => totranslate('Passive Powers'),
                 'description' => totranslate('Unique powers to out-wit opponents'),
                 'nobeginner' => true,
             ],
-            AGRESSIVE => [
+            H_AGRESSIVE => [
                 'name' => totranslate('Agressive Powers'),
                 'tmdisplay' => totranslate('Agressive Powers'),
                 'description' => totranslate('Unique powers to penalize opponents'),
@@ -335,11 +329,11 @@ $game_options = [
             ],
         ],
         'startcondition' => [
-            AGRESSIVE => [
+            H_AGRESSIVE => [
                 [
                     'type' => 'otheroption',
-                    'id' => OPTION_COOP,
-                    'value' => NO,
+                    'id' => H_OPTION_COOP,
+                    'value' => H_NO,
                     'message' => totranslate('Cannot use Agressive Powers with Cooperative Anthology'),
                 ],
             ],
@@ -347,22 +341,22 @@ $game_options = [
     ],
     */
 
-    OPTION_COOP => [
+    H_OPTION_COOP => [
         'name' => totranslate('Cooperative Anthology'),
-        'default' => NO,
+        'default' => H_NO,
         'values' => [
-            NO => [
+            H_NO => [
                 'name' => totranslate('No'),
                 'description' => totranslate('Compete to be the finest novelist of the age'),
             ],
-            COOP_BASIC => [
+            H_COOP_BASIC => [
                 'name' => totranslate('Cooperative'),
                 'tmdisplay' => totranslate('Cooperative'),
                 'description' => totranslate('Win or lose as a team against archrival Penny Dreadful (challenging)'),
                 'nobeginner' => true,
                 'is_coop' => true,
             ],
-            COOP_SIGNATURE => [
+            H_COOP_SIGNATURE => [
                 'name' => totranslate('Cooperative With Signature Genre'),
                 'tmdisplay' => totranslate('Cooperative With Signature Genre'),
                 'description' => totranslate('Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging)'),
@@ -371,18 +365,18 @@ $game_options = [
             ],
         ],
         'startcondition' => [
-            NO => [
+            H_NO => [
                 [
                     'type' => 'minplayers',
                     'value' => 2,
                     'message' => totranslate('Must enable Cooperative Anthology to play solo'),
                 ],
             ],
-            COOP_BASIC => [
+            H_COOP_BASIC => [
                 [
                     'type' => 'otheroption',
-                    'id' => GAMESTATE_RATING_MODE,
-                    'value' => ELO_OFF,
+                    'id' => H_OPTION_GAME_MODE,
+                    'value' => H_TRAINING_MODE,
                     'message' => totranslate('Must set game mode = training mode (no ELO) to enable Cooperative Anthology'),
                 ],
                 [
@@ -391,11 +385,11 @@ $game_options = [
                     'message' => totranslate('Must set max players = 1 - 4 to enable Cooperative Anthology'),
                 ],
             ],
-            COOP_SIGNATURE => [
+            H_COOP_SIGNATURE => [
                 [
                     'type' => 'otheroption',
-                    'id' => GAMESTATE_RATING_MODE,
-                    'value' => ELO_OFF,
+                    'id' => H_OPTION_GAME_MODE,
+                    'value' => H_TRAINING_MODE,
                     'message' => totranslate('Must set game mode = training mode (no ELO) to enable Cooperative Anthology'),
                 ],
                 [
@@ -409,7 +403,7 @@ $game_options = [
 ];
 
 $game_preferences = [
-    PREF_DRAG_DROP => [
+    H_PREF_DRAG_DROP => [
         'name' => totranslate('Drag and drop'),
         'needReload' => false,
         'values' => [
@@ -418,7 +412,7 @@ $game_preferences = [
         ],
     ],
 
-    PREF_CARD_SIZE => [
+    H_PREF_CARD_SIZE => [
         'name' => totranslate('Card size'),
         'needReload' => false,
         'default' => 4,

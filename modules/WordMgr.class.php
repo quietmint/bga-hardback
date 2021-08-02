@@ -4,14 +4,14 @@ class WordMgr extends APP_GameClass
 {
     public static function getLanguageId(): int
     {
-        return hardback::$instance->gamestate->table_globals[OPTION_LANG];
+        return hardback::$instance->gamestate->table_globals[H_OPTION_LANG];
     }
 
     public static function getDictionaryId(): int
     {
         $lang = self::getLanguageId();
-        if ($lang == LANG_EN) {
-            return hardback::$instance->gamestate->table_globals[OPTION_DICTIONARY];
+        if ($lang == H_LANG_EN) {
+            return hardback::$instance->gamestate->table_globals[H_OPTION_DICTIONARY];
         } else {
             $opt = 120 + $lang;
             return hardback::$instance->gamestate->table_globals[$opt];
@@ -28,11 +28,11 @@ class WordMgr extends APP_GameClass
             'dict' => hardback::$instance->dicts[$dict],
             'lang' => hardback::$instance->langs[$lang],
         ];
-        if ($dict == TWELVEDICTS) {
+        if ($dict == H_TWELVEDICTS) {
             $info['link'] = 'http://wordlist.aspell.net/12dicts-readme/';
-        } else if ($dict == YANDEX) {
+        } else if ($dict == H_YANDEX) {
             $info['link'] = 'https://yandex.com/dev/dictionary/';
-        } else if ($dict == MORPHALOU) {
+        } else if ($dict == H_MORPHALOU) {
             $info['link'] = 'https://www.ortolang.fr/market/lexicons/morphalou/v3.1';
         }
         return $info;
@@ -46,22 +46,22 @@ class WordMgr extends APP_GameClass
         }
 
         $dict = self::getDictionaryId();
-        if ($dict == YANDEX) {
+        if ($dict == H_YANDEX) {
             // Web-based dictionary
             // Supported languages: be, cs, de, en, es, fi, fr, hu, it, lt, ru, uk
             $svc = null;
             $data = null;
             try {
                 $lang = self::getLanguageId();
-                if ($lang == LANG_EN) {
+                if ($lang == H_LANG_EN) {
                     $langPair = "en-en";
-                } else if ($lang == LANG_DE) {
+                } else if ($lang == H_LANG_DE) {
                     $langPair = "de-de";
-                } else if ($lang == LANG_FR) {
+                } else if ($lang == H_LANG_FR) {
                     $langPair = "fr-fr";
-                } else if ($lang == LANG_ES) {
+                } else if ($lang == H_LANG_ES) {
                     $langPair = "es-es";
-                } else if ($lang == LANG_IT) {
+                } else if ($lang == H_LANG_IT) {
                     $langPair = "it-it";
                 } else {
                     throw new Exception("Unsupported language $lang");
@@ -109,7 +109,7 @@ class WordMgr extends APP_GameClass
                     // ERR_KEY_BLOCKED - 402 - This API key has been blocked.
                     // ERR_DAILY_REQ_LIMIT_EXCEEDED - 403 - Exceeded the daily limit on the number of requests.
                     // ERR_TEXT_TOO_LONG - 413 - The text size exceeds the maximum.
-                    // ERR_LANG_NOT_SUPPORTED - 501 - The specified translation direction is not supported.
+                    // ERR_H_LANG_NOT_SUPPORTED - 501 - The specified translation direction is not supported.
                     if ($result['code'] == 403) {
                         throw new Exception('Daily limit reached');
                     } else {

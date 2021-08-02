@@ -50,10 +50,10 @@
 require_once('modules/constants.inc.php');
 
 $genres = [
-    ADVENTURE => clienttranslate('Adventure'),
-    HORROR => clienttranslate('Horror'),
-    MYSTERY => clienttranslate('Mystery'),
-    ROMANCE => clienttranslate('Romance'),
+    H_ADVENTURE => clienttranslate('Adventure'),
+    H_HORROR => clienttranslate('Horror'),
+    H_MYSTERY => clienttranslate('Mystery'),
+    H_ROMANCE => clienttranslate('Romance'),
 ];
 
 $letters = [];
@@ -64,52 +64,52 @@ foreach (range('A', 'Z') as $letter) {
 $stats_type = [
     'table' => [
         'turns' => [
-            'id' => STAT_TURNS,
+            'id' => H_STAT_TURNS,
             'name' => totranslate('Turns'),
             'type' => 'int',
         ],
         'words' => [
-            'id' => STAT_WORDS,
+            'id' => H_STAT_WORDS,
             'name' => totranslate('Words'),
             'type' => 'int',
         ],
         'longestWord' => [
-            'id' => STAT_LONGEST_WORD,
+            'id' => H_STAT_LONGEST_WORD,
             'name' => totranslate('Longest word'),
             'type' => 'int',
         ],
         'bestWord' => [
-            'id' => STAT_BEST_WORD,
+            'id' => H_STAT_BEST_WORD,
             'name' => totranslate('Highest-scoring word'),
             'type' => 'int',
         ],
         'invalidWords' => [
-            'id' => STAT_INVALID_WORDS,
+            'id' => H_STAT_INVALID_WORDS,
             'name' => totranslate('Invalid words'),
             'type' => 'int',
         ],
         'flush' => [
-            'id' => STAT_FLUSH,
+            'id' => H_STAT_FLUSH,
             'name' => totranslate('Flush Offer Row'),
             'type' => 'int',
         ],
         'coopScore' => [
-            'id' => STAT_COOP_SCORE,
+            'id' => H_STAT_COOP_SCORE,
             'name' => totranslate('Penny Dreadful: Score'),
             'type' => 'int',
         ],
         'coopTurns' => [
-            'id' => STAT_COOP_TURNS,
+            'id' => H_STAT_COOP_TURNS,
             'name' => totranslate('Penny Dreadful: Turns'),
             'type' => 'int',
         ],
         'coopAvg' => [
-            'id' => STAT_COOP_AVG,
+            'id' => H_STAT_COOP_AVG,
             'name' => totranslate('Penny Dreadful: Points per turn'),
             'type' => 'float',
         ],
         'coopGenre' => [
-            'id' => STAT_COOP_GENRE,
+            'id' => H_STAT_COOP_GENRE,
             'name' => totranslate('Penny Dreadful: Signature Genre'),
             'type' => 'int',
         ],
@@ -117,125 +117,125 @@ $stats_type = [
 
     'player' => [
         'pointsBasic' => [
-            'id' => STAT_POINTS_BASIC,
+            'id' => H_STAT_POINTS_BASIC,
             'name' => totranslate('Points from basic benefits'),
             'type' => 'int',
         ],
         'pointsGenre' => [
-            'id' => STAT_POINTS_GENRE,
+            'id' => H_STAT_POINTS_GENRE,
             'name' => totranslate('Points from genre benefits'),
             'type' => 'int',
         ],
         'pointsPurchase' => [
-            'id' => STAT_POINTS_PURCHASE,
+            'id' => H_STAT_POINTS_PURCHASE,
             'name' => totranslate('Points from card purchases'),
             'type' => 'int',
         ],
         'pointsAward' => [
-            'id' => STAT_POINTS_AWARD,
+            'id' => H_STAT_POINTS_AWARD,
             'name' => totranslate('Points from literary awards'),
             'type' => 'int',
         ],
         'pointsAdvert' => [
-            'id' => STAT_POINTS_ADVERT,
+            'id' => H_STAT_POINTS_ADVERT,
             'name' => totranslate('Points from adverts'),
             'type' => 'int',
         ],
         'coins' => [
-            'id' => STAT_COINS,
+            'id' => H_STAT_COINS,
             'name' => totranslate('Coins earned'),
             'type' => 'int',
         ],
         'cardsPurchase' => [
-            'id' => STAT_CARDS_PURCHASE,
+            'id' => H_STAT_CARDS_PURCHASE,
             'name' => totranslate('Cards purchased'),
             'type' => 'int',
         ],
         'cardsTrash' => [
-            'id' => STAT_CARDS_TRASH,
+            'id' => H_STAT_CARDS_TRASH,
             'name' => totranslate('Cards trashed'),
             'type' => 'int',
         ],
         'words' => [
-            'id' => STAT_WORDS,
+            'id' => H_STAT_WORDS,
             'name' => totranslate('Words'),
             'type' => 'int',
         ],
         'longestWord' => [
-            'id' => STAT_LONGEST_WORD,
+            'id' => H_STAT_LONGEST_WORD,
             'name' => totranslate('Longest word'),
             'type' => 'int',
         ],
         'bestWord' => [
-            'id' => STAT_BEST_WORD,
+            'id' => H_STAT_BEST_WORD,
             'name' => totranslate('Highest-scoring word'),
             'type' => 'int',
         ],
         'invalidWords' => [
-            'id' => STAT_INVALID_WORDS,
+            'id' => H_STAT_INVALID_WORDS,
             'name' => totranslate('Invalid words'),
             'type' => 'int',
         ],
         'votesAccept' => [
-            'id' => STAT_VOTES_ACCEPT,
+            'id' => H_STAT_VOTES_ACCEPT,
             'name' => totranslate('Votes to accept'),
             'type' => 'int',
         ],
         'votesReject' => [
-            'id' => STAT_VOTES_REJECT,
+            'id' => H_STAT_VOTES_REJECT,
             'name' => totranslate('Votes to reject'),
             'type' => 'int',
         ],
         'useInk' => [
-            'id' => STAT_USE_INK,
+            'id' => H_STAT_USE_INK,
             'name' => totranslate('Ink used'),
             'type' => 'int',
         ],
         'useRemover' => [
-            'id' => STAT_USE_REMOVER,
+            'id' => H_STAT_USE_REMOVER,
             'name' => totranslate('Remover used'),
             'type' => 'int',
         ],
         'starterCard1' => [
-            'id' => STAT_STARTER_CARD1,
+            'id' => H_STAT_STARTER_CARD1,
             'name' => totranslate('Starter card'),
             'type' => 'int',
         ],
         'starterCard2' => [
-            'id' => STAT_STARTER_CARD2,
+            'id' => H_STAT_STARTER_CARD2,
             'name' => totranslate('Starter card'),
             'type' => 'int',
         ],
-        'deck' . STARTER => [
-            'id' => STAT_STARTER,
+        'deck' . H_STARTER => [
+            'id' => H_STAT_STARTER,
             'name' => totranslate('Starter cards in deck'),
             'type' => 'int',
         ],
-        'deck' . ADVENTURE => [
-            'id' => STAT_ADVENTURE,
+        'deck' . H_ADVENTURE => [
+            'id' => H_STAT_ADVENTURE,
             'name' => totranslate('Adventure cards in deck'),
             'type' => 'int',
         ],
-        'deck' . HORROR => [
-            'id' => STAT_HORROR,
+        'deck' . H_HORROR => [
+            'id' => H_STAT_HORROR,
             'name' => totranslate('Horror cards in deck'),
             'type' => 'int',
         ],
-        'deck' . MYSTERY => [
-            'id' => STAT_MYSTERY,
+        'deck' . H_MYSTERY => [
+            'id' => H_STAT_MYSTERY,
             'name' => totranslate('Mystery cards in deck'),
             'type' => 'int',
         ],
-        'deck' . ROMANCE => [
-            'id' => STAT_ROMANCE,
+        'deck' . H_ROMANCE => [
+            'id' => H_STAT_ROMANCE,
             'name' => totranslate('Romance cards in deck'),
             'type' => 'int',
         ],
     ],
 
     'value_labels' => [
-        STAT_STARTER_CARD1 => $letters,
-        STAT_STARTER_CARD2 => $letters,
-        STAT_COOP_GENRE => $genres,
+        H_STAT_STARTER_CARD1 => $letters,
+        H_STAT_STARTER_CARD2 => $letters,
+        H_STAT_COOP_GENRE => $genres,
     ],
 ];

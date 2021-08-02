@@ -54,42 +54,42 @@
 $machinestates = [
 
     // The initial state. Please do not modify.
-    ST_BGA_GAME_SETUP => [
+    H_ST_BGA_GAME_SETUP => [
         'name' => 'gameSetup',
         'description' => '',
         'type' => 'manager',
         'action' => 'stGameSetup',
         'transitions' => [
-            '' => ST_START,
+            '' => H_ST_START,
         ],
     ],
 
-    ST_START => [
+    H_ST_START => [
         'name' => 'start',
         'description' => '',
         'type' => 'game',
         'action' => 'stStart',
         'transitions' => [
-            'next' => ST_PLAYER_TURN,
+            'next' => H_ST_PLAYER_TURN,
         ],
     ],
 
-    ST_PLAYER_TURN => [
+    H_ST_PLAYER_TURN => [
         'name' => 'playerTurn',
         'description' => clienttranslate('${actplayer} must spell a word'),
         'descriptionmyturn' => clienttranslate('${you} must spell a word'),
         'type' => 'activeplayer',
         'possibleactions' => ['confirmWord', 'skipWord'],
         'transitions' => [
-            'next' => ST_UNCOVER,
-            'vote' => ST_VOTE,
-            'skip' => ST_SKIP_TURN,
-            'zombie' => ST_SKIP_TURN,
+            'next' => H_ST_UNCOVER,
+            'vote' => H_ST_VOTE,
+            'skip' => H_ST_SKIP_TURN,
+            'zombie' => H_ST_SKIP_TURN,
         ],
         'updateGameProgression' => true,
     ],
 
-    ST_VOTE => [
+    H_ST_VOTE => [
         'name' => 'vote',
         'description' => clienttranslate('Others must vote on ${player_name}\'s word: ${word}'),
         'descriptionmyturn' => clienttranslate('${you} must vote on ${player_name}\'s word: ${word}'),
@@ -98,12 +98,12 @@ $machinestates = [
         'action' => 'stVote',
         'possibleactions' => ['voteAccept', 'voteReject'],
         'transitions' => [
-            'accept' => ST_UNCOVER,
-            'reject' => ST_PLAYER_TURN,
+            'accept' => H_ST_UNCOVER,
+            'reject' => H_ST_PLAYER_TURN,
         ],
     ],
 
-    ST_UNCOVER => [
+    H_ST_UNCOVER => [
         'name' => 'uncover',
         'description' => clienttranslate('${actplayer} must uncover a wild card using ${genre}${letter}'),
         'descriptionmyturn' => clienttranslate('${you} must uncover a wild card using ${genre}${letter}'),
@@ -112,13 +112,13 @@ $machinestates = [
         'action' => 'stAutoSkip',
         'possibleactions' => ['uncover'],
         'transitions' => [
-            'again' => ST_UNCOVER,
-            'next' => ST_DOUBLE,
-            'zombie' => ST_CLEANUP,
+            'again' => H_ST_UNCOVER,
+            'next' => H_ST_DOUBLE,
+            'zombie' => H_ST_CLEANUP,
         ],
     ],
 
-    ST_DOUBLE => [
+    H_ST_DOUBLE => [
         'name' => 'double',
         'description' => clienttranslate('${actplayer} must double an adjacent card using ${genre}${letter}'),
         'descriptionmyturn' => clienttranslate('${you} must double an adjacent card using ${genre}${letter}'),
@@ -127,33 +127,33 @@ $machinestates = [
         'action' => 'stAutoSkip',
         'possibleactions' => ['double'],
         'transitions' => [
-            'again' => ST_DOUBLE,
-            'next' => ST_BASIC,
-            'zombie' => ST_CLEANUP,
+            'again' => H_ST_DOUBLE,
+            'next' => H_ST_BASIC,
+            'zombie' => H_ST_CLEANUP,
         ],
     ],
 
-    ST_BASIC => [
+    H_ST_BASIC => [
         'name' => 'basic',
         'description' => '',
         'type' => 'game',
         'action' => 'stBasic',
         'transitions' => [
-            'next' => ST_SPECIAL,
+            'next' => H_ST_SPECIAL,
         ],
     ],
 
-    ST_SPECIAL => [
+    H_ST_SPECIAL => [
         'name' => 'special',
         'description' => '',
         'type' => 'game',
         'action' => 'stSpecial',
         'transitions' => [
-            'next' => ST_TRASH,
+            'next' => H_ST_TRASH,
         ],
     ],
 
-    ST_TRASH => [
+    H_ST_TRASH => [
         'name' => 'trash',
         'description' => clienttranslate('${actplayer} may trash cards (${coins}¢ and ${points}${icon} earned so far)'),
         'descriptionmyturn' => clienttranslate('${you} may trash cards (${coins}¢ and ${points}${icon} earned so far)'),
@@ -162,14 +162,14 @@ $machinestates = [
         'action' => 'stAutoSkip',
         'possibleactions' => ['trash', 'previewDraw', 'skip'],
         'transitions' => [
-            'romance' => ST_SPECIAL_ROMANCE,
-            'again' => ST_TRASH,
-            'next' => ST_TRASH_DISCARD,
-            'zombie' => ST_CLEANUP,
+            'romance' => H_ST_SPECIAL_ROMANCE,
+            'again' => H_ST_TRASH,
+            'next' => H_ST_TRASH_DISCARD,
+            'zombie' => H_ST_CLEANUP,
         ],
     ],
 
-    ST_TRASH_DISCARD => [
+    H_ST_TRASH_DISCARD => [
         'name' => 'trashDiscard',
         'description' => clienttranslate('${actplayer} may trash discarded cards (${coins}¢ and ${points}${icon} earned so far)'),
         'descriptionmyturn' => clienttranslate('${you} may trash discarded cards (${coins}¢ and ${points}${icon} earned so far)'),
@@ -178,14 +178,14 @@ $machinestates = [
         'action' => 'stAutoSkip',
         'possibleactions' => ['trashDiscard', 'previewDraw', 'skip'],
         'transitions' => [
-            'romance' => ST_SPECIAL_ROMANCE,
-            'again' => ST_TRASH_DISCARD,
-            'next' => ST_SPECIAL_ROMANCE_PROMPT,
-            'zombie' => ST_CLEANUP,
+            'romance' => H_ST_SPECIAL_ROMANCE,
+            'again' => H_ST_TRASH_DISCARD,
+            'next' => H_ST_SPECIAL_ROMANCE_PROMPT,
+            'zombie' => H_ST_CLEANUP,
         ],
     ],
 
-    ST_SPECIAL_ROMANCE_PROMPT => [
+    H_ST_SPECIAL_ROMANCE_PROMPT => [
         'name' => 'specialRomancePrompt',
         'description' => clienttranslate('${actplayer} may preview cards'),
         'descriptionmyturn' => clienttranslate('${you} may preview cards'),
@@ -194,24 +194,24 @@ $machinestates = [
         'action' => 'stAutoSkip',
         'possibleactions' => ['previewDraw', 'skip'],
         'transitions' => [
-            'romance' => ST_SPECIAL_ROMANCE,
-            'next' => ST_EITHER,
+            'romance' => H_ST_SPECIAL_ROMANCE,
+            'next' => H_ST_EITHER,
         ],
     ],
 
-    ST_SPECIAL_ROMANCE => [
+    H_ST_SPECIAL_ROMANCE => [
         'name' => 'specialRomance',
         'description' => clienttranslate('${actplayer} must return or discard previewed cards'),
         'descriptionmyturn' => clienttranslate('${you} must return or discard previewed cards'),
         'type' => 'activeplayer',
         'possibleactions' => ['previewReturn', 'previewDiscard'],
         'transitions' => [
-            'next' => ST_TRASH,
-            'zombie' => ST_CLEANUP,
+            'next' => H_ST_TRASH,
+            'zombie' => H_ST_CLEANUP,
         ],
     ],
 
-    ST_EITHER => [
+    H_ST_EITHER => [
         'name' => 'either',
         'description' => clienttranslate('${actplayer} must choose a benefit for ${genre}${letter} (${coins}¢ and ${points}${icon} earned so far)'),
         'descriptionmyturn' => clienttranslate('${you} must choose a benefit for ${genre}${letter} (${coins}¢ and ${points}${icon} earned so far)'),
@@ -220,13 +220,13 @@ $machinestates = [
         'action' => 'stAutoSkip',
         'possibleactions' => ['either'],
         'transitions' => [
-            'again' => ST_EITHER,
-            'next' => ST_JAIL,
-            'zombie' => ST_CLEANUP,
+            'again' => H_ST_EITHER,
+            'next' => H_ST_JAIL,
+            'zombie' => H_ST_CLEANUP,
         ],
     ],
 
-    ST_JAIL => [
+    H_ST_JAIL => [
         'name' => 'jail',
         'description' => clienttranslate('${actplayer} may jail offer row cards (${coins}¢ and ${points}${icon} earned so far)'),
         'descriptionmyturn' => clienttranslate('${you} may jail offer row cards (${coins}¢ and ${points}${icon} earned so far)'),
@@ -235,13 +235,13 @@ $machinestates = [
         'action' => 'stAutoSkip',
         'possibleactions' => ['jail', 'skip'],
         'transitions' => [
-            'again' => ST_JAIL,
-            'next' => ST_FLUSH,
-            'zombie' => ST_CLEANUP,
+            'again' => H_ST_JAIL,
+            'next' => H_ST_FLUSH,
+            'zombie' => H_ST_CLEANUP,
         ],
     ],
 
-    ST_FLUSH => [
+    H_ST_FLUSH => [
         'name' => 'flush',
         'description' => clienttranslate('${actplayer} may flush the offer row (${coins}¢ available)'),
         'descriptionmyturn' => clienttranslate('${you} may flush the offer row (${coins}¢ available)'),
@@ -250,12 +250,12 @@ $machinestates = [
         'action' => 'stFlush',
         'possibleactions' => ['flush', 'skip'],
         'transitions' => [
-            'next' => ST_PURCHASE,
-            'zombie' => ST_CLEANUP,
+            'next' => H_ST_PURCHASE,
+            'zombie' => H_ST_CLEANUP,
         ],
     ],
 
-    ST_PURCHASE => [
+    H_ST_PURCHASE => [
         'name' => 'purchase',
         'description' => clienttranslate('${actplayer} may purchase (${coins}¢ available)'),
         'descriptionmyturn' => clienttranslate('${you} may purchase (${coins}¢ available)'),
@@ -264,14 +264,14 @@ $machinestates = [
         'action' => 'stAutoSkip',
         'possibleactions' => ['purchase', 'skipPurchase', 'doctor', 'convert'],
         'transitions' => [
-            'again' => ST_PURCHASE,
-            'next' => ST_CLEANUP,
-            'zombie' => ST_CLEANUP,
+            'again' => H_ST_PURCHASE,
+            'next' => H_ST_CLEANUP,
+            'zombie' => H_ST_CLEANUP,
         ],
         'updateGameProgression' => true,
     ],
 
-    ST_CLEANUP => [
+    H_ST_CLEANUP => [
         'name' => 'cleanup',
         'description' => clienttranslate('${actplayer}\'s turn ends'),
         'descriptionmyturn' => clienttranslate('${actplayer}\'s turn ends'),
@@ -279,11 +279,11 @@ $machinestates = [
         'action' => 'stCleanup',
         'possibleactions' => [],
         'transitions' => [
-            'next' => ST_COOP_TURN,
+            'next' => H_ST_COOP_TURN,
         ],
     ],
 
-    ST_SKIP_TURN => [
+    H_ST_SKIP_TURN => [
         'name' => 'skipTurn',
         'description' => clienttranslate('${actplayer}\'s turn ends'),
         'descriptionmyturn' => clienttranslate('${actplayer}\'s turn ends'),
@@ -291,47 +291,47 @@ $machinestates = [
         'action' => 'stSkipTurn',
         'possibleactions' => [],
         'transitions' => [
-            'next' => ST_COOP_TURN,
+            'next' => H_ST_COOP_TURN,
         ],
     ],
 
-    ST_COOP_TURN => [
+    H_ST_COOP_TURN => [
         'name' => 'coopTurn',
         'description' => clienttranslate('Penny Dreadful takes a turn'),
         'type' => 'game',
         'action' => 'stCoopTurn',
         'transitions' => [
-            'next' => ST_NEXT_PLAYER,
-            'end' => ST_END,
+            'next' => H_ST_NEXT_PLAYER,
+            'end' => H_ST_END,
         ],
     ],
 
-    ST_NEXT_PLAYER => [
+    H_ST_NEXT_PLAYER => [
         'name' => 'nextPlayer',
         'description' => '',
         'type' => 'game',
         'action' => 'stNextPlayer',
         'transitions' => [
-            'playerTurn' => ST_PLAYER_TURN,
-            'end' => ST_END,
+            'playerTurn' => H_ST_PLAYER_TURN,
+            'end' => H_ST_END,
         ],
         'updateGameProgression' => true,
     ],
 
-    ST_END => [
+    H_ST_END => [
         'name' => 'end',
         'description' => '',
         'type' => 'game',
         'action' => 'stEnd',
         'transitions' => [
-            'gameEnd' => ST_BGA_GAME_END,
+            'gameEnd' => H_ST_BGA_GAME_END,
         ],
         'updateGameProgression' => true,
     ],
 
     // Final state.
     // Please do not modify (and do not overload action/args methods).
-    ST_BGA_GAME_END => [
+    H_ST_BGA_GAME_END => [
         'name' => 'gameEnd',
         'description' => clienttranslate('End of game'),
         'type' => 'manager',

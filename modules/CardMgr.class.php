@@ -35,7 +35,7 @@ class CardMgr extends APP_GameClass
         $cards = hardback::$instance->cards;
         $create = [];
         foreach ($cards as $refId => $ref) {
-            if ($ref['genre'] != STARTER) {
+            if ($ref['genre'] != H_STARTER) {
                 $create[] = "($refId, 'discard', 'discard')";
             }
         }
@@ -48,8 +48,8 @@ class CardMgr extends APP_GameClass
         $starterCoins = [];
         $starterPoints = [];
         foreach ($cards as $refId => $ref) {
-            if ($ref['genre'] == STARTER) {
-                if (array_key_exists(COINS, $ref['basicBenefits'])) {
+            if ($ref['genre'] == H_STARTER) {
+                if (array_key_exists(H_COINS, $ref['basicBenefits'])) {
                     $starterCoins[] = $refId;
                 } else {
                     $starterPoints[] = $refId;
@@ -420,11 +420,11 @@ class CardMgr extends APP_GameClass
             }, $cards));
         }
         return [
-            $counts[STARTER] ?? 0,
-            $counts[ADVENTURE] ?? 0,
-            $counts[HORROR] ?? 0,
-            $counts[MYSTERY] ?? 0,
-            $counts[ROMANCE] ?? 0,
+            $counts[H_STARTER] ?? 0,
+            $counts[H_ADVENTURE] ?? 0,
+            $counts[H_HORROR] ?? 0,
+            $counts[H_MYSTERY] ?? 0,
+            $counts[H_ROMANCE] ?? 0,
         ];
     }
 
@@ -556,7 +556,7 @@ class CardMgr extends APP_GameClass
         foreach ($cards as $card) {
             // Cancel all benefits on opponent timeless cards
             if ($card->isOrigin('timeless') && !$card->isOrigin(self::getTimelessLocation($playerId))) {
-                self::useBenefit($card, ALL_BENEFITS);
+                self::useBenefit($card, H_ALL_BENEFITS);
                 $opponent[] = $card;
             }
         }
@@ -575,7 +575,7 @@ class CardMgr extends APP_GameClass
         $myCounts = self::getGenreCounts(self::getTimeless($playerId));
         $opponentCounts = self::getGenreCounts($opponent);
         foreach ($counts as $genre => $count) {
-            if ($genre != STARTER) {
+            if ($genre != H_STARTER) {
                 $val = $count + $myCounts[$genre] - $opponentCounts[$genre];
                 hardback::$instance->setGameStateValue("countActive$genre", $val);
             }
@@ -587,7 +587,7 @@ class CardMgr extends APP_GameClass
 
     public static function isGenreActive(int $genre): bool
     {
-        return $genre != STARTER && hardback::$instance->getGameStateValue("countActive$genre") >= 2;
+        return $genre != H_STARTER && hardback::$instance->getGameStateValue("countActive$genre") >= 2;
     }
 
     public static function discardToOrigin($cards): array
@@ -606,7 +606,7 @@ class CardMgr extends APP_GameClass
     {
         // Starter cards are trashed forever
         // Non-starter cards can eventually reshuffle
-        return $card->getGenre() == STARTER ? "trash" : "discard";
+        return $card->getGenre() == H_STARTER ? "trash" : "discard";
     }
 
     public static function discard($cards, string $location, bool $notify = true): void
@@ -654,7 +654,7 @@ class CardMgr extends APP_GameClass
                 $keep = false;
                 if ($skipWord) {
                     $keep = $card->isOrigin('timeless'); // keep already-played
-                } else if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO) {
+                } else if (hardback::$instance->gamestate->table_globals[H_OPTION_COOP] != H_NO) {
                     $keep = $owner == $playerId || $card->isOrigin('timeless'); // keep mine and already-played
                 } else {
                     $keep = $owner == $playerId; // keep mine
@@ -692,7 +692,7 @@ class CardMgr extends APP_GameClass
 
     public static function canFlushOffer(): bool
     {
-        if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO) {
+        if (hardback::$instance->gamestate->table_globals[H_OPTION_COOP] != H_NO) {
             return false;
         }
 
@@ -725,7 +725,7 @@ class CardMgr extends APP_GameClass
         self::notifyCards(self::drawCards(7, 'deck', 'offer'));
     }
 
-    public static function inkCard(HCard $card, int $inkValue = HAS_INK): void
+    public static function inkCard(HCard $card, int $inkValue = H_HAS_INK): void
     {
         $sql = "UPDATE card SET `ink` = $inkValue WHERE `id` = {$card->getId()}";
         self::DbQuery($sql);
@@ -737,10 +737,10 @@ class CardMgr extends APP_GameClass
 
     public static function uncover(HCard &$card, HCard $source): void
     {
-        self::useBenefit($source, UNCOVER_ADJ);
+        self::useBenefit($source, H_UNCOVER_ADJ);
         self::DbQuery("UPDATE card SET `wild` = '_' WHERE `id` = {$card->getId()}");
         $card->setWild('_');
-        if ($card->getGenre() != STARTER) {
+        if ($card->getGenre() != H_STARTER) {
             hardback::$instance->incGameStateValue("countActive{$card->getGenre()}", 1);
         }
 
@@ -750,7 +750,7 @@ class CardMgr extends APP_GameClass
 
     public static function double(HCard &$card, HCard $source): void
     {
-        self::useBenefit($source, DOUBLE_ADJ);
+        self::useBenefit($source, H_DOUBLE_ADJ);
         self::DbQuery("UPDATE card SET `factor` = `factor` + 1 WHERE `id` = {$card->getId()}");
         $card->setFactor($card->getFactor() + 1);
 

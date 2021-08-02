@@ -43,24 +43,24 @@ class hardback extends Table
         //  the corresponding ID in gameoptions.inc.php.
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         self::initGameStateLabels([
-            'adverts' => OPTION_ADVERTS,
-            'awards' => OPTION_AWARDS,
-            'awardWinner' => AWARD_WINNER,
-            'coop' => OPTION_COOP,
-            'countActive' . ADVENTURE => COUNT_ACTIVE_ADVENTURE,
-            'countActive' . HORROR => COUNT_ACTIVE_HORROR,
-            'countActive' . MYSTERY => COUNT_ACTIVE_MYSTERY,
-            'countActive' . ROMANCE => COUNT_ACTIVE_ROMANCE,
-            'dictionary' => OPTION_DICTIONARY,
-            'dictionaryDe' => OPTION_DICTIONARY_DE,
-            'dictionaryFr' => OPTION_DICTIONARY_FR,
-            'dictionaryEs' => OPTION_DICTIONARY_ES,
-            'dictionaryIt' => OPTION_DICTIONARY_IT,
-            'length' => OPTION_LENGTH,
-            // 'powers' => OPTION_POWERS,
-            'startInk' => START_INK,
-            'startRemover' => START_REMOVER,
-            'startScore' => START_SCORE,
+            'adverts' => H_OPTION_ADVERTS,
+            'awards' => H_OPTION_AWARDS,
+            'awardWinner' => H_AWARD_WINNER,
+            'coop' => H_OPTION_COOP,
+            'countActive' . H_ADVENTURE => H_COUNT_ACTIVE_ADVENTURE,
+            'countActive' . H_HORROR => H_COUNT_ACTIVE_HORROR,
+            'countActive' . H_MYSTERY => H_COUNT_ACTIVE_MYSTERY,
+            'countActive' . H_ROMANCE => H_COUNT_ACTIVE_ROMANCE,
+            'dictionary' => H_OPTION_DICTIONARY,
+            'dictionaryDe' => H_OPTION_DICTIONARY_DE,
+            'dictionaryFr' => H_OPTION_DICTIONARY_FR,
+            'dictionaryEs' => H_OPTION_DICTIONARY_ES,
+            'dictionaryIt' => H_OPTION_DICTIONARY_IT,
+            'length' => H_OPTION_LENGTH,
+            // 'powers' => H_OPTION_POWERS,
+            'startInk' => H_START_INK,
+            'startRemover' => H_START_REMOVER,
+            'startScore' => H_START_SCORE,
         ]);
     }
 
@@ -95,15 +95,15 @@ class hardback extends Table
 
         // Init global values with their initial values
         self::setGameStateInitialValue('awardWinner', 0);
-        self::setGameStateInitialValue('countActive' . ADVENTURE, 0);
-        self::setGameStateInitialValue('countActive' . HORROR, 0);
-        self::setGameStateInitialValue('countActive' . MYSTERY, 0);
-        self::setGameStateInitialValue('countActive' . ROMANCE, 0);
+        self::setGameStateInitialValue('countActive' . H_ADVENTURE, 0);
+        self::setGameStateInitialValue('countActive' . H_HORROR, 0);
+        self::setGameStateInitialValue('countActive' . H_MYSTERY, 0);
+        self::setGameStateInitialValue('countActive' . H_ROMANCE, 0);
         self::setGameStateInitialValue('startInk', 0);
         self::setGameStateInitialValue('startRemover', 0);
         self::setGameStateInitialValue('startScore', 0);
-        if ($this->gamestate->table_globals[OPTION_COOP] == COOP_SIGNATURE) {
-            $genre = rand(ADVENTURE, ROMANCE);
+        if ($this->gamestate->table_globals[H_OPTION_COOP] == H_COOP_SIGNATURE) {
+            $genre = rand(H_ADVENTURE, H_ROMANCE);
             self::initStat('table', 'coopGenre', $genre);
         }
 
@@ -113,7 +113,7 @@ class hardback extends Table
         self::initStat('table', 'longestWord', 0);
         self::initStat('table', 'turns', 1);
         self::initStat('table', 'words', 0);
-        if ($this->gamestate->table_globals[OPTION_COOP]) {
+        if ($this->gamestate->table_globals[H_OPTION_COOP]) {
             self::initStat('table', 'coopAvg', 0);
             self::initStat('table', 'coopScore', 0);
             self::initStat('table', 'coopTurns', 0);
@@ -126,11 +126,11 @@ class hardback extends Table
         self::initStat('player', 'cardsPurchase', 0);
         self::initStat('player', 'cardsTrash', 0);
         self::initStat('player', 'coins', 0);
-        self::initStat('player', 'deck' . ADVENTURE, 0);
-        self::initStat('player', 'deck' . HORROR, 0);
-        self::initStat('player', 'deck' . MYSTERY, 0);
-        self::initStat('player', 'deck' . ROMANCE, 0);
-        self::initStat('player', 'deck' . STARTER, 10);
+        self::initStat('player', 'deck' . H_ADVENTURE, 0);
+        self::initStat('player', 'deck' . H_HORROR, 0);
+        self::initStat('player', 'deck' . H_MYSTERY, 0);
+        self::initStat('player', 'deck' . H_ROMANCE, 0);
+        self::initStat('player', 'deck' . H_STARTER, 10);
         self::initStat('player', 'invalidWords', 0);
         self::initStat('player', 'longestWord', 0);
         self::initStat('player', 'pointsBasic', 0);
@@ -141,14 +141,14 @@ class hardback extends Table
         self::initStat('player', 'useInk', 0);
         self::initStat('player', 'useRemover', 0);
         self::initStat('player', 'words', 0);
-        if ($this->gamestate->table_globals[OPTION_ADVERTS]) {
+        if ($this->gamestate->table_globals[H_OPTION_ADVERTS]) {
             self::initStat('player', 'pointsAdvert', 0);
         }
-        if ($this->gamestate->table_globals[OPTION_AWARDS]) {
+        if ($this->gamestate->table_globals[H_OPTION_AWARDS]) {
             self::initStat('player', 'pointsAward', 0);
         }
         $dict = WordMgr::getDictionaryId();
-        if ($dict == VOTE_50 || $dict == VOTE_100) {
+        if ($dict == H_VOTE_50 || $dict == H_VOTE_100) {
             self::initStat('player', 'votesAccept', 0);
             self::initStat('player', 'votesReject', 0);
         }
@@ -205,11 +205,11 @@ class hardback extends Table
             'cards' => CardMgr::getCardsInLocation($locations),
             'finalRound' => $this->getGameProgression() >= 100,
             'options' => [
-                'adverts' => $this->gamestate->table_globals[OPTION_ADVERTS] > 0,
-                'awards' => $this->gamestate->table_globals[OPTION_AWARDS] > 0,
-                'coop' => $this->gamestate->table_globals[OPTION_COOP] > 0,
+                'adverts' => $this->gamestate->table_globals[H_OPTION_ADVERTS] > 0,
+                'awards' => $this->gamestate->table_globals[H_OPTION_AWARDS] > 0,
+                'coop' => $this->gamestate->table_globals[H_OPTION_COOP] > 0,
                 'lang' => WordMgr::getLanguageId(),
-                // 'powers' => $this->gamestate->table_globals[OPTION_POWERS] > 0,
+                // 'powers' => $this->gamestate->table_globals[H_OPTION_POWERS] > 0,
             ],
             'refs' => [
                 'benefits' => $this->benefits,
@@ -218,13 +218,13 @@ class hardback extends Table
             ],
             'word' => $activePlayer->getWord(),
         ];
-        if ($this->gamestate->table_globals[OPTION_ADVERTS]) {
+        if ($this->gamestate->table_globals[H_OPTION_ADVERTS]) {
             $data['refs']['adverts'] = $this->adverts;
         }
-        if ($this->gamestate->table_globals[OPTION_AWARDS]) {
+        if ($this->gamestate->table_globals[H_OPTION_AWARDS]) {
             $data['refs']['awards'] = $this->awards;
         }
-        if ($this->gamestate->table_globals[OPTION_COOP]) {
+        if ($this->gamestate->table_globals[H_OPTION_COOP]) {
             $data['penny'] = PlayerMgr::getPenny();
             $data['refs']['signatures'] = $this->signatures;
         }
@@ -249,10 +249,10 @@ class hardback extends Table
 
     function getGameLength(): int
     {
-        if ($this->gamestate->table_globals[OPTION_COOP]) {
+        if ($this->gamestate->table_globals[H_OPTION_COOP]) {
             return 60 * PlayerMgr::getPlayerCount();
         } else {
-            return $this->gamestate->table_globals[OPTION_LENGTH];
+            return $this->gamestate->table_globals[H_OPTION_LENGTH];
         }
     }
 
@@ -306,7 +306,7 @@ class hardback extends Table
         }
 
         // Inked cards must be used
-        $inked = CardMgr::getCardsInLocation([$player->getHandLocation(), 'tableau'], HAS_INK);
+        $inked = CardMgr::getCardsInLocation([$player->getHandLocation(), 'tableau'], H_HAS_INK);
         $unusedInk = array_filter($inked, function ($card) use ($cardIds) {
             return !in_array($card->getId(), $cardIds);
         });
@@ -342,7 +342,7 @@ class hardback extends Table
         ]);
 
         $dict = WordMgr::getDictionaryId();
-        if ($dict == VOTE_50 || $dict == VOTE_100) {
+        if ($dict == H_VOTE_50 || $dict == H_VOTE_100) {
             // Database pre-commit 
             $updatedIds = CardMgr::preCommitWord($cards);
             CardMgr::notifyCards(CardMgr::getCards($updatedIds));
@@ -390,7 +390,7 @@ class hardback extends Table
             $this->setStat($length, 'longestWord');
             $length = min($length, 12);
             $longest = min($longest, 12);
-            if ($length > $longest && $length >= 7 && $this->gamestate->table_globals[OPTION_AWARDS]) {
+            if ($length > $longest && $length >= 7 && $this->gamestate->table_globals[H_OPTION_AWARDS]) {
                 $msg = $this->msg['awardFirst'];
                 $points = $this->awards[$length];
                 $args = [
@@ -514,7 +514,7 @@ class hardback extends Table
         $source = null;
         $tableau = CardMgr::getTableau(self::getActivePlayerId());
         foreach ($tableau as $card) {
-            if ($card->hasBenefit(UNCOVER_ADJ)) {
+            if ($card->hasBenefit(H_UNCOVER_ADJ)) {
                 if ($card->getPrevious() != null && $card->getPrevious()->isWild()) {
                     $cardIds[] = $card->getPrevious()->getId();
                 }
@@ -568,7 +568,7 @@ class hardback extends Table
         $source = null;
         $tableau = CardMgr::getTableau(self::getActivePlayerId());
         foreach ($tableau as $card) {
-            if ($card->hasBenefit(DOUBLE_ADJ)) {
+            if ($card->hasBenefit(H_DOUBLE_ADJ)) {
                 if ($card->getPrevious() != null && !$card->getPrevious()->isWild()) {
                     $cardIds[] = $card->getPrevious()->getId();
                 }
@@ -624,19 +624,19 @@ class hardback extends Table
         $benefit = null;
         $tableau = CardMgr::getTableau($player->getId());
         foreach ($tableau as $card) {
-            $benefits = $card->getBenefits(EITHER_BASIC);
+            $benefits = $card->getBenefits(H_EITHER_BASIC);
             if (!empty($benefits)) {
-                $benefit = EITHER_BASIC;
+                $benefit = H_EITHER_BASIC;
                 $amount = $benefits[0]['value'];
             } else {
-                $benefits = $card->getBenefits(EITHER_GENRE);
+                $benefits = $card->getBenefits(H_EITHER_GENRE);
                 if (!empty($benefits)) {
-                    $benefit = EITHER_GENRE;
+                    $benefit = H_EITHER_GENRE;
                     $amount = $benefits[0]['value'];
                 } else {
-                    $benefits = $card->getBenefits(EITHER_INK);
+                    $benefits = $card->getBenefits(H_EITHER_INK);
                     if (!empty($benefits)) {
-                        $benefit = EITHER_INK;
+                        $benefit = H_EITHER_INK;
                         $amount =  1;
                     }
                 }
@@ -673,14 +673,14 @@ class hardback extends Table
 
         CardMgr::useBenefit($card, $benefitId);
         $amount = $this->gamestate->state()['args']['amount'];
-        if (($benefitId == EITHER_BASIC || $benefitId == EITHER_GENRE) && $choice == 'coins') {
+        if (($benefitId == H_EITHER_BASIC || $benefitId == H_EITHER_GENRE) && $choice == 'coins') {
             $player->addCoins($amount);
-        } else if (($benefitId == EITHER_BASIC || $benefitId == EITHER_GENRE) && $choice == 'points') {
-            $stat = $benefits[0]['activation'] == FROM_GENRE ? 'pointsGenre' : 'pointsBasic';
+        } else if (($benefitId == H_EITHER_BASIC || $benefitId == H_EITHER_GENRE) && $choice == 'points') {
+            $stat = $benefits[0]['activation'] == H_FROM_GENRE ? 'pointsGenre' : 'pointsBasic';
             $player->addPoints($amount, $stat);
-        } else if ($benefitId == EITHER_INK && $choice == 'ink') {
+        } else if ($benefitId == H_EITHER_INK && $choice == 'ink') {
             $player->addInk();
-        } else if ($benefitId == EITHER_INK && $choice = 'remover') {
+        } else if ($benefitId == H_EITHER_INK && $choice = 'remover') {
             $player->addRemover();
         }
         $this->gamestate->nextState('again');
@@ -695,13 +695,13 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         $tableau = CardMgr::getTableau($player->getId());
         foreach ($tableau as $card) {
-            $benefits = $card->getBenefits(COINS);
+            $benefits = $card->getBenefits(H_COINS);
             foreach ($benefits as $benefit) {
                 $player->addCoins($benefit['value']);
             }
-            $benefits = $card->getBenefits(POINTS);
+            $benefits = $card->getBenefits(H_POINTS);
             foreach ($benefits as $benefit) {
-                $stat = $benefit['activation'] == FROM_GENRE ? 'pointsGenre' : 'pointsBasic';
+                $stat = $benefit['activation'] == H_FROM_GENRE ? 'pointsGenre' : 'pointsBasic';
                 $player->addPoints($benefit['value'], $stat);
             }
         }
@@ -727,16 +727,16 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer();
         $tableau = CardMgr::getTableau($player->getId());
         foreach ($tableau as $card) {
-            if ($card->hasBenefit(SPECIAL_ADVENTURE)) {
+            if ($card->hasBenefit(H_SPECIAL_ADVENTURE)) {
                 // Adventure: 2 coins per adventure
-                $benefits = $card->getBenefits(SPECIAL_ADVENTURE);
+                $benefits = $card->getBenefits(H_SPECIAL_ADVENTURE);
                 $benefit = reset($benefits);
-                CardMgr::useBenefit($card, SPECIAL_ADVENTURE);
-                $coins = $this->getGameStateValue('countActive' . ADVENTURE) * $benefit['value'];
+                CardMgr::useBenefit($card, H_SPECIAL_ADVENTURE);
+                $coins = $this->getGameStateValue('countActive' . H_ADVENTURE) * $benefit['value'];
                 $player->addCoins($coins);
-            } else if ($card->hasBenefit(SPECIAL_HORROR)) {
+            } else if ($card->hasBenefit(H_SPECIAL_HORROR)) {
                 // Horror: 1 point per inked card
-                $benefits = $card->getBenefits(SPECIAL_HORROR);
+                $benefits = $card->getBenefits(H_SPECIAL_HORROR);
                 $benefit = reset($benefits);
                 $inked = 0;
                 foreach ($tableau as $card) {
@@ -744,12 +744,12 @@ class hardback extends Table
                         $inked++;
                     }
                 }
-                CardMgr::useBenefit($card, SPECIAL_HORROR);
+                CardMgr::useBenefit($card, H_SPECIAL_HORROR);
                 $score = $inked * $benefit['value'];
                 $player->addPoints($score, 'pointsGenre');
-            } else if ($card->hasBenefit(SPECIAL_MYSTERY)) {
+            } else if ($card->hasBenefit(H_SPECIAL_MYSTERY)) {
                 // Mystery: 1 point per wild, including uncovered wilds
-                $benefits = $card->getBenefits(SPECIAL_MYSTERY);
+                $benefits = $card->getBenefits(H_SPECIAL_MYSTERY);
                 $benefit = reset($benefits);
                 $wilds = 0;
                 foreach ($tableau as $card) {
@@ -757,7 +757,7 @@ class hardback extends Table
                         $wilds++;
                     }
                 }
-                CardMgr::useBenefit($card, SPECIAL_MYSTERY);
+                CardMgr::useBenefit($card, H_SPECIAL_MYSTERY);
                 $score = $wilds * $benefit['value'];
                 $player->addPoints($score, 'pointsGenre');
             }
@@ -782,7 +782,7 @@ class hardback extends Table
         $count = $player->getDeckCount() + $player->getDiscardCount();
         if ($count > 0) {
             foreach ($tableau as $card) {
-                if ($card->hasBenefit(SPECIAL_ROMANCE)) {
+                if ($card->hasBenefit(H_SPECIAL_ROMANCE)) {
                     return $card->getId();
                 }
             }
@@ -798,7 +798,7 @@ class hardback extends Table
         if ($cardId == null) {
         }
         // Romance: Draw 3 and return or discard
-        CardMgr::useBenefit($cardId, SPECIAL_ROMANCE);
+        CardMgr::useBenefit($cardId, H_SPECIAL_ROMANCE);
         $preview = CardMgr::drawCards(3, $player->getDeckLocation(), $player->getHandLocation());
         self::notifyAllPlayers('message', $this->msg['preview'], [
             'player_name' => $player->getName(),
@@ -847,7 +847,7 @@ class hardback extends Table
         $cardIds = [];
         $tableau = CardMgr::getTableau($player->getId());
         foreach ($tableau as $card) {
-            if ($card->hasBenefit(TRASH_COINS) || $card->hasBenefit(TRASH_POINTS)) {
+            if ($card->hasBenefit(H_TRASH_COINS) || $card->hasBenefit(H_TRASH_POINTS)) {
                 $cardIds[] = $card->getId();
             }
         }
@@ -869,12 +869,12 @@ class hardback extends Table
         }
 
         $card = CardMgr::getCard($cardId);
-        $benefits = $card->getBenefits(TRASH_POINTS);
+        $benefits = $card->getBenefits(H_TRASH_POINTS);
         if (empty($benefits)) {
-            $benefits = $card->getBenefits(TRASH_COINS);
+            $benefits = $card->getBenefits(H_TRASH_COINS);
         }
         if (empty($benefits)) {
-            $benefits = $card->getBenefits(TRASH_DISCARD);
+            $benefits = $card->getBenefits(H_TRASH_DISCARD);
         }
         if (empty($benefits)) {
             throw new BgaVisibleSystemException("trash: Not possible for $player to use card $card");
@@ -884,8 +884,8 @@ class hardback extends Table
         CardMgr::discard($card, CardMgr::getTrashLocation($card));
         $icon = null;
         $amount = $benefits[0]['value'];
-        if ($benefits[0]['id'] == TRASH_POINTS) {
-            $stat = $benefits[0]['activation'] == FROM_GENRE ? 'pointsGenre' : 'pointsBasic';
+        if ($benefits[0]['id'] == H_TRASH_POINTS) {
+            $stat = $benefits[0]['activation'] == H_FROM_GENRE ? 'pointsGenre' : 'pointsBasic';
             $player->addPoints($amount, $stat);
             $icon = 'star';
         } else {
@@ -912,7 +912,7 @@ class hardback extends Table
         $tableau = CardMgr::getTableau($player->getId());
         if ($player->getDiscardCount() > 0) {
             foreach ($tableau as $card) {
-                $benefits = $card->getBenefits(TRASH_DISCARD);
+                $benefits = $card->getBenefits(H_TRASH_DISCARD);
                 if (!empty($benefits)) {
                     $sources[$card->getId()] = $benefits[0]['value'];
                 }
@@ -944,7 +944,7 @@ class hardback extends Table
         }
 
         $amount = $this->gamestate->state()['args']['amount'];
-        CardMgr::useBenefit($source, TRASH_DISCARD);
+        CardMgr::useBenefit($source, H_TRASH_DISCARD);
         CardMgr::discard($card, CardMgr::getTrashLocation($card));
         $player->addCoins($amount);
         self::notifyAllPlayers('message', $this->msg['trash'], [
@@ -969,7 +969,7 @@ class hardback extends Table
         $sourceIds = [];
         $tableau = CardMgr::getTableau($player->getId());
         foreach ($tableau as $card) {
-            if ($card->hasBenefit(JAIL)) {
+            if ($card->hasBenefit(H_JAIL)) {
                 $sourceIds[] = $card->getId();
             }
         }
@@ -998,7 +998,7 @@ class hardback extends Table
             throw new BgaVisibleSystemException("jail: Not possible for $player to use card $card");
         }
 
-        CardMgr::useBenefit($source, JAIL);
+        CardMgr::useBenefit($source, H_JAIL);
         if ($choice == 'trash') {
             self::notifyAllPlayers('message', $this->msg['trashOffer'], [
                 'player_name' => $player->getName(),
@@ -1097,7 +1097,7 @@ class hardback extends Table
             return $player->getCoins() >= $card->getCost();
         }));
         $advert = null;
-        if ($this->gamestate->table_globals[OPTION_ADVERTS]) {
+        if ($this->gamestate->table_globals[H_OPTION_ADVERTS]) {
             foreach ($this->adverts as $coins => $points) {
                 if ($points > $player->getAdvert()) {
                     $advert = ['coins' => $coins, 'points' => $points, 'icon' => 'star'];
@@ -1160,7 +1160,7 @@ class hardback extends Table
         self::notifyAllPlayers('message', $this->msg[$msg], $args);
 
         $penny = PlayerMgr::getPenny();
-        if ($penny->isGenreActive(ADVENTURE)) {
+        if ($penny->isGenreActive(H_ADVENTURE)) {
             // Adventure: Penny earns 1 per purchase
             $penny->addPoints(1);
             self::notifyAllPlayers('message', $this->msg['earn'], [
@@ -1196,7 +1196,7 @@ class hardback extends Table
         ]);
 
         $penny = PlayerMgr::getPenny();
-        if ($penny->isGenreActive(HORROR)) {
+        if ($penny->isGenreActive(H_HORROR)) {
             // Horror: Penny earns 1 per ink
             $penny->addPoints($convert['ink']);
             self::notifyAllPlayers('message', $this->msg['earn'], [
@@ -1291,7 +1291,7 @@ class hardback extends Table
     function stCoopTurn()
     {
         $player = PlayerMgr::getPlayer();
-        if ($this->gamestate->table_globals[OPTION_COOP] == NO || $player->isEliminated() || $player->isZombie()) {
+        if ($this->gamestate->table_globals[H_OPTION_COOP] == H_NO || $player->isEliminated() || $player->isZombie()) {
             $this->gamestate->nextState('next');
             return;
         }
@@ -1306,7 +1306,7 @@ class hardback extends Table
         $offer = CardMgr::getOffer();
         $card = end($offer);
         $points = $card->getCost();
-        if ($penny->getGenre() == ROMANCE && $card->getGenre() == ROMANCE) {
+        if ($penny->getGenre() == H_ROMANCE && $card->getGenre() == H_ROMANCE) {
             // Romance: Penny earns double
             $points *= 2;
         }
@@ -1331,7 +1331,7 @@ class hardback extends Table
         $draw = $this->drawOfferRow();
         unset($offer[$card->getId()]);
         $offer[$draw->getId()] = $draw;
-        if ($penny->getGenre() == MYSTERY && $card->getGenre() == MYSTERY) {
+        if ($penny->getGenre() == H_MYSTERY && $card->getGenre() == H_MYSTERY) {
             // Mystery: Penny discards cheapest
             CardMgr::sortCards($offer, 'cost');
             $card = reset($offer);
@@ -1361,7 +1361,7 @@ class hardback extends Table
         $draw = CardMgr::drawCards(1, 'deck', 'offer');
         $draw = reset($draw);
 
-        if ($this->gamestate->table_globals[OPTION_COOP] != NO) {
+        if ($this->gamestate->table_globals[H_OPTION_COOP] != H_NO) {
             // Discard the oldest matching timeless card
             $penny = PlayerMgr::getPenny();
             $player = PlayerMgr::getPlayer();
@@ -1441,7 +1441,7 @@ class hardback extends Table
         $this->incStat(1, 'useInk', $player->getId());
 
         $penny = PlayerMgr::getPenny();
-        if ($penny->isGenreActive(HORROR)) {
+        if ($penny->isGenreActive(H_HORROR)) {
             // Horror: Penny earns 1 per ink
             $penny->addPoints(1);
             self::notifyAllPlayers('message', $this->msg['earn'], [
@@ -1464,7 +1464,7 @@ class hardback extends Table
         }
         $player->spendRemover();
         $player->notifyRemover($card);
-        CardMgr::inkCard($card, HAS_REMOVER);
+        CardMgr::inkCard($card, H_HAS_REMOVER);
         $this->incStat(1, 'useRemover', $player->getId());
     }
 
@@ -1475,7 +1475,7 @@ class hardback extends Table
     function stEnd(): void
     {
         // Literary award points
-        if ($this->gamestate->table_globals[OPTION_AWARDS]) {
+        if ($this->gamestate->table_globals[H_OPTION_AWARDS]) {
             $winner = $this->getGameStateValue('awardWinner');
             if ($winner) {
                 $length = min($this->getStat('longestWord'), 12);
@@ -1490,7 +1490,7 @@ class hardback extends Table
             }
         }
 
-        if ($this->gamestate->table_globals[OPTION_COOP]) {
+        if ($this->gamestate->table_globals[H_OPTION_COOP]) {
             $penny = PlayerMgr::getPenny();
             if ($penny->getScore() >= PlayerMgr::getMaxScore()) {
                 // Coop lose

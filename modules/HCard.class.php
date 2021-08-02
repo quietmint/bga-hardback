@@ -181,7 +181,7 @@ class HCard extends APP_GameClass implements JsonSerializable
     public function getBenefits(int $benefitId = null): array
     {
         $benefits = [];
-        if (!$this->isWild() && !in_array(ALL_BENEFITS, $this->resolve)) {
+        if (!$this->isWild() && !in_array(H_ALL_BENEFITS, $this->resolve)) {
             // Basic benefits
             $basicBenefits = hardback::$instance->cards[$this->refId]['basicBenefits'] ?? [];
             foreach ($basicBenefits as $k => $v) {
@@ -193,7 +193,7 @@ class HCard extends APP_GameClass implements JsonSerializable
                     $benefits[] = [
                         'id' => $k,
                         'value' => $v,
-                        'activation' => FROM_BASIC,
+                        'activation' => H_FROM_BASIC,
                     ];
                 }
             }
@@ -210,7 +210,7 @@ class HCard extends APP_GameClass implements JsonSerializable
                         $benefits[] = [
                             'id' => $k,
                             'value' => $v,
-                            'activation' => FROM_GENRE,
+                            'activation' => H_FROM_GENRE,
                         ];
                     }
                 }
@@ -237,15 +237,15 @@ class HCard extends APP_GameClass implements JsonSerializable
     public function getGenreName(): string
     {
         switch ($this->getGenre()) {
-            case STARTER:
+            case H_STARTER:
                 return 'starter';
-            case ADVENTURE:
+            case H_ADVENTURE:
                 return 'adventure';
-            case HORROR:
+            case H_HORROR:
                 return 'horror';
-            case MYSTERY:
+            case H_MYSTERY:
                 return 'mystery';
-            case ROMANCE:
+            case H_ROMANCE:
                 return 'romance';
         }
     }

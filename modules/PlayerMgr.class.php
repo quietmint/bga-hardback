@@ -5,7 +5,7 @@ class PlayerMgr extends APP_GameClass
     public static function getMaxScore(): int
     {
         $max = intval(self::getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_eliminated = 0 AND player_zombie = 0"));
-        if (hardback::$instance->gamestate->table_globals[OPTION_COOP] != NO) {
+        if (hardback::$instance->gamestate->table_globals[H_OPTION_COOP] != H_NO) {
             $max = max($max, self::getPenny()->getScore());
         }
         return $max;
@@ -65,7 +65,7 @@ class PlayerMgr extends APP_GameClass
         $max = self::getPlayerCount() - 1;
         $majority = $max / 2;
         $dict = WordMgr::getDictionaryId();
-        if ($dict == VOTE_50) {
+        if ($dict == H_VOTE_50) {
             if ($accept >= $majority) {
                 // 50% accepts (includes ties)
                 return 'accept';
@@ -73,7 +73,7 @@ class PlayerMgr extends APP_GameClass
                 // >50% rejects or voting is complete
                 return 'reject';
             }
-        } else if ($dict == VOTE_100) {
+        } else if ($dict == H_VOTE_100) {
             if ($reject > 0) {
                 // Any voter rejects
                 return 'reject';

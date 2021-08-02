@@ -62,10 +62,10 @@ class HPlayer extends APP_GameClass implements JsonSerializable
             'remover' => $this->remover,
             'score' => $this->score,
         ];
-        if (hardback::$instance->gamestate->table_globals[OPTION_AWARDS]) {
+        if (hardback::$instance->gamestate->table_globals[H_OPTION_AWARDS]) {
             $json['award'] = $this->getAward();
         }
-        if (hardback::$instance->gamestate->table_globals[OPTION_ADVERTS]) {
+        if (hardback::$instance->gamestate->table_globals[H_OPTION_ADVERTS]) {
             $json['advert'] = $this->advert;
         }
         return $json;
@@ -84,7 +84,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     public function getAward(): int
     {
         $points = 0;
-        if (hardback::$instance->gamestate->table_globals[OPTION_AWARDS] && hardback::$instance->getGameStateValue('awardWinner') == $this->id) {
+        if (hardback::$instance->gamestate->table_globals[H_OPTION_AWARDS] && hardback::$instance->getGameStateValue('awardWinner') == $this->id) {
             $length = min(hardback::$instance->getStat('longestWord'), 12);
             $points = hardback::$instance->awards[$length];
         }
@@ -104,17 +104,17 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     public function getColorName(): string
     {
         switch ($this->color) {
-            case RED:
+            case H_RED:
                 return 'red';
-            case GREEN:
+            case H_GREEN:
                 return 'green';
-            case BLUE:
+            case H_BLUE:
                 return 'blue';
-            case YELLOW:
+            case H_YELLOW:
                 return 'yellow';
-            case PURPLE:
+            case H_PURPLE:
                 return 'purple';
-            case BLACK:
+            case H_BLACK:
                 return 'black';
         }
     }
@@ -287,7 +287,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         hardback::$instance->incStat($amount, $stat, $this->id);
         $hint = null;
         $sql = "UPDATE player SET player_score = player_score + $amount";
-        if (hardback::$instance->gamestate->table_globals[OPTION_COOP] == NO) {
+        if (hardback::$instance->gamestate->table_globals[H_OPTION_COOP] == H_NO) {
             $sql .= " WHERE player_id = {$this->id}";
         } else {
             $hint = 'allScore';
