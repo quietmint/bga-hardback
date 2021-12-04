@@ -98,6 +98,7 @@ define('H_OPTION_DICTIONARY_IT', 125);
 define('H_TWELVEDICTS', 1);
 define('H_US', 2);
 define('H_UK', 3);
+define('H_BEOLINGUS', 20);
 define('H_MORPHALOU', 30);
 define('H_YANDEX', 80);
 define('H_VOTE_50', 90);

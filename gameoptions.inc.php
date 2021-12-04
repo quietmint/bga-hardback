@@ -101,8 +101,14 @@ $game_options = [
 
     H_OPTION_DICTIONARY_DE => [
         'name' => totranslate('Dictionary'),
-        'default' => H_YANDEX,
+        'default' => H_BEOLINGUS,
         'values' => [
+            H_BEOLINGUS => [
+                'name' => totranslate('BEOLINGUS (TU Chemnitz)'),
+                'tmdisplay' => totranslate('BEOLINGUS (TU Chemnitz)'),
+                'description' => totranslate('230,000 words (2020 edition)'),
+                'beta' => true,
+            ],
             H_YANDEX => [
                 'name' => totranslate('Yandex.Dictionary'),
                 'tmdisplay' => totranslate('Yandex.Dictionary'),
