@@ -100,6 +100,7 @@ $machinestates = [
         'transitions' => [
             'accept' => H_ST_UNCOVER,
             'reject' => H_ST_PLAYER_TURN,
+            'skip' => H_ST_SKIP_TURN,
         ],
     ],
 

@@ -44,6 +44,7 @@ class hardback extends Table
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         self::initGameStateLabels([
             'adverts' => H_OPTION_ADVERTS,
+            'attempts' => H_ATTEMPTS,
             'awards' => H_OPTION_AWARDS,
             'awardWinner' => H_AWARD_WINNER,
             'coop' => H_OPTION_COOP,
@@ -94,6 +95,7 @@ class hardback extends Table
         self::reloadPlayersBasicInfos();
 
         // Init global values with their initial values
+        self::setGameStateInitialValue('attempts', 0);
         self::setGameStateInitialValue('awardWinner', 0);
         self::setGameStateInitialValue('countActive' . H_ADVENTURE, 0);
         self::setGameStateInitialValue('countActive' . H_HORROR, 0);
@@ -417,19 +419,38 @@ class hardback extends Table
         $this->giveExtraTime($player->getId());
     }
 
-    function rejectWord(HPlayer $player, string $word): void
+    function rejectWord(HPlayer $player, string $word): bool
     {
+        $msg = $this->msg['rejectedWord'];
+        $remaining = null;
+        $attempts = $this->incGameStateValue('attempts', 1);
+        if ($this->gamestate->table_globals[H_OPTION_ATTEMPTS] > 0) {
+            $msg = $this->msg['rejectedWordRemaining'];
+            $remaining = $this->gamestate->table_globals[H_OPTION_ATTEMPTS] - $attempts;
+        }
+
         $this->incStat(1, 'invalidWords');
         $this->incStat(1, 'invalidWords', $player->getId());
         $info = WordMgr::getDictionaryInfo();
-        self::notifyAllPlayers('invalid', $this->msg['rejectedWord'], [
+        self::notifyAllPlayers('invalid', $msg, [
             'i18n' => ['dict'],
             'player_id' => $player->getId(),
             'player_name' => $player->getName(),
             'word' => $word,
             'dict' => $info['dict'],
             'lang' => $info['lang'],
+            'remaining' => $remaining,
         ]);
+
+        if ($remaining === 0) {
+            if ($this->gamestate->state()['type'] == 'multipleactiveplayer') { // during voting
+                $this->gamestate->setAllPlayersNonMultiactive('skip');
+            } else {
+                $this->skipWord();
+            }
+            return true;
+        }
+        return false;
     }
 
     function argVote()
@@ -476,9 +497,11 @@ class hardback extends Table
             $this->gamestate->setAllPlayersNonMultiactive('accept');
         } else if ($result == 'reject') {
             $player = PlayerMgr::getPlayer();
-            $this->rejectWord($player, $player->getWord());
+            $didTransition = $this->rejectWord($player, $player->getWord());
             $player->setWord(null);
-            $this->gamestate->setAllPlayersNonMultiactive('reject');
+            if (!$didTransition) {
+                $this->gamestate->setAllPlayersNonMultiactive('reject');
+            }
         } else {
             $this->gamestate->setPlayerNonMultiactive($current->getId(), '');
         }
@@ -1403,6 +1426,7 @@ class hardback extends Table
     function stNextPlayer(): void
     {
         // Activate next player
+        $this->setGameStateValue('attempts', 0);
         $this->activeNextPlayer();
         $player = PlayerMgr::getPlayer();
 

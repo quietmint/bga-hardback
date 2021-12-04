@@ -245,6 +245,37 @@ $game_options = [
         'startcondition' => $dictionaryStartCond,
     ],
 
+    H_OPTION_ATTEMPTS => [
+        'name' => totranslate('Invalid Word Attempts'),
+        'default' => -1,
+        'values' => [
+            0 => [
+                'name' => totranslate('Unlimited'),
+                'description' => totranslate('No penalty for spelling invalid words'),
+            ],
+            2 => [
+                'name' => totranslate('2'),
+                'tmdisplay' => totranslate('2 Invalid Word Attempts'),
+                'description' => totranslate('Spelling too many invalid words ends your turn'),
+            ],
+            3 => [
+                'name' => totranslate('3'),
+                'tmdisplay' => totranslate('3 Invalid Word Attempts'),
+                'description' => totranslate('Spelling too many invalid words ends your turn'),
+            ],
+            4 => [
+                'name' => totranslate('4'),
+                'tmdisplay' => totranslate('4 Invalid Word Attempts'),
+                'description' => totranslate('Spelling too many invalid words ends your turn'),
+            ],
+            5 => [
+                'name' => totranslate('5'),
+                'tmdisplay' => totranslate('5 Invalid Word Attempts'),
+                'description' => totranslate('Spelling too many invalid words ends your turn'),
+            ],
+        ],
+    ],
+
     H_OPTION_LENGTH => [
         'name' => totranslate('Game Length'),
         'default' => 60,

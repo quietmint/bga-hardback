@@ -171,6 +171,7 @@ class Table extends APP_GameClass
 
     function incGameStateValue($value_label, $increment)
     {
+        return 0;
     }
 
     /* Statistics */
