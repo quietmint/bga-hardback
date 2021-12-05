@@ -1039,6 +1039,11 @@ export default {
     },
 
     previewWord(): void {
+      // @ts-ignore
+      if (window.g_tutorialwritten) {
+        // skip during tutorials
+        return;
+      }
       let lock = false;
       let handIds = this.cardIds(this.handCards);
       let handMask = this.wildMask(this.handCards);
