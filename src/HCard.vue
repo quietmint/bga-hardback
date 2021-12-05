@@ -1,5 +1,5 @@
 <template>
-  <div @pointerdown="pointStart" @pointerup="pointStop" @pointercancel="pointStop" class="cardholder relative" :class="holderClass" ref="cardholder" :id="'cardholder_' + this.card.id">
+  <div :id="'cardholder_' + this.card.id" @pointerdown="pointStart" @pointerup="pointStop" @pointercancel="pointStop" class="cardholder relative" :class="holderClass" ref="cardholder">
     <!-- Header -->
     <div v-if="header" class="flex items-start justify-evenly text-center text-14 whitespace-nowrap leading-5">
       <div class="px-2 rounded-t-lg z-10" :class="header.class" :title="header.title"><Icon v-if="header.icon" :icon="header.icon" class="inline text-15" /> {{ header.text }}</div>
@@ -68,7 +68,7 @@
 
     <!-- Footer -->
     <div class="h-7 leading-7 flex items-start justify-evenly text-center text-14 whitespace-nowrap">
-      <div v-for="action in footerActions" :key="action" @click="clickFooter(action)" :class="action.class" class="rounded-b-lg z-10">{{ action.text }}<Icon v-if="action.icon" :icon="action.icon" class="inline text-15" /></div>
+      <div :id="'tut_a' + index + '_c' + this.card.id" v-for="(action, index) in footerActions" :key="action" @click="clickFooter(action)" :class="action.class" class="rounded-b-lg z-10">{{ action.text }}<Icon v-if="action.icon" :icon="action.icon" class="inline text-15" /></div>
     </div>
   </div>
 </template>

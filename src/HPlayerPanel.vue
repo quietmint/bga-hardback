@@ -2,11 +2,11 @@
   <teleport :to="teleportTo">
     <div class="tailwind panelbg">
       <div class="panel-left text-center">
-        <div v-if="player.order == 1" class="text-14 text-left pl-1 pt-1" v-text="i18n('first')"></div>
+        <div id="tut_firstPlayer" v-if="player.order == 1" class="text-14 text-left pl-1 pt-1" v-text="i18n('first')"></div>
 
         <div class="panel-ink flex items-center text-20 font-bold text-noshadow">
-          <div class="flex-1" :title="i18n('ink') + ': ' + player.ink">{{ player.ink }}</div>
-          <div class="flex-1 text-black" :title="i18n('remover') + ': ' + player.remover">{{ player.remover }}</div>
+          <div :id="'tut_ink_p' + player.id" class="flex-1" :title="i18n('ink') + ': ' + player.ink">{{ player.ink }}</div>
+          <div :id="'tut_remover_p' + player.id" class="flex-1 text-black" :title="i18n('remover') + ': ' + player.remover">{{ player.remover }}</div>
         </div>
       </div>
 
@@ -23,7 +23,7 @@
             </div>
           </template>
           <template v-slot:default>
-            <div class="panel-opt">{{ player.award || "" }}<Icon v-if="player.award" class="inline text-20" icon="star" /></div>
+            <div :id="'tut_award_p' + player.id" class="panel-opt">{{ player.award || "" }}<Icon v-if="player.award" class="inline text-20" icon="star" /></div>
           </template>
         </HTooltip>
 
@@ -39,18 +39,18 @@
             </div>
           </template>
           <template v-slot:default>
-            <div class="panel-opt">{{ player.advert || "" }}<Icon v-if="player.advert" class="inline text-20" icon="star" /></div>
+            <div :id="'tut_advert_p' + player.id" class="panel-opt">{{ player.advert || "" }}<Icon v-if="player.advert" class="inline text-20" icon="star" /></div>
           </template>
         </HTooltip>
       </div>
 
       <div class="panel-bottom mt-1 text-white text-17 font-bold flex text-noshadow">
-        <div class="rounded-lg bg-black bg-opacity-50 px-2 ml-1" :title="i18n('hand') + ': ' + player.activeCount"><Icon icon="hand" class="inline" /> {{ player.activeCount }}</div>
-        <div class="rounded-lg bg-black bg-opacity-50 px-2 ml-1" :title="i18n('deck') + ': ' + player.deckCount"><Icon icon="deck" class="inline" /> {{ player.deckCount }}</div>
-        <div class="rounded-lg bg-black bg-opacity-50 px-2 ml-1" :class="{ 'cursor-pointer': player.id == game.player_id }" @click="player.id == game.player_id ? clickDiscard() : null" :title="i18n('discardButton') + ': ' + player.discardCount"><Icon icon="shuffle" class="inline" /> {{ player.discardCount }}</div>
+        <div :id="'tut_hand_p' + player.id" class="rounded-lg bg-black bg-opacity-50 px-2 ml-1" :title="i18n('hand') + ': ' + player.activeCount"><Icon icon="hand" class="inline" /> {{ player.activeCount }}</div>
+        <div :id="'tut_deck_p' + player.id" class="rounded-lg bg-black bg-opacity-50 px-2 ml-1" :title="i18n('deck') + ': ' + player.deckCount"><Icon icon="deck" class="inline" /> {{ player.deckCount }}</div>
+        <div :id="'tut_discard_p' + player.id" class="rounded-lg bg-black bg-opacity-50 px-2 ml-1" :class="{ 'cursor-pointer': player.id == game.player_id }" @click="player.id == game.player_id ? clickDiscard() : null" :title="i18n('discardButton') + ': ' + player.discardCount"><Icon icon="shuffle" class="inline" /> {{ player.discardCount }}</div>
       </div>
 
-      <HTooltip class="genreCounts text-noshadow" position="left">
+      <HTooltip :id="'tut_genreCounts_p' + player.id" class="genreCounts text-noshadow" position="left">
         <template v-slot:tip>
           <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-left whitespace-nowrap">
             <div class="p-2 bg-gray-200 font-bold text-center" v-html="i18n('genreCountsTip', { player_name: `<span class='${player.colorText}'>${player.name}</span>` })"></div>

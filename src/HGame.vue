@@ -6,7 +6,7 @@
 
     <!-- Icons -->
     <div class="hidden">
-      <Icon v-for="(icon, key) in icons" :key="key" :id="'icon_' + key" :icon="icon" />
+      <Icon :id="'icon_' + key" v-for="(icon, key) in icons" :key="key" :icon="icon" />
     </div>
 
     <!-- Keyboard popup -->
@@ -26,83 +26,83 @@
     <!-- Discard -->
     <div v-if="!spectator" class="py-2 border-t-2 border-black bg-black bg-opacity-25">
       <div class="flex leading-7 font-bold">
-        <div @click="clickDiscard" class="title ml-2 flex-grow cursor-pointer"><Icon icon="chevron" class="chevron float-left h-7 text-24" :class="{ collapsed: !discardVisible }" /> <span v-text="i18n('myDiscard', { count: discardCards.length })"></span></div>
+        <div id="tut_discard_title" @click="clickDiscard" class="title ml-2 flex-grow cursor-pointer"><Icon icon="chevron" class="chevron float-left h-7 text-24" :class="{ collapsed: !discardVisible }" /> <span v-text="i18n('myDiscard', { count: discardCards.length })"></span></div>
 
         <div v-if="discardVisible" class="buttongroup mr-2 grid grid-cols-3">
-          <div @click="sort(discardLocation, 'letter')" class="button" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
-          <div @click="sort(discardLocation, 'cost')" class="button text-15" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortCostTip')">¢</div>
-          <div @click="sort(discardLocation, 'genre')" class="button" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
+          <div id="tut_discard_sortLetter" @click="sort(discardLocation, 'letter')" class="button" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
+          <div id="tut_discard_sortCost" @click="sort(discardLocation, 'cost')" class="button text-15" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortCostTip')">¢</div>
+          <div id="tus_discard_sortGenre" @click="sort(discardLocation, 'genre')" class="button" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
         </div>
       </div>
 
-      <HCardList v-if="discardVisible" :cards="discardCards" :location="discardLocation" />
+      <HCardList id="tut_discard_cards" v-if="discardVisible" :cards="discardCards" :location="discardLocation" />
     </div>
 
     <!-- Hand -->
     <div v-if="!spectator && gamestate.name != 'gameEnd'" class="py-2 border-t-2 border-black">
       <div class="flex leading-7 font-bold">
-        <div class="title ml-2 flex-grow" v-text="i18n('myHand', { count: handCards.length })"></div>
+        <div id="tut_hand_title" class="title ml-2 flex-grow" v-text="i18n('myHand', { count: handCards.length })"></div>
 
         <div class="buttongroup flex">
-          <div @click="buttonEnabled['useInk'] && takeAction('useInk')" class="button" :class="buttonEnabled['useInk'] ? 'blue' : 'disabled'" v-text="i18n('draw', { count: myself.ink })"></div>
-          <div @click="buttonEnabled['resetAll'] && resetAll(handLocation)" class="button" :class="buttonEnabled['resetAll'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
-          <div @click="buttonEnabled['moveAll'] && moveAll(handLocation)" class="button" :class="buttonEnabled['moveAll'] ? 'blue' : 'disabled'" v-text="i18n('playAll')"></div>
+          <div id="tut_hand_useInk" @click="buttonEnabled['useInk'] && takeAction('useInk')" class="button" :class="buttonEnabled['useInk'] ? 'blue' : 'disabled'" v-text="i18n('draw', { count: myself.ink })"></div>
+          <div id="tut_hand_resetAll" @click="buttonEnabled['resetAll'] && resetAll(handLocation)" class="button" :class="buttonEnabled['resetAll'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
+          <div id="tut_hand_moveAll" @click="buttonEnabled['moveAll'] && moveAll(handLocation)" class="button" :class="buttonEnabled['moveAll'] ? 'blue' : 'disabled'" v-text="i18n('playAll')"></div>
         </div>
 
         <div class="buttongroup mr-2 grid grid-cols-3">
-          <div @click="sortOnce(handLocation, 'letter')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
-          <div @click="sortOnce(handLocation, 'genre')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
-          <div @click="sortOnce(handLocation, 'shuffle')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-17 h-7" /></div>
+          <div id="tut_hand_sortLetter" @click="sortOnce(handLocation, 'letter')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
+          <div id="tut_hand_sortGenre" @click="sortOnce(handLocation, 'genre')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
+          <div id="tut_hand_shuffle" @click="sortOnce(handLocation, 'shuffle')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-17 h-7" /></div>
         </div>
       </div>
 
-      <HCardList :cards="handCards" :location="handLocation" :ref="handLocation" />
+      <HCardList id="tut_hand_cards" :cards="handCards" :location="handLocation" :ref="handLocation" />
       <div v-if="handReminder" class="py-12 text-18 text-center italic" v-text="i18n('handReminder')"></div>
     </div>
 
     <!-- Tableau -->
     <div v-if="gamestate.name != 'gameEnd'" class="py-2 border-t-2 border-black bg-opacity-30 transition-colors duration-1000" :class="author.colorBg || 'bg-white'">
       <div class="flex leading-7 font-bold">
-        <div class="title ml-2 flex-grow" v-html="i18n('tableau', { player_name: `<span class='transition-colors duration-1000 ${author.colorText || 'text-black'}'>${author.name}</span>`, count: tableauCards.length }) + (gamedatas.word ? ' — <b>' + gamedatas.word + '</b>' : '')"></div>
+        <div id="tut_tableau_title" class="title ml-2 flex-grow" v-html="i18n('tableau', { player_name: `<span class='transition-colors duration-1000 ${author.colorText || 'text-black'}'>${author.name}</span>`, count: tableauCards.length }) + (gamedatas.word ? ' — <b>' + gamedatas.word + '</b>' : '')"></div>
 
         <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup flex">
-          <div @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')" class="button" :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
-          <div @click="buttonEnabled['moveAllTableau'] && moveAll('tableau')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('returnAll')"></div>
+          <div id="tut_tableau_resetAll" @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')" class="button" :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
+          <div id="tut_tableau_moveAll" @click="buttonEnabled['moveAllTableau'] && moveAll('tableau')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('returnAll')"></div>
         </div>
 
         <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup mr-2 grid grid-cols-3">
-          <div @click="sortOnce('tableau', 'letter')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
-          <div @click="sortOnce('tableau', 'genre')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
-          <div @click="sortOnce('tableau', 'shuffle')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-17 h-7" /></div>
+          <div id="tut_tableau_sortLetter" @click="sortOnce('tableau', 'letter')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
+          <div id="tut_tableau_sortGenre" @click="sortOnce('tableau', 'genre')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
+          <div id="tut_tableau_shuffle" @click="sortOnce('tableau', 'shuffle')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-17 h-7" /></div>
         </div>
       </div>
 
-      <HCardList :cards="tableauCards" location="tableau" ref="tableau" />
+      <HCardList id="tut_tableau_cards" :cards="tableauCards" location="tableau" ref="tableau" />
     </div>
 
     <!-- Timeless Classics -->
     <div v-if="timelessVisible" class="py-2 border-t-2 border-black">
       <div class="flex leading-7 font-bold">
-        <div class="title flex-grow" v-text="i18n('timeless', { count: timelessCards.length })"></div>
+        <div id="tut_timeless_title" class="title flex-grow" v-text="i18n('timeless', { count: timelessCards.length })"></div>
       </div>
 
-      <HCardList :cards="timelessCards" location="timeless" ref="timeless" />
+      <HCardList id="tut_timeless_cards" :cards="timelessCards" location="timeless" ref="timeless" />
     </div>
 
     <!-- Offer -->
     <div class="py-2 border-t-2 border-black">
       <div class="flex leading-7 font-bold">
-        <div class="title ml-2 flex-grow" v-text="i18n('offer')"></div>
+        <div id="tut_offer_title" class="title ml-2 flex-grow" v-text="i18n('offer')"></div>
 
         <div class="buttongroup mr-2 grid grid-cols-4">
-          <div @click="sort('offer', 'letter')" class="button blue" :class="{ active: locationOrder.offer == 'letter' }" :title="i18n('sortLetterTip')">A-Z</div>
-          <div @click="sort('offer', 'cost')" class="button blue text-15" :class="{ active: locationOrder.offer == 'cost' }" :title="i18n('sortCostTip')">¢</div>
-          <div @click="sort('offer', 'genre')" class="button blue" :class="{ active: locationOrder.offer == 'genre' }" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
-          <div @click="sort('offer', 'order')" class="button blue" :class="{ active: locationOrder.offer == 'order' }" :title="i18n('sortTimeTip')"><Icon icon="clock" class="inline text-17 h-7" /></div>
+          <div id="tut_offer_sortLetter" @click="sort('offer', 'letter')" class="button blue" :class="{ active: locationOrder.offer == 'letter' }" :title="i18n('sortLetterTip')">A-Z</div>
+          <div id="tut_offer_sortCost" @click="sort('offer', 'cost')" class="button blue text-15" :class="{ active: locationOrder.offer == 'cost' }" :title="i18n('sortCostTip')">¢</div>
+          <div id="tut_offer_sortGenre" @click="sort('offer', 'genre')" class="button blue" :class="{ active: locationOrder.offer == 'genre' }" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
+          <div id="tut_offer_sortTime" @click="sort('offer', 'order')" class="button blue" :class="{ active: locationOrder.offer == 'order' }" :title="i18n('sortTimeTip')"><Icon icon="clock" class="inline text-17 h-7" /></div>
         </div>
       </div>
 
-      <HCardList :cards="offerCards" location="offer" />
+      <HCardList id="tut_offer_cards" :cards="offerCards" location="offer" />
     </div>
   </div>
 </template>
