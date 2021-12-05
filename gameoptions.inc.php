@@ -109,12 +109,6 @@ $game_options = [
                 'description' => totranslate('230,000 words (2020 edition)'),
                 'beta' => true,
             ],
-            H_YANDEX => [
-                'name' => totranslate('Yandex.Dictionary'),
-                'tmdisplay' => totranslate('Yandex.Dictionary'),
-                'description' => totranslate('Powered by machine learning from Yandex, a Russian technology company'),
-                'beta' => true,
-            ],
             H_VOTE_50 => [
                 'name' => totranslate('Majority Vote'),
                 'tmdisplay' => totranslate('Majority Vote'),
@@ -148,12 +142,6 @@ $game_options = [
                 'name' => totranslate('Morphalou'),
                 'tmdisplay' => totranslate('Morphalou'),
                 'description' => totranslate('680,000 words (2019 edition)'),
-                'beta' => true,
-            ],
-            H_YANDEX => [
-                'name' => totranslate('Yandex.Dictionary'),
-                'tmdisplay' => totranslate('Yandex.Dictionary'),
-                'description' => totranslate('Powered by machine learning from Yandex, a Russian technology company'),
                 'beta' => true,
             ],
             H_VOTE_50 => [
