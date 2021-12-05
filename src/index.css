@@ -1,10 +1,10 @@
 /*! @import */
 
-@import url("https://fonts.googleapis.com/css2?family=Almendra+Display&family=Big+Shoulders+Inline+Text:wght@900&family=Bodoni+Moda:wght@700&family=Finger+Paint&family=New+Rocker&display=swap");
+@import url(https://fonts.googleapis.com/css2?family=Almendra+Display&family=Big+Shoulders+Inline+Text:wght@900&family=Bodoni+Moda:wght@700&family=Finger+Paint&family=New+Rocker&display=swap);
 @font-face {
   font-family: "Deutsch Gothic";
-  src: url("Deutsch-Gothic.woff2") format("woff2"),
-    url("Deutsch-Gothic.woff") format("woff");
+  src: url(Deutsch-Gothic.woff2) format("woff2"),
+    url(Deutsch-Gothic.woff) format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
