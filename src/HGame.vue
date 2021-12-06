@@ -26,7 +26,11 @@
     <!-- Discard -->
     <div v-if="!spectator" class="py-2 border-t-2 border-black bg-black bg-opacity-25">
       <div class="flex leading-7 font-bold">
-        <div id="tut_discard_title" @click="clickDiscard" class="title ml-2 flex-grow cursor-pointer"><Icon icon="chevron" class="chevron float-left h-7 text-24" :class="{ collapsed: !discardVisible }" /> <span v-text="i18n('myDiscard', { count: discardCards.length })"></span></div>
+        <div id="tut_discard_title" @click="clickDiscard" class="title ml-2 flex-grow cursor-pointer">
+          <Icon icon="chevron" class="chevron float-left h-7 text-24" :class="{ collapsed: !discardVisible }" />
+          <Icon icon="shuffle" class="float-left h-7 text-24 mr-1" />
+          <span v-text="i18n('myDiscard', { count: discardCards.length })"></span>
+        </div>
 
         <div v-if="discardVisible" class="buttongroup mr-2 grid grid-cols-3">
           <div id="tut_discard_sortLetter" @click="sort(discardLocation, 'letter')" class="button" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
@@ -38,10 +42,31 @@
       <HCardList id="tut_discard_cards" v-if="discardVisible" :cards="discardCards" :location="discardLocation" />
     </div>
 
+    <!-- Deck -->
+    <div v-if="!spectator && gamedatas.options.deck" class="py-2 border-t-2 border-black bg-black bg-opacity-25">
+      <div class="flex leading-7 font-bold">
+        <div id="tut_deck_title" @click="clickDeck" class="title ml-2 flex-grow cursor-pointer">
+          <Icon icon="chevron" class="chevron float-left h-7 text-24" :class="{ collapsed: !deckVisible }" />
+          <Icon icon="deck" class="float-left h-7 text-24 mr-1" />
+          <span v-text="i18n('myDeck', { count: deckCards.length })"></span>
+        </div>
+
+        <div v-if="deckVisible" class="buttongroup mr-2 grid grid-cols-2">
+          <div id="tut_deck_sortLetter" @click="sort(deckLocation, 'letter')" class="button" :class="deckCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
+          <div id="tus_deck_sortGenre" @click="sort(deckLocation, 'genre')" class="button" :class="deckCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
+        </div>
+      </div>
+
+      <HCardList id="tut_deck_cards" v-if="deckVisible" :cards="deckCards" :location="deckLocation" />
+    </div>
+
     <!-- Hand -->
     <div v-if="!spectator && gamestate.name != 'gameEnd'" class="py-2 border-t-2 border-black">
       <div class="flex leading-7 font-bold">
-        <div id="tut_hand_title" class="title ml-2 flex-grow" v-text="i18n('myHand', { count: handCards.length })"></div>
+        <div id="tut_hand_title" class="title ml-2 flex-grow">
+          <Icon icon="hand" class="float-left h-7 text-24 mr-1" />
+          <span v-text="i18n('myHand', { count: handCards.length })"></span>
+        </div>
 
         <div class="buttongroup flex">
           <div id="tut_hand_useInk" @click="buttonEnabled['useInk'] && takeAction('useInk')" class="button" :class="buttonEnabled['useInk'] ? 'blue' : 'disabled'" v-text="i18n('draw', { count: myself.ink })"></div>
@@ -57,7 +82,7 @@
       </div>
 
       <HCardList id="tut_hand_cards" :cards="handCards" :location="handLocation" :ref="handLocation" />
-      <div v-if="handReminder" class="py-12 text-18 text-center italic" v-text="i18n('handReminder')"></div>
+      <div v-if="handReminder" class="py-10 text-center italic" v-text="i18n('handReminder')"></div>
     </div>
 
     <!-- Tableau -->
@@ -257,11 +282,13 @@ export default {
   mounted() {
     this.emitter.on("clickCard", this.clickCard);
     this.emitter.on("clickDiscard", this.clickDiscard);
+    this.emitter.on("clickDeck", this.clickDeck);
     this.emitter.on("clickFooter", this.clickFooter);
     this.emitter.on("clickKey", this.clickKey);
     this.emitter.on("dragStart", this.dragStart);
     this.discardVisible = this.gamestate.name == "gameEnd";
     this.locationOrder[this.discardLocation] = "genre";
+    this.locationOrder[this.deckLocation] = "genre";
     this.locationOrder.offer = "order";
     try {
       var x = localStorage.getItem("hardback.sort.offer");
@@ -278,6 +305,7 @@ export default {
   beforeUnmount() {
     this.emitter.off("clickCard", this.clickCard);
     this.emitter.off("clickDiscard", this.clickDiscard);
+    this.emitter.off("clickDeck", this.clickDeck);
     this.emitter.off("clickFooter", this.clickFooter);
     this.emitter.off("clickKey", this.clickKey);
     this.emitter.off("dragStart", this.dragStart);
@@ -304,6 +332,7 @@ export default {
       gamestate: {},
 
       discardVisible: false,
+      deckVisible: false,
       drag: null,
       keyboardId: null,
       prefs: {},
@@ -360,6 +389,14 @@ export default {
 
     handReminder() {
       return this.handCards.length == 0 && this.gamestate.active && this.gamestate.name == "playerTurn";
+    },
+
+    deckLocation() {
+      return "deck_" + this.game.player_id;
+    },
+
+    deckCards() {
+      return this.cardsInLocation(this.deckLocation);
     },
 
     discardLocation() {
@@ -603,7 +640,7 @@ export default {
         start = getRect(cardEl);
       }
 
-      let visible = card.location == this.handLocation || card.location == "tableau" || card.location == "offer" || card.location == "jail" || (this.discardVisible && card.location == this.discardLocation) || card.location.startsWith("timeless");
+      let visible = card.location == this.handLocation || card.location == "tableau" || card.location == "offer" || card.location == "jail" || (this.discardVisible && card.location == this.discardLocation) || (this.deckVisible && card.location == this.deckLocation) || card.location.startsWith("timeless");
       if (!start && !visible) {
         // Invisible card movement, no animation
         this.gamedatas.cards[card.id] = card;
@@ -1130,6 +1167,12 @@ export default {
 
     clickDiscard(): void {
       this.discardVisible = !this.discardVisible;
+    },
+
+    clickDeck(): void {
+      if (this.gamedatas.options.deck) {
+        this.deckVisible = !this.deckVisible;
+      }
     },
 
     /*

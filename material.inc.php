@@ -101,7 +101,7 @@ $this->i18n = [
     'finalRound' => clienttranslate('This is the final round!'),
     'first' => clienttranslate('First Player'),
     'flushButton' => clienttranslate('Flush Offer Row'),
-    'genreCountsTip' => clienttranslate('${player_name}\'s deck'),
+    'genreCountsTip' => clienttranslate('${player_name}\'s cards (${count})'),
     'genreTip' => clienttranslate('With multiple ${x} cards'),
     'hand' => clienttranslate('Hand'),
     'handReminder' => clienttranslate('All your cards are already in play'),
@@ -111,6 +111,7 @@ $this->i18n = [
     'jailTip' => clienttranslate('Jailed: Only ${player_name} may purchase'),
     'jailWarning' => clienttranslate('${genre}${letter} currently in jail will be trashed'),
     'keyboard' => clienttranslate('Click or type the wild letter'),
+    'myDeck' => clienttranslate('My Deck (${count})'),
     'myDiscard' => clienttranslate('My Discard Pile (${count})'),
     'myHand' => clienttranslate('My Hand (${count})'),
     'offer' => clienttranslate('Offer Row'),
@@ -139,9 +140,9 @@ $this->i18n = [
     'trashCoinsButton' => clienttranslate('Trash (${coins}¢)'),
     'uncoverButton' => clienttranslate('Uncover (${x})'),
     'useRemoverButton' => clienttranslate('Remove Ink'),
-    'wildButton' => clienttranslate('Wild'),
     'voteAcceptButton' => clienttranslate('Accept ${word}'),
     'voteRejectButton' => clienttranslate('Reject ${word}'),
+    'wildButton' => clienttranslate('Wild'),
 ];
 
 $this->msg = [

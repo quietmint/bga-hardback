@@ -78,7 +78,7 @@ class CardMgr extends APP_GameClass
         self::moveHandToTableau($firstPlayer);
     }
 
-    public static function drawCards(int $count, string $fromLocation, string $toLocation, string $origin = null): array
+    public static function drawCards(int $count, string $fromLocation, string $toLocation, string $origin = null, bool $returnReshuffle = false): array
     {
         $order = self::getStartOfLocation($toLocation);
 
@@ -87,6 +87,7 @@ class CardMgr extends APP_GameClass
         $ids = self::getObjectListFromDB($sql, true);
 
         $missing = $count - count($ids);
+        $reshuffle = [];
         if ($missing > 0) {
             // Rehuffle and continue drawing
             $shuffleIds = self::reshuffleDeck($fromLocation);
@@ -96,18 +97,12 @@ class CardMgr extends APP_GameClass
             }
             $sql .= " ORDER BY `location`, `order` LIMIT $missing";
             $ids = array_merge($ids, self::getObjectListFromDB($sql, true));
-
-            // Required to notify reshuffled cards as "unknown"
             if ($fromLocation != 'deck') {
-                $unknownIds = array_values(array_diff($shuffleIds, $ids));
-                $unknown = [];
-                foreach ($unknownIds as $id) {
-                    $unknown[intval($id)] = [
-                        'id' => intval($id),
-                        'location' => 'unknown',
-                    ];
+                $reshuffleIds = array_values(array_diff($shuffleIds, $ids));
+                $reshuffle = self::getCards($reshuffleIds);
+                foreach ($reshuffle as $reshuffleCard) {
+                    $reshuffleCard->setOrder(-1);
                 }
-                self::notifyCards($unknown);
             }
         }
 
@@ -125,6 +120,16 @@ class CardMgr extends APP_GameClass
             $card->setOrigin($origin);
             $card->setOrder($order);
         }
+
+        if (!empty($reshuffle)) {
+            // Required to return or notify reshuffled cards
+            if ($returnReshuffle) {
+                $cards = array_merge($cards, $reshuffle);
+            } else {
+                self::notifyCards($reshuffle);
+            }
+        }
+
         return $cards;
     }
 
@@ -681,13 +686,13 @@ class CardMgr extends APP_GameClass
         self::notifyCards(self::getCards($updatedIds));
 
         // Draw new hand
-        $hand = self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId));
+        $handAndReshuffle = self::drawCards(5, self::getDeckLocation($playerId), self::getHandLocation($playerId), null, true);
 
         // Move next player's hand to tableau
         $nextPlayer = hardback::$instance->getPlayerAfter($playerId);
         $tableau = self::moveHandToTableau($nextPlayer);
 
-        self::notifyCards(array_merge($hand, $tableau));
+        self::notifyCards(array_merge($handAndReshuffle, $tableau));
     }
 
     public static function canFlushOffer(): bool
@@ -730,9 +735,6 @@ class CardMgr extends APP_GameClass
         $sql = "UPDATE card SET `ink` = $inkValue WHERE `id` = {$card->getId()}";
         self::DbQuery($sql);
         $card->setInk($inkValue);
-
-        // Notify
-        self::notifyCards($card);
     }
 
     public static function uncover(HCard &$card, HCard $source): void

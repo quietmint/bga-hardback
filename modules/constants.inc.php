@@ -88,7 +88,6 @@ define('H_STAT_COOP_GENRE', 89);
 // Game options
 define('H_OPTION_GAME_MODE', 201);
 define('H_TRAINING_MODE', 1);
-define('H_ARENA_MODE', 2);
 
 define('H_OPTION_DICTIONARY', 100);
 define('H_OPTION_DICTIONARY_DE', 122);
@@ -115,9 +114,10 @@ define('H_PASSIVE', 2);
 define('H_AGRESSIVE', 3);
 
 define('H_OPTION_COOP', 110);
-// 0 = no
 define('H_COOP_BASIC', 1);
 define('H_COOP_SIGNATURE', 2);
+
+define('H_OPTION_DECK', 170);
 
 define('H_OPTION_LANG', 207);
 define('H_LANG_EN', 1);

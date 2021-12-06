@@ -52,6 +52,7 @@ class hardback extends Table
             'countActive' . H_HORROR => H_COUNT_ACTIVE_HORROR,
             'countActive' . H_MYSTERY => H_COUNT_ACTIVE_MYSTERY,
             'countActive' . H_ROMANCE => H_COUNT_ACTIVE_ROMANCE,
+            'deck' => H_OPTION_DECK,
             'dictionary' => H_OPTION_DICTIONARY,
             'dictionaryDe' => H_OPTION_DICTIONARY_DE,
             'dictionaryFr' => H_OPTION_DICTIONARY_FR,
@@ -196,26 +197,29 @@ class hardback extends Table
             return $player->jsonSerialize();
         }, PlayerMgr::getPlayers());
 
-        $locations = [CardMgr::getHandLocation($playerId), CardMgr::getDiscardLocation($playerId), 'tableau', 'offer', 'jail', 'timeless%'];
-        if ($this->gamestate->state()['name'] == 'gameEnd') {
-            $locations[] = CardMgr::getDeckLocation($playerId);
+        $locations = [CardMgr::getHandLocation($playerId), CardMgr::getDiscardLocation($playerId), CardMgr::getDeckLocation($playerId), 'tableau', 'offer', 'jail', 'timeless%'];
+        $cards = CardMgr::getCardsInLocation($locations);
+        foreach ($cards as $card) {
+            if ($card->isLocation('deck')) {
+                $card->setOrder(-1);
+            }
         }
 
-        $cards = $this->cards;
         $data = [
             'players' => $playersAsArray,
-            'cards' => CardMgr::getCardsInLocation($locations),
+            'cards' => $cards,
             'finalRound' => $this->getGameProgression() >= 100,
             'options' => [
                 'adverts' => $this->gamestate->table_globals[H_OPTION_ADVERTS] > 0,
                 'awards' => $this->gamestate->table_globals[H_OPTION_AWARDS] > 0,
                 'coop' => $this->gamestate->table_globals[H_OPTION_COOP] > 0,
+                'deck' => $this->gamestate->table_globals[H_OPTION_DECK] > 0,
                 'lang' => WordMgr::getLanguageId(),
                 // 'powers' => $this->gamestate->table_globals[H_OPTION_POWERS] > 0,
             ],
             'refs' => [
                 'benefits' => $this->benefits,
-                'cards' => $cards,
+                'cards' => $this->cards,
                 'i18n' => $this->i18n,
             ],
             'word' => $activePlayer->getWord(),
@@ -822,13 +826,19 @@ class hardback extends Table
         }
         // Romance: Draw 3 and return or discard
         CardMgr::useBenefit($cardId, H_SPECIAL_ROMANCE);
-        $preview = CardMgr::drawCards(3, $player->getDeckLocation(), $player->getHandLocation());
+        $cards = CardMgr::drawCards(3, $player->getDeckLocation(), $player->getHandLocation(), null, true);
+        $previewCount = 0;
+        foreach ($cards as $card) {
+            if ($card->isLocation($player->getHandLocation())) {
+                $previewCount++;
+            }
+        }
         self::notifyAllPlayers('message', $this->msg['preview'], [
             'player_name' => $player->getName(),
-            'count' => count($preview),
+            'count' => $previewCount,
         ]);
         $player->notifyPanel();
-        CardMgr::notifyCards($preview);
+        CardMgr::notifyCards($cards);
         $this->gamestate->nextState('romance');
     }
 
@@ -1454,7 +1464,7 @@ class hardback extends Table
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
         $location = $player->isActive() ? 'tableau' : $player->getHandLocation();
-        $cards = CardMgr::drawCards(1, $player->getDeckLocation(), $location, $player->getHandLocation());
+        $cards = CardMgr::drawCards(1, $player->getDeckLocation(), $location, $player->getHandLocation(), true);
         if (empty($cards)) {
             throw new BgaUserException($this->msg['errorEmpty']);
         }
@@ -1463,6 +1473,7 @@ class hardback extends Table
         $player->notifyInk($card);
         CardMgr::inkCard($card);
         $this->incStat(1, 'useInk', $player->getId());
+        CardMgr::notifyCards($cards);
 
         $penny = PlayerMgr::getPenny();
         if ($penny->isGenreActive(H_HORROR)) {
@@ -1490,6 +1501,7 @@ class hardback extends Table
         $player->notifyRemover($card);
         CardMgr::inkCard($card, H_HAS_REMOVER);
         $this->incStat(1, 'useRemover', $player->getId());
+        CardMgr::notifyCards($card);
     }
 
     /*
@@ -1607,6 +1619,7 @@ class hardback extends Table
         if ($from_version <= 2112042104) {
             self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 20 WHERE global_id = 122 AND global_value = 80");
             self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 30 WHERE global_id = 123 AND global_value = 80");
+            self::applyDbUpgradeToAllDB("INSERT INTO DBPREFIX_global (global_id, global_value) VALUES (170, 0)");
         }
     }
 

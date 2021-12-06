@@ -33,24 +33,12 @@ $dictionaryStartCond = [
             'value' => 2,
             'message' => totranslate('Cannot use a voting dictionary to play solo'),
         ],
-        [
-            'type' => 'otheroptionisnot',
-            'id' => H_OPTION_GAME_MODE,
-            'value' => H_ARENA_MODE,
-            'message' => totranslate('Cannot use a voting dictionary in Arena Mode'),
-        ],
     ],
     H_VOTE_100 => [
         [
             'type' => 'minplayers',
             'value' => 2,
             'message' => totranslate('Cannot use a voting dictionary to play solo'),
-        ],
-        [
-            'type' => 'otheroptionisnot',
-            'id' => H_OPTION_GAME_MODE,
-            'value' => H_ARENA_MODE,
-            'message' => totranslate('Cannot use a voting dictionary in Arena Mode'),
         ],
     ],
 ];
@@ -423,6 +411,22 @@ $game_options = [
                     'message' => totranslate('Must set max players = 1 - 4 to enable Cooperative Anthology'),
                 ],
             ],
+        ],
+    ],
+
+    H_OPTION_DECK => [
+        'name' => totranslate('Deck Visibility'),
+        'default' => H_NO,
+        'values' => [
+            H_NO => [
+                'name' => totranslate('Invisible (Official Rules)'),
+                'description' => totranslate('Cannot see cards remaining in your deck'),
+            ],
+            H_YES => [
+                'name' => totranslate('Open (House Rule)'),
+                'tmdisplay' => totranslate('Open Deck'),
+                'description' => totranslate('View cards remaining in your deck anytime (helpful in turn-based games)'),
+            ]
         ],
     ],
 ];

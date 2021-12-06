@@ -46,14 +46,14 @@
 
       <div class="panel-bottom mt-1 text-white text-17 font-bold flex text-noshadow">
         <div :id="'tut_hand_p' + player.id" class="rounded-lg bg-black bg-opacity-50 px-2 ml-1" :title="i18n('hand') + ': ' + player.activeCount"><Icon icon="hand" class="inline" /> {{ player.activeCount }}</div>
-        <div :id="'tut_deck_p' + player.id" class="rounded-lg bg-black bg-opacity-50 px-2 ml-1" :title="i18n('deck') + ': ' + player.deckCount"><Icon icon="deck" class="inline" /> {{ player.deckCount }}</div>
+        <div :id="'tut_deck_p' + player.id" class="rounded-lg bg-black bg-opacity-50 px-2 ml-1" :class="{ 'cursor-pointer': player.id == game.player_id }" @click="player.id == game.player_id ? clickDeck() : null" :title="i18n('deck') + ': ' + player.deckCount"><Icon icon="deck" class="inline" /> {{ player.deckCount }}</div>
         <div :id="'tut_discard_p' + player.id" class="rounded-lg bg-black bg-opacity-50 px-2 ml-1" :class="{ 'cursor-pointer': player.id == game.player_id }" @click="player.id == game.player_id ? clickDiscard() : null" :title="i18n('discardButton') + ': ' + player.discardCount"><Icon icon="shuffle" class="inline" /> {{ player.discardCount }}</div>
       </div>
 
       <HTooltip :id="'tut_genreCounts_p' + player.id" class="genreCounts text-noshadow" position="left">
         <template v-slot:tip>
           <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-left whitespace-nowrap">
-            <div class="p-2 bg-gray-200 font-bold text-center" v-html="i18n('genreCountsTip', { player_name: `<span class='${player.colorText}'>${player.name}</span>` })"></div>
+            <div class="p-2 bg-gray-200 font-bold text-center" v-html="i18n('genreCountsTip', { player_name: `<span class='${player.colorText}'>${player.name}</span>`, count: genreTotal })"></div>
             <div v-for="gc in genreCountsNonEmpty" :key="gc.genre" class="px-2 py-1 border-t border-black border-opacity-30" :class="gc.class">
               <Icon class="inline text-20" :icon="gc.genre" /> {{ i18n(gc.genre) }}
               <div class="float-right pt-1 pl-4">{{ gc.display }}</div>
@@ -114,7 +114,7 @@ export default {
         return {
           class: `${genre.bg} ${genre.textLight}`,
           count: count,
-          display: `${count}/${this.genreTotal} (${percent.toFixed(0)}%)`,
+          display: `${count} (${percent.toFixed(0)}%)`,
           genre: genre.icon,
           percent: percent,
         };
@@ -129,6 +129,10 @@ export default {
   methods: {
     clickDiscard() {
       this.emitter.emit("clickDiscard");
+    },
+
+    clickDeck() {
+      this.emitter.emit("clickDeck");
     },
   },
 };
