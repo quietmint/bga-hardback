@@ -67,8 +67,6 @@ export default Object.freeze({
   LANG_EN: 1,
   LANG_DE: 2,
   LANG_FR: 3,
-  LANG_ES: 4,
-  LANG_IT: 5,
 
   // Game preferences
   PREF_DRAG_DROP: 100,

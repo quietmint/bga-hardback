@@ -56,8 +56,6 @@ class hardback extends Table
             'dictionary' => H_OPTION_DICTIONARY,
             'dictionaryDe' => H_OPTION_DICTIONARY_DE,
             'dictionaryFr' => H_OPTION_DICTIONARY_FR,
-            'dictionaryEs' => H_OPTION_DICTIONARY_ES,
-            'dictionaryIt' => H_OPTION_DICTIONARY_IT,
             'length' => H_OPTION_LENGTH,
             // 'powers' => H_OPTION_POWERS,
             'startInk' => H_START_INK,
@@ -1620,6 +1618,11 @@ class hardback extends Table
             self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 20 WHERE global_id = 122 AND global_value = 80");
             self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 30 WHERE global_id = 123 AND global_value = 80");
             self::applyDbUpgradeToAllDB("INSERT INTO DBPREFIX_global (global_id, global_value) VALUES (170, 0)");
+        }
+        if ($from_version <= 2112060213) {
+            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 1 WHERE global_id = 207 AND global_value IN (4, 5)");
+            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_id = 100 WHERE global_id IN (124, 125)");
+            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 90 WHERE global_id = 100 AND global_value = 80");
         }
     }
 

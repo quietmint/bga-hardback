@@ -811,22 +811,6 @@ export default {
                 `<a target="hdefine" href="https://www.cnrtl.fr/definition/${q}">Trésor</a>`, //
               ],
             ];
-          } else if (this.gamedatas.options.lang == HConstants.LANG_ES) {
-            links = [
-              [
-                `<a target="hdefine" href="https://dle.rae.es/${q}">Real Academia Española</a>`, //
-              ],
-            ];
-          } else if (this.gamedatas.options.lang == HConstants.LANG_IT) {
-            links = [
-              [
-                `<a target="hdefine" href="https://www.grandidizionari.it/Dizionario_Italiano/cerca.aspx?query=${q}">HOEPLI</a>`, //
-                `<a target="hdefine" href="https://www.treccani.it/vocabolario/ricerca/${q}/">Treccani</a>`, //
-              ],
-              [
-                `<a target="hdefine" href="https://www.sapere.it/sapere/search.html?q=${q}&tipo_dizionario=Italiano">Sapere</a>`, //
-              ],
-            ];
           }
           if (links.length) {
             const table = "<table><tr>" + links.map((o) => `<td>• ${o.join("</td><td>• ")}</td>`).join("</tr><tr>") + "</tr></table>";

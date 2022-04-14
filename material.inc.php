@@ -66,7 +66,6 @@ $this->dicts = [
     H_UK => clienttranslate('British Scrabble'),
     H_BEOLINGUS => clienttranslate('BEOLINGUS (TU Chemnitz)'),
     H_MORPHALOU => clienttranslate('Morphalou'),
-    H_YANDEX => clienttranslate('Yandex.Dictionary'),
     H_VOTE_50 => clienttranslate('Majority Vote'),
     H_VOTE_100 => clienttranslate('Unanimous Vote'),
 ];
@@ -75,8 +74,6 @@ $this->langs = [
     H_LANG_EN => 'English',
     H_LANG_DE => 'Deutsch',
     H_LANG_FR => 'Français',
-    H_LANG_ES => 'Español',
-    H_LANG_IT => 'Italiano',
 ];
 
 $this->i18n = [

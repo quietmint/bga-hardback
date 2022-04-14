@@ -92,14 +92,11 @@ define('H_TRAINING_MODE', 1);
 define('H_OPTION_DICTIONARY', 100);
 define('H_OPTION_DICTIONARY_DE', 122);
 define('H_OPTION_DICTIONARY_FR', 123);
-define('H_OPTION_DICTIONARY_ES', 124);
-define('H_OPTION_DICTIONARY_IT', 125);
 define('H_TWELVEDICTS', 1);
 define('H_US', 2);
 define('H_UK', 3);
 define('H_BEOLINGUS', 20);
 define('H_MORPHALOU', 30);
-define('H_YANDEX', 80);
 define('H_VOTE_50', 90);
 define('H_VOTE_100', 91);
 
@@ -123,8 +120,6 @@ define('H_OPTION_LANG', 207);
 define('H_LANG_EN', 1);
 define('H_LANG_DE', 2);
 define('H_LANG_FR', 3);
-define('H_LANG_ES', 4);
-define('H_LANG_IT', 5);
 
 // Game preferences
 define('H_PREF_DRAG_DROP', 100);
