@@ -203,6 +203,10 @@ $game_options = [
                 'name' => totranslate('Longer (80 Points)'),
                 'tmdisplay' => totranslate('Longer (80 Points)'),
             ],
+            160 => [
+                'name' => totranslate('Marathon (160 Points)'),
+                'tmdisplay' => totranslate('Marathon (160 Points)'),
+            ],
         ],
         'displaycondition' => [
             [
