@@ -46,7 +46,7 @@ $dictionaryStartCond = [
 $game_options = [
     H_OPTION_DICTIONARY => [
         'name' => totranslate('Dictionary'),
-        'default' => H_TWELVEDICTS,
+        'default' => H_US,
         'values' => [
             H_TWELVEDICTS => [
                 'name' => totranslate('12dicts'),
@@ -62,6 +62,11 @@ $game_options = [
                 'name' => totranslate('British Scrabble'),
                 'tmdisplay' => totranslate('British Scrabble'),
                 'description' => totranslate('280,000 words (2019 edition)'),
+            ],
+            H_LETTERPRESS => [
+                'name' => totranslate('Letterpress'),
+                'tmdisplay' => totranslate('Letterpress'),
+                'description' => totranslate('270,000 words (2015 edition)'),
             ],
             H_VOTE_50 => [
                 'name' => totranslate('Majority Vote'),
@@ -89,12 +94,18 @@ $game_options = [
 
     H_OPTION_DICTIONARY_DE => [
         'name' => totranslate('Dictionary'),
-        'default' => H_BEOLINGUS,
+        'default' => H_FREE_DE,
         'values' => [
             H_BEOLINGUS => [
                 'name' => totranslate('BEOLINGUS (TU Chemnitz)'),
                 'tmdisplay' => totranslate('BEOLINGUS (TU Chemnitz)'),
-                'description' => totranslate('230,000 words (2020 edition)'),
+                'description' => totranslate('185,000 words (2020 edition)'),
+                'beta' => true,
+            ],
+            H_FREE_DE => [
+                'name' => totranslate('Free German Dictionary'),
+                'tmdisplay' => totranslate('Free German Dictionary'),
+                'description' => totranslate('1,500,000 words (2021 edition)'),
                 'beta' => true,
             ],
             H_VOTE_50 => [

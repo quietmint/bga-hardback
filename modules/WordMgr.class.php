@@ -30,8 +30,12 @@ class WordMgr extends APP_GameClass
         ];
         if ($dict == H_TWELVEDICTS) {
             $info['link'] = 'http://wordlist.aspell.net/12dicts-readme/';
+        } else if ($dict == H_LETTERPRESS) {
+            $info['link'] = 'https://github.com/lorenbrichter/Words';
         } else if ($dict == H_BEOLINGUS) {
             $info['link'] = 'https://dict.tu-chemnitz.de/doc/about.de.html';
+        } else if ($dict == H_FREE_DE) {
+            $info['link'] = 'https://sourceforge.net/projects/germandict/files/';
         } else if ($dict == H_MORPHALOU) {
             $info['link'] = 'https://www.ortolang.fr/market/lexicons/morphalou/v3.1';
         }
