@@ -5,7 +5,7 @@
 
 <script type="text/javascript">
 const URL = dojoConfig.packages.reduce((r,p) => p.name == "bgagame" ? p.location : r, null);
-document.write('<script type="module" src="' + URL + '/modules/index.js"><\/script><link rel="modulepreload" href="' + URL + '/modules/vendor.js">');
+document.write('<script type="module" src="' + URL + '/modules/index.js"><\/script>');
 </script>
 
 {OVERALL_GAME_FOOTER}
