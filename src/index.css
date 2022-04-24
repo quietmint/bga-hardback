@@ -158,8 +158,8 @@
 
 .wildletter {
   @apply text-blue-100;
-  font-size: 7.5em;
-  line-height: 142%;
+  font-size: 7em;
+  line-height: 150%;
   font-family: "Bodoni Moda", serif;
   text-shadow: -2px 2px theme("colors.blue.400"),
     1px -1px theme("colors.blue.700"), 0 0 4px #0008;

@@ -63,6 +63,9 @@
         <div v-if="card.wild" class="absolute wildletter text-center leading-none w-full">
           {{ card.wild }}
         </div>
+        <div v-if="card.wild" class="absolute bottom-1 w-full flex flex-grow justify-evenly text-16 bold">
+          <div :class="titleClass" class="rounded-lg px-2 bg-opacity-80"><Icon :icon="card.genreName" class="icon inline text-105" />{{ card.letter }}</div>
+        </div>
       </div>
     </div>
 
