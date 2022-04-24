@@ -69,7 +69,7 @@
         </div>
 
         <div class="buttongroup flex">
-          <div id="tut_hand_useInk" @click="buttonEnabled['useInk'] && takeAction('useInk')" class="button" :class="buttonEnabled['useInk'] ? 'blue' : 'disabled'" v-text="i18n('draw', { count: myself.ink })"></div>
+          <div id="tut_hand_useInk" @click="buttonEnabled['useInk'] && useInk()" class="button" :class="buttonEnabled['useInk'] ? 'blue' : 'disabled'" v-text="i18n('draw', { count: myself.ink })"></div>
           <div id="tut_hand_resetAll" @click="buttonEnabled['resetAll'] && resetAll(handLocation)" class="button" :class="buttonEnabled['resetAll'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
           <div id="tut_hand_moveAll" @click="buttonEnabled['moveAll'] && moveAll(handLocation)" class="button" :class="buttonEnabled['moveAll'] ? 'blue' : 'disabled'" v-text="i18n('playAll')"></div>
         </div>
@@ -998,8 +998,10 @@ export default {
         Promise.all(cards.map(this.animateCard)).then(() => {
           this.game.notifqueue.setSynchronousDuration(1);
         });
-      } else if (notif.type == "ink" && this.game.player_id != notif.args.player_id) {
-        this.game.disableNextMoveSound();
+      } else if (notif.type == "ink") {
+        if (this.game.player_id != notif.args.player_id) {
+          this.game.disableNextMoveSound();
+        }
       } else if (notif.type == "invalid") {
         this.gamedatas.word = null;
         if (!this.gamestate.instant && this.game.player_id == notif.args.player_id) {
@@ -1057,6 +1059,10 @@ export default {
       try {
         localStorage.setItem("hardback.sort." + location, order);
       } catch (ignore) {}
+    },
+
+    useInk(): void {
+      this.takeAction("useInk");
     },
 
     previewWord(): void {
