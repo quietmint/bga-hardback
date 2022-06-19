@@ -591,14 +591,21 @@ class hardback extends Table
     {
         $cardIds = [];
         $source = null;
-        $tableau = CardMgr::getTableau(self::getActivePlayerId());
+        $playerId = self::getActivePlayerId();
+        $tableau = CardMgr::getTableau($playerId);
         foreach ($tableau as $card) {
             if ($card->hasBenefit(H_DOUBLE_ADJ)) {
                 if ($card->getPrevious() != null && !$card->getPrevious()->isWild()) {
-                    $cardIds[] = $card->getPrevious()->getId();
+                    $owner = $card->getPrevious()->getOwner() ?? $playerId;
+                    if ($owner == $playerId) { // can't double opponent timeless
+                        $cardIds[] = $card->getPrevious()->getId();
+                    }
                 }
                 if ($card->getNext() != null && !$card->getNext()->isWild()) {
-                    $cardIds[] = $card->getNext()->getId();
+                    $owner = $card->getNext()->getOwner() ?? $playerId;
+                    if ($owner == $playerId) { // can't double opponent timeless
+                        $cardIds[] = $card->getNext()->getId();
+                    }
                 }
                 if (!empty($cardIds)) {
                     $source = $card;
