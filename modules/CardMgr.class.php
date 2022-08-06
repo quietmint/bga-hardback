@@ -242,13 +242,18 @@ class CardMgr extends APP_GameClass
         return "(" . implode(" OR ", $parts) . ")";
     }
 
-    public static function getCardsInLocation($locations, int $inkValue = null): array
+    public static function getCardsInLocation($locations, int $inkValue = null, string $sort = null): array
     {
         $sql = "SELECT `id` FROM card WHERE " . self::getLocationWhereClause($locations);
         if ($inkValue != null) {
             $sql .= " AND `ink` = $inkValue";
         }
-        $sql .= " ORDER BY `location`, `order`";
+        if ($sort == 'tableau') {
+            // Sort timeless classics by age, then other cards by order
+            $sql .= " ORDER BY CASE WHEN `origin` LIKE 'timeless_%' THEN 0 ELSE 1 END, CASE WHEN `origin` LIKE 'timeless_%' THEN `age` ELSE `order` END";
+        } else {
+            $sql .= " ORDER BY `location`, `order`";
+        }
         $cardIds = self::getObjectListFromDB($sql, true);
         return self::getCards($cardIds);
     }
@@ -330,7 +335,7 @@ class CardMgr extends APP_GameClass
         if ($playerId != null) {
             $locations[] = self::getTimelessLocation($playerId);
         }
-        return self::getCardsInLocation($locations);
+        return self::getCardsInLocation($locations, null, 'tableau');
     }
 
     public static function getTimeless(int $playerId, bool $origin = false): array
