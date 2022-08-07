@@ -248,7 +248,7 @@ class CardMgr extends APP_GameClass
         if ($inkValue != null) {
             $sql .= " AND `ink` = $inkValue";
         }
-        if ($sort == 'tableau') {
+        if ($sort == 'jail') {
             // Sort timeless classics by age, then other cards by order
             $sql .= " ORDER BY CASE WHEN `origin` LIKE 'timeless_%' THEN 0 ELSE 1 END, CASE WHEN `origin` LIKE 'timeless_%' THEN `age` ELSE `order` END";
         } else {
@@ -329,13 +329,13 @@ class CardMgr extends APP_GameClass
         return self::getCountInLocation(self::getDiscardLocation($playerId));
     }
 
-    public static function getTableau(int $playerId = null): array
+    public static function getTableau(int $playerId = null, string $sort = null): array
     {
         $locations = ['tableau'];
         if ($playerId != null) {
             $locations[] = self::getTimelessLocation($playerId);
         }
-        return self::getCardsInLocation($locations, null, 'tableau');
+        return self::getCardsInLocation($locations, null, $sort);
     }
 
     public static function getTimeless(int $playerId, bool $origin = false): array

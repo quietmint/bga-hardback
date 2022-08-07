@@ -1005,7 +1005,7 @@ class hardback extends Table
     {
         $player = PlayerMgr::getPlayer();
         $sourceIds = [];
-        $tableau = CardMgr::getTableau($player->getId());
+        $tableau = CardMgr::getTableau($player->getId(), 'jail');
         foreach ($tableau as $card) {
             if ($card->hasBenefit(H_JAIL)) {
                 $sourceIds[] = $card->getId();
