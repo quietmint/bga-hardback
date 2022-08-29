@@ -103,8 +103,12 @@ class hardback extends Table
         self::setGameStateInitialValue('startInk', 0);
         self::setGameStateInitialValue('startRemover', 0);
         self::setGameStateInitialValue('startScore', 0);
-        if ($this->gamestate->table_globals[H_OPTION_COOP] == H_COOP_SIGNATURE) {
-            $genre = rand(H_ADVENTURE, H_ROMANCE);
+        if ($this->gamestate->table_globals[H_OPTION_COOP] >= H_COOP_RANDOM) {
+            if ($this->gamestate->table_globals[H_OPTION_COOP] == H_COOP_RANDOM) {
+                $genre = rand(H_ADVENTURE, H_ROMANCE);
+            } else {
+                $genre = $this->gamestate->table_globals[H_OPTION_COOP] - 10;
+            }
             self::initStat('table', 'coopGenre', $genre);
         }
 

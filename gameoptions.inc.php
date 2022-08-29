@@ -308,16 +308,44 @@ $game_options = [
                 'description' => totranslate('Compete to be the finest novelist of the age'),
             ],
             H_COOP_BASIC => [
-                'name' => totranslate('Cooperative'),
-                'tmdisplay' => totranslate('Cooperative'),
+                'name' => totranslate('Cooperative (No Signature Genre)'),
+                'tmdisplay' => totranslate('Cooperative (No Signature Genre)'),
                 'description' => totranslate('Win or lose as a team against archrival Penny Dreadful (challenging)'),
                 'nobeginner' => true,
                 'is_coop' => true,
             ],
-            H_COOP_SIGNATURE => [
-                'name' => totranslate('Cooperative With Signature Genre'),
-                'tmdisplay' => totranslate('Cooperative With Signature Genre'),
-                'description' => totranslate('Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging)'),
+            H_COOP_RANDOM => [
+                'name' => totranslate('Cooperative (Random)'),
+                'tmdisplay' => totranslate('Cooperative (Random)'),
+                'description' => totranslate('Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging). Penny\'s genre is randomly selected.'),
+                'nobeginner' => true,
+                'is_coop' => true,
+            ],
+            H_COOP_ADVENTURE => [
+                'name' => totranslate('Cooperative (Adventure)'),
+                'tmdisplay' => totranslate('Cooperative (Adventure)'),
+                'description' => totranslate('Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging). If there is an Adventure card in the offer row, Penny gains 1 point for each card purchased by any player.'),
+                'nobeginner' => true,
+                'is_coop' => true,
+            ],
+            H_COOP_HORROR => [
+                'name' => totranslate('Cooperative (Horror)'),
+                'tmdisplay' => totranslate('Cooperative (Horror)'),
+                'description' => totranslate('Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging). If there is a Horror card in the offer row, Penny gains 1 point for each ink used by any player.'),
+                'nobeginner' => true,
+                'is_coop' => true,
+            ],
+            H_COOP_MYSTERY => [
+                'name' => totranslate('Cooperative (Mystery)'),
+                'tmdisplay' => totranslate('Cooperative (Mystery)'),
+                'description' => totranslate('Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging). Each time Penny claims a Mystery card, she also jails the cheapest card in the offer row.'),
+                'nobeginner' => true,
+                'is_coop' => true,
+            ],
+            H_COOP_ROMANCE => [
+                'name' => totranslate('Cooperative (Romance)'),
+                'tmdisplay' => totranslate('Cooperative (Romance)'),
+                'description' => totranslate('Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging). Double the value of each Romance card Penny claims from the offer row.'),
                 'nobeginner' => true,
                 'is_coop' => true,
             ],
@@ -343,7 +371,59 @@ $game_options = [
                     'message' => totranslate('Must set max players = 1 - 4 to enable Cooperative Anthology'),
                 ],
             ],
-            H_COOP_SIGNATURE => [
+            H_COOP_RANDOM => [
+                [
+                    'type' => 'otheroption',
+                    'id' => H_OPTION_GAME_MODE,
+                    'value' => H_TRAINING_MODE,
+                    'message' => totranslate('Must set game mode = training mode (no ELO) to enable Cooperative Anthology'),
+                ],
+                [
+                    'type' => 'maxplayers',
+                    'value' => 4,
+                    'message' => totranslate('Must set max players = 1 - 4 to enable Cooperative Anthology'),
+                ],
+            ],
+            H_COOP_ADVENTURE => [
+                [
+                    'type' => 'otheroption',
+                    'id' => H_OPTION_GAME_MODE,
+                    'value' => H_TRAINING_MODE,
+                    'message' => totranslate('Must set game mode = training mode (no ELO) to enable Cooperative Anthology'),
+                ],
+                [
+                    'type' => 'maxplayers',
+                    'value' => 4,
+                    'message' => totranslate('Must set max players = 1 - 4 to enable Cooperative Anthology'),
+                ],
+            ],
+            H_COOP_HORROR => [
+                [
+                    'type' => 'otheroption',
+                    'id' => H_OPTION_GAME_MODE,
+                    'value' => H_TRAINING_MODE,
+                    'message' => totranslate('Must set game mode = training mode (no ELO) to enable Cooperative Anthology'),
+                ],
+                [
+                    'type' => 'maxplayers',
+                    'value' => 4,
+                    'message' => totranslate('Must set max players = 1 - 4 to enable Cooperative Anthology'),
+                ],
+            ],
+            H_COOP_MYSTERY => [
+                [
+                    'type' => 'otheroption',
+                    'id' => H_OPTION_GAME_MODE,
+                    'value' => H_TRAINING_MODE,
+                    'message' => totranslate('Must set game mode = training mode (no ELO) to enable Cooperative Anthology'),
+                ],
+                [
+                    'type' => 'maxplayers',
+                    'value' => 4,
+                    'message' => totranslate('Must set max players = 1 - 4 to enable Cooperative Anthology'),
+                ],
+            ],
+            H_COOP_ROMANCE => [
                 [
                     'type' => 'otheroption',
                     'id' => H_OPTION_GAME_MODE,

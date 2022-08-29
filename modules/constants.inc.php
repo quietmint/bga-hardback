@@ -114,7 +114,11 @@ define('H_AGRESSIVE', 3);
 
 define('H_OPTION_COOP', 110);
 define('H_COOP_BASIC', 1);
-define('H_COOP_SIGNATURE', 2);
+define('H_COOP_RANDOM', 2);
+define('H_COOP_ADVENTURE', 11);
+define('H_COOP_HORROR', 12);
+define('H_COOP_MYSTERY', 13);
+define('H_COOP_ROMANCE', 14);
 
 define('H_OPTION_DECK', 170);
 
