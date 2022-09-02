@@ -35,7 +35,9 @@
         <div v-if="discardVisible" class="buttongroup mr-2 grid grid-cols-3">
           <div id="tut_discard_sortLetter" @click="sort(discardLocation, 'letter')" class="button" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
           <div id="tut_discard_sortCost" @click="sort(discardLocation, 'cost')" class="button text-15" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortCostTip')">¢</div>
-          <div id="tus_discard_sortGenre" @click="sort(discardLocation, 'genre')" class="button" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
+          <div id="tus_discard_sortGenre" @click="sort(discardLocation, 'genre')" class="button" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')">
+            <Icon icon="starter" class="inline text-17 h-7" />
+          </div>
         </div>
       </div>
 
@@ -53,7 +55,9 @@
 
         <div v-if="deckVisible" class="buttongroup mr-2 grid grid-cols-2">
           <div id="tut_deck_sortLetter" @click="sort(deckLocation, 'letter')" class="button" :class="deckCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
-          <div id="tus_deck_sortGenre" @click="sort(deckLocation, 'genre')" class="button" :class="deckCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
+          <div id="tus_deck_sortGenre" @click="sort(deckLocation, 'genre')" class="button" :class="deckCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')">
+            <Icon icon="starter" class="inline text-17 h-7" />
+          </div>
         </div>
       </div>
 
@@ -76,8 +80,12 @@
 
         <div class="buttongroup mr-2 grid grid-cols-3">
           <div id="tut_hand_sortLetter" @click="sortOnce(handLocation, 'letter')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
-          <div id="tut_hand_sortGenre" @click="sortOnce(handLocation, 'genre')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
-          <div id="tut_hand_shuffle" @click="sortOnce(handLocation, 'shuffle')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-17 h-7" /></div>
+          <div id="tut_hand_sortGenre" @click="sortOnce(handLocation, 'genre')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')">
+            <Icon icon="starter" class="inline text-17 h-7" />
+          </div>
+          <div id="tut_hand_shuffle" @click="sortOnce(handLocation, 'shuffle')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('shuffleTip')">
+            <Icon icon="shuffle" class="inline text-17 h-7" />
+          </div>
         </div>
       </div>
 
@@ -88,7 +96,15 @@
     <!-- Tableau -->
     <div v-if="gamestate.name != 'gameEnd'" class="py-2 border-t-2 border-black bg-opacity-30 transition-colors duration-1000" :class="author.colorBg || 'bg-white'">
       <div class="flex leading-7 font-bold">
-        <div id="tut_tableau_title" class="title ml-2 flex-grow" v-html="i18n('tableau', { player_name: `<span class='transition-colors duration-1000 ${author.colorText || 'text-black'}'>${author.name}</span>`, count: tableauCards.length }) + (gamedatas.word ? ' — <b>' + gamedatas.word + '</b>' : '')"></div>
+        <div
+          id="tut_tableau_title"
+          class="title ml-2 flex-grow"
+          v-html="
+            i18n('tableau', {
+              player_name: `<span class='transition-colors duration-1000 ${author.colorText || 'text-black'}'>${author.name}</span>`,
+              count: tableauCards.length,
+            }) + (gamedatas.word ? ' — <b>' + gamedatas.word + '</b>' : '')
+          "></div>
 
         <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup flex">
           <div id="tut_tableau_resetAll" @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')" class="button" :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
@@ -97,8 +113,12 @@
 
         <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup mr-2 grid grid-cols-3">
           <div id="tut_tableau_sortLetter" @click="sortOnce('tableau', 'letter')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
-          <div id="tut_tableau_sortGenre" @click="sortOnce('tableau', 'genre')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
-          <div id="tut_tableau_shuffle" @click="sortOnce('tableau', 'shuffle')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('shuffleTip')"><Icon icon="shuffle" class="inline text-17 h-7" /></div>
+          <div id="tut_tableau_sortGenre" @click="sortOnce('tableau', 'genre')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')">
+            <Icon icon="starter" class="inline text-17 h-7" />
+          </div>
+          <div id="tut_tableau_shuffle" @click="sortOnce('tableau', 'shuffle')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('shuffleTip')">
+            <Icon icon="shuffle" class="inline text-17 h-7" />
+          </div>
         </div>
       </div>
 
@@ -122,8 +142,12 @@
         <div class="buttongroup mr-2 grid grid-cols-4">
           <div id="tut_offer_sortLetter" @click="sort('offer', 'letter')" class="button blue" :class="{ active: locationOrder.offer == 'letter' }" :title="i18n('sortLetterTip')">A-Z</div>
           <div id="tut_offer_sortCost" @click="sort('offer', 'cost')" class="button blue text-15" :class="{ active: locationOrder.offer == 'cost' }" :title="i18n('sortCostTip')">¢</div>
-          <div id="tut_offer_sortGenre" @click="sort('offer', 'genre')" class="button blue" :class="{ active: locationOrder.offer == 'genre' }" :title="i18n('sortGenreTip')"><Icon icon="starter" class="inline text-17 h-7" /></div>
-          <div id="tut_offer_sortTime" @click="sort('offer', 'order')" class="button blue" :class="{ active: locationOrder.offer == 'order' }" :title="i18n('sortTimeTip')"><Icon icon="clock" class="inline text-17 h-7" /></div>
+          <div id="tut_offer_sortGenre" @click="sort('offer', 'genre')" class="button blue" :class="{ active: locationOrder.offer == 'genre' }" :title="i18n('sortGenreTip')">
+            <Icon icon="starter" class="inline text-17 h-7" />
+          </div>
+          <div id="tut_offer_sortTime" @click="sort('offer', 'order')" class="button blue" :class="{ active: locationOrder.offer == 'order' }" :title="i18n('sortTimeTip')">
+            <Icon icon="clock" class="inline text-17 h-7" />
+          </div>
         </div>
       </div>
 
@@ -142,6 +166,8 @@ import { Icon, addIcon } from "@iconify/vue";
 import { firstBy } from "thenby";
 import { nextTick, computed } from "vue";
 import { throttle } from "lodash-es";
+
+let lastErrorCode = null;
 
 const queue = (callable) => {
   let busy = false;
@@ -740,11 +766,19 @@ export default {
         // Cancel any pending preview
         this.previewWord.cancel();
       }
-      return this.takeActionAjax(action, data);
+      return this.takeActionAjax(action, data).catch((errorMsg) => {
+        if (errorMsg == "endGameWarning") {
+          this.game.confirmationDialog(this.i18n("endGameWarning"), () => {
+            data.lock = true;
+            data.endGameConfirm = true;
+            this.takeActionAjax(action, data);
+          });
+        }
+      });
     },
 
     takeActionAjax(action: string, data): Promise<void> {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         const start = Date.now();
         console.log(`Take action ${action}`, data);
         this.game.ajaxcall(
@@ -755,11 +789,12 @@ export default {
           (error) => {
             const duration = Date.now() - start;
             if (error) {
-              console.error(`Take action ${action} error in ${duration}ms`, error);
+              console.error(`Take action ${action} error in ${duration}ms`, lastErrorCode);
+              reject(lastErrorCode);
             } else {
               console.log(`Take action ${action} done in ${duration}ms`);
+              resolve();
             }
-            resolve();
           }
         );
       });
@@ -1025,6 +1060,10 @@ export default {
       }
     },
 
+    onErrorCode(code): void {
+      lastErrorCode = code;
+    },
+
     onPrefChange(id: number, value: number) {
       this.prefs[id] = value;
     },
@@ -1080,7 +1119,13 @@ export default {
         tableauIds = this.cardIds(this.tableauCards);
         tableauMask = this.wildMask(this.tableauCards);
       }
-      this.takeAction("previewWord", { lock, handIds, handMask, tableauIds, tableauMask });
+      this.takeAction("previewWord", {
+        lock,
+        handIds,
+        handMask,
+        tableauIds,
+        tableauMask,
+      });
     },
 
     moveAll(location: string): Promise<any> {

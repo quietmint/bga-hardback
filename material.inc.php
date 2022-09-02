@@ -95,6 +95,7 @@ $this->i18n = [
     'doctorButton' => clienttranslate('${points}${icon} Advert (${coins}¢)'),
     'doubleButton' => clienttranslate('Double'),
     'draw' => clienttranslate('Draw With Ink (${count})'),
+    'endGameWarning' => clienttranslate('Penny Dreadful will score enough points to end the game immediately'),
     'finalRound' => clienttranslate('This is the final round!'),
     'first' => clienttranslate('First Player'),
     'flushButton' => clienttranslate('Flush Offer Row'),

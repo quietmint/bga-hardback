@@ -62,6 +62,11 @@ define([
         return;
       }
 
+      // Co-op victory/defeat override
+      if (this.gamedatas.penny) {
+        this.is_coop = true;
+      }
+
       // Intiailize Vue
       var app = Vue.createApp(HGame);
       app.config.globalProperties.game = this;
@@ -180,6 +185,18 @@ define([
           cancelable: false,
         });
       });
+    },
+
+    /* @Override */
+    showMessage: function (msg, type) {
+      if (type == "error") {
+        var lastErrorCode = msg.startsWith("!!!") ? msg.substring(3) : null;
+        this.vue.onErrorCode(lastErrorCode);
+        if (lastErrorCode) {
+          return;
+        }
+      }
+      this.inherited(arguments);
     },
 
     /* @Override */

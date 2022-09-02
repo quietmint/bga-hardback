@@ -1174,7 +1174,7 @@ class hardback extends Table
         ];
     }
 
-    function purchase(int $cardId): void
+    function purchase(int $cardId, bool $endGameConfirm = false): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
         if (!in_array($cardId, $this->gamestate->state()['args']['cardIds'])) {
@@ -1210,6 +1210,15 @@ class hardback extends Table
                 'amount' => 1,
                 'icon' => 'star',
             ]);
+
+            // Immediately end the game if Penny just won
+            $isEnding = $penny->getScore() >= $this->getGameLength();
+            if ($isEnding) {
+                if (!$endGameConfirm) {
+                    throw new BgaUserException('!!!endGameWarning');
+                }
+                $this->gamestate->nextState('end');
+            }
         }
 
         if ($oldLocation == 'offer') {
@@ -1220,7 +1229,7 @@ class hardback extends Table
         $this->gamestate->nextState('again');
     }
 
-    function convert(): void
+    function convert(bool $endGameConfirm = false): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
         $convert = $this->gamestate->state()['args']['convert'];
@@ -1246,6 +1255,15 @@ class hardback extends Table
                 'amount' => $convert['ink'],
                 'icon' => 'star',
             ]);
+
+            // Immediately end the game if Penny just won
+            $isEnding = $penny->getScore() >= $this->getGameLength();
+            if ($isEnding) {
+                if (!$endGameConfirm) {
+                    throw new BgaUserException('!!!endGameWarning');
+                }
+                $this->gamestate->nextState('end');
+            }
         }
 
         $this->gamestate->nextState('again');
@@ -1469,7 +1487,7 @@ class hardback extends Table
      * PHASE 8: USE INK AND REMOVER
      */
 
-    function useInk(): void
+    function useInk(bool $endGameConfirm = false): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
         $location = $player->isActive() ? 'tableau' : $player->getHandLocation();
@@ -1493,6 +1511,19 @@ class hardback extends Table
                 'amount' => 1,
                 'icon' => 'star',
             ]);
+
+            // Immediately end the game if Penny just won
+            $isEnding = $penny->getScore() >= $this->getGameLength();
+            if ($isEnding) {
+                $stateName = $this->gamestate->state()['name'];
+                if ($stateName != 'playerTurn' && $stateName != 'purchase' && !$this->isCurrentPlayerActive()) {
+                    throw new BgaUserException('Ink cannot be used out-of-turn right now. Try again later.');
+                }
+                if (!$endGameConfirm) {
+                    throw new BgaUserException('!!!endGameWarning');
+                }
+                $this->gamestate->nextState('end');
+            }
         }
     }
 

@@ -208,7 +208,8 @@ class action_hardback extends APP_GameAction
     self::setAjaxMode();
     $this->game->checkAction('purchase');
     $cardId = self::getArg('cardId', AT_posint, true);
-    $this->game->purchase($cardId);
+    $endGameConfirm = self::getArg('endGameConfirm', AT_bool, false, false);
+    $this->game->purchase($cardId, $endGameConfirm);
     self::ajaxResponse();
   }
 
@@ -216,7 +217,8 @@ class action_hardback extends APP_GameAction
   {
     self::setAjaxMode();
     $this->game->checkAction('convert');
-    $this->game->convert();
+    $endGameConfirm = self::getArg('endGameConfirm', AT_bool, false, false);
+    $this->game->convert($endGameConfirm);
     self::ajaxResponse();
   }
 
@@ -251,7 +253,8 @@ class action_hardback extends APP_GameAction
   {
     self::setAjaxMode();
     $this->game->checkActionCustom('useInk');
-    $this->game->useInk();
+    $endGameConfirm = self::getArg('endGameConfirm', AT_bool, false, false);
+    $this->game->useInk($endGameConfirm);
     self::ajaxResponse();
   }
 
