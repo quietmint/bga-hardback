@@ -448,7 +448,7 @@
 }
 
 .panel-opt {
-  @apply rounded-full bg-white bg-opacity-75 text-black border-3 border-dashed border-gray-800 text-17 text-center font-bold shadow;
+  @apply rounded-full bg-white bg-opacity-75 text-black border-3 border-dashed border-gray-800 text-17 text-center font-bold shadow whitespace-nowrap;
   width: 45px;
   height: 45px;
   line-height: 39px;
