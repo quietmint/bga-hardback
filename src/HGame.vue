@@ -14,6 +14,11 @@
       <HKeyboard v-if="keyboardId" />
     </transition>
 
+    <!-- Lookup popup -->
+    <transition name="fade">
+      <HLookup v-if="lookupVisible" :options="gamedatas.options" :history="lookupHistory" :myself="myself" />
+    </transition>
+
     <!-- Browser warning (Safari 12, etc.) -->
     <div v-if="warningVisible" class="m-4 p-3 text-17 font-bold text-center border-2 border-red-700 bg-white bg-opacity-50">
       <a href="https://browsehappy.com/" target="_blank" class="block text-blue-700" v-text="i18n('browserWarnTitle')"></a>
@@ -70,6 +75,10 @@
         <div id="tut_hand_title" class="title ml-2 flex-grow">
           <Icon icon="hand" class="float-left h-7 text-24 mr-1" />
           <span v-text="i18n('myHand', { count: handCards.length })"></span>
+        </div>
+
+        <div v-if="buttonEnabled['lookup']" class="buttongroup flex">
+          <div id="tut_hand_lookup" @click="showLookup()" class="button blue"><Icon icon="dictionary" class="inline text-17" /> <span v-text="i18n('lookup')"></span></div>
         </div>
 
         <div class="buttongroup flex">
@@ -157,9 +166,10 @@
 </template>
 
 <script lang="ts">
-import HConstants from "./HConstants.js";
 import HCardList from "./HCardList.vue";
+import HConstants from "./HConstants.js";
 import HKeyboard from "./HKeyboard.vue";
+import HLookup from "./HLookup.vue";
 import HPenny from "./HPenny.vue";
 import HPlayerPanel from "./HPlayerPanel.vue";
 import { Icon, addIcon } from "@iconify/vue";
@@ -171,7 +181,7 @@ let lastErrorCode = null;
 
 const queue = (callable) => {
   let busy = false;
-  const q = [];
+  const q: any[] = [];
   const execute = function () {
     if (busy) {
       return; // queue is busy
@@ -212,7 +222,7 @@ const queue = (callable) => {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const repaint = () => new Promise((resolve) => requestAnimationFrame(resolve));
-const getRect = (el: HTMLElement, calculateMargin = false) => {
+const getRect = (el: HTMLElement | null, calculateMargin = false) => {
   if (!el) {
     return null;
   }
@@ -273,6 +283,7 @@ import lockIcon from "@iconify-icons/mdi/lock";
 import starOutlined from "@iconify-icons/ant-design/star-outlined";
 
 // Sorter icons
+import bookOpenPageVariant from "@iconify-icons/mdi/book-open-page-variant";
 import chevronDown from "@iconify-icons/mdi/chevron-down";
 import clockOutline from "@iconify-icons/mdi/clock-outline";
 import shuffleVariant from "@iconify-icons/mdi/shuffle-variant";
@@ -281,9 +292,14 @@ import shuffleVariant from "@iconify-icons/mdi/shuffle-variant";
 import cardsIcon from "@iconify-icons/mdi/cards";
 import handRight from "@iconify-icons/mdi/hand-right";
 
+// Lookup word icons
+import checkCircle from "@iconify-icons/mdi/check-circle";
+import closeCircle from "@iconify-icons/mdi/close-circle";
+import loadingIcon from "@iconify-icons/mdi/loading";
+
 export default {
   name: "HGame",
-  components: { Icon, HCardList, HKeyboard, HPenny, HPlayerPanel },
+  components: { Icon, HCardList, HKeyboard, HLookup, HPenny, HPlayerPanel },
 
   provide() {
     return {
@@ -311,6 +327,7 @@ export default {
     this.emitter.on("clickDeck", this.clickDeck);
     this.emitter.on("clickFooter", this.clickFooter);
     this.emitter.on("clickKey", this.clickKey);
+    this.emitter.on("clickLookup", this.clickLookup);
     this.emitter.on("dragStart", this.dragStart);
     this.discardVisible = this.gamestate.name == "gameEnd";
     this.locationOrder[this.discardLocation] = "genre";
@@ -334,6 +351,7 @@ export default {
     this.emitter.off("clickDeck", this.clickDeck);
     this.emitter.off("clickFooter", this.clickFooter);
     this.emitter.off("clickKey", this.clickKey);
+    this.emitter.off("clickLookup", this.clickLookup);
     this.emitter.off("dragStart", this.dragStart);
   },
 
@@ -361,6 +379,8 @@ export default {
       deckVisible: false,
       drag: null,
       keyboardId: null,
+      lookupHistory: [],
+      lookupVisible: false,
       prefs: {},
       locationOrder: {
         timeless: "location",
@@ -370,15 +390,19 @@ export default {
         chevron: chevronDown,
         clock: clockOutline,
         deck: cardsIcon,
+        dictionary: bookOpenPageVariant,
         hand: handRight,
         horror: mdiSkull,
         jail: lockIcon,
+        loading: loadingIcon,
         mystery: magnifyingGlass,
+        no: closeCircle,
         romance: mdiHeart,
         shuffle: shuffleVariant,
         star: starOutlined,
         starter: bookmarkIcon,
         timeless: cachedIcon,
+        yes: checkCircle,
       },
       icons105: {},
     };
@@ -458,6 +482,7 @@ export default {
 
     buttonEnabled() {
       return {
+        lookup: !this.gamedatas.options.dictionary?.voting,
         useInk: this.myself.ink && (this.myself.deckCount || this.myself.discardCount) && (!this.gamestate.active || this.gamestate.name == "playerTurn"),
         moveAll: this.gamestate.active && this.gamestate.name == "playerTurn" && this.handCards.length > 1,
         resetAll: this.handWildCards.length,
@@ -489,7 +514,7 @@ export default {
       return msg;
     },
 
-    getLocationEl(location: string): HTMLElement {
+    getLocationEl(location: string): HTMLElement | undefined {
       if (location.startsWith("timeless")) {
         location = "timeless";
       }
@@ -499,7 +524,7 @@ export default {
       }
     },
 
-    getCardEl(card): HTMLElement {
+    getCardEl(card): HTMLElement | null {
       if (typeof card == "number") {
         card = this.gamedatas.cards[card];
       }
@@ -569,14 +594,14 @@ export default {
       return newCard;
     },
 
-    populateCards(cards): any[] {
+    populateCards(cards): any[] | null {
       if (!Array.isArray(cards)) {
         return null;
       }
       return cards.map(this.populateCard);
     },
 
-    cardIds(cards): number[] {
+    cardIds(cards): number[] | null {
       if (!Array.isArray(cards)) {
         return null;
       }
@@ -658,9 +683,9 @@ export default {
       }
 
       // Compute start position
-      let cardEl: HTMLElement = null;
-      let start = null;
-      let end = null;
+      let cardEl: HTMLElement | null = null;
+      let start: any = null;
+      let end: any = null;
       if (oldCard != null) {
         cardEl = this.getCardEl(oldCard);
         start = getRect(cardEl);
@@ -673,7 +698,7 @@ export default {
         return;
       }
 
-      let mode = null;
+      let mode: string | null = null;
       if (start && !visible) {
         mode = "leave";
         if (card.location.startsWith("discard_") || card.location == "deck_" + this.game.player_id) {
@@ -688,7 +713,7 @@ export default {
 
         // Clone, which will be animated
         const rootEl = document.getElementById("HGame");
-        const root = getRect(rootEl);
+        const root: any = getRect(rootEl);
         const top = end.top - root.top;
         const left = end.left - root.left;
         cardEl = cardEl.cloneNode(true) as HTMLElement;
@@ -773,6 +798,8 @@ export default {
             data.endGameConfirm = true;
             this.takeActionAjax(action, data);
           });
+        } else {
+          throw errorMsg;
         }
       });
     },
@@ -813,7 +840,7 @@ export default {
         }
         if (args.word) {
           const q = args.word.toLowerCase();
-          let links = [];
+          let links: any[] = [];
           if (this.gamedatas.options.lang == HConstants.LANG_EN) {
             links = [
               [
@@ -1042,6 +1069,15 @@ export default {
         if (!this.gamestate.instant && this.game.player_id == notif.args.player_id) {
           this.game.showMessage(this.i18n(notif.log, notif.args), "error no_log");
         }
+      } else if (notif.type == "lookup") {
+        for (let i = 0; i < this.lookupHistory.length; i++) {
+          let hist = this.lookupHistory[i];
+          // onFormatString may add bold tag
+          if (notif.args.word == hist.word || notif.args.word == `<b>${hist.word}</b>`) {
+            hist.icon = notif.args.valid ? "yes" : "no";
+            break;
+          }
+        }
       } else if (notif.type == "pause") {
         // @ts-ignore
         const duration = this.gamestate.instant || window.g_archive_mode ? 1 : notif.args.duration;
@@ -1098,6 +1134,10 @@ export default {
       try {
         localStorage.setItem("hardback.sort." + location, order);
       } catch (ignore) {}
+    },
+
+    showLookup(): void {
+      this.lookupVisible = true;
     },
 
     useInk(): void {
@@ -1197,6 +1237,32 @@ export default {
         this.gamedatas.cards[this.keyboardId].wild = letter;
         this.keyboardId = null;
         this.previewWord();
+      }
+    },
+
+    clickLookup(word: string): void {
+      if (word) {
+        let ignore = word.length == 1 || this.lookupHistory.some((hist) => hist.word == word);
+        if (!ignore) {
+          this.lookupHistory.unshift({
+            icon: "loading",
+            word: word,
+          });
+          if (this.lookupHistory.length > 10) {
+            this.lookupHistory.splice(10, this.lookupHistory.length - 10);
+          }
+          this.takeAction("lookup", { lock: false, word }).catch((error) => {
+            for (let i = 0; i < this.lookupHistory.length; i++) {
+              let hist = this.lookupHistory[i];
+              if (hist.word == word) {
+                this.lookupHistory.splice(i, 1);
+                break;
+              }
+            }
+          });
+        }
+      } else {
+        this.lookupVisible = false;
       }
     },
 

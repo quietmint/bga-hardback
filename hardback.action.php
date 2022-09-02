@@ -88,6 +88,14 @@ class action_hardback extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function lookup()
+  {
+    self::setAjaxMode();
+    $word = self::getArg('word', AT_alphanum, true);
+    $this->game->lookup($word);
+    self::ajaxResponse();
+  }
+
   /*
    * PHASE 3: RESOLVE CARD BENEFITS
    */

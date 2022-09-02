@@ -50,7 +50,6 @@ define('H_START_SCORE', 20);
 define('H_START_INK', 21);
 define('H_START_REMOVER', 22);
 define('H_AWARD_WINNER', 30);
-define('H_ATTEMPTS', 40);
 
 // Game statistics
 define('H_STAT_TURNS', 10);

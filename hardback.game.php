@@ -44,7 +44,6 @@ class hardback extends Table
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         self::initGameStateLabels([
             'adverts' => H_OPTION_ADVERTS,
-            'attempts' => H_ATTEMPTS,
             'awards' => H_OPTION_AWARDS,
             'awardWinner' => H_AWARD_WINNER,
             'coop' => H_OPTION_COOP,
@@ -94,7 +93,6 @@ class hardback extends Table
         self::reloadPlayersBasicInfos();
 
         // Init global values with their initial values
-        self::setGameStateInitialValue('attempts', 0);
         self::setGameStateInitialValue('awardWinner', 0);
         self::setGameStateInitialValue('countActive' . H_ADVENTURE, 0);
         self::setGameStateInitialValue('countActive' . H_HORROR, 0);
@@ -213,9 +211,11 @@ class hardback extends Table
             'finalRound' => $this->getGameProgression() >= 100,
             'options' => [
                 'adverts' => $this->gamestate->table_globals[H_OPTION_ADVERTS] > 0,
+                'attempts' => intval($this->gamestate->table_globals[H_OPTION_ATTEMPTS]),
                 'awards' => $this->gamestate->table_globals[H_OPTION_AWARDS] > 0,
                 'coop' => $this->gamestate->table_globals[H_OPTION_COOP] > 0,
                 'deck' => $this->gamestate->table_globals[H_OPTION_DECK] > 0,
+                'dictionary' => WordMgr::getDictionaryInfo(),
                 'lang' => WordMgr::getLanguageId(),
                 // 'powers' => $this->gamestate->table_globals[H_OPTION_POWERS] > 0,
             ],
@@ -429,10 +429,10 @@ class hardback extends Table
     {
         $msg = $this->msg['rejectedWord'];
         $remaining = null;
-        $attempts = $this->incGameStateValue('attempts', 1);
+        $player->addAttempt();
         if ($this->gamestate->table_globals[H_OPTION_ATTEMPTS] > 0) {
             $msg = $this->msg['rejectedWordRemaining'];
-            $remaining = $this->gamestate->table_globals[H_OPTION_ATTEMPTS] - $attempts;
+            $remaining = max(0, $this->gamestate->table_globals[H_OPTION_ATTEMPTS] - $player->getAttempts());
         }
 
         $this->incStat(1, 'invalidWords');
@@ -448,7 +448,7 @@ class hardback extends Table
             'remaining' => $remaining,
         ]);
 
-        if ($remaining === 0) {
+        if ($remaining <= 0) {
             if ($this->gamestate->state()['type'] == 'multipleactiveplayer') { // during voting
                 $this->gamestate->setAllPlayersNonMultiactive('skip');
             } else {
@@ -510,6 +510,45 @@ class hardback extends Table
             }
         } else {
             $this->gamestate->setPlayerNonMultiactive($current->getId(), '');
+        }
+    }
+
+    function lookup(string $word)
+    {
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        if ($this->gamestate->table_globals[H_OPTION_ATTEMPTS] > 0 && $player->getAttempts() >= $this->gamestate->table_globals[H_OPTION_ATTEMPTS]) {
+            throw new BgaVisibleSystemException("lookup: Not possible for $player to lookup with {$player->getAttempts()} invalid attempts");
+        }
+
+        $valid = WordMgr::isWord($word);
+        if (!$valid) {
+            $msg = $this->msg['rejectedWord'];
+            $remaining = null;
+            $player->addAttempt();
+            if ($this->gamestate->table_globals[H_OPTION_ATTEMPTS] > 0) {
+                $msg = $this->msg['rejectedWordRemaining'];
+                $remaining = max(0, $this->gamestate->table_globals[H_OPTION_ATTEMPTS] - $player->getAttempts());
+            }
+
+            $this->incStat(1, 'invalidWords');
+            $this->incStat(1, 'invalidWords', $player->getId());
+            $info = WordMgr::getDictionaryInfo();
+            self::notifyPlayer($player->getId(), 'lookup', $msg, [
+                'word' => $word,
+                'valid' => $valid,
+                'i18n' => ['dict'],
+                'player_id' => $player->getId(),
+                'player_name' => $player->getName(),
+                'dict' => $info['dict'],
+                'lang' => $info['lang'],
+                'remaining' => $remaining,
+            ]);
+        } else {
+            $this->not_a_move_notification = true;
+            self::notifyPlayer($player->getId(), 'lookup', '', [
+                'word' => $word,
+                'valid' => $valid,
+            ]);
         }
     }
 
@@ -1313,7 +1352,7 @@ class hardback extends Table
 
         // Reset hand and tableau
         CardMgr::reset($player->getId(), true);
-        $player->notifyPanel();
+        $player->resetAttempts();
         $this->gamestate->nextState('next');
     }
 
@@ -1340,7 +1379,7 @@ class hardback extends Table
         // Reset hand and tableau
         CardMgr::reset($player->getId());
         $player->setWord(null);
-        $player->notifyPanel();
+        $player->resetAttempts();
         $this->gamestate->nextState('next');
     }
 
@@ -1463,7 +1502,6 @@ class hardback extends Table
     function stNextPlayer(): void
     {
         // Activate next player
-        $this->setGameStateValue('attempts', 0);
         $this->activeNextPlayer();
         $player = PlayerMgr::getPlayer();
 
@@ -1665,6 +1703,10 @@ class hardback extends Table
             self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 1 WHERE global_id = 207 AND global_value IN (4, 5)");
             self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_id = 100 WHERE global_id IN (124, 125)");
             self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 90 WHERE global_id = 100 AND global_value = 80");
+        }
+        if ($from_version <= 2209021813) {
+            self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_player ADD `attempts` INT NOT NULL DEFAULT 0");
+            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_player SET `attempts` = (SELECT global_value FROM DBPREFIX_global WHERE global_id = 40) WHERE player_id = (SELECT global_value FROM DBPREFIX_global WHERE global_id = 2)");
         }
     }
 

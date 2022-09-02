@@ -27,6 +27,7 @@ class WordMgr extends APP_GameClass
             'preserve' => ['link'],
             'dict' => hardback::$instance->dicts[$dict],
             'lang' => hardback::$instance->langs[$lang],
+            'voting' => $dict == H_VOTE_50 || $dict == H_VOTE_100,
         ];
         if ($dict == H_TWELVEDICTS) {
             $info['link'] = 'http://wordlist.aspell.net/12dicts-readme/';
