@@ -448,7 +448,7 @@ class hardback extends Table
             'remaining' => $remaining,
         ]);
 
-        if ($remaining <= 0) {
+        if ($remaining === 0) {
             if ($this->gamestate->state()['type'] == 'multipleactiveplayer') { // during voting
                 $this->gamestate->setAllPlayersNonMultiactive('skip');
             } else {
@@ -1704,9 +1704,17 @@ class hardback extends Table
             self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_id = 100 WHERE global_id IN (124, 125)");
             self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 90 WHERE global_id = 100 AND global_value = 80");
         }
-        if ($from_version <= 2209021813) {
-            self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_player ADD `attempts` INT NOT NULL DEFAULT 0");
-            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_player SET `attempts` = (SELECT global_value FROM DBPREFIX_global WHERE global_id = 40) WHERE player_id = (SELECT global_value FROM DBPREFIX_global WHERE global_id = 2)");
+        if ($from_version <= 2209030117) {
+            try {
+                self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_player ADD `attempts` INT NOT NULL DEFAULT 0");
+                self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_player SET `attempts` = (SELECT global_value FROM DBPREFIX_global WHERE global_id = 40) WHERE player_id = (SELECT global_value FROM DBPREFIX_global WHERE global_id = 2)");
+            } catch (Exception $e) {
+                try {
+                    self::applyDbUpgradeToAllDB("ALTER TABLE player ADD `attempts` INT NOT NULL DEFAULT 0");
+                    self::applyDbUpgradeToAllDB("UPDATE player SET `attempts` = (SELECT global_value FROM global WHERE global_id = 40) WHERE player_id = (SELECT global_value FROM global WHERE global_id = 2)");
+                } catch (Exception $ee) {
+                }
+            }
         }
     }
 
