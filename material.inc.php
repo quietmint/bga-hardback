@@ -199,11 +199,11 @@ $this->benefits = [
         'long' => clienttranslate('Double the ¢ and ${star} values of an adjacent card'),
     ],
     H_EITHER_BASIC => [
-        'short' => clienttranslate('${value}¢ or ${star}'),
+        'short' => clienttranslate('${value}¢ or ${value}${star}'),
         'long' => clienttranslate('Gain ${value}¢ or ${value}${star}'),
     ],
     H_EITHER_GENRE => [
-        'short' => clienttranslate('${value}¢ or ${star}'),
+        'short' => clienttranslate('${value}¢ or ${value}${star}'),
         'long' => clienttranslate('Gain ${value}¢ or ${value}${star}'),
     ],
     H_EITHER_INK => [
