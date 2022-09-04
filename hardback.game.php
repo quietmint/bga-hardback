@@ -1721,7 +1721,7 @@ class hardback extends Table
             }
         }
         if ($from_version <= 2209030442) {
-            self::applyDbUpgradeToAllDB("INSERT DBPREFIX_global (global_id, global_value) VALUES (" + H_OPTION_LOOKUP + ", " + H_YES + ")");
+            self::applyDbUpgradeToAllDB("INSERT INTO DBPREFIX_global (global_id, global_value) VALUES (" + H_OPTION_LOOKUP + ", " + H_YES + ")");
         }
     }
 
