@@ -217,6 +217,7 @@ class hardback extends Table
                 'deck' => $this->gamestate->table_globals[H_OPTION_DECK] > 0,
                 'dictionary' => WordMgr::getDictionaryInfo(),
                 'lang' => WordMgr::getLanguageId(),
+                'lookup' => $this->gamestate->table_globals[H_OPTION_LOOKUP] > 0,
                 // 'powers' => $this->gamestate->table_globals[H_OPTION_POWERS] > 0,
             ],
             'refs' => [
@@ -516,6 +517,9 @@ class hardback extends Table
     function lookup(string $word)
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        if ($this->gamestate->table_globals[H_OPTION_LOOKUP] == 0) {
+            throw new BgaVisibleSystemException("lookup: Not possible for $player to lookup in this game");
+        }
         if ($this->gamestate->table_globals[H_OPTION_ATTEMPTS] > 0 && $player->getAttempts() >= $this->gamestate->table_globals[H_OPTION_ATTEMPTS]) {
             throw new BgaVisibleSystemException("lookup: Not possible for $player to lookup with {$player->getAttempts()} invalid attempts");
         }
@@ -1715,6 +1719,9 @@ class hardback extends Table
                 } catch (Exception $ee) {
                 }
             }
+        }
+        if ($from_version <= 2209030442) {
+            self::applyDbUpgradeToAllDB("INSERT DBPREFIX_global (global_id, global_value) VALUES (" + H_OPTION_LOOKUP + ", " + H_YES + ")");
         }
     }
 

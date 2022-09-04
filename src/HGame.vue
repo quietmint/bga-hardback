@@ -638,7 +638,7 @@ export default {
 
     buttonEnabled() {
       return {
-        lookup: !this.gamedatas.options.dictionary?.voting,
+        lookup: this.gamedatas.options.lookup && this.gamedatas.options.dictionary && !this.gamedatas.options.dictionary.voting,
         useInk: this.myself.ink && (this.myself.deckCount || this.myself.discardCount) && (!this.gamestate.active || this.gamestate.name == "playerTurn"),
         moveAll: this.gamestate.active && this.gamestate.name == "playerTurn" && this.handCards.length > 1,
         resetAll: this.handWildCards.length,

@@ -199,6 +199,23 @@ $game_options = [
         ],
     ],
 
+    H_OPTION_LOOKUP => [
+        'name' => totranslate('Word Lookups'),
+        'default' => H_YES,
+        'values' => [
+            H_NO => [
+                'name' => totranslate('No'),
+                'tmdisplay' => totranslate('Word Lookups Disabled'),
+
+            ],
+            H_YES => [
+                'name' => totranslate('Yes'),
+                'tmdisplay' => totranslate('Word Lookups Enabled'),
+                'description' => totranslate('Query the dictionary anytime (helpful in turn-based games)'),
+            ]
+        ],
+    ],
+
     H_OPTION_LENGTH => [
         'name' => totranslate('Game Length'),
         'default' => 60,
