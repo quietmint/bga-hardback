@@ -65,6 +65,7 @@ $this->dicts = [
     H_US => clienttranslate('American Scrabble'),
     H_UK => clienttranslate('British Scrabble'),
     H_BEOLINGUS => clienttranslate('BEOLINGUS (TU Chemnitz)'),
+    H_FREE_DE => clienttranslate('Free German Dictionary'),
     H_MORPHALOU => clienttranslate('Morphalou'),
     H_VOTE_50 => clienttranslate('Majority Vote'),
     H_VOTE_100 => clienttranslate('Unanimous Vote'),
