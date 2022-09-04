@@ -1,57 +1,110 @@
 <template>
-  <div :id="'cardholder_' + this.card.id" @pointerdown="pointStart" @pointerup="pointStop" @pointercancel="pointStop" class="cardholder relative" :class="holderClass" ref="cardholder">
+  <div :id="'cardholder_' + this.card.id"
+       @pointerdown="pointStart"
+       @pointerup="pointStop"
+       @pointercancel="pointStop"
+       class="cardholder relative"
+       :class="holderClass"
+       ref="cardholder">
     <!-- Header -->
-    <div v-if="header" class="flex items-start justify-evenly text-center text-14 whitespace-nowrap leading-5">
-      <div class="px-2 rounded-t-lg z-10" :class="header.class" :title="header.title"><Icon v-if="header.icon" :icon="header.icon" class="inline text-15" /> {{ header.text }}</div>
+    <div v-if="header"
+         class="flex items-start justify-evenly text-center text-14 whitespace-nowrap leading-5">
+      <div class="px-2 rounded-t-lg z-10"
+           :class="header.class"
+           :title="header.title">
+        <Icon v-if="header.icon"
+              :icon="header.icon"
+              class="inline text-15" /> {{ header.text }}
+      </div>
     </div>
 
     <!-- Card -->
-    <div @click="clickCard" :class="cardClass" class="card shadow relative rounded-lg">
+    <div @click="clickCard"
+         :class="cardClass"
+         class="card shadow relative rounded-lg">
       <div class="cardface front rounded-lg">
         <!-- Bookmark -->
-        <div :class="bookmarkClass" class="bookmark absolute flex items-center text-center font-bold leading-none whitespace-nowrap">
-          <Icon v-if="card.genreName != 'starter'" :icon="card.genreName" class="icon" />
+        <div :class="bookmarkClass"
+             class="bookmark absolute flex items-center text-center font-bold leading-none whitespace-nowrap">
+          <Icon v-if="card.genreName != 'starter'"
+                :icon="card.genreName"
+                class="icon" />
           <div v-if="card.cost">{{ card.cost }}¢</div>
-          <div v-if="card.points">{{ card.points }}<Icon icon="star" class="inline star" /></div>
+          <div v-if="card.points">{{ card.points }}
+            <Icon icon="star"
+                  class="inline star" />
+          </div>
         </div>
 
         <!-- Letter -->
-        <div :class="letterClass" class="absolute letter text-center leading-none">
+        <div :class="letterClass"
+             class="absolute letter text-center leading-none">
           {{ letterDisplay }}
         </div>
 
         <!-- Benefits -->
-        <div @pointerenter="tooltipEnter" @pointerleave="tooltipLeave" class="benefits absolute text-115 leading-120 tracking-tight font-bold text-center flex flex-col flex-grow whitespace-nowrap" ref="benefits">
+        <div @pointerenter="tooltipEnter"
+             @pointerleave="tooltipLeave"
+             class="benefits absolute text-115 leading-120 tracking-tight font-bold text-center flex flex-col flex-grow whitespace-nowrap"
+             ref="benefits">
           <!-- Basic Benefits -->
-          <div :class="basicSectionClass" class="flex-grow flex items-center justify-evenly">
-            <div v-for="benefit in basicBenefitsList" :key="benefit.id" class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
+          <div :class="basicSectionClass"
+               class="flex-grow flex items-center justify-evenly">
+            <div v-for="benefit in basicBenefitsList"
+                 :key="benefit.id"
+                 class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black"
+                 v-html="benefit.html"></div>
           </div>
 
           <!-- Genre Benefits -->
-          <div v-if="genreBenefitsList.length" :class="genreSectionClass" class="flex-grow flex items-center justify-evenly border-t-2 border-black">
-            <div v-for="benefit in genreBenefitsList" :key="benefit.id" :class="genreBubbleClass" class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white" v-html="benefit.html"></div>
+          <div v-if="genreBenefitsList.length"
+               :class="genreSectionClass"
+               class="flex-grow flex items-center justify-evenly border-t-2 border-black">
+            <div v-for="benefit in genreBenefitsList"
+                 :key="benefit.id"
+                 :class="genreBubbleClass"
+                 class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white"
+                 v-html="benefit.html"></div>
           </div>
         </div>
 
         <!-- Tooltip -->
-        <teleport to="#HGame" v-if="tooltip.visible">
-          <div class="absolute z-top shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden" :style="{ top: tooltip.top, left: tooltip.left, maxWidth: '240px' }" ref="tooltip">
-            <div :class="titleClass" class="px-2 py-1 text-110 font-bold border-b-2 border-black"><Icon :icon="card.genreName" class="inline text-125" /> {{ i18n(card.genreName) }} {{ card.letter }}</div>
+        <teleport to="#HGame"
+                  v-if="tooltip.visible">
+          <div class="absolute z-top shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden"
+               :style="{ top: tooltip.top, left: tooltip.left, maxWidth: '240px' }"
+               ref="tooltip">
+            <div :class="titleClass"
+                 class="px-2 py-1 text-110 font-bold border-b-2 border-black">
+              <Icon :icon="card.genreName"
+                    class="inline text-125" /> {{ i18n(card.genreName) }} {{ card.letter }}
+            </div>
             <table>
-              <tr v-for="benefit in basicBenefitsList" :key="benefit.id">
+              <tr v-for="benefit in basicBenefitsList"
+                  :key="benefit.id">
                 <td class="px-2 py-1 whitespace-nowrap text-center">
-                  <div class="text-110 leading-120 tracking-tight font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" v-html="benefit.html"></div>
+                  <div class="text-110 leading-120 tracking-tight font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black"
+                       v-html="benefit.html"></div>
                 </td>
-                <td class="pr-2 py-1" v-html="benefit.htmlLong"></td>
+                <td class="pr-2 py-1"
+                    v-html="benefit.htmlLong"></td>
               </tr>
               <tr v-if="genreBenefitsList.length">
-                <td class="px-2 py-1 italic border-t-2 border-black" colspan="2" :class="genreTooltipClass" v-text="i18n('genreTip', { x: i18n(card.genreName) })"></td>
+                <td class="px-2 py-1 italic border-t-2 border-black"
+                    colspan="2"
+                    :class="genreTooltipClass"
+                    v-text="i18n('genreTip', { x: i18n(card.genreName) })"></td>
               </tr>
-              <tr v-for="benefit in genreBenefitsList" :key="benefit.id" :class="genreTooltipClass">
+              <tr v-for="benefit in genreBenefitsList"
+                  :key="benefit.id"
+                  :class="genreTooltipClass">
                 <td class="px-2 py-1 whitespace-nowrap text-center">
-                  <div class="text-110 leading-120 tracking-tight font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black" :class="genreBubbleClass" v-html="benefit.html"></div>
+                  <div class="text-110 leading-120 tracking-tight font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black"
+                       :class="genreBubbleClass"
+                       v-html="benefit.html"></div>
                 </td>
-                <td class="pr-2 py-1" v-html="benefit.htmlLong"></td>
+                <td class="pr-2 py-1"
+                    v-html="benefit.htmlLong"></td>
               </tr>
             </table>
           </div>
@@ -60,23 +113,38 @@
 
       <!-- Wild -->
       <div class="cardface back rounded-lg">
-        <div v-if="card.wild" class="absolute wildletter text-center leading-none w-full">
+        <div v-if="card.wild"
+             class="absolute wildletter text-center leading-none w-full">
           {{ card.wild }}
         </div>
-        <div v-if="card.wild" class="absolute bottom-1 w-full flex flex-grow justify-evenly text-16 bold">
-          <div :class="titleClass" class="rounded-lg px-2 bg-opacity-80"><Icon :icon="card.genreName" class="icon inline text-105" />{{ card.letter }}</div>
+        <div v-if="card.wild"
+             class="absolute bottom-1 w-full flex flex-grow justify-evenly text-16 bold">
+          <div :class="titleClass"
+               class="rounded-lg px-2 bg-opacity-80">
+            <Icon :icon="card.genreName"
+                  class="icon inline text-105" />{{ card.letter }}
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Footer -->
     <div class="h-7 leading-7 flex items-start justify-evenly text-center text-14 whitespace-nowrap">
-      <div :id="'tut_a' + index + '_c' + this.card.id" v-for="(action, index) in footerActions" :key="action" @click="clickFooter(action)" :class="action.class" class="rounded-b-lg z-10">{{ action.text }}<Icon v-if="action.icon" :icon="action.icon" class="inline text-15" /></div>
+      <div :id="'tut_a' + index + '_c' + this.card.id"
+           v-for="(action, index) in footerActions"
+           :key="action"
+           @click="clickFooter(action)"
+           :class="action.class"
+           class="rounded-b-lg z-10">{{ action.text }}
+        <Icon v-if="action.icon"
+              :icon="action.icon"
+              class="inline text-15" />
+      </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import HConstants from "./HConstants.js";
 import { Icon } from "@iconify/vue";
 import { firstBy } from "thenby";
@@ -108,7 +176,7 @@ export default {
   },
 
   mounted() {
-    const holder: HTMLElement = this.$refs.benefits;
+    const holder = this.$refs.benefits;
     if (!window.PointerEvent) {
       // Old Safari?
       holder.addEventListener("mouseenter", this.tooltipEnter, false);
@@ -117,7 +185,7 @@ export default {
   },
 
   beforeUnmount() {
-    const holder: HTMLElement = this.$refs.benefits;
+    const holder = this.$refs.benefits;
     if (!window.PointerEvent) {
       // Old Safari?
       holder.removeEventListener("mouseenter", this.tooltipEnter, false);
@@ -160,20 +228,20 @@ export default {
       return list;
     },
 
-    letterDisplay(): string {
+    letterDisplay() {
       if (this.card.letter == "I" && this.card.genre == HConstants.ROMANCE) {
         return "|";
       }
       return this.card.letter;
     },
 
-    holderClass(): string {
+    holderClass() {
       let c = this.card.dragging ? "invisible " : "";
       c += this.card.ink || this.card.location == "jail" || this.card.origin.startsWith("timeless") ? "mx-2 mb-1 mt-2" : "m-1 mt-2";
       return c;
     },
 
-    cardClass(): string {
+    cardClass() {
       let c = "card-" + this.card.genreName + " ";
       c += this.dragLocations ? "touch-none cursor-move " : this.clickAction ? "cursor-pointer " : "cursor-not-allowed ";
       c += this.card.timeless ? "timeless " : "";
@@ -187,32 +255,32 @@ export default {
       return c;
     },
 
-    titleClass(): string {
+    titleClass() {
       return `${HConstants.GENRES[this.card.genre].bg} ${HConstants.GENRES[this.card.genre].textLight}`;
     },
 
-    bookmarkClass(): string {
+    bookmarkClass() {
       let c = this.card.timeless ? "flex-row " : "flex-col ";
       return c + HConstants.GENRES[this.card.genre].textLight;
     },
 
-    letterClass(): string {
+    letterClass() {
       return "letter-" + this.card.letter;
     },
 
-    basicSectionClass(): string {
+    basicSectionClass() {
       return this.card.timeless ? "flex-col" : "flex";
     },
 
-    genreSectionClass(): string {
+    genreSectionClass() {
       return `${this.basicSectionClass} ${HConstants.GENRES[this.card.genre].text} ${HConstants.GENRES[this.card.genre].bg} bg-opacity-25`;
     },
 
-    genreBubbleClass(): string {
+    genreBubbleClass() {
       return `${HConstants.GENRES[this.card.genre].border}`;
     },
 
-    genreTooltipClass(): string {
+    genreTooltipClass() {
       return `${HConstants.GENRES[this.card.genre].text} ${HConstants.GENRES[this.card.genre].bg} bg-opacity-25`;
     },
 
@@ -241,7 +309,7 @@ export default {
       }
     },
 
-    clickAction(): any {
+    clickAction() {
       if (this.gamestate.active) {
         if (this.gamestate.name == "playerTurn") {
           let destination = null;
@@ -259,7 +327,7 @@ export default {
       }
     },
 
-    footerActions(): any[] {
+    footerActions() {
       const actionBlack = "button mx-1 black shadow";
       const actionBlue = "button mx-1 blue shadow";
       const actionRed = "button mx-1 red shadow";
@@ -450,17 +518,17 @@ export default {
   },
 
   methods: {
-    clickCard(ev: MouseEvent): void {
-      let action: any = this.clickAction;
+    clickCard(ev) {
+      let action = this.clickAction;
       if (action) {
-        let card: any = this.card;
+        let card = this.card;
         this.emitter.emit("clickCard", { action, card });
       }
     },
 
-    clickFooter(action): void {
+    clickFooter(action) {
       if (action.action) {
-        let card: any = this.card;
+        let card = this.card;
         this.emitter.emit("clickFooter", { action, card });
       }
     },
@@ -469,7 +537,7 @@ export default {
      * Drag and drop
      */
 
-    pointStart(ev: PointerEvent): void {
+    pointStart(ev) {
       // Start the timer (which prevents click event and starts dragging)
       if (this.dragLocations) {
         console.log(`Pre-drag card ${this.card.id} start`);
@@ -477,7 +545,7 @@ export default {
       }
     },
 
-    pointStop(ev: PointerEvent): void {
+    pointStop(ev) {
       // Stop the timer
       if (this.dragTimeout) {
         console.log(`Pre-drag card ${this.card.id} stop (via ${ev.type})`);
@@ -486,7 +554,7 @@ export default {
       }
     },
 
-    dragStart(ev: PointerEvent): void {
+    dragStart(ev) {
       if (this.dragTimeout) {
         // Stop the timer
         clearTimeout(this.dragTimeout);
@@ -495,7 +563,7 @@ export default {
         // Start dragging
         console.log(`Pre-drag card ${this.card.id}`, this.dragLocations);
         if (this.dragLocations) {
-          const el: HTMLElement = this.$refs.cardholder;
+          const el = this.$refs.cardholder;
           this.emitter.emit("dragStart", { ev, el, cardId: this.card.id, locations: this.dragLocations });
         }
       }
@@ -504,13 +572,13 @@ export default {
     /*
      * Tooltip
      */
-    tooltipEnter(ev: MouseEvent) {
+    tooltipEnter(ev) {
       if (this.prefs.value[HConstants.PREF_TOOLTIPS] == HConstants.TOOLTIPS_ENABLED) {
         this.tooltip.timeout = setTimeout(() => this.tooltipShow(), HConstants.TOOLTIP_TIMEOUT);
       }
     },
 
-    tooltipLeave(ev: MouseEvent) {
+    tooltipLeave(ev) {
       clearTimeout(this.tooltip.timeout);
       this.tooltip.timeout = null;
       this.tooltip.visible = false;
@@ -521,8 +589,12 @@ export default {
       this.tooltip.top = "0px";
       this.tooltip.left = "-999px";
       await nextTick();
-      const tip: HTMLElement = this.$refs.tooltip;
-      const holder: HTMLElement = this.$refs.benefits;
+      const tip = this.$refs.tooltip;
+      const holder = this.$refs.benefits;
+      if (tip == null || holder == null) {
+        this.tooltipLeave();
+        return;
+      }
       const holderRect = this.getRect(holder);
       const tipRect = this.getRect(tip);
       const parentRect = this.getRect(tip.offsetParent);

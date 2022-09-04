@@ -1,171 +1,327 @@
 <template>
   <div class="select-none adjust-none">
     <!-- Player panels (moved using teleport) -->
-    <HPlayerPanel v-for="(player, id) in players" :key="id" :player="player" />
-    <HPenny v-if="gamedatas.penny" :penny="gamedatas.penny" />
+    <HPlayerPanel v-for="(player, id) in players"
+                  :key="id"
+                  :player="player" />
+    <HPenny v-if="gamedatas.penny"
+            :penny="gamedatas.penny" />
 
     <!-- Icons -->
     <div class="hidden">
-      <Icon :id="'icon_' + key" v-for="(icon, key) in icons" :key="key" :icon="icon" />
+      <Icon :id="'icon_' + key"
+            v-for="(icon, key) in icons"
+            :key="key"
+            :icon="icon" />
     </div>
 
     <!-- Keyboard popup -->
     <transition name="fade">
-      <HKeyboard v-if="keyboardId" />
+      <HKeyboard v-if="keyboardPopup"
+                 :keyboardPopup="keyboardPopup" />
     </transition>
 
     <!-- Lookup popup -->
     <transition name="fade">
-      <HLookup v-if="lookupVisible" :options="gamedatas.options" :history="lookupHistory" :myself="myself" />
+      <HLookup v-if="lookupPopup"
+               :history="lookupHistory"
+               :lookupPopup="lookupPopup"
+               :myself="myself"
+               :options="gamedatas.options" />
     </transition>
 
     <!-- Browser warning (Safari 12, etc.) -->
-    <div v-if="warningVisible" class="m-4 p-3 text-17 font-bold text-center border-2 border-red-700 bg-white bg-opacity-50">
-      <a href="https://browsehappy.com/" target="_blank" class="block text-blue-700" v-text="i18n('browserWarnTitle')"></a>
-      <div class="text-15" v-text="i18n('browserWarnDesc')"></div>
+    <div v-if="warningVisible"
+         class="m-4 p-3 text-17 font-bold text-center border-2 border-red-700 bg-white bg-opacity-50">
+      <a href="https://browsehappy.com/"
+         target="_blank"
+         class="block text-blue-700"
+         v-text="i18n('browserWarnTitle')"></a>
+      <div class="text-15"
+           v-text="i18n('browserWarnDesc')"></div>
     </div>
 
     <!-- Final round reminder -->
-    <div v-if="gamedatas.finalRound && !gamedatas.options.coop" class="m-4 p-3 text-17 text-center font-bold border-2 border-red-700 bg-white bg-opacity-50" v-text="i18n('finalRound')"></div>
+    <div v-if="gamedatas.finalRound && !gamedatas.options.coop"
+         class="m-4 p-3 text-17 text-center font-bold border-2 border-red-700 bg-white bg-opacity-50"
+         v-text="i18n('finalRound')"></div>
 
     <!-- Discard -->
-    <div v-if="!spectator" class="py-2 border-t-2 border-black bg-black bg-opacity-25">
+    <div v-if="!spectator"
+         class="py-2 border-t-2 border-black bg-black bg-opacity-25">
       <div class="flex leading-7 font-bold">
-        <div id="tut_discard_title" @click="clickDiscard" class="title ml-2 flex-grow cursor-pointer">
-          <Icon icon="chevron" class="chevron float-left h-7 text-24" :class="{ collapsed: !discardVisible }" />
-          <Icon icon="shuffle" class="float-left h-7 text-24 mr-1" />
+        <div id="tut_discard_title"
+             @click="clickDiscard"
+             class="title ml-2 flex-grow cursor-pointer">
+          <Icon icon="chevron"
+                class="chevron float-left h-7 text-24"
+                :class="{ collapsed: !discardVisible }" />
+          <Icon icon="shuffle"
+                class="float-left h-7 text-24 mr-1" />
           <span v-text="i18n('myDiscard', { count: discardCards.length })"></span>
         </div>
 
-        <div v-if="discardVisible" class="buttongroup mr-2 grid grid-cols-3">
-          <div id="tut_discard_sortLetter" @click="sort(discardLocation, 'letter')" class="button" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
-          <div id="tut_discard_sortCost" @click="sort(discardLocation, 'cost')" class="button text-15" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortCostTip')">¢</div>
-          <div id="tus_discard_sortGenre" @click="sort(discardLocation, 'genre')" class="button" :class="discardCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')">
-            <Icon icon="starter" class="inline text-17 h-7" />
+        <div v-if="discardVisible"
+             class="buttongroup mr-2 grid grid-cols-3">
+          <div id="tut_discard_sortLetter"
+               @click="sort(discardLocation, 'letter')"
+               class="button"
+               :class="discardCards.length ? 'blue' : 'disabled'"
+               :title="i18n('sortLetterTip')">A-Z</div>
+          <div id="tut_discard_sortCost"
+               @click="sort(discardLocation, 'cost')"
+               class="button text-15"
+               :class="discardCards.length ? 'blue' : 'disabled'"
+               :title="i18n('sortCostTip')">¢</div>
+          <div id="tus_discard_sortGenre"
+               @click="sort(discardLocation, 'genre')"
+               class="button"
+               :class="discardCards.length ? 'blue' : 'disabled'"
+               :title="i18n('sortGenreTip')">
+            <Icon icon="starter"
+                  class="inline text-17 h-7" />
           </div>
         </div>
       </div>
 
-      <HCardList id="tut_discard_cards" v-if="discardVisible" :cards="discardCards" :location="discardLocation" />
+      <HCardList id="tut_discard_cards"
+                 v-if="discardVisible"
+                 :cards="discardCards"
+                 :location="discardLocation" />
     </div>
 
     <!-- Deck -->
-    <div v-if="!spectator && gamedatas.options.deck" class="py-2 border-t-2 border-black bg-black bg-opacity-25">
+    <div v-if="!spectator && gamedatas.options.deck"
+         class="py-2 border-t-2 border-black bg-black bg-opacity-25">
       <div class="flex leading-7 font-bold">
-        <div id="tut_deck_title" @click="clickDeck" class="title ml-2 flex-grow cursor-pointer">
-          <Icon icon="chevron" class="chevron float-left h-7 text-24" :class="{ collapsed: !deckVisible }" />
-          <Icon icon="deck" class="float-left h-7 text-24 mr-1" />
+        <div id="tut_deck_title"
+             @click="clickDeck"
+             class="title ml-2 flex-grow cursor-pointer">
+          <Icon icon="chevron"
+                class="chevron float-left h-7 text-24"
+                :class="{ collapsed: !deckVisible }" />
+          <Icon icon="deck"
+                class="float-left h-7 text-24 mr-1" />
           <span v-text="i18n('myDeck', { count: deckCards.length })"></span>
         </div>
 
-        <div v-if="deckVisible" class="buttongroup mr-2 grid grid-cols-2">
-          <div id="tut_deck_sortLetter" @click="sort(deckLocation, 'letter')" class="button" :class="deckCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
-          <div id="tus_deck_sortGenre" @click="sort(deckLocation, 'genre')" class="button" :class="deckCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')">
-            <Icon icon="starter" class="inline text-17 h-7" />
+        <div v-if="deckVisible"
+             class="buttongroup mr-2 grid grid-cols-2">
+          <div id="tut_deck_sortLetter"
+               @click="sort(deckLocation, 'letter')"
+               class="button"
+               :class="deckCards.length ? 'blue' : 'disabled'"
+               :title="i18n('sortLetterTip')">A-Z</div>
+          <div id="tus_deck_sortGenre"
+               @click="sort(deckLocation, 'genre')"
+               class="button"
+               :class="deckCards.length ? 'blue' : 'disabled'"
+               :title="i18n('sortGenreTip')">
+            <Icon icon="starter"
+                  class="inline text-17 h-7" />
           </div>
         </div>
       </div>
 
-      <HCardList id="tut_deck_cards" v-if="deckVisible" :cards="deckCards" :location="deckLocation" />
+      <HCardList id="tut_deck_cards"
+                 v-if="deckVisible"
+                 :cards="deckCards"
+                 :location="deckLocation" />
     </div>
 
     <!-- Hand -->
-    <div v-if="!spectator && gamestate.name != 'gameEnd'" class="py-2 border-t-2 border-black">
+    <div v-if="!spectator && gamestate.name != 'gameEnd'"
+         class="py-2 border-t-2 border-black">
       <div class="flex leading-7 font-bold">
-        <div id="tut_hand_title" class="title ml-2 flex-grow">
-          <Icon icon="hand" class="float-left h-7 text-24 mr-1" />
+        <div id="tut_hand_title"
+             class="title ml-2 flex-grow">
+          <Icon icon="hand"
+                class="float-left h-7 text-24 mr-1" />
           <span v-text="i18n('myHand', { count: handCards.length })"></span>
         </div>
 
-        <div v-if="buttonEnabled['lookup']" class="buttongroup flex">
-          <div id="tut_hand_lookup" @click="showLookup()" class="button blue"><Icon icon="dictionary" class="inline text-17" /> <span v-text="i18n('lookup')"></span></div>
+        <div v-if="buttonEnabled['lookup']"
+             class="buttongroup flex">
+          <div id="tut_hand_lookup"
+               @click="showLookup()"
+               class="button blue">
+            <Icon icon="dictionary"
+                  class="inline text-17" /> <span v-text="i18n('lookup')"></span>
+          </div>
         </div>
 
         <div class="buttongroup flex">
-          <div id="tut_hand_useInk" @click="buttonEnabled['useInk'] && useInk()" class="button" :class="buttonEnabled['useInk'] ? 'blue' : 'disabled'" v-text="i18n('draw', { count: myself.ink })"></div>
-          <div id="tut_hand_resetAll" @click="buttonEnabled['resetAll'] && resetAll(handLocation)" class="button" :class="buttonEnabled['resetAll'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
-          <div id="tut_hand_moveAll" @click="buttonEnabled['moveAll'] && moveAll(handLocation)" class="button" :class="buttonEnabled['moveAll'] ? 'blue' : 'disabled'" v-text="i18n('playAll')"></div>
+          <div id="tut_hand_useInk"
+               @click="buttonEnabled['useInk'] && useInk()"
+               class="button"
+               :class="buttonEnabled['useInk'] ? 'blue' : 'disabled'"
+               v-text="i18n('draw', { count: myself.ink })"></div>
+          <div id="tut_hand_resetAll"
+               @click="buttonEnabled['resetAll'] && resetAll(handLocation)"
+               class="button"
+               :class="buttonEnabled['resetAll'] ? 'blue' : 'disabled'"
+               v-text="i18n('resetAll')"></div>
+          <div id="tut_hand_moveAll"
+               @click="buttonEnabled['moveAll'] && moveAll(handLocation)"
+               class="button"
+               :class="buttonEnabled['moveAll'] ? 'blue' : 'disabled'"
+               v-text="i18n('playAll')"></div>
         </div>
 
         <div class="buttongroup mr-2 grid grid-cols-3">
-          <div id="tut_hand_sortLetter" @click="sortOnce(handLocation, 'letter')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
-          <div id="tut_hand_sortGenre" @click="sortOnce(handLocation, 'genre')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')">
-            <Icon icon="starter" class="inline text-17 h-7" />
+          <div id="tut_hand_sortLetter"
+               @click="sortOnce(handLocation, 'letter')"
+               class="button"
+               :class="handCards.length ? 'blue' : 'disabled'"
+               :title="i18n('sortLetterTip')">A-Z</div>
+          <div id="tut_hand_sortGenre"
+               @click="sortOnce(handLocation, 'genre')"
+               class="button"
+               :class="handCards.length ? 'blue' : 'disabled'"
+               :title="i18n('sortGenreTip')">
+            <Icon icon="starter"
+                  class="inline text-17 h-7" />
           </div>
-          <div id="tut_hand_shuffle" @click="sortOnce(handLocation, 'shuffle')" class="button" :class="handCards.length ? 'blue' : 'disabled'" :title="i18n('shuffleTip')">
-            <Icon icon="shuffle" class="inline text-17 h-7" />
+          <div id="tut_hand_shuffle"
+               @click="sortOnce(handLocation, 'shuffle')"
+               class="button"
+               :class="handCards.length ? 'blue' : 'disabled'"
+               :title="i18n('shuffleTip')">
+            <Icon icon="shuffle"
+                  class="inline text-17 h-7" />
           </div>
         </div>
       </div>
 
-      <HCardList id="tut_hand_cards" :cards="handCards" :location="handLocation" :ref="handLocation" />
-      <div v-if="handReminder" class="py-10 text-center italic" v-text="i18n('handReminder')"></div>
+      <HCardList id="tut_hand_cards"
+                 :cards="handCards"
+                 :location="handLocation"
+                 :ref="handLocation" />
+      <div v-if="handReminder"
+           class="py-10 text-center italic"
+           v-text="i18n('handReminder')"></div>
     </div>
 
     <!-- Tableau -->
-    <div v-if="gamestate.name != 'gameEnd'" class="py-2 border-t-2 border-black bg-opacity-30 transition-colors duration-1000" :class="author.colorBg || 'bg-white'">
+    <div v-if="gamestate.name != 'gameEnd'"
+         class="py-2 border-t-2 border-black bg-opacity-30 transition-colors duration-1000"
+         :class="author.colorBg || 'bg-white'">
       <div class="flex leading-7 font-bold">
-        <div
-          id="tut_tableau_title"
-          class="title ml-2 flex-grow"
-          v-html="
-            i18n('tableau', {
-              player_name: `<span class='transition-colors duration-1000 ${author.colorText || 'text-black'}'>${author.name}</span>`,
-              count: tableauCards.length,
-            }) + (gamedatas.word ? ' — <b>' + gamedatas.word + '</b>' : '')
-          "></div>
+        <div id="tut_tableau_title"
+             class="title ml-2 flex-grow"
+             v-html="
+               i18n('tableau', {
+                 player_name: `<span class='transition-colors duration-1000 ${author.colorText || 'text-black'}'>${author.name}</span>`,
+                 count: tableauCards.length,
+               }) + (gamedatas.word ? ' — <b>' + gamedatas.word + '</b>' : '')
+             "></div>
 
-        <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup flex">
-          <div id="tut_tableau_resetAll" @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')" class="button" :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('resetAll')"></div>
-          <div id="tut_tableau_moveAll" @click="buttonEnabled['moveAllTableau'] && moveAll('tableau')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" v-text="i18n('returnAll')"></div>
+        <div v-if="buttonEnabled['moveAllTableau']"
+             class="buttongroup flex">
+          <div id="tut_tableau_resetAll"
+               @click="buttonEnabled['resetAllTableau'] && resetAll('tableau')"
+               class="button"
+               :class="buttonEnabled['resetAllTableau'] ? 'blue' : 'disabled'"
+               v-text="i18n('resetAll')"></div>
+          <div id="tut_tableau_moveAll"
+               @click="buttonEnabled['moveAllTableau'] && moveAll('tableau')"
+               class="button"
+               :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'"
+               v-text="i18n('returnAll')"></div>
         </div>
 
-        <div v-if="buttonEnabled['moveAllTableau']" class="buttongroup mr-2 grid grid-cols-3">
-          <div id="tut_tableau_sortLetter" @click="sortOnce('tableau', 'letter')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('sortLetterTip')">A-Z</div>
-          <div id="tut_tableau_sortGenre" @click="sortOnce('tableau', 'genre')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('sortGenreTip')">
-            <Icon icon="starter" class="inline text-17 h-7" />
+        <div v-if="buttonEnabled['moveAllTableau']"
+             class="buttongroup mr-2 grid grid-cols-3">
+          <div id="tut_tableau_sortLetter"
+               @click="sortOnce('tableau', 'letter')"
+               class="button"
+               :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'"
+               :title="i18n('sortLetterTip')">A-Z</div>
+          <div id="tut_tableau_sortGenre"
+               @click="sortOnce('tableau', 'genre')"
+               class="button"
+               :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'"
+               :title="i18n('sortGenreTip')">
+            <Icon icon="starter"
+                  class="inline text-17 h-7" />
           </div>
-          <div id="tut_tableau_shuffle" @click="sortOnce('tableau', 'shuffle')" class="button" :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'" :title="i18n('shuffleTip')">
-            <Icon icon="shuffle" class="inline text-17 h-7" />
+          <div id="tut_tableau_shuffle"
+               @click="sortOnce('tableau', 'shuffle')"
+               class="button"
+               :class="buttonEnabled['moveAllTableau'] ? 'blue' : 'disabled'"
+               :title="i18n('shuffleTip')">
+            <Icon icon="shuffle"
+                  class="inline text-17 h-7" />
           </div>
         </div>
       </div>
 
-      <HCardList id="tut_tableau_cards" :cards="tableauCards" location="tableau" ref="tableau" />
+      <HCardList id="tut_tableau_cards"
+                 :cards="tableauCards"
+                 location="tableau"
+                 ref="tableau" />
     </div>
 
     <!-- Timeless Classics -->
-    <div v-if="timelessVisible" class="py-2 border-t-2 border-black">
+    <div v-if="timelessVisible"
+         class="py-2 border-t-2 border-black">
       <div class="flex leading-7 font-bold">
-        <div id="tut_timeless_title" class="title flex-grow" v-text="i18n('timeless', { count: timelessCards.length })"></div>
+        <div id="tut_timeless_title"
+             class="title flex-grow"
+             v-text="i18n('timeless', { count: timelessCards.length })"></div>
       </div>
 
-      <HCardList id="tut_timeless_cards" :cards="timelessCards" location="timeless" ref="timeless" />
+      <HCardList id="tut_timeless_cards"
+                 :cards="timelessCards"
+                 location="timeless"
+                 ref="timeless" />
     </div>
 
     <!-- Offer -->
     <div class="py-2 border-t-2 border-black">
       <div class="flex leading-7 font-bold">
-        <div id="tut_offer_title" class="title ml-2 flex-grow" v-text="i18n('offer')"></div>
+        <div id="tut_offer_title"
+             class="title ml-2 flex-grow"
+             v-text="i18n('offer')"></div>
 
         <div class="buttongroup mr-2 grid grid-cols-4">
-          <div id="tut_offer_sortLetter" @click="sort('offer', 'letter')" class="button blue" :class="{ active: locationOrder.offer == 'letter' }" :title="i18n('sortLetterTip')">A-Z</div>
-          <div id="tut_offer_sortCost" @click="sort('offer', 'cost')" class="button blue text-15" :class="{ active: locationOrder.offer == 'cost' }" :title="i18n('sortCostTip')">¢</div>
-          <div id="tut_offer_sortGenre" @click="sort('offer', 'genre')" class="button blue" :class="{ active: locationOrder.offer == 'genre' }" :title="i18n('sortGenreTip')">
-            <Icon icon="starter" class="inline text-17 h-7" />
+          <div id="tut_offer_sortLetter"
+               @click="sort('offer', 'letter')"
+               class="button blue"
+               :class="{ active: locationOrder.offer == 'letter' }"
+               :title="i18n('sortLetterTip')">A-Z</div>
+          <div id="tut_offer_sortCost"
+               @click="sort('offer', 'cost')"
+               class="button blue text-15"
+               :class="{ active: locationOrder.offer == 'cost' }"
+               :title="i18n('sortCostTip')">¢</div>
+          <div id="tut_offer_sortGenre"
+               @click="sort('offer', 'genre')"
+               class="button blue"
+               :class="{ active: locationOrder.offer == 'genre' }"
+               :title="i18n('sortGenreTip')">
+            <Icon icon="starter"
+                  class="inline text-17 h-7" />
           </div>
-          <div id="tut_offer_sortTime" @click="sort('offer', 'order')" class="button blue" :class="{ active: locationOrder.offer == 'order' }" :title="i18n('sortTimeTip')">
-            <Icon icon="clock" class="inline text-17 h-7" />
+          <div id="tut_offer_sortTime"
+               @click="sort('offer', 'order')"
+               class="button blue"
+               :class="{ active: locationOrder.offer == 'order' }"
+               :title="i18n('sortTimeTip')">
+            <Icon icon="clock"
+                  class="inline text-17 h-7" />
           </div>
         </div>
       </div>
 
-      <HCardList id="tut_offer_cards" :cards="offerCards" location="offer" />
+      <HCardList id="tut_offer_cards"
+                 :cards="offerCards"
+                 location="offer" />
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import HCardList from "./HCardList.vue";
 import HConstants from "./HConstants.js";
 import HKeyboard from "./HKeyboard.vue";
@@ -181,7 +337,7 @@ let lastErrorCode = null;
 
 const queue = (callable) => {
   let busy = false;
-  const q: any[] = [];
+  const q = [];
   const execute = function () {
     if (busy) {
       return; // queue is busy
@@ -220,9 +376,9 @@ const queue = (callable) => {
   };
 };
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const repaint = () => new Promise((resolve) => requestAnimationFrame(resolve));
-const getRect = (el: HTMLElement | null, calculateMargin = false) => {
+const getRect = (el, calculateMargin = false) => {
   if (!el) {
     return null;
   }
@@ -248,13 +404,13 @@ const getRect = (el: HTMLElement | null, calculateMargin = false) => {
   }
   return output;
 };
-const getIcon = (key: string, cssClass: string) => {
+const getIcon = (key, cssClass) => {
   const el = document.getElementById("icon_" + key);
   if (el) {
     return el.outerHTML.replace(/ id=.*? /, ` class="icon-${key} ${cssClass}" `);
   }
 };
-const transitionEnd = (el: HTMLElement): Promise<void> => {
+const transitionEnd = (el) => {
   return new Promise((resolve) => {
     function onTransition(ev) {
       if (ev.target == el) {
@@ -338,7 +494,7 @@ export default {
       if (x) {
         this.locationOrder.offer = x;
       }
-    } catch (ignore) {}
+    } catch (ignore) { }
 
     for (const key in this.icons) {
       this.icons105[key] = getIcon(key, "inline text-105");
@@ -378,9 +534,9 @@ export default {
       discardVisible: false,
       deckVisible: false,
       drag: null,
-      keyboardId: null,
+      keyboardPopup: null,
       lookupHistory: [],
-      lookupVisible: false,
+      lookupPopup: false,
       prefs: {},
       locationOrder: {
         timeless: "location",
@@ -501,7 +657,7 @@ export default {
      * Utility functions
      */
 
-    i18n(msg: string, args): string {
+    i18n(msg, args) {
       if (!msg) {
         return "";
       }
@@ -509,12 +665,11 @@ export default {
         msg = this.gamedatas.refs.i18n[msg];
       }
       const argsWithIcons = args ? { ...this.icons105, ...args } : { ...this.icons105 };
-      // @ts-ignore
       msg = this.game.format_string_recursive(window._(msg), argsWithIcons);
       return msg;
     },
 
-    getLocationEl(location: string): HTMLElement | undefined {
+    getLocationEl(location) {
       if (location.startsWith("timeless")) {
         location = "timeless";
       }
@@ -524,7 +679,7 @@ export default {
       }
     },
 
-    getCardEl(card): HTMLElement | null {
+    getCardEl(card) {
       if (typeof card == "number") {
         card = this.gamedatas.cards[card];
       }
@@ -541,12 +696,12 @@ export default {
       */
     },
 
-    cardsInLocation(location: string): any[] {
+    cardsInLocation(location) {
       if (location.startsWith("timeless")) {
         location = "timeless";
       }
       let cards = this.populateCards(
-        Object.values(this.gamedatas.cards).filter((card: any) => {
+        Object.values(this.gamedatas.cards).filter((card) => {
           return card.location.startsWith(location);
         })
       );
@@ -554,28 +709,26 @@ export default {
       return cards;
     },
 
-    sortCards(order: string, cards: any[]): void {
+    sortCards(order, cards) {
       order = order || "order";
       let sorter = firstBy(order);
       if (order != "letter") {
-        // @ts-ignore
         sorter = sorter.thenBy("letter");
       }
-      // @ts-ignore
       sorter = sorter.thenBy("id");
       cards.sort(sorter);
     },
 
-    shuffleCards(cards: any[]): void {
+    shuffleCards(cards) {
       for (let i = cards.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [cards[i], cards[j]] = [cards[j], cards[i]];
       }
     },
 
-    nextOrderInLocation(location: string): number {
+    nextOrderInLocation(location) {
       const cards = this.cardsInLocation(location);
-      const max: number = cards.map((card) => card.order).reduce((acc: number, cur: number) => Math.max(acc, cur), -1);
+      const max = cards.map((card) => card.order).reduce((acc, cur) => Math.max(acc, cur), -1);
       return max + 1;
     },
 
@@ -594,21 +747,21 @@ export default {
       return newCard;
     },
 
-    populateCards(cards): any[] | null {
+    populateCards(cards) {
       if (!Array.isArray(cards)) {
         return null;
       }
       return cards.map(this.populateCard);
     },
 
-    cardIds(cards): number[] | null {
+    cardIds(cards) {
       if (!Array.isArray(cards)) {
         return null;
       }
       return cards.map((card) => card.id);
     },
 
-    wildMask(cards): string {
+    wildMask(cards) {
       return cards.map((card) => card.wild || "_").join("");
     },
 
@@ -660,7 +813,7 @@ export default {
     /*
      * Animation
      */
-    async animateCard(card, changes): Promise<void> {
+    async animateCard(card, changes) {
       if (changes) {
         card = Object.assign({}, card, changes);
       }
@@ -683,9 +836,9 @@ export default {
       }
 
       // Compute start position
-      let cardEl: HTMLElement | null = null;
-      let start: any = null;
-      let end: any = null;
+      let cardEl = null;
+      let start = null;
+      let end = null;
       if (oldCard != null) {
         cardEl = this.getCardEl(oldCard);
         start = getRect(cardEl);
@@ -698,7 +851,7 @@ export default {
         return;
       }
 
-      let mode: string | null = null;
+      let mode = null;
       if (start && !visible) {
         mode = "leave";
         if (card.location.startsWith("discard_") || card.location == "deck_" + this.game.player_id) {
@@ -713,10 +866,10 @@ export default {
 
         // Clone, which will be animated
         const rootEl = document.getElementById("HGame");
-        const root: any = getRect(rootEl);
+        const root = getRect(rootEl);
         const top = end.top - root.top;
         const left = end.left - root.left;
-        cardEl = cardEl.cloneNode(true) as HTMLElement;
+        cardEl = cardEl.cloneNode(true);
         cardEl.id = "";
         cardEl.style.position = "absolute";
         cardEl.style.top = top + "px";
@@ -753,7 +906,7 @@ export default {
       }
     },
 
-    async animateFlip(el: HTMLElement, start, end): Promise<void> {
+    async animateFlip(el, start, end) {
       // FLIP technique: https://aerotwist.com/blog/flip-your-animations/
       // Element is already at the end position
       // Immediately translate it back to the start position
@@ -772,7 +925,7 @@ export default {
     /*
      * BGA framework methods
      */
-    takeAction(action: string, data): Promise<void> {
+    takeAction(action, data) {
       data = data || {};
       if (data.lock === false) {
         delete data.lock;
@@ -804,7 +957,7 @@ export default {
       });
     },
 
-    takeActionAjax(action: string, data): Promise<void> {
+    takeActionAjax(action, data) {
       return new Promise((resolve, reject) => {
         const start = Date.now();
         console.log(`Take action ${action}`, data);
@@ -812,7 +965,7 @@ export default {
           "/hardback/hardback/" + action + ".html",
           data,
           this,
-          () => {},
+          () => { },
           (error) => {
             const duration = Date.now() - start;
             if (error) {
@@ -830,7 +983,7 @@ export default {
     /*
      * BGA framework event callbacks
      */
-    onFormatString(log: string, args): string {
+    onFormatString(log, args) {
       if (args) {
         if (args.award) {
           args.award = `<div class="haward length${args.award}"></div>`;
@@ -840,7 +993,7 @@ export default {
         }
         if (args.word) {
           const q = args.word.toLowerCase();
-          let links: any[] = [];
+          let links = [];
           if (this.gamedatas.options.lang == HConstants.LANG_EN) {
             links = [
               [
@@ -903,7 +1056,7 @@ export default {
       return log;
     },
 
-    onUpdateActionButtons(stateName: string, args): void {
+    onUpdateActionButtons(stateName, args) {
       Object.assign(this.gamestate, this.game.gamedatas.gamestate, {
         active: this.game.isCurrentPlayerActive(),
         instant: this.game.instantaneousMode,
@@ -1006,10 +1159,10 @@ export default {
         return;
       }
 
-      let possible: string[] = this.gamestate.possibleactions;
+      let possible = this.gamestate.possibleactions;
       possible.forEach((p, index) => {
         const action = actionRef[p];
-        let visible: boolean = action != null && (action.condition == null || action.condition.apply(this));
+        let visible = action != null && (action.condition == null || action.condition.apply(this));
         if (visible) {
           let text = action.text;
           if (typeof text == "function") {
@@ -1030,7 +1183,7 @@ export default {
       });
     },
 
-    onEnteringState(stateName: string, args): void {
+    onEnteringState(stateName, args) {
       if (args && args.updateGameProgression) {
         this.gamedatas.finalRound = args.updateGameProgression >= 100;
       }
@@ -1039,7 +1192,7 @@ export default {
       }
     },
 
-    onLeavingState(stateName: string): void {
+    onLeavingState(stateName) {
       if (this.gamestate.name == "cleanup") {
         this.gamedatas.word = null;
       } else if (this.gamestate.active && this.gamestate.name == "trashDiscard" && this.gamestate.args && !this.gamestate.args.skip) {
@@ -1047,7 +1200,7 @@ export default {
       }
     },
 
-    onNotify(notif): void {
+    onNotify(notif) {
       console.log(`Notify ${notif.type}`, notif.args);
       if (notif.type == "cards" || notif.type == "cardsPreview") {
         if (notif.args.ignorePlayerId && notif.args.ignorePlayerId == this.game.player_id) {
@@ -1055,7 +1208,6 @@ export default {
           return;
         }
         let cards = Object.values(notif.args.cards);
-        // @ts-ignore
         cards.sort(firstBy("location").thenBy("order").thenBy("id"));
         Promise.all(cards.map(this.animateCard)).then(() => {
           this.game.notifqueue.setSynchronousDuration(1);
@@ -1079,7 +1231,6 @@ export default {
           }
         }
       } else if (notif.type == "pause") {
-        // @ts-ignore
         const duration = this.gamestate.instant || window.g_archive_mode ? 1 : notif.args.duration;
         this.game.notifqueue.setSynchronousDuration(duration);
       } else if (notif.type == "penny") {
@@ -1096,11 +1247,17 @@ export default {
       }
     },
 
-    onErrorCode(code): void {
+    onErrorCode(code) {
       lastErrorCode = code;
     },
 
-    onPrefChange(id: number, value: number) {
+    onChatKeyDown(ev) {
+      if (this.keyboardPopup || this.lookupPopup) {
+        return true; // suppress BGA chat popup
+      }
+    },
+
+    onPrefChange(id, value) {
       this.prefs[id] = value;
     },
 
@@ -1108,7 +1265,7 @@ export default {
      * Other functions
      */
 
-    sortOnce(location: string, order: string): void {
+    sortOnce(location, order) {
       const cards = this.cardsInLocation(location);
       if (order == "shuffle") {
         this.shuffleCards(cards);
@@ -1121,7 +1278,7 @@ export default {
       this.previewWord();
     },
 
-    sort(location: string, order: string): void {
+    sort(location, order) {
       if (order == "shuffle") {
         order = "order";
         const cards = this.cardsInLocation(location);
@@ -1133,19 +1290,18 @@ export default {
       this.locationOrder[location] = order;
       try {
         localStorage.setItem("hardback.sort." + location, order);
-      } catch (ignore) {}
+      } catch (ignore) { }
     },
 
-    showLookup(): void {
-      this.lookupVisible = true;
+    showLookup() {
+      this.lookupPopup = true;
     },
 
-    useInk(): void {
+    useInk() {
       this.takeAction("useInk");
     },
 
-    previewWord(): void {
-      // @ts-ignore
+    previewWord() {
       if (window.g_tutorialwritten) {
         // skip during tutorials
         return;
@@ -1168,7 +1324,7 @@ export default {
       });
     },
 
-    moveAll(location: string): Promise<any> {
+    moveAll(location) {
       if (this.gamestate.active && this.gamestate.name == "playerTurn") {
         return Promise.all(
           this.cardsInLocation(location).map((card) =>
@@ -1186,14 +1342,14 @@ export default {
       }
     },
 
-    resetAll(location: string): void {
+    resetAll(location) {
       const wilds = location == "tableau" ? this.tableauWildCards : this.handWildCards;
       wilds.forEach((card) => {
         this.clickFooter({ card: card, action: { action: "reset" } });
       });
     },
 
-    clickCard(e): Promise<any> {
+    clickCard(e) {
       let { action, card } = e;
       if (action.action == "move") {
         return this.animateCard(card, {
@@ -1209,11 +1365,15 @@ export default {
       }
     },
 
-    clickFooter(e): void {
+    clickFooter(e) {
       let { action, card } = e;
       if (action.action == "wild") {
         // Show keyboard
-        this.keyboardId = card.id;
+        this.keyboardPopup = {
+          id: card.id,
+          genre: card.genreName,
+          letter: card.letter,
+        };
       } else if (action.action == "reset") {
         this.gamedatas.cards[card.id].wild = false;
         this.previewWord();
@@ -1232,15 +1392,15 @@ export default {
       }
     },
 
-    clickKey(letter: string): void {
-      if (this.keyboardId != null) {
-        this.gamedatas.cards[this.keyboardId].wild = letter;
-        this.keyboardId = null;
+    clickKey(letter) {
+      if (this.keyboardPopup != null) {
+        this.gamedatas.cards[this.keyboardPopup.id].wild = letter;
+        this.keyboardPopup = null;
         this.previewWord();
       }
     },
 
-    clickLookup(word: string): void {
+    clickLookup(word) {
       if (word) {
         let ignore = word.length == 1 || this.lookupHistory.some((hist) => hist.word == word);
         if (!ignore) {
@@ -1262,15 +1422,15 @@ export default {
           });
         }
       } else {
-        this.lookupVisible = false;
+        this.lookupPopup = false;
       }
     },
 
-    clickDiscard(): void {
+    clickDiscard() {
       this.discardVisible = !this.discardVisible;
     },
 
-    clickDeck(): void {
+    clickDeck() {
       if (this.gamedatas.options.deck) {
         this.deckVisible = !this.deckVisible;
       }
@@ -1286,11 +1446,11 @@ export default {
         this.dragStop(e.ev);
       }
 
-      const ev: PointerEvent = e.ev;
-      const el: HTMLElement = e.el;
-      const cardId: number = e.cardId;
+      const ev = e.ev;
+      const el = e.el;
+      const cardId = e.cardId;
       const card = this.gamedatas.cards[cardId];
-      const locations: string[] = e.locations;
+      const locations = e.locations;
       ev.preventDefault();
 
       // Compute drop zones
@@ -1366,7 +1526,7 @@ export default {
       };
 
       // Clone, which will follow the mouse
-      const cloneEl = el.cloneNode(true) as HTMLElement;
+      const cloneEl = el.cloneNode(true);
       cloneEl.id = "clone";
       cloneEl.style.position = "absolute";
       cloneEl.style.top = elRect.offsetTop - elRect.marginTop + "px";
@@ -1387,7 +1547,7 @@ export default {
     },
 
     /*
-    debugDrops(drops: Map<any, any>) {
+    debugDrops(drops) {
       let boxes = document.getElementById("boxes");
       if (boxes) {
         boxes.remove();
@@ -1412,7 +1572,7 @@ export default {
     },
     */
 
-    dragMove(ev: PointerEvent) {
+    dragMove(ev) {
       if (!this.drag) {
         console.warn("dragMove: No drag is in progress");
         return;
@@ -1442,7 +1602,7 @@ export default {
       }
     },
 
-    dragStop(ev: PointerEvent) {
+    dragStop(ev) {
       if (!this.drag) {
         console.warn("dragStop: No drag is in progress");
         return;

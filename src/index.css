@@ -1,8 +1,7 @@
 @import url(https://fonts.googleapis.com/css2?family=Almendra+Display&family=Big+Shoulders+Inline+Text:wght@900&family=Bodoni+Moda:wght@700&family=Finger+Paint&family=New+Rocker&display=swap);
 @font-face {
   font-family: "Deutsch Gothic";
-  src: url(Deutsch-Gothic.woff2) format("woff2"),
-    url(Deutsch-Gothic.woff) format("woff");
+  src: url(Deutsch-Gothic.woff2) format("woff2"), url(Deutsch-Gothic.woff) format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -161,8 +160,7 @@
   font-size: 7em;
   line-height: 150%;
   font-family: "Bodoni Moda", serif;
-  text-shadow: -2px 2px theme("colors.blue.400"),
-    1px -1px theme("colors.blue.700"), 0 0 4px #0008;
+  text-shadow: -2px 2px theme("colors.blue.400"), 1px -1px theme("colors.blue.700"), 0 0 4px #0008;
 }
 
 .card .letter {
@@ -223,8 +221,7 @@
   margin-left: -2%;
   font-size: 4.875em;
   font-family: "Big Shoulders Inline Text", serif;
-  text-shadow: -2px 0px 8px theme("colors.red.500"),
-    6px 2px theme("colors.yellow.900");
+  text-shadow: -2px 0px 8px theme("colors.red.500"), 6px 2px theme("colors.yellow.900");
 }
 
 .card-adventure .letter.letter-Q {
@@ -255,8 +252,7 @@
   margin-top: 17.2%;
   line-height: 80%;
   font-family: "Finger Paint", serif;
-  text-shadow: -2px 2px theme("colors.green.700"),
-    1px -1px theme("colors.green.200");
+  text-shadow: -2px 2px theme("colors.green.700"), 1px -1px theme("colors.green.200");
 }
 
 .card-horror .letter.letter-C,
@@ -344,8 +340,7 @@
   margin-top: 15%;
   font-size: 5.25em;
   font-family: "New Rocker", serif;
-  text-shadow: -1px 1px theme("colors.blue.100"),
-    1px -1px theme("colors.gray.900");
+  text-shadow: -1px 1px theme("colors.blue.100"), 1px -1px theme("colors.gray.900");
 }
 
 .card-mystery .letter.letter-J,
@@ -481,4 +476,13 @@
 .icon-left,
 .icon-right {
   width: 0.7em;
+}
+
+.hpopup .hgenre {
+  @apply rounded-lg px-2;
+}
+
+.hpopup .hgenre .hicon {
+  @apply inline text-110;
+  vertical-align: -3px;
 }

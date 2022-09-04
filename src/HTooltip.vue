@@ -1,13 +1,18 @@
 <template>
-  <div @pointerenter="enter" @pointerleave="hide" ref="holder">
-    <div v-if="visible" class="absolute z-top" :style="{ marginTop: top, marginLeft: left }" ref="tip">
+  <div @pointerenter="enter"
+       @pointerleave="hide"
+       ref="holder">
+    <div v-if="visible"
+         class="absolute z-top"
+         :style="{ marginTop: top, marginLeft: left }"
+         ref="tip">
       <slot name="tip" />
     </div>
     <slot />
   </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import { nextTick } from "vue";
 import HConstants from "./HConstants";
 
@@ -32,7 +37,7 @@ export default {
   },
 
   mounted() {
-    const holder: HTMLElement = this.$refs.holder;
+    const holder = this.$refs.holder;
     if (!window.PointerEvent) {
       // Old Safari?
       holder.addEventListener("mouseenter", this.enter, false);
@@ -41,7 +46,7 @@ export default {
   },
 
   beforeUnmount() {
-    const holder: HTMLElement = this.$refs.holder;
+    const holder = this.$refs.holder;
     if (!window.PointerEvent) {
       // Old Safari?
       holder.removeEventListener("mouseenter", this.enter, false);
@@ -50,13 +55,13 @@ export default {
   },
 
   methods: {
-    enter(ev: MouseEvent) {
+    enter(ev) {
       if (this.prefs.value[HConstants.PREF_TOOLTIPS] == HConstants.TOOLTIPS_ENABLED) {
         this.timeout = setTimeout(() => this.show(), HConstants.TOOLTIP_TIMEOUT);
       }
     },
 
-    hide(ev: MouseEvent) {
+    hide(ev) {
       clearTimeout(this.timeout);
       this.timeout = null;
       this.visible = false;
@@ -67,8 +72,12 @@ export default {
       this.top = "0px";
       this.left = "-9999px";
       await nextTick();
-      const tip: HTMLElement = this.$refs.tip;
-      const holder: HTMLElement = this.$refs.holder;
+      const tip = this.$refs.tip;
+      const holder = this.$refs.holder;
+      if (tip == null || holder == null) {
+        this.tooltipLeave();
+        return;
+      }
       const holderRect = this.getRect(holder);
       const tipRect = this.getRect(tip);
       const padding = 8;
