@@ -1676,53 +1676,42 @@ class hardback extends Table
 
     function upgradeTableDb($from_version)
     {
-        // $from_version is the current version of this game database, in numerical form.
-        // For example, if the game was running with a release of your game named "140430-1345",
-        // $from_version is equal to 1404301345
-        if ($from_version <= 2103240527) {
-            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_card SET `location` = 'discard', `origin` = 'discard' WHERE `location` IN ('discard_0', 'trash') AND `refId` <= 140");
-        }
-        if ($from_version <= 2103270523) {
-            self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_player ADD `word` VARCHAR(32)");
-        }
-        if ($from_version <= 2104280652) {
-            self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_card ADD `age` timestamp(6) NULL DEFAULT NULL");
-        }
-        if ($from_version <= 2105150216) {
-            self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_player ADD `vote` INT(1) NULL DEFAULT NULL");
-        }
-        if ($from_version <= 2105240722) {
-            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 3 WHERE global_id = 207 AND global_value = 2");
-            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_id = 123 WHERE global_id = 120");
-        }
-        if ($from_version <= 2106090221) {
-            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 80 WHERE global_id IN (100, 122, 123, 124, 125) AND global_value = 4");
-        }
-        if ($from_version <= 2112042104) {
-            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 20 WHERE global_id = 122 AND global_value = 80");
-            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 30 WHERE global_id = 123 AND global_value = 80");
-            self::applyDbUpgradeToAllDB("INSERT INTO DBPREFIX_global (global_id, global_value) VALUES (170, 0)");
-        }
-        if ($from_version <= 2112060213) {
-            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 1 WHERE global_id = 207 AND global_value IN (4, 5)");
-            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_id = 100 WHERE global_id IN (124, 125)");
-            self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_global SET global_value = 90 WHERE global_id = 100 AND global_value = 80");
-        }
-        if ($from_version <= 2209030117) {
-            try {
-                self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_player ADD `attempts` INT NOT NULL DEFAULT 0");
-                self::applyDbUpgradeToAllDB("UPDATE DBPREFIX_player SET `attempts` = (SELECT global_value FROM DBPREFIX_global WHERE global_id = 40) WHERE player_id = (SELECT global_value FROM DBPREFIX_global WHERE global_id = 2)");
-            } catch (Exception $e) {
+        $changes = [
+            2103240527 => "UPDATE DBPREFIX_card SET `location` = 'discard', `origin` = 'discard' WHERE `location` IN ('discard_0', 'trash') AND `refId` <= 140",
+            2103270523 => "ALTER TABLE DBPREFIX_player ADD `word` VARCHAR(32)",
+            2104280652 => "ALTER TABLE DBPREFIX_card ADD `age` timestamp(6) NULL DEFAULT NULL",
+            2105150216 => "ALTER TABLE DBPREFIX_player ADD `vote` INT(1) NULL DEFAULT NULL",
+            2105240722 => "UPDATE DBPREFIX_global SET `global_value = 3 WHERE `global_id` = 207 AND `global_value` = 2",
+            2105240722 => "UPDATE DBPREFIX_global SET `global_id = 123 WHERE `global_id` = 120",
+            2106090221 => "UPDATE DBPREFIX_global SET `global_value = 80 WHERE `global_id` IN (100, 122, 123, 124, 125) AND `global_value` = 4",
+            2112042104 => "UPDATE DBPREFIX_global SET `global_value = 20 WHERE `global_id` = 122 AND `global_value` = 80",
+            2112042104 => "UPDATE DBPREFIX_global SET `global_value = 30 WHERE `global_id` = 123 AND `global_value` = 80",
+            2112042104 => "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (170, 0)",
+            2112060213 => "UPDATE DBPREFIX_global SET `global_value` = 1 WHERE `global_id` = 207 AND `global_value` IN (4, 5)",
+            2112060213 => "UPDATE DBPREFIX_global SET `global_id` = 100 WHERE `global_id` IN (124, 125)",
+            2112060213 => "UPDATE DBPREFIX_global SET `global_value` = 90 WHERE `global_id` = 100 AND `global_value` = 80",
+            2209030117 => "ALTER TABLE DBPREFIX_player ADD `attempts` INT NOT NULL DEFAULT 0",
+            2209030117 => "UPDATE DBPREFIX_player SET `attempts` = (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 40) WHERE `player_id` = (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 2)",
+            2209030442 => "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (171, 1)",
+        ];
+
+        foreach ($changes as $version => $sql) {
+            if ($from_version <= $version) {
                 try {
-                    self::applyDbUpgradeToAllDB("ALTER TABLE player ADD `attempts` INT NOT NULL DEFAULT 0");
-                    self::applyDbUpgradeToAllDB("UPDATE player SET `attempts` = (SELECT global_value FROM global WHERE global_id = 40) WHERE player_id = (SELECT global_value FROM global WHERE global_id = 2)");
-                } catch (Exception $ee) {
+                    self::warn("upgradeTableDb apply 1: from_version=$from_version, change=[ $version, $sql ]");
+                    self::applyDbUpgradeToAllDB($sql);
+                } catch (Exception $e) {
+                    // See https://studio.boardgamearena.com/bug?id=64
+                    // BGA framework can produce invalid SQL with non-existant tables when using DBPREFIX_.
+                    // The workaround is to retry the query on the base table only.
+                    self::error("upgradeTableDb apply 1 failed: from_version=$from_version, change=[ $version, $sql ]");
+                    $sql = str_replace("DBPREFIX_", "", $sql);
+                    self::warn("upgradeTableDb apply 2: from_version=$from_version, change=[ $version, $sql ]");
+                    self::applyDbUpgradeToAllDB($sql);
                 }
             }
         }
-        if ($from_version <= 2209030442) {
-            self::applyDbUpgradeToAllDB("INSERT INTO DBPREFIX_global (global_id, global_value) VALUES (" + H_OPTION_LOOKUP + ", " + H_YES + ")");
-        }
+        self::warn("upgradeTableDb complete: from_version=$from_version");
     }
 
     ///////////////////////////////////////////////////////////////////////////////////:
