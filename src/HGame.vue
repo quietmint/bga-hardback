@@ -267,7 +267,7 @@
          class="py-2 border-t-2 border-black">
       <div class="flex leading-7 font-bold">
         <div id="tut_timeless_title"
-             class="title flex-grow"
+             class="title ml-2 flex-grow"
              v-text="i18n('timeless', { count: timelessCards.length })"></div>
       </div>
 
