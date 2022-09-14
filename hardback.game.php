@@ -1677,25 +1677,25 @@ class hardback extends Table
     function upgradeTableDb($from_version)
     {
         $changes = [
-            2103240527 => "UPDATE DBPREFIX_card SET `location` = 'discard', `origin` = 'discard' WHERE `location` IN ('discard_0', 'trash') AND `refId` <= 140",
-            2103270523 => "ALTER TABLE DBPREFIX_player ADD `word` VARCHAR(32)",
-            2104280652 => "ALTER TABLE DBPREFIX_card ADD `age` timestamp(6) NULL DEFAULT NULL",
-            2105150216 => "ALTER TABLE DBPREFIX_player ADD `vote` INT(1) NULL DEFAULT NULL",
-            2105240722 => "UPDATE DBPREFIX_global SET `global_value = 3 WHERE `global_id` = 207 AND `global_value` = 2",
-            2105240722 => "UPDATE DBPREFIX_global SET `global_id = 123 WHERE `global_id` = 120",
-            2106090221 => "UPDATE DBPREFIX_global SET `global_value = 80 WHERE `global_id` IN (100, 122, 123, 124, 125) AND `global_value` = 4",
-            2112042104 => "UPDATE DBPREFIX_global SET `global_value = 20 WHERE `global_id` = 122 AND `global_value` = 80",
-            2112042104 => "UPDATE DBPREFIX_global SET `global_value = 30 WHERE `global_id` = 123 AND `global_value` = 80",
-            2112042104 => "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (170, 0)",
-            2112060213 => "UPDATE DBPREFIX_global SET `global_value` = 1 WHERE `global_id` = 207 AND `global_value` IN (4, 5)",
-            2112060213 => "UPDATE DBPREFIX_global SET `global_id` = 100 WHERE `global_id` IN (124, 125)",
-            2112060213 => "UPDATE DBPREFIX_global SET `global_value` = 90 WHERE `global_id` = 100 AND `global_value` = 80",
-            2209030117 => "ALTER TABLE DBPREFIX_player ADD `attempts` INT NOT NULL DEFAULT 0",
-            2209030117 => "UPDATE DBPREFIX_player SET `attempts` = (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 40) WHERE `player_id` = (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 2)",
-            2209030442 => "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (171, 1)",
+            [2103240527, "UPDATE DBPREFIX_card SET `location` = 'discard', `origin` = 'discard' WHERE `location` IN ('discard_0', 'trash') AND `refId` <= 140"],
+            [2103270523, "ALTER TABLE DBPREFIX_player ADD `word` VARCHAR(32)"],
+            [2104280652, "ALTER TABLE DBPREFIX_card ADD `age` timestamp(6) NULL DEFAULT NULL"],
+            [2105150216, "ALTER TABLE DBPREFIX_player ADD `vote` INT(1) NULL DEFAULT NULL"],
+            [2105240722, "UPDATE DBPREFIX_global SET `global_value = 3 WHERE `global_id` = 207 AND `global_value` = 2"],
+            [2105240722, "UPDATE DBPREFIX_global SET `global_id = 123 WHERE `global_id` = 120"],
+            [2106090221, "UPDATE DBPREFIX_global SET `global_value = 80 WHERE `global_id` IN (100, 122, 123, 124, 125) AND `global_value` = 4"],
+            [2112042104, "UPDATE DBPREFIX_global SET `global_value = 20 WHERE `global_id` = 122 AND `global_value` = 80"],
+            [2112042104, "UPDATE DBPREFIX_global SET `global_value = 30 WHERE `global_id` = 123 AND `global_value` = 80"],
+            [2112042104, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (170, 0)"],
+            [2112060213, "UPDATE DBPREFIX_global SET `global_value` = 1 WHERE `global_id` = 207 AND `global_value` IN (4, 5)"],
+            [2112060213, "UPDATE DBPREFIX_global SET `global_id` = 100 WHERE `global_id` IN (124, 125)"],
+            [2112060213, "UPDATE DBPREFIX_global SET `global_value` = 90 WHERE `global_id` = 100 AND `global_value` = 80"],
+            [2209030117, "ALTER TABLE DBPREFIX_player ADD `attempts` INT NOT NULL DEFAULT 0"],
+            [2209030117, "UPDATE DBPREFIX_player SET `attempts` = (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 40) WHERE `player_id` = (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 2)"],
+            [2209030442, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (171, 1)"],
         ];
 
-        foreach ($changes as $version => $sql) {
+        foreach ($changes as [$version, $sql]) {
             if ($from_version <= $version) {
                 try {
                     self::warn("upgradeTableDb apply 1: from_version=$from_version, change=[ $version, $sql ]");
