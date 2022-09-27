@@ -994,7 +994,7 @@ export default {
         if (args.word) {
           const q = args.word.toLowerCase();
           let links = [];
-          if (this.gamedatas.options.lang == HConstants.LANG_EN) {
+          if (this.gamedatas.options.dictionary.langId == HConstants.LANG_EN) {
             links = [
               [
                 `<a target="hdefine" href="https://dictionary.cambridge.org/search/english/direct/?q=${q}">Cambridge</a>`, //
@@ -1009,13 +1009,13 @@ export default {
                 `<a target="hdefine" href="https://en.wiktionary.org/wiki/${q}">Wiktionary</a>`, //
               ],
             ];
-          } else if (this.gamedatas.options.lang == HConstants.LANG_DE) {
+          } else if (this.gamedatas.options.dictionary.langId == HConstants.LANG_DE) {
             links = [
               [
                 `<a target="hdefine" href="https://www.duden.de/suchen/dudenonline/${q}">Duden</a>`, //
               ],
             ];
-          } else if (this.gamedatas.options.lang == HConstants.LANG_FR) {
+          } else if (this.gamedatas.options.dictionary.langId == HConstants.LANG_FR) {
             links = [
               [
                 `<a target="hdefine" href="https://www.cnrtl.fr/definition/academie9/${q}">Académie Française</a>`, //

@@ -150,8 +150,8 @@ class hardback extends Table
         if ($this->gamestate->table_globals[H_OPTION_AWARDS]) {
             self::initStat('player', 'pointsAward', 0);
         }
-        $dict = WordMgr::getDictionaryId();
-        if ($dict == H_VOTE_50 || $dict == H_VOTE_100) {
+        $info = WordMgr::getDictionaryInfo();
+        if ($info['voting']) {
             self::initStat('player', 'votesAccept', 0);
             self::initStat('player', 'votesReject', 0);
         }
@@ -216,7 +216,6 @@ class hardback extends Table
                 'coop' => $this->gamestate->table_globals[H_OPTION_COOP] > 0,
                 'deck' => $this->gamestate->table_globals[H_OPTION_DECK] > 0,
                 'dictionary' => WordMgr::getDictionaryInfo(),
-                'lang' => WordMgr::getLanguageId(),
                 'lookup' => $this->gamestate->table_globals[H_OPTION_LOOKUP] > 0,
                 // 'powers' => $this->gamestate->table_globals[H_OPTION_POWERS] > 0,
             ],
@@ -350,8 +349,8 @@ class hardback extends Table
             'definitions' => '',
         ]);
 
-        $dict = WordMgr::getDictionaryId();
-        if ($dict == H_VOTE_50 || $dict == H_VOTE_100) {
+        $info = WordMgr::getDictionaryInfo();
+        if ($info['voting']) {
             // Database pre-commit 
             $updatedIds = CardMgr::preCommitWord($cards);
             CardMgr::notifyCards(CardMgr::getCards($updatedIds));
@@ -493,11 +492,11 @@ class hardback extends Table
         $result = PlayerMgr::getVoteResult();
         if ($result == 'accept') {
             $player = PlayerMgr::getPlayer();
-            $dict = WordMgr::getDictionaryId();
+            $info = WordMgr::getDictionaryInfo();
             self::notifyAllPlayers('word', $this->msg['acceptedWord'], [
                 'i18n' => ['dict'],
                 'word' => $player->getWord(),
-                'dict' => $this->dicts[$dict],
+                'dict' => $info['dict'],
             ]);
             $cards = CardMgr::getTableau(null);
             $this->acceptWord($cards);

@@ -60,23 +60,6 @@ $this->signatures = [
     ],
 ];
 
-$this->dicts = [
-    H_TWELVEDICTS => clienttranslate('12dicts'),
-    H_US => clienttranslate('American Scrabble'),
-    H_UK => clienttranslate('British Scrabble'),
-    H_BEOLINGUS => clienttranslate('BEOLINGUS (TU Chemnitz)'),
-    H_FREE_DE => clienttranslate('Free German Dictionary'),
-    H_MORPHALOU => clienttranslate('Morphalou'),
-    H_VOTE_50 => clienttranslate('Majority Vote'),
-    H_VOTE_100 => clienttranslate('Unanimous Vote'),
-];
-
-$this->langs = [
-    H_LANG_EN => 'English',
-    H_LANG_DE => 'Deutsch',
-    H_LANG_FR => 'Français',
-];
-
 $this->i18n = [
     'starter' => clienttranslate('Starter'),
     'adventure' => clienttranslate('Adventure'),
