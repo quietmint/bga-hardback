@@ -43,20 +43,12 @@ class hardback extends Table
         //  the corresponding ID in gameoptions.inc.php.
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         self::initGameStateLabels([
-            'adverts' => H_OPTION_ADVERTS,
-            'awards' => H_OPTION_AWARDS,
-            'awardWinner' => H_AWARD_WINNER,
-            'coop' => H_OPTION_COOP,
             'countActive' . H_ADVENTURE => H_COUNT_ACTIVE_ADVENTURE,
             'countActive' . H_HORROR => H_COUNT_ACTIVE_HORROR,
             'countActive' . H_MYSTERY => H_COUNT_ACTIVE_MYSTERY,
             'countActive' . H_ROMANCE => H_COUNT_ACTIVE_ROMANCE,
             'deck' => H_OPTION_DECK,
-            'dictionary' => H_OPTION_DICTIONARY,
-            'dictionaryDe' => H_OPTION_DICTIONARY_DE,
-            'dictionaryFr' => H_OPTION_DICTIONARY_FR,
-            'length' => H_OPTION_LENGTH,
-            // 'powers' => H_OPTION_POWERS,
+            'purchases' => H_PURCHASES,
             'startInk' => H_START_INK,
             'startRemover' => H_START_REMOVER,
             'startScore' => H_START_SCORE,
@@ -93,11 +85,11 @@ class hardback extends Table
         self::reloadPlayersBasicInfos();
 
         // Init global values with their initial values
-        self::setGameStateInitialValue('awardWinner', 0);
         self::setGameStateInitialValue('countActive' . H_ADVENTURE, 0);
         self::setGameStateInitialValue('countActive' . H_HORROR, 0);
         self::setGameStateInitialValue('countActive' . H_MYSTERY, 0);
         self::setGameStateInitialValue('countActive' . H_ROMANCE, 0);
+        self::setGameStateInitialValue('purchases', 0);
         self::setGameStateInitialValue('startInk', 0);
         self::setGameStateInitialValue('startRemover', 0);
         self::setGameStateInitialValue('startScore', 0);
@@ -211,13 +203,12 @@ class hardback extends Table
             'finalRound' => $this->getGameProgression() >= 100,
             'options' => [
                 'adverts' => $this->gamestate->table_globals[H_OPTION_ADVERTS] > 0,
-                'attempts' => intval($this->gamestate->table_globals[H_OPTION_ATTEMPTS]),
                 'awards' => $this->gamestate->table_globals[H_OPTION_AWARDS] > 0,
                 'coop' => $this->gamestate->table_globals[H_OPTION_COOP] > 0,
                 'deck' => $this->gamestate->table_globals[H_OPTION_DECK] > 0,
                 'dictionary' => WordMgr::getDictionaryInfo(),
                 'lookup' => $this->gamestate->table_globals[H_OPTION_LOOKUP] > 0,
-                // 'powers' => $this->gamestate->table_globals[H_OPTION_POWERS] > 0,
+                'unlimited' => $this->gamestate->table_globals[H_OPTION_UNLIMITED] > 0,
             ],
             'refs' => [
                 'benefits' => $this->benefits,
@@ -396,28 +387,36 @@ class hardback extends Table
         $longest = $this->getStat('longestWord');
         if ($length > $longest) {
             $this->setStat($length, 'longestWord');
+        }
+
+        // Literary awards
+        if ($this->gamestate->table_globals[H_OPTION_AWARDS] && $length >= 7) {
             $length = min($length, 12);
-            $longest = min($longest, 12);
-            if ($length > $longest && $length >= 7 && $this->gamestate->table_globals[H_OPTION_AWARDS]) {
-                $msg = $this->msg['awardFirst'];
-                $points = $this->awards[$length];
-                $args = [
-                    'player_name' => $player->getName(),
-                    'points' => $points,
-                    'iconPoints' => 'star',
-                    'length' => $length,
-                    'award' => $length,
-                ];
-                $previous = $this->getGameStateValue('awardWinner');
-                $this->setGameStateValue('awardWinner', $player->getId());
-                if ($previous && $previous != $player->getId()) {
-                    $msg = $this->msg['awardSecond'];
-                    $loser = PlayerMgr::getPlayer($previous);
-                    $args['player_name2'] = $loser->getName();
-                    $loser->notifyPanel();
+            $points = $this->awards[$length];
+            if ($points > $player->getAward()) {
+                $maxAward = PlayerMgr::getMaxAward();
+                $win = $maxAward == null || $points > $maxAward['award'];
+                $winShared = $this->gamestate->table_globals[H_OPTION_RULESET] == 2 && $this->gamestate->table_globals[H_OPTION_COOP] == H_NO && $length == 12 && $maxAward != null && $points == $maxAward['award'];
+                if ($win || $winShared) {
+                    $msg = $this->msg['awardFirst'];
+                    $args = [
+                        'player_name' => $player->getName(),
+                        'points' => $points,
+                        'iconPoints' => 'star',
+                        'length' => $length,
+                        'award' => $length,
+                    ];
+                    if (!$winShared && $maxAward != null && $maxAward['player_id'] != $player->getId()) {
+                        $loser = PlayerMgr::getPlayer($maxAward['player_id']);
+                        $msg = $this->msg['awardSecond'];
+                        $args['player_name2'] = $loser->getName();
+                        $loser->setAward(0);
+                        $loser->notifyPanel();
+                    }
+                    $player->setAward($points);
+                    $player->notifyPanel();
+                    self::notifyAllPlayers('award', $msg, $args);
                 }
-                $player->notifyPanel();
-                self::notifyAllPlayers('award', $msg, $args);
             }
         }
 
@@ -430,9 +429,9 @@ class hardback extends Table
         $msg = $this->msg['rejectedWord'];
         $remaining = null;
         $player->addAttempt();
-        if ($this->gamestate->table_globals[H_OPTION_ATTEMPTS] > 0) {
+        if ($this->gamestate->table_globals[H_OPTION_UNLIMITED] == H_NO) {
             $msg = $this->msg['rejectedWordRemaining'];
-            $remaining = max(0, $this->gamestate->table_globals[H_OPTION_ATTEMPTS] - $player->getAttempts());
+            $remaining = max(0, 3 - $player->getAttempts());
         }
 
         $this->incStat(1, 'invalidWords');
@@ -519,7 +518,7 @@ class hardback extends Table
         if ($this->gamestate->table_globals[H_OPTION_LOOKUP] == 0) {
             throw new BgaVisibleSystemException("lookup: Not possible for $player to lookup in this game");
         }
-        if ($this->gamestate->table_globals[H_OPTION_ATTEMPTS] > 0 && $player->getAttempts() >= $this->gamestate->table_globals[H_OPTION_ATTEMPTS]) {
+        if ($this->gamestate->table_globals[H_OPTION_UNLIMITED] == H_NO && $player->getAttempts() >= 3) {
             throw new BgaVisibleSystemException("lookup: Not possible for $player to lookup with {$player->getAttempts()} invalid attempts");
         }
 
@@ -528,9 +527,9 @@ class hardback extends Table
             $msg = $this->msg['rejectedWord'];
             $remaining = null;
             $player->addAttempt();
-            if ($this->gamestate->table_globals[H_OPTION_ATTEMPTS] > 0) {
+            if ($this->gamestate->table_globals[H_OPTION_UNLIMITED] == H_NO) {
                 $msg = $this->msg['rejectedWordRemaining'];
-                $remaining = max(0, $this->gamestate->table_globals[H_OPTION_ATTEMPTS] - $player->getAttempts());
+                $remaining = max(0, 3 - $player->getAttempts());
             }
 
             $this->incStat(1, 'invalidWords');
@@ -1266,6 +1265,7 @@ class hardback extends Table
         if ($oldLocation == 'offer') {
             $this->drawOfferRow();
         }
+        $this->incGameStateValue('purchases', 1);
         $this->incStat(1, 'cardsPurchase', $player->getId());
         $this->incStat(1, 'deck' . $card->getGenre(), $player->getId());
         $this->gamestate->nextState('again');
@@ -1392,7 +1392,27 @@ class hardback extends Table
 
     function stCoopTurn()
     {
+        // New rules: Cycle the offer row
         $player = PlayerMgr::getPlayer();
+        if ($this->gamestate->table_globals[H_OPTION_RULESET] == 2 && $this->gamestate->table_globals[H_OPTION_COOP] == H_NO) {
+            $purchases = intval($this->getGameStateValue('purchases'));
+            if ($purchases == 0) {
+                // Discard the oldest offer row card
+                $offer = CardMgr::getOffer();
+                $card = end($offer);
+                CardMgr::discard($card, 'discard');
+                self::notifyAllPlayers('message', $this->msg['purchaseNone'], [
+                    'player_name' => $player->getName(),
+                    'genre' => $card->getGenreName(),
+                    'letter' => $card->getLetter(),
+                ]);
+
+                // Draw a new card
+                $draw = $this->drawOfferRow();
+            }
+        }
+        $this->setGameStateValue('purchases', 0);
+
         if ($this->gamestate->table_globals[H_OPTION_COOP] == H_NO || $player->isEliminated() || $player->isZombie()) {
             $this->gamestate->nextState('next');
             return;
@@ -1591,19 +1611,18 @@ class hardback extends Table
 
     function stEnd(): void
     {
-        // Literary award points
+        // Literary awards
         if ($this->gamestate->table_globals[H_OPTION_AWARDS]) {
-            $winner = $this->getGameStateValue('awardWinner');
-            if ($winner) {
-                $length = min($this->getStat('longestWord'), 12);
-                $points = $this->awards[$length];
-                $player = PlayerMgr::getPlayer($winner);
-                $player->addPoints($points, 'pointsAward');
-                self::notifyAllPlayers('message', $this->msg['awardEnd'], [
-                    'player_name' => $player->getName(),
-                    'amount' => $points,
-                    'icon' => 'star',
-                ]);
+            foreach (PlayerMgr::getPlayers() as $player) {
+                $points = $player->getAward();
+                if ($points > 0) {
+                    $player->addPoints($points, 'pointsAward');
+                    self::notifyAllPlayers('message', $this->msg['awardEnd'], [
+                        'player_name' => $player->getName(),
+                        'amount' => $points,
+                        'icon' => 'star',
+                    ]);
+                }
             }
         }
 
@@ -1692,6 +1711,9 @@ class hardback extends Table
             [2209030117, "ALTER TABLE DBPREFIX_player ADD `attempts` INT NOT NULL DEFAULT 0"],
             [2209030117, "UPDATE DBPREFIX_player SET `attempts` = (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 40) WHERE `player_id` = (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 2)"],
             [2209030442, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (171, 1)"],
+            [2209270419, "INSERT INTO DBPREFIX_global SELECT 107 AS `global_id`, CASE `global_value` WHEN 0 THEN 1 ELSE 0 END AS `global_value` FROM DBPREFIX_global WHERE `global_id` = 106"],
+            [2209270419, "ALTER TABLE DBPREFIX_player ADD `award` INT NOT NULL DEFAULT 0"],
+            [2209270419, "UPDATE DBPREFIX_player SET `award` = (SELECT CASE `stats_value` WHEN 7 THEN 5 WHEN 8 THEN 6 WHEN 9 THEN 7 WHEN 10 THEN 9 WHEN 11 THEN 12 WHEN 12 THEN 15 ELSE 0 END AS points FROM DBPREFIX_stats WHERE `stats_type` = 51 AND `stats_player_id` IS NULL) WHERE `player_id` = (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 30)"],
         ];
 
         foreach ($changes as [$version, $sql]) {

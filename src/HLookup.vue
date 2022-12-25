@@ -65,13 +65,13 @@ export default {
 
   computed: {
     attemptText() {
-      if (this.options.attempts > 0) {
-        return this.i18n("lookupAttempts", { remaining: this.options.attempts - this.myself.attempts });
+      if (!this.options.unlimited) {
+        return this.i18n("lookupAttempts", { remaining: 3 - this.myself.attempts });
       }
     },
 
     disabled() {
-      return this.options.attempts > 0 && this.myself.attempts >= this.options.attempts;
+      return !this.options.unlimited && this.myself.attempts >= 3;
     },
   },
 

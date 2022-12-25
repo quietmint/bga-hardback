@@ -44,6 +44,24 @@ $dictionaryStartCond = [
 ];
 
 $game_options = [
+    H_OPTION_RULESET => [
+        'name' => totranslate('Game Rules'),
+        'default' => 2,
+        'values' => [
+            1 => [
+                'name' => totranslate('First edition'),
+                'tmdisplay' => totranslate('First edition'),
+                'description' => totranslate('Offer row doesn\'t refresh. Only the first player can win the top literary award.'),
+            ],
+            2 => [
+                'name' => totranslate('Second edition (NEW!)'),
+                'tmdisplay' => totranslate('Second edition (NEW!)'),
+                'description' => totranslate('Try the NEW second edition rules: Discard the oldest offer row card when you do not purchase any cards. All players can win the top literary award.'),
+                'beta' => true,
+            ],
+        ]
+    ],
+
     H_OPTION_DICTIONARY => [
         'name' => totranslate('Dictionary'),
         'default' => H_US,
@@ -168,160 +186,12 @@ $game_options = [
         'startcondition' => $dictionaryStartCond,
     ],
 
-    H_OPTION_ATTEMPTS => [
-        'name' => totranslate('Invalid Word Attempts'),
-        'default' => -1,
-        'values' => [
-            0 => [
-                'name' => totranslate('Unlimited'),
-                'description' => totranslate('No penalty for spelling invalid words'),
-            ],
-            2 => [
-                'name' => totranslate('2'),
-                'tmdisplay' => totranslate('2 Invalid Word Attempts'),
-                'description' => totranslate('Spelling too many invalid words ends your turn'),
-            ],
-            3 => [
-                'name' => totranslate('3'),
-                'tmdisplay' => totranslate('3 Invalid Word Attempts'),
-                'description' => totranslate('Spelling too many invalid words ends your turn'),
-            ],
-            4 => [
-                'name' => totranslate('4'),
-                'tmdisplay' => totranslate('4 Invalid Word Attempts'),
-                'description' => totranslate('Spelling too many invalid words ends your turn'),
-            ],
-            5 => [
-                'name' => totranslate('5'),
-                'tmdisplay' => totranslate('5 Invalid Word Attempts'),
-                'description' => totranslate('Spelling too many invalid words ends your turn'),
-            ],
-        ],
-    ],
-
-    H_OPTION_LOOKUP => [
-        'name' => totranslate('Word Lookups'),
-        'default' => H_YES,
-        'values' => [
-            H_NO => [
-                'name' => totranslate('No'),
-                'tmdisplay' => totranslate('Word Lookups Disabled'),
-
-            ],
-            H_YES => [
-                'name' => totranslate('Yes'),
-                'tmdisplay' => totranslate('Word Lookups Enabled'),
-                'description' => totranslate('Query the dictionary anytime (helpful in turn-based games)'),
-            ]
-        ],
-    ],
-
-    H_OPTION_LENGTH => [
-        'name' => totranslate('Game Length'),
-        'default' => 60,
-        'values' => [
-            40 => [
-                'name' => totranslate('Shorter (40 Points)'),
-                'tmdisplay' => totranslate('Shorter (40 Points)'),
-            ],
-            60 => [
-                'name' => totranslate('Standard (60 Points)'),
-            ],
-            80 => [
-                'name' => totranslate('Longer (80 Points)'),
-                'tmdisplay' => totranslate('Longer (80 Points)'),
-            ],
-            160 => [
-                'name' => totranslate('Marathon (160 Points)'),
-                'tmdisplay' => totranslate('Marathon (160 Points)'),
-            ],
-        ],
-        'displaycondition' => [
-            [
-                'type' => 'otheroption',
-                'id' => H_OPTION_COOP,
-                'value' => H_NO,
-            ],
-        ],
-        'notdisplayedmessage' => totranslate('Standard (60 Points)'),
-    ],
-
-    H_OPTION_AWARDS => [
-        'name' => totranslate('Literary Awards'),
-        'default' => H_YES,
-        'values' => [
-            H_NO => [
-                'name' => totranslate('No'),
-            ],
-            H_YES => [
-                'name' => totranslate('Yes'),
-                'tmdisplay' => totranslate('Literary Awards'),
-                'description' => totranslate('Bonus points for the longest word'),
-            ]
-        ],
-    ],
-
-    H_OPTION_ADVERTS => [
-        'name' => totranslate('Adverts'),
-        'default' => H_YES,
-        'values' => [
-            H_NO => [
-                'name' => totranslate('No'),
-            ],
-            H_YES => [
-                'name' => totranslate('Yes'),
-                'tmdisplay' => totranslate('Adverts'),
-                'description' => totranslate('Purchase points with coins'),
-            ]
-        ],
-    ],
-
-    /*
-    H_OPTION_POWERS => [
-        'name' => totranslate('Player Powers'),
-        'default' => H_NO,
-        'values' => [
-            H_NO => [
-                'name' => totranslate('No'),
-            ],
-            H_YES => [
-                'name' => totranslate('Yes'),
-                'tmdisplay' => totranslate('Powers'),
-                'description' => totranslate('Unique powers to either out-wit or penalize opponents (everyone receives the same type)',
-                'nobeginner' => true,
-            ],
-            H_PASSIVE => [
-                'name' => totranslate('Passive Powers'),
-                'tmdisplay' => totranslate('Passive Powers'),
-                'description' => totranslate('Unique powers to out-wit opponents'),
-                'nobeginner' => true,
-            ],
-            H_AGRESSIVE => [
-                'name' => totranslate('Agressive Powers'),
-                'tmdisplay' => totranslate('Agressive Powers'),
-                'description' => totranslate('Unique powers to penalize opponents'),
-                'nobeginner' => true,
-            ],
-        ],
-        'startcondition' => [
-            H_AGRESSIVE => [
-                [
-                    'type' => 'otheroption',
-                    'id' => H_OPTION_COOP,
-                    'value' => H_NO,
-                    'message' => totranslate('Cannot use Agressive Powers with Cooperative Anthology'),
-                ],
-            ],
-        ],
-    ],
-    */
-
     H_OPTION_COOP => [
-        'name' => totranslate('Cooperative Anthology'),
+        'name' => totranslate('Game Type'),
         'default' => H_NO,
         'values' => [
             H_NO => [
-                'name' => totranslate('No'),
+                'name' => totranslate('Competetive'),
                 'description' => totranslate('Compete to be the finest novelist of the age'),
             ],
             H_COOP_BASIC => [
@@ -372,7 +242,7 @@ $game_options = [
                 [
                     'type' => 'minplayers',
                     'value' => 2,
-                    'message' => totranslate('Must enable Cooperative Anthology to play solo'),
+                    'message' => totranslate('Cooprative game is required for solo play'),
                 ],
             ],
             H_COOP_BASIC => [
@@ -380,12 +250,12 @@ $game_options = [
                     'type' => 'otheroption',
                     'id' => H_OPTION_GAME_MODE,
                     'value' => H_TRAINING_MODE,
-                    'message' => totranslate('Must set game mode = training mode (no ELO) to enable Cooperative Anthology'),
+                    'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
                 ],
                 [
                     'type' => 'maxplayers',
                     'value' => 4,
-                    'message' => totranslate('Must set max players = 1 - 4 to enable Cooperative Anthology'),
+                    'message' => totranslate('Cooprative game supports 1 - 4 players'),
                 ],
             ],
             H_COOP_RANDOM => [
@@ -393,12 +263,12 @@ $game_options = [
                     'type' => 'otheroption',
                     'id' => H_OPTION_GAME_MODE,
                     'value' => H_TRAINING_MODE,
-                    'message' => totranslate('Must set game mode = training mode (no ELO) to enable Cooperative Anthology'),
+                    'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
                 ],
                 [
                     'type' => 'maxplayers',
                     'value' => 4,
-                    'message' => totranslate('Must set max players = 1 - 4 to enable Cooperative Anthology'),
+                    'message' => totranslate('Cooprative game supports 1 - 4 players'),
                 ],
             ],
             H_COOP_ADVENTURE => [
@@ -406,12 +276,12 @@ $game_options = [
                     'type' => 'otheroption',
                     'id' => H_OPTION_GAME_MODE,
                     'value' => H_TRAINING_MODE,
-                    'message' => totranslate('Must set game mode = training mode (no ELO) to enable Cooperative Anthology'),
+                    'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
                 ],
                 [
                     'type' => 'maxplayers',
                     'value' => 4,
-                    'message' => totranslate('Must set max players = 1 - 4 to enable Cooperative Anthology'),
+                    'message' => totranslate('Cooprative game supports 1 - 4 players'),
                 ],
             ],
             H_COOP_HORROR => [
@@ -419,12 +289,12 @@ $game_options = [
                     'type' => 'otheroption',
                     'id' => H_OPTION_GAME_MODE,
                     'value' => H_TRAINING_MODE,
-                    'message' => totranslate('Must set game mode = training mode (no ELO) to enable Cooperative Anthology'),
+                    'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
                 ],
                 [
                     'type' => 'maxplayers',
                     'value' => 4,
-                    'message' => totranslate('Must set max players = 1 - 4 to enable Cooperative Anthology'),
+                    'message' => totranslate('Cooprative game supports 1 - 4 players'),
                 ],
             ],
             H_COOP_MYSTERY => [
@@ -432,12 +302,12 @@ $game_options = [
                     'type' => 'otheroption',
                     'id' => H_OPTION_GAME_MODE,
                     'value' => H_TRAINING_MODE,
-                    'message' => totranslate('Must set game mode = training mode (no ELO) to enable Cooperative Anthology'),
+                    'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
                 ],
                 [
                     'type' => 'maxplayers',
                     'value' => 4,
-                    'message' => totranslate('Must set max players = 1 - 4 to enable Cooperative Anthology'),
+                    'message' => totranslate('Cooprative game supports 1 - 4 players'),
                 ],
             ],
             H_COOP_ROMANCE => [
@@ -445,29 +315,123 @@ $game_options = [
                     'type' => 'otheroption',
                     'id' => H_OPTION_GAME_MODE,
                     'value' => H_TRAINING_MODE,
-                    'message' => totranslate('Must set game mode = training mode (no ELO) to enable Cooperative Anthology'),
+                    'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
                 ],
                 [
                     'type' => 'maxplayers',
                     'value' => 4,
-                    'message' => totranslate('Must set max players = 1 - 4 to enable Cooperative Anthology'),
+                    'message' => totranslate('Cooprative game supports 1 - 4 players'),
                 ],
             ],
         ],
     ],
 
-    H_OPTION_DECK => [
-        'name' => totranslate('Deck Visibility'),
-        'default' => H_NO,
+    H_OPTION_LENGTH => [
+        'name' => totranslate('Game Length'),
+        'default' => 60,
+        'values' => [
+            40 => [
+                'name' => totranslate('Shorter (40 Points)'),
+                'tmdisplay' => totranslate('Shorter (40 Points)'),
+            ],
+            60 => [
+                'name' => totranslate('Standard (60 Points)'),
+            ],
+            80 => [
+                'name' => totranslate('Longer (80 Points)'),
+                'tmdisplay' => totranslate('Longer (80 Points)'),
+            ],
+            160 => [
+                'name' => totranslate('Marathon (160 Points)'),
+                'tmdisplay' => totranslate('Marathon (160 Points)'),
+            ],
+        ],
+        'displaycondition' => [
+            [
+                'type' => 'otheroption',
+                'id' => H_OPTION_COOP,
+                'value' => H_NO,
+            ],
+        ],
+        'notdisplayedmessage' => totranslate('Standard (60 Points)'),
+    ],
+
+    H_OPTION_UNLIMITED => [
+        'name' => totranslate('Unlimited Misspellings'),
+        'default' => H_YES,
         'values' => [
             H_NO => [
-                'name' => totranslate('Invisible (Official Rules)'),
+                'name' => totranslate('No'),
+                'tmdisplay' => totranslate('3 Misspellings'),
+                'description' => totranslate('Spelling 3 invalid words ends your turn'),
+            ],
+            H_YES => [
+                'name' => totranslate('Yes'),
+                'tmdisplay' => totranslate('Unlimited Misspellings'),
+                'description' => totranslate('No penalty for spelling invalid words'),
+            ],
+        ],
+    ],
+
+    H_OPTION_LOOKUP => [
+        'name' => totranslate('Word Lookups'),
+        'default' => H_YES,
+        'values' => [
+            H_NO => [
+                'name' => totranslate('No'),
+                'tmdisplay' => totranslate('Word Lookups Disabled'),
+            ],
+            H_YES => [
+                'name' => totranslate('Yes'),
+                'tmdisplay' => totranslate('Word Lookups Enabled'),
+                'description' => totranslate('Query the dictionary anytime (helpful in turn-based games)'),
+            ]
+        ],
+    ],
+
+    H_OPTION_DECK => [
+        'name' => totranslate('Deck Visibile'),
+        'default' => H_YES,
+        'values' => [
+            H_NO => [
+                'name' => totranslate('No'),
+                'tmdisplay' => totranslate('Deck Invisible'),
                 'description' => totranslate('Cannot see cards remaining in your deck'),
             ],
             H_YES => [
-                'name' => totranslate('Open (House Rule)'),
-                'tmdisplay' => totranslate('Open Deck'),
+                'name' => totranslate('Yes'),
+                'tmdisplay' => totranslate('Deck Visible'),
                 'description' => totranslate('View cards remaining in your deck anytime (helpful in turn-based games)'),
+            ]
+        ],
+    ],
+
+    H_OPTION_AWARDS => [
+        'name' => totranslate('Literary Awards'),
+        'default' => H_YES,
+        'values' => [
+            H_NO => [
+                'name' => totranslate('No'),
+            ],
+            H_YES => [
+                'name' => totranslate('Yes'),
+                'tmdisplay' => totranslate('Literary Awards'),
+                'description' => totranslate('Bonus points for the longest word'),
+            ]
+        ],
+    ],
+
+    H_OPTION_ADVERTS => [
+        'name' => totranslate('Adverts'),
+        'default' => H_YES,
+        'values' => [
+            H_NO => [
+                'name' => totranslate('No'),
+            ],
+            H_YES => [
+                'name' => totranslate('Yes'),
+                'tmdisplay' => totranslate('Adverts'),
+                'description' => totranslate('Purchase points with coins'),
             ]
         ],
     ],

@@ -2,6 +2,11 @@
 
 class PlayerMgr extends APP_GameClass
 {
+    public static function getMaxAward(): ?array
+    {
+        return self::getObjectFromDB("SELECT player_id, award FROM player WHERE award > 0 ORDER BY award DESC LIMIT 1");
+    }
+
     public static function getMaxScore(): int
     {
         $max = intval(self::getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_eliminated = 0 AND player_zombie = 0"));
@@ -36,7 +41,7 @@ class PlayerMgr extends APP_GameClass
 
     public static function getPlayers(array $playerIds = []): array
     {
-        $sql = "SELECT player_id, player_no, player_name, player_color, player_eliminated, player_zombie, player_score, attempts, coins, ink, remover, advert, word, vote FROM player";
+        $sql = "SELECT player_id, player_no, player_name, player_color, player_eliminated, player_zombie, player_score, attempts, coins, ink, remover, award, advert, word, vote FROM player";
         if (!empty($playerIds)) {
             $sql .= " WHERE player_id IN (" . implode(", ", $playerIds) . ")";
         }

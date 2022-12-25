@@ -5,6 +5,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     protected $id;
     protected $advert;
     protected $attempts;
+    protected $award;
     protected $coins;
     protected $color;
     protected $eliminated;
@@ -21,6 +22,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->id = intval($dbplayer['player_id']);
         $this->advert = intval($dbplayer['advert']);
         $this->attempts = intval($dbplayer['attempts']);
+        $this->award = intval($dbplayer['award']);
         $this->coins = intval($dbplayer['coins']);
         $this->color = $dbplayer['player_color'];
         $this->eliminated = intval($dbplayer['player_eliminated']);
@@ -66,7 +68,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
             'score' => $this->score,
         ];
         if (hardback::$instance->gamestate->table_globals[H_OPTION_AWARDS]) {
-            $json['award'] = $this->getAward();
+            $json['award'] = $this->award;
         }
         if (hardback::$instance->gamestate->table_globals[H_OPTION_ADVERTS]) {
             $json['advert'] = $this->advert;
@@ -91,12 +93,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     public function getAward(): int
     {
-        $points = 0;
-        if (hardback::$instance->gamestate->table_globals[H_OPTION_AWARDS] && hardback::$instance->getGameStateValue('awardWinner') == $this->id) {
-            $length = min(hardback::$instance->getStat('longestWord'), 12);
-            $points = hardback::$instance->awards[$length];
-        }
-        return $points;
+        return $this->award;
     }
 
     public function getCoins(): int
@@ -400,6 +397,13 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->advert = $points;
         $this->spendCoins($coins, false);
         $this->addPoints($points, 'pointsAdvert');
+    }
+
+    public function setAward(int $points): void
+    {
+        $this->DbLock();
+        self::DbQuery("UPDATE player SET award = $points WHERE player_id = {$this->id}");
+        $this->award = $points;
     }
 
     public function setVote(bool $vote): void

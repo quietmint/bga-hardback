@@ -49,7 +49,7 @@ define('H_COUNT_ACTIVE_ROMANCE', 14);
 define('H_START_SCORE', 20);
 define('H_START_INK', 21);
 define('H_START_REMOVER', 22);
-define('H_AWARD_WINNER', 30);
+define('H_PURCHASES', 31);
 
 // Game statistics
 define('H_STAT_TURNS', 10);
@@ -101,15 +101,12 @@ define('H_MORPHALOU', 30);
 define('H_VOTE_50', 90);
 define('H_VOTE_100', 91);
 
-define('H_OPTION_ATTEMPTS', 106);
+define('H_OPTION_UNLIMITED', 107);
 define('H_OPTION_LENGTH', 105);
 define('H_OPTION_AWARDS', 101);
 define('H_OPTION_ADVERTS', 102);
-define('H_OPTION_POWERS', 104);
 define('H_NO', 0);
 define('H_YES', 1);
-define('H_PASSIVE', 2);
-define('H_AGRESSIVE', 3);
 
 define('H_OPTION_COOP', 110);
 define('H_COOP_BASIC', 1);
@@ -121,6 +118,7 @@ define('H_COOP_ROMANCE', 14);
 
 define('H_OPTION_DECK', 170);
 define('H_OPTION_LOOKUP', 171);
+define('H_OPTION_RULESET', 199);
 
 define('H_OPTION_LANG', 207);
 define('H_LANG_EN', 1);

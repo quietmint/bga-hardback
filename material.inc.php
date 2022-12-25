@@ -157,6 +157,7 @@ $this->msg = [
     'purchase2' => clienttranslate('${player_name} purchases ${genre}${letter} for ${coins}${iconCoins} and earns ${points}${iconPoints}'),
     'purchaseAdvert' => clienttranslate('${player_name} purchases the ${points}${iconPoints} advertisement for ${coins}${iconCoins}'),
     'purchaseCoop' => clienttranslate('${player_name} purchases ${genre}${letter} and earns ${points}${iconPoints}'),
+    'purchaseNone' => clienttranslate('${player_name} did not purchase any cards and discards ${genre}${letter} from the offer row'),
     'rejectedWord' => clienttranslate('${word} is rejected by ${dict} (${lang})'),
     'rejectedWordRemaining' => clienttranslate('${word} is rejected by ${dict} (${lang}) -- ${remaining} attempt(s) remaining'),
     'skipWord' => clienttranslate('${player_name} is stymied by writer\'s block and skips their turn.'),
