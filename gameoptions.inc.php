@@ -51,13 +51,12 @@ $game_options = [
             1 => [
                 'name' => totranslate('First edition'),
                 'tmdisplay' => totranslate('First edition'),
-                'description' => totranslate('Offer row doesn\'t refresh. Only the first player can win the top literary award.'),
+                'description' => totranslate('Offer row doesn\'t refresh automatically. Only one player can win the top literary award.'),
             ],
             2 => [
                 'name' => totranslate('Second edition (NEW!)'),
                 'tmdisplay' => totranslate('Second edition (NEW!)'),
-                'description' => totranslate('Try the NEW second edition rules: Discard the oldest offer row card when you do not purchase any cards. All players can win the top literary award.'),
-                'beta' => true,
+                'description' => totranslate('Discard the oldest offer row card when you do not purchase any cards. All players can win the top literary award.'),
             ],
         ]
     ],

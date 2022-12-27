@@ -68,6 +68,7 @@ define('H_STAT_FLUSH', 53);
 define('H_STAT_VOTES_ACCEPT', 54);
 define('H_STAT_VOTES_REJECT', 55);
 define('H_STAT_BEST_WORD', 56);
+define('H_STAT_PURCHASE_NONE', 57);
 define('H_STAT_USE_INK', 60);
 define('H_STAT_USE_REMOVER', 61);
 define('H_STAT_STARTER_CARD1', 70);

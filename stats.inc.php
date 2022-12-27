@@ -93,6 +93,11 @@ $stats_type = [
             'name' => totranslate('Flush Offer Row'),
             'type' => 'int',
         ],
+        'purchaseNone' => [
+            'id' => H_STAT_PURCHASE_NONE,
+            'name' => totranslate('Discard Offer Row (No Purchase)'),
+            'type' => 'int',
+        ],
         'coopScore' => [
             'id' => H_STAT_COOP_SCORE,
             'name' => totranslate('Penny Dreadful: Score'),

@@ -114,6 +114,9 @@ class hardback extends Table
             self::initStat('table', 'coopTurns', 0);
         } else {
             self::initStat('table', 'flush', 0);
+            if ($this->gamestate->table_globals[H_OPTION_RULESET] == 2) {
+                self::initStat('table', 'purchaseNone', 0);
+            }
         }
 
         // Init player statistics
@@ -1401,12 +1404,12 @@ class hardback extends Table
                 $offer = CardMgr::getOffer();
                 $card = end($offer);
                 CardMgr::discard($card, 'discard');
+                $this->incStat(1, 'purchaseNone');
                 self::notifyAllPlayers('message', $this->msg['purchaseNone'], [
                     'player_name' => $player->getName(),
                     'genre' => $card->getGenreName(),
                     'letter' => $card->getLetter(),
                 ]);
-
                 // Draw a new card
                 $draw = $this->drawOfferRow();
             }
