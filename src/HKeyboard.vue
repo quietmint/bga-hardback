@@ -1,8 +1,8 @@
 <template>
   <div class="fixed z-top inset-0 bg-white bg-opacity-75 dark:bg-black dark:bg-opacity-75"
        @click="click(null)">
-    <div class="flex items-center justify-center min-h-screen">
-      <div class="hpopup flex flex-col items-center justify-center bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow text-20 p-6"
+    <div class="flex items-start justify-center min-h-screen">
+      <div class="hpopup flex flex-col items-center justify-center bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow text-20 p-6 mt-18"
            @click.stop>
         <div class="mb-4"
              v-html="i18n('keyboard', keyboardPopup)"></div>
@@ -13,7 +13,7 @@
                v-for="letter in row"
                :key="letter"
                @click.stop="click(letter)"
-               class="flex-none cursor-pointer text-center m-2 w-14 h-14 leading-14 shadow text-24 font-bold rounded-full bg-gradient-to-b from-gray-100 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-700 dark:to-gray-800 hover:from-blue-600 hover:to-blue-700 hover:text-white">{{ letter }}</div>
+               class="flex-none cursor-pointer text-center m-1 w-14 h-14 leading-14 shadow text-24 font-bold rounded-full bg-gradient-to-b from-gray-100 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-700 dark:to-gray-800 hover:from-blue-600 hover:to-blue-700 hover:text-white">{{ letter }}</div>
         </div>
       </div>
     </div>

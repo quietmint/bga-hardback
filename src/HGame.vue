@@ -1420,6 +1420,9 @@ export default {
               }
             }
           });
+        } else {
+          // Move the duplicate word to the top
+          this.lookupHistory.sort((a, b) => a.word == word ? -1 : b.word == word ? 1 : 0);
         }
       } else {
         this.lookupPopup = false;

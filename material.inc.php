@@ -69,6 +69,7 @@ $this->i18n = [
 
     'adverts' => clienttranslate('Adverts'),
     'award' => clienttranslate('Literary Awards'),
+    'awardLetters' => clienttranslate('${length} letters'),
     'browserWarnDesc' => clienttranslate('Some game features are unavailable'),
     'browserWarnTitle' => clienttranslate('Update your browser for a better experience'),
     'confirmButton' => clienttranslate('Confirm Word'),
@@ -184,15 +185,15 @@ $this->benefits = [
         'long' => clienttranslate('Double the ¢ and ${star} values of an adjacent card'),
     ],
     H_EITHER_BASIC => [
-        'short' => clienttranslate('${value}¢ or ${value}${star}'),
+        'short' => clienttranslate('${value}¢/${value}${star}'),
         'long' => clienttranslate('Gain ${value}¢ or ${value}${star}'),
     ],
     H_EITHER_GENRE => [
-        'short' => clienttranslate('${value}¢ or ${value}${star}'),
+        'short' => clienttranslate('${value}¢/${value}${star}'),
         'long' => clienttranslate('Gain ${value}¢ or ${value}${star}'),
     ],
     H_EITHER_INK => [
-        'short' => clienttranslate('Ink'),
+        'short' => clienttranslate('Remover'),
         'long' => clienttranslate('Gain an ink or remover'),
     ],
     H_JAIL => [
@@ -204,15 +205,15 @@ $this->benefits = [
         'long' => clienttranslate('Gain ${value}${star}'),
     ],
     H_SPECIAL_ADVENTURE => [
-        'short' => '${value}¢/${adventure}',
+        'short' => '${value}¢ per ${adventure}',
         'long' => clienttranslate('Gain ${value}¢ for each ${adventure} card in play'),
     ],
     H_SPECIAL_HORROR => [
-        'short' => clienttranslate('${value}${star}/Ink'),
+        'short' => clienttranslate('${value}${star} per Ink'),
         'long' => clienttranslate('Gain ${value}${star} for each inked card in play'),
     ],
     H_SPECIAL_MYSTERY => [
-        'short' => clienttranslate('${value}${star}/Wild'),
+        'short' => clienttranslate('${value}${star} per Wild'),
         'long' => clienttranslate('Gain ${value}${star} for each wild card in play'),
     ],
     H_SPECIAL_ROMANCE => [

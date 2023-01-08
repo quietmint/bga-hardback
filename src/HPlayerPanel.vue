@@ -18,35 +18,25 @@
 
       <div class="panel-right flex items-center justify-around text-noshadow">
         <!-- Literary Award -->
-        <HTooltip v-if="options.value.awards"
-                  position="left">
+        <HTooltip v-if="options.value.awards" position="left">
           <template v-slot:tip>
             <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-center whitespace-nowrap">
               <div class="p-2 bg-gray-200 font-bold">{{ i18n("award") }}</div>
               <div v-for="(value, key) in refs.value.awards"
                    :key="key"
                    class="px-2 py-1 border-t border-black border-opacity-30">
-                {{ key }}
-                <span class="pl-4">{{ value }}
-                  <Icon icon="star"
-                        class="inline text-18" />
-                </span>
+                {{i18n("awardLetters", {length: key})}}
+                <span class="pl-4">{{ value }}<Icon icon="star" class="inline text-18" /></span>
               </div>
             </div>
           </template>
           <template v-slot:default>
-            <div :id="'tut_award_p' + player.id"
-                 class="panel-opt">{{ player.award || "" }}
-              <Icon v-if="player.award"
-                    class="inline text-20"
-                    icon="star" />
-            </div>
+            <div :id="'tut_award_p' + player.id" class="panel-opt">{{ player.award || "" }}<Icon v-if="player.award" class="inline text-20" icon="star" /></div>
           </template>
         </HTooltip>
 
         <!-- Adverts -->
-        <HTooltip v-if="options.value.adverts"
-                  position="left">
+        <HTooltip v-if="options.value.adverts" position="left">
           <template v-slot:tip>
             <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-center whitespace-nowrap">
               <div class="p-2 bg-gray-200 font-bold">{{ i18n("adverts") }}</div>
@@ -54,20 +44,12 @@
                    :key="key"
                    class="px-2 py-1 border-t border-black border-opacity-30">
                 {{ key }}¢
-                <span class="pl-4">{{ value }}
-                  <Icon icon="star"
-                        class="inline text-18" />
-                </span>
+                <span class="pl-4">{{ value }}<Icon icon="star" class="inline text-18" /></span>
               </div>
             </div>
           </template>
           <template v-slot:default>
-            <div :id="'tut_advert_p' + player.id"
-                 class="panel-opt">{{ player.advert || "" }}
-              <Icon v-if="player.advert"
-                    class="inline text-20"
-                    icon="star" />
-            </div>
+            <div :id="'tut_advert_p' + player.id" class="panel-opt">{{ player.advert || "" }}<Icon v-if="player.advert" class="inline text-20" icon="star" /></div>
           </template>
         </HTooltip>
       </div>

@@ -55,6 +55,9 @@ module.exports = {
         115: "115%",
         120: "120%",
       },
+      margin: {
+        18: "4.5rem",
+      },
       minHeight: {
         60: "15rem",
         64: "16rem",

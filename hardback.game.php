@@ -527,12 +527,14 @@ class hardback extends Table
 
         $valid = WordMgr::isWord($word);
         if (!$valid) {
-            $msg = $this->msg['rejectedWord'];
+            $msg = '';
             $remaining = null;
             $player->addAttempt();
             if ($this->gamestate->table_globals[H_OPTION_UNLIMITED] == H_NO) {
                 $msg = $this->msg['rejectedWordRemaining'];
                 $remaining = max(0, 3 - $player->getAttempts());
+            } else {
+                $this->not_a_move_notification = true;
             }
 
             $this->incStat(1, 'invalidWords');

@@ -1,8 +1,8 @@
 <template>
   <div class="fixed z-top inset-0 bg-white bg-opacity-75 dark:bg-black dark:bg-opacity-75"
        @click="hide()">
-    <div class="flex items-center justify-center min-h-screen">
-      <div class="hpopup bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow text-20 p-6 w-96"
+    <div class="flex items-start justify-center min-h-screen">
+      <div class="hpopup bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow text-20 p-6 mt-18"
            @click.stop>
         <div v-text="i18n(options.dictionary.dict) + ' (' + options.dictionary.lang + ')'"
              class="text-center"></div>
@@ -11,15 +11,17 @@
                id="lookupInput"
                @input="input"
                :placeholder="i18n('lookupPlaceholder')"
-               class="w-full text-24 text-center bg-blue-100 text-blue-600 dark:bg-blue-900 dark:bg-opacity-75 dark:text-blue-300 rounded-lg p-3 mb-4"
+               class="w-96 text-24 text-center bg-blue-100 text-blue-600 dark:bg-blue-900 dark:bg-opacity-75 dark:text-blue-300 rounded-lg p-3 mb-4"
                autocomplete="off"
                autofocus />
         <div v-for="hist in history"
              :key="hist"
-             class="mb-2">
+             class="flex items-center mb-2">
           <Icon :icon="hist.icon"
                 :class="{ 'text-red-600': hist.icon == 'no', 'text-green-600': hist.icon == 'yes', 'animate-spin': hist.icon == 'loading' }"
-                class="inline" /> {{ hist.word }}
+                class="inline mr-1" />
+          <div class="flex-grow">{{ hist.word }}</div>
+          <div class="text-15">{{ hist.word.length }}</div>
         </div>
       </div>
     </div>
