@@ -21,20 +21,6 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
       this.vue = null;
     },
 
-    onScreenWidthChange: function () {
-      // Remove broken "zoom" property added by BGA framework
-      this.gameinterface_zoomFactor = 1;
-      dojo.style("page-content", "zoom", "");
-      dojo.style("page-title", "zoom", "");
-      dojo.style("right-side-first-part", "zoom", "");
-
-      // Force mobile view in landscape orientation
-      var landscape = window.orientation === -90 || window.orientation === 90;
-      var width = landscape ? 980 : 740;
-      this.interface_min_width = width;
-      this.default_viewport = "width=" + width;
-    },
-
     setup: function () {
       console.log("Game setup", this.gamedatas);
 
@@ -142,6 +128,34 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
     },
 
     /* @Override */
+    onScreenWidthChange: function () {
+      // Remove broken "zoom" property added by BGA framework
+      this.gameinterface_zoomFactor = 1;
+      dojo.style("page-content", "zoom", "");
+      dojo.style("page-title", "zoom", "");
+      dojo.style("right-side-first-part", "zoom", "");
+      this.computeViewport();
+    },
+
+    computeViewport: function () {
+      // Force device-width during chat
+      var chatVisible = false;
+      for (var w in this.chatbarWindows) {
+        if (this.chatbarWindows[w].status == "expanded") {
+          chatVisible = true;
+          break;
+        }
+      }
+
+      // Force mobile view in landscape orientation
+      var landscape = window.orientation === -90 || window.orientation === 90;
+      var width = chatVisible ? "device-width" : landscape ? 980 : 740;
+      this.interface_min_width = width;
+      this.default_viewport = "width=" + width;
+      return this.default_viewport;
+    },
+
+    /* @Override */
     showMessage: function (msg, type) {
       if (type == "error") {
         var lastErrorCode = msg.startsWith("!!!") ? msg.substring(3) : null;
@@ -162,11 +176,23 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
       return this.inherited(arguments);
     },
 
-    /* @override */
+    /* @Override */
     onChatKeyDown: function (ev) {
       if (!this.vue.onChatKeyDown(ev)) {
         this.inherited(arguments);
       }
+    },
+
+    /* @Override */
+    expandChatWindow: function () {
+      this.inherited(arguments);
+      dojo.query('meta[name="viewport"]')[0].content = this.computeViewport();
+    },
+
+    /* @Override */
+    collapseChatWindow: function () {
+      this.inherited(arguments);
+      dojo.query('meta[name="viewport"]')[0].content = this.computeViewport();
     },
 
     onEnteringState: function (stateName, args) {
