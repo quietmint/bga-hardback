@@ -536,7 +536,7 @@ export default {
       drag: null,
       keyboardPopup: null,
       lookupHistory: [],
-      lookupPopup: false,
+      lookupPopup: null,
       prefs: {},
       locationOrder: {
         timeless: "location",
@@ -763,6 +763,10 @@ export default {
 
     wildMask(cards) {
       return cards.map((card) => card.wild || "_").join("");
+    },
+
+    word(cards) {
+      return cards.map((card) => card.wild || card.letter).join("");
     },
 
     populatePlayer(player) {
@@ -1294,7 +1298,13 @@ export default {
     },
 
     showLookup() {
-      this.lookupPopup = true;
+      let word = '';
+      if (this.gamestate.active && this.tableauCards.length) {
+        word = this.word(this.tableauCards);
+      } else {
+        word = this.word(this.handCards);
+      }
+      this.lookupPopup = { word };
     },
 
     useInk() {
@@ -1425,7 +1435,7 @@ export default {
           this.lookupHistory.sort((a, b) => a.word == word ? -1 : b.word == word ? 1 : 0);
         }
       } else {
-        this.lookupPopup = false;
+        this.lookupPopup = null;
       }
     },
 

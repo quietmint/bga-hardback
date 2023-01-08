@@ -61,8 +61,13 @@ export default {
   mounted() {
     window.addEventListener("keydown", this.keydown, true);
     let inputEl = document.getElementById("lookupInput");
-    inputEl.value = "";
+    inputEl.value = this.lookupPopup.word;
     inputEl.focus();
+    inputEl.select();
+    if (this.options.unlimited) {
+      // Automatic submit
+      this.emitter.emit("clickLookup", this.lookupPopup.word);
+    }
   },
 
   computed: {
