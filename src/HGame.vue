@@ -468,7 +468,6 @@ export default {
     Object.keys(this.locationOrder).forEach((location) => {
       try {
         let saved = localStorage.getItem("hardback.sort." + location);
-        console.log('saved order', location, saved);
         if (saved) {
           this.locationOrder[location] = saved;
         }
