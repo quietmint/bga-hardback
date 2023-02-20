@@ -48,11 +48,12 @@
 }
 
 .title {
-  text-shadow: -0.5px 0 rgba(0, 0, 0, 0.5), 0.5px 0.5px rgba(255, 255, 255, 0.5);
+  @apply font-bold text-17;
+  text-shadow: 0 0 2px white, 1px 1px rgb(255 255 255 / 50%);
 }
 
 .buttongroup {
-  @apply mb-1 ml-2 rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer text-14 text-center divide-x divide-white;
+  @apply mb-1 ml-2 rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer text-14 text-center divide-x divide-white self-center;
 }
 
 .button {
@@ -77,6 +78,24 @@
 
 .button.disabled {
   @apply cursor-not-allowed bg-gray-600 text-gray-300;
+}
+
+.tabgroup {
+  @apply flex justify-evenly pt-2 relative;
+}
+
+.tab {
+  @apply border-2 border-b-0 rounded-t-lg px-4 py-2 font-bold bg-opacity-10 transition-colors duration-300;
+  border-color: inherit;
+}
+
+.tab.active,
+.tab.cursor-pointer:hover {
+  @apply bg-opacity-50 text-black;
+}
+
+.tabcontent {
+  @apply rounded-lg p-1 bg-opacity-50;
 }
 
 .cardholder {

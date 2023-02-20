@@ -166,11 +166,12 @@ a:visited.playername {
 
 .player-name a {
   background-color: #8889;
-  text-shadow: 0 0 3px white, 0 0 2px white;
+  text-shadow: 0 0 2px white, 1px 1px rgb(255 255 255 / 50%);
 }
 
-.player-board.red .player-name a, .player-board.yellow .player-name a {
-  text-shadow: 0 0 3px black, 0 0 2px black;
+.player-board.red .player-name a,
+.player-board.yellow .player-name a {
+  text-shadow: 0 0 2px black, 1px 1px rgb(0 0 0 / 50%);
 }
 
 .player_board_inner {

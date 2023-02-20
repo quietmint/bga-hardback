@@ -173,6 +173,14 @@ class hardback extends Table
         return !$invalid;
     }
 
+    public function checkVersion(int $clientVersion)
+    {
+        $gameVersion = $this->gamestate->table_globals[H_OPTION_VERSION];
+        if ($clientVersion != $gameVersion) {
+            throw new BgaVisibleSystemException(self::_("A new version of this game is now available. Please reload the page (F5)."));
+        }
+    }
+
     /*
         getAllDatas: 
         
@@ -184,23 +192,21 @@ class hardback extends Table
     */
     protected function getAllDatas(): array
     {
-        $playerId = self::getCurrentPlayerId();
-        $activePlayer = PlayerMgr::getPlayer();
-
         // BGA requires 'players' to be an array
         $playersAsArray = array_map(function ($player) {
             return $player->jsonSerialize();
         }, PlayerMgr::getPlayers());
 
-        $locations = [CardMgr::getHandLocation($playerId), CardMgr::getDiscardLocation($playerId), CardMgr::getDeckLocation($playerId), 'tableau', 'offer', 'jail', 'timeless%'];
+        $locations = ['offer', '%_%']; // offer row and all player locations
         $cards = CardMgr::getCardsInLocation($locations);
         foreach ($cards as $card) {
-            if ($card->isLocation('deck')) {
+            if ($card->isLocation('draw')) {
                 $card->setOrder(-1);
             }
         }
 
         $data = [
+            'version' => intval($this->gamestate->table_globals[H_OPTION_VERSION]),
             'players' => $playersAsArray,
             'cards' => $cards,
             'finalRound' => $this->getGameProgression() >= 100,
@@ -217,8 +223,7 @@ class hardback extends Table
                 'benefits' => $this->benefits,
                 'cards' => $this->cards,
                 'i18n' => $this->i18n,
-            ],
-            'word' => $activePlayer->getWord(),
+            ]
         ];
         if ($this->gamestate->table_globals[H_OPTION_ADVERTS]) {
             $data['refs']['adverts'] = $this->adverts;
@@ -269,10 +274,10 @@ class hardback extends Table
      * PHASE 2: DISCARD UNUSED CARDS
      */
 
-    function previewWord(array $handIds, string $handMask, ?array $tableauIds, ?string $tableauMask): void
+    function previewWord(array $handIds, string $handMask, array $tableauIds, string $tableauMask): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-        $origins = [$player->getHandLocation(), 'timeless'];
+        $origins = [$player->getHandLocation(), $player->getHandLocation(), 'timeless'];
 
         $hand = CardMgr::getCards($handIds, $handMask);
         $invalid = array_filter($hand, function ($card) use ($origins) {
@@ -282,19 +287,15 @@ class hardback extends Table
             throw new BgaVisibleSystemException("previewWord: Not possible for $player to use hand cards " .  CardMgr::getString($invalid));
         }
 
-        $notify = false;
-        $tableau = null;
-        if ($this->isCurrentPlayerActive() && $tableauIds !== null) {
-            $notify = PlayerMgr::getPlayerCount() > 1;
-            $tableau = CardMgr::getCards($tableauIds, $tableauMask);
-            $invalid = array_filter($tableau, function ($card) use ($origins) {
-                return !$card->isOrigin($origins);
-            });
-            if (!empty($invalid)) {
-                throw new BgaVisibleSystemException("previewWord: Not possible for $player to use tableau cards " .  CardMgr::getString($invalid));
-            }
+        $tableau = CardMgr::getCards($tableauIds, $tableauMask);
+        $invalid = array_filter($tableau, function ($card) use ($origins) {
+            return !$card->isOrigin($origins);
+        });
+        if (!empty($invalid)) {
+            throw new BgaVisibleSystemException("previewWord: Not possible for $player to use tableau cards " .  CardMgr::getString($invalid));
         }
 
+        $notify = PlayerMgr::getPlayerCount() > 1;
         CardMgr::previewWord($player->getId(), $hand, $tableau, $notify);
     }
 
@@ -308,7 +309,7 @@ class hardback extends Table
         }
 
         // Inked cards must be used
-        $inked = CardMgr::getCardsInLocation([$player->getHandLocation(), 'tableau'], H_HAS_INK);
+        $inked = CardMgr::getCardsInLocation([$player->getHandLocation(), $player->getTableauLocation()], H_HAS_INK);
         $unusedInk = array_filter($inked, function ($card) use ($cardIds) {
             return !in_array($card->getId(), $cardIds);
         });
@@ -319,7 +320,7 @@ class hardback extends Table
         // Inked and timeless cards cannot be wild
         $cards = CardMgr::getCards($cardIds, $wildMask);
         $invalidWilds = array_filter($cards, function ($card) {
-            return $card->isWild() && ($card->hasInk() || $card->isOrigin("timeless"));
+            return $card->isWild() && ($card->hasInk() || $card->isOrigin('timeless'));
         });
         if (!empty($invalidWilds)) {
             throw new BgaUserException(sprintf($this->msg['errorWild'], CardMgr::getString($invalidWilds)));
@@ -346,7 +347,7 @@ class hardback extends Table
         $info = WordMgr::getDictionaryInfo();
         if ($info['voting']) {
             // Database pre-commit 
-            $updatedIds = CardMgr::preCommitWord($cards);
+            $updatedIds = CardMgr::preCommitWord($player->getId(), $cards);
             CardMgr::notifyCards(CardMgr::getCards($updatedIds));
             $player->setWord($word);
 
@@ -585,9 +586,10 @@ class hardback extends Table
 
     function argUncover(): array
     {
+        $player = PlayerMgr::getPlayer();
         $cardIds = [];
         $source = null;
-        $tableau = CardMgr::getTableau(self::getActivePlayerId());
+        $tableau = $player->getTableau();
         foreach ($tableau as $card) {
             if ($card->hasBenefit(H_UNCOVER_ADJ)) {
                 if ($card->getPrevious() != null && $card->getPrevious()->isWild()) {
@@ -639,21 +641,21 @@ class hardback extends Table
 
     function argDouble(): array
     {
+        $player = PlayerMgr::getPlayer();
         $cardIds = [];
         $source = null;
-        $playerId = self::getActivePlayerId();
-        $tableau = CardMgr::getTableau($playerId);
+        $tableau = $player->getTableau();
         foreach ($tableau as $card) {
             if ($card->hasBenefit(H_DOUBLE_ADJ)) {
                 if ($card->getPrevious() != null && !$card->getPrevious()->isWild()) {
-                    $owner = $card->getPrevious()->getOwner() ?? $playerId;
-                    if ($owner == $playerId) { // can't double opponent timeless
+                    $owner = $card->getPrevious()->getOwner() ?? $player->getId();
+                    if ($owner == $player->getId()) { // can't double opponent timeless
                         $cardIds[] = $card->getPrevious()->getId();
                     }
                 }
                 if ($card->getNext() != null && !$card->getNext()->isWild()) {
-                    $owner = $card->getNext()->getOwner() ?? $playerId;
-                    if ($owner == $playerId) { // can't double opponent timeless
+                    $owner = $card->getNext()->getOwner() ?? $player->getId();
+                    if ($owner == $player->getId()) { // can't double opponent timeless
                         $cardIds[] = $card->getNext()->getId();
                     }
                 }
@@ -704,7 +706,7 @@ class hardback extends Table
         $source = null;
         $amount = null;
         $benefit = null;
-        $tableau = CardMgr::getTableau($player->getId());
+        $tableau = $player->getTableau();
         foreach ($tableau as $card) {
             $benefits = $card->getBenefits(H_EITHER_BASIC);
             if (!empty($benefits)) {
@@ -775,7 +777,7 @@ class hardback extends Table
     function stBasic(): void
     {
         $player = PlayerMgr::getPlayer();
-        $tableau = CardMgr::getTableau($player->getId());
+        $tableau = $player->getTableau();
         foreach ($tableau as $card) {
             $benefits = $card->getBenefits(H_COINS);
             foreach ($benefits as $benefit) {
@@ -807,7 +809,7 @@ class hardback extends Table
     function stSpecial(): void
     {
         $player = PlayerMgr::getPlayer();
-        $tableau = CardMgr::getTableau($player->getId());
+        $tableau = $player->getTableau();
         foreach ($tableau as $card) {
             if ($card->hasBenefit(H_SPECIAL_ADVENTURE)) {
                 // Adventure: 2 coins per adventure
@@ -850,7 +852,7 @@ class hardback extends Table
     function argSpecialRomancePrompt(): array
     {
         $player = PlayerMgr::getPlayer();
-        $tableau = CardMgr::getTableau($player->getId());
+        $tableau = $player->getTableau();
         $cardId = $this->checkPreviewDraw($player, $tableau);
         return [
             'previewDraw' => $cardId,
@@ -861,7 +863,7 @@ class hardback extends Table
     function checkPreviewDraw(HPlayer $player, array $tableau): ?int
     {
         $player = PlayerMgr::getPlayer();
-        $count = $player->getDeckCount() + $player->getDiscardCount();
+        $count = $player->getDrawCount() + $player->getDiscardCount();
         if ($count > 0) {
             foreach ($tableau as $card) {
                 if ($card->hasBenefit(H_SPECIAL_ROMANCE)) {
@@ -875,13 +877,13 @@ class hardback extends Table
     function previewDraw(): void
     {
         $player = PlayerMgr::getPlayer();
-        $tableau = CardMgr::getTableau($player->getId());
+        $tableau = $player->getTableau();
         $cardId = $this->checkPreviewDraw($player, $tableau);
         if ($cardId == null) {
         }
         // Romance: Draw 3 and return or discard
         CardMgr::useBenefit($cardId, H_SPECIAL_ROMANCE);
-        $cards = CardMgr::drawCards(3, $player->getDeckLocation(), $player->getHandLocation(), null, true);
+        $cards = CardMgr::drawCards(3, $player->getDrawLocation(), $player->getHandLocation(), null, true);
         $previewCount = 0;
         foreach ($cards as $card) {
             if ($card->isLocation($player->getHandLocation())) {
@@ -904,9 +906,9 @@ class hardback extends Table
         if ($card == null || !$card->isLocation($player->getHandLocation())) {
             throw new BgaVisibleSystemException("previewReturn: Not possible for $player to use card $card");
         }
-        CardMgr::previewReturn($card, $player->getDeckLocation());
+        CardMgr::previewReturn($card, $player->getDrawLocation());
         $player->notifyPanel();
-        if (CardMgr::getHandCount($player->getId()) == 0) {
+        if ($player->getHandCount() == 0) {
             $this->gamestate->nextState('next');
         }
     }
@@ -920,7 +922,7 @@ class hardback extends Table
         }
         CardMgr::discard($card, $player->getDiscardLocation());
         $player->notifyPanel();
-        if (CardMgr::getHandCount($player->getId()) == 0) {
+        if ($player->getHandCount() == 0) {
             $this->gamestate->nextState('next');
         }
     }
@@ -933,7 +935,7 @@ class hardback extends Table
     {
         $player = PlayerMgr::getPlayer();
         $cardIds = [];
-        $tableau = CardMgr::getTableau($player->getId());
+        $tableau = $player->getTableau();
         foreach ($tableau as $card) {
             if ($card->hasBenefit(H_TRASH_COINS) || $card->hasBenefit(H_TRASH_POINTS)) {
                 $cardIds[] = $card->getId();
@@ -997,7 +999,7 @@ class hardback extends Table
     {
         $player = PlayerMgr::getPlayer();
         $sources = [];
-        $tableau = CardMgr::getTableau($player->getId());
+        $tableau = $player->getTableau();
         if ($player->getDiscardCount() > 0) {
             foreach ($tableau as $card) {
                 $benefits = $card->getBenefits(H_TRASH_DISCARD);
@@ -1055,13 +1057,13 @@ class hardback extends Table
     {
         $player = PlayerMgr::getPlayer();
         $sourceIds = [];
-        $tableau = CardMgr::getTableau($player->getId(), 'jail');
+        $tableau = $player->getTableau('jail');
         foreach ($tableau as $card) {
             if ($card->hasBenefit(H_JAIL)) {
                 $sourceIds[] = $card->getId();
             }
         }
-        $jailCard = CardMgr::getJail($player->getId());
+        $jailCard = $player->getJail();
         $jail = $jailCard ? ['genre' => $jailCard->getGenreName(), 'letter' => $jailCard->getLetter()] : null;
         return [
             'sourceIds' => $sourceIds,
@@ -1556,8 +1558,7 @@ class hardback extends Table
     function useInk(bool $endGameConfirm = false): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-        $location = $player->isActive() ? 'tableau' : $player->getHandLocation();
-        $cards = CardMgr::drawCards(1, $player->getDeckLocation(), $location, $player->getHandLocation(), true);
+        $cards = CardMgr::drawCards(1, $player->getDrawLocation(), $player->getTableauLocation(), $player->getHandLocation(), true);
         if (empty($cards)) {
             throw new BgaUserException($this->msg['errorEmpty']);
         }
@@ -1597,7 +1598,7 @@ class hardback extends Table
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
         $card = CardMgr::getCard($cardId);
-        if ($card == null || !$card->isLocation($player->getHandLocation(), 'tableau')) {
+        if ($card == null || !$card->isLocation($player->getHandLocation(), $player->getTableauLocation())) {
             throw new BgaVisibleSystemException("useRemover: Card $card is unavailable to $player");
         }
         if (!$card->hasInk()) {
@@ -1650,8 +1651,8 @@ class hardback extends Table
             self::DbQuery('UPDATE player SET player_score_aux = ink');
         }
 
-        // Discard all cards
-        CardMgr::endGameDiscard();
+        // Move all cards to tableau
+        CardMgr::endGameCleanup();
         CardMgr::deletePreviewNotifications();
         $this->gamestate->nextState('gameEnd');
     }
@@ -1719,6 +1720,10 @@ class hardback extends Table
             [2209270419, "INSERT INTO DBPREFIX_global SELECT 107 AS `global_id`, CASE `global_value` WHEN 0 THEN 1 ELSE 0 END AS `global_value` FROM DBPREFIX_global WHERE `global_id` = 106"],
             [2209270419, "ALTER TABLE DBPREFIX_player ADD `award` INT NOT NULL DEFAULT 0"],
             [2209270419, "UPDATE DBPREFIX_player SET `award` = (SELECT CASE `stats_value` WHEN 7 THEN 5 WHEN 8 THEN 6 WHEN 9 THEN 7 WHEN 10 THEN 9 WHEN 11 THEN 12 WHEN 12 THEN 15 ELSE 0 END AS points FROM DBPREFIX_stats WHERE `stats_type` = 51 AND `stats_player_id` IS NULL) WHERE `player_id` = (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 30)"],
+            [2301081942, "UPDATE DBPREFIX_card SET `location` = CONCAT('tableau_', (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 2)) WHERE `location` = 'tableau'"],
+            [2301081942, "UPDATE DBPREFIX_card SET `location` = CONCAT('jail_', `order`), `origin` = CONCAT('jail_', `order`) WHERE `location` = 'jail'"],
+            [2301081942, "UPDATE DBPREFIX_card SET `location` = REPLACE(`location`, 'deck_', 'draw_') WHERE `location` LIKE 'deck_%'"],
+            [2301081942, "UPDATE DBPREFIX_card SET `origin` = REPLACE(`origin`, 'deck_', 'draw_') WHERE `origin` LIKE 'deck_%'"],
         ];
 
         foreach ($changes as [$version, $sql]) {

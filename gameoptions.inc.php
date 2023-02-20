@@ -449,7 +449,7 @@ $game_preferences = [
     H_PREF_CARD_SIZE => [
         'name' => totranslate('Card size'),
         'needReload' => false,
-        'default' => 4,
+        'default' => 3,
         'values' => [
             1 => ['name' => ''],
             2 => ['name' => ''],

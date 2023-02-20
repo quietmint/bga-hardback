@@ -126,6 +126,8 @@ define('H_LANG_EN', 1);
 define('H_LANG_DE', 2);
 define('H_LANG_FR', 3);
 
+define('H_OPTION_VERSION', 300);
+
 // Game preferences
 define('H_PREF_DRAG_DROP', 100);
 define('H_PREF_CARD_SIZE', 151);

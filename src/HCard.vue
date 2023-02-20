@@ -79,34 +79,19 @@
               <Icon :icon="card.genreName"
                     class="inline text-125" /> {{ i18n(card.genreName) }} {{ card.letter }}
             </div>
-            <table>
-              <tr v-for="benefit in basicBenefitsList"
-                  :key="benefit.id">
-                <td class="px-2 py-1 whitespace-nowrap text-center">
-                  <div class="text-110 leading-120 tracking-tight font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black"
-                       v-html="benefit.html"></div>
-                </td>
-                <td class="pr-2 py-1"
-                    v-html="benefit.htmlLong"></td>
-              </tr>
-              <tr v-if="genreBenefitsList.length">
-                <td class="px-2 py-1 italic border-t-2 border-black"
-                    colspan="2"
-                    :class="genreTooltipClass"
-                    v-text="i18n('genreTip', { x: i18n(card.genreName) })"></td>
-              </tr>
-              <tr v-for="benefit in genreBenefitsList"
-                  :key="benefit.id"
-                  :class="genreTooltipClass">
-                <td class="px-2 py-1 whitespace-nowrap text-center">
-                  <div class="text-110 leading-120 tracking-tight font-bold rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black"
-                       :class="genreBubbleClass"
-                       v-html="benefit.html"></div>
-                </td>
-                <td class="pr-2 py-1"
-                    v-html="benefit.htmlLong"></td>
-              </tr>
-            </table>
+            <div v-for="benefit in basicBenefitsList"
+                 :key="benefit.id"
+                 class="px-2 py-1"
+                 v-html="benefit.htmlLong"></div>
+            <div v-if="genreBenefitsList.length > 0"
+                 :class="genreTooltipClass"
+                 class="px-1 pt-1 text-90 italic border-t-2 border-black"
+                 v-text="i18n('genreTip', { x: i18n(card.genreName) })"></div>
+            <div v-for="benefit in genreBenefitsList"
+                 :key="benefit.id"
+                 :class="genreTooltipClass"
+                 class="px-2 py-1"
+                 v-html="benefit.htmlLong"></div>
           </div>
         </teleport>
       </div>
@@ -237,7 +222,7 @@ export default {
 
     holderClass() {
       let c = this.card.dragging ? "invisible " : "";
-      c += this.card.ink || this.card.location == "jail" || this.card.origin.startsWith("timeless") ? "mx-2 mb-1 mt-2" : "m-1 mt-2";
+      c += this.card.ink || this.card.location.startsWith("jail") || this.card.origin.startsWith("timeless") ? "mx-2 mb-1 mt-2" : "m-1 mt-2";
       return c;
     },
 
@@ -247,7 +232,7 @@ export default {
       c += this.card.timeless ? "timeless " : "";
       if (this.card.ink) {
         c += "ring ring-black ";
-      } else if (this.card.location == "jail" || this.card.origin.startsWith("timeless")) {
+      } else if (this.card.location.startsWith("jail") || this.card.origin.startsWith("timeless")) {
         c += `ring ${this.card.player.colorRing} `;
       } else if (this.card.wild) {
         c += "wild ";
@@ -292,7 +277,7 @@ export default {
           title: this.i18n("timelessTip", { player_name: this.card.player.name }),
           class: `${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
         };
-      } else if (this.card.location == "jail") {
+      } else if (this.card.location.startsWith("jail")) {
         return {
           text: this.card.player.name,
           icon: "jail",
@@ -310,19 +295,13 @@ export default {
     },
 
     clickAction() {
-      if (this.gamestate.active) {
-        if (this.gamestate.name == "playerTurn") {
-          let destination = null;
-          if (this.card.location == "tableau") {
-            destination = this.card.origin;
-          } else if (this.card.location.startsWith("hand") || this.card.location.startsWith("timeless")) {
-            destination = "tableau";
-          }
-          if (destination) {
-            return { action: "move", destination: destination };
-          }
-        } else if (this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
-          return { action: "purchase" };
+      if (this.gamestate.active && this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
+        return { action: "purchase" };
+      } else if (!this.gamestate.active || this.gamestate.name == "playerTurn") {
+        if (this.card.location == this.myself.value.tableauLocation) {
+          return { action: "move", destination: this.card.origin };
+        } else if (this.card.location == this.myself.value.handLocation || (this.gamestate.active && this.gamestate.name == "playerTurn" && this.card.location.startsWith("timeless"))) {
+          return { action: "move", destination: this.myself.value.tableauLocation };
         }
       }
     },
@@ -478,19 +457,19 @@ export default {
         }
       }
 
-      if (this.card.location == "jail" && this.gamestate.active && this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
+      if (this.card.location.startsWith("jail") && this.gamestate.active && this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
         return [actionRef.purchase];
       }
 
       if (this.card.ink) {
-        if (this.myself.value.remover > 0 && (this.card.location.startsWith("hand") || (this.card.location == "tableau" && this.gamestate.active && this.gamestate.name == "playerTurn"))) {
+        if (this.myself.value.remover > 0 && (this.card.location == this.myself.value.handLocation || this.card.location == this.myself.value.tableauLocation)) {
           return [actionRef.inkButton];
         } else {
           return [actionRef.inkText];
         }
       }
 
-      if (!this.card.origin.startsWith("timeless") && (this.card.location.startsWith("hand") || (this.card.location == "tableau" && this.gamestate.active && this.gamestate.name == "playerTurn"))) {
+      if (!this.card.origin.startsWith("timeless") && (this.card.location == this.myself.value.handLocation || this.card.location == this.myself.value.tableauLocation) && (!this.gamestate.active || this.gamestate.name == "playerTurn")) {
         let reset = {
           action: "reset",
           text: this.i18n("resetButton", { x: this.card.letter }),
@@ -502,16 +481,11 @@ export default {
 
     dragLocations() {
       if (this.prefs.value[HConstants.PREF_DRAG_DROP] !== HConstants.DRAG_DROP_DISABLED) {
-        if (this.gamestate.active && this.gamestate.name == "playerTurn") {
-          if (this.card.location == "tableau") {
-            return ["tableau", this.card.origin];
-          } else if (this.card.location.startsWith("hand") || this.card.location.startsWith("timeless")) {
-            return ["tableau", this.card.location];
-          }
-        } else if (!this.gamestate.active) {
-          if (this.card.location.startsWith("hand")) {
-            return [this.card.location];
-          }
+        if (((!this.gamestate.active || this.gamestate.name == "playerTurn") && (this.card.location == this.myself.value.tableauLocation || this.card.location == this.myself.value.handLocation))
+          || (this.gamestate.active && this.gamestate.name == "playerTurn" && this.card.location.startsWith("timeless"))) {
+          let locations = [this.myself.value.tableauLocation, this.card.location, this.card.origin];
+          let unique = [...new Set(locations)];
+          return unique;
         }
       }
     },

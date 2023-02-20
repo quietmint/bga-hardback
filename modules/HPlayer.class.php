@@ -14,6 +14,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     protected $order;
     protected $remover;
     protected $score;
+    protected $vote;
     protected $word;
     protected $zombie;
 
@@ -57,15 +58,17 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     {
         $json = [
             'id' => $this->id,
-            'activeCount' => $this->getActiveCount(),
             'attempts' => $this->attempts,
             'coins' => $this->coins,
-            'deckCount' => $this->getDeckCount(),
-            'discardCount' => $this->getDiscardCount(),
+            'discardLocation' => $this->getDiscardLocation(),
+            'drawLocation' => $this->getDrawLocation(),
             'genreCounts' => $this->getGenreCounts(),
+            'handLocation' => $this->getHandLocation(),
             'ink' => $this->ink,
+            'jailLocation' => $this->getJailLocation(),
             'remover' => $this->remover,
             'score' => $this->score,
+            'tableauLocation' => $this->getTableauLocation(),
         ];
         if (hardback::$instance->gamestate->table_globals[H_OPTION_AWARDS]) {
             $json['award'] = $this->award;
@@ -171,11 +174,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     /***** Card Functions *****/
 
-    public function getActiveCount(): int
-    {
-        return CardMgr::getActiveCount($this->id);
-    }
-
     public function getHand(int $inkValue = null): array
     {
         return CardMgr::getHand($this->id, $inkValue);
@@ -191,14 +189,14 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         return CardMgr::getHandLocation($this->id);
     }
 
-    public function getDeckCount(): int
+    public function getDrawCount(): int
     {
-        return CardMgr::getDeckCount($this->id);
+        return CardMgr::getDrawCount($this->id);
     }
 
-    public function getDeckLocation(): string
+    public function getDrawLocation(): string
     {
-        return CardMgr::getDeckLocation($this->id);
+        return CardMgr::getDrawLocation($this->id);
     }
 
     public function getDiscard(): array
@@ -216,9 +214,29 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         return CardMgr::getDiscardLocation($this->id);
     }
 
+    public function getTableau(string $sort = null): array
+    {
+        return CardMgr::getTableau($this->id, $sort);
+    }
+
+    public function getTableauCount(): int
+    {
+        return CardMgr::getTableauCount($this->id);
+    }
+
+    public function getTableauLocation(): string
+    {
+        return CardMgr::getTableauLocation($this->id);
+    }
+
     public function getJail(): ?HCard
     {
         return CardMgr::getJail($this->id);
+    }
+
+    public function getJailLocation(): string
+    {
+        return CardMgr::getJailLocation($this->id);
     }
 
     public function getTimeless(bool $origin = false): array

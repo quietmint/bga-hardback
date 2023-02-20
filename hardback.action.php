@@ -37,6 +37,12 @@ class action_hardback extends APP_GameAction
     }
   }
 
+  private function checkVersion()
+  {
+    $clientVersion = (int) self::getArg('version', AT_int, false);
+    $this->game->checkVersion($clientVersion);
+  }
+
   private function getArgIdList(string $name, bool $required): ?array
   {
     $value = self::getArg($name, AT_numberlist, $required);
@@ -59,11 +65,12 @@ class action_hardback extends APP_GameAction
   public function previewWord()
   {
     self::setAjaxMode();
+    self::checkVersion();
     if ($this->game->checkActionCustom('previewWord', false)) {
       $handIds = $this->getArgIdList('handIds', true);
       $handMask = self::getArg('handMask', AT_alphanum, true);
-      $tableauIds = $this->getArgIdList('tableauIds', false);
-      $tableauMask = self::getArg('tableauMask', AT_alphanum, false);
+      $tableauIds = $this->getArgIdList('tableauIds', true);
+      $tableauMask = self::getArg('tableauMask', AT_alphanum, true);
       $this->game->previewWord($handIds, $handMask, $tableauIds, $tableauMask);
     }
     self::ajaxResponse();
@@ -72,6 +79,7 @@ class action_hardback extends APP_GameAction
   public function confirmWord()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('confirmWord');
     $cardIds = $this->getArgIdList('cardIds', true);
     $wildMask = self::getArg('wildMask', AT_alphanum, true);
@@ -82,6 +90,7 @@ class action_hardback extends APP_GameAction
   public function voteWord()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('voteAccept');
     $vote = self::getArg('vote', AT_bool, true);
     $this->game->voteWord($vote);
@@ -91,6 +100,7 @@ class action_hardback extends APP_GameAction
   public function lookup()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $word = self::getArg('word', AT_alphanum, true);
     $this->game->lookup($word);
     self::ajaxResponse();
@@ -103,6 +113,7 @@ class action_hardback extends APP_GameAction
   public function skip()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('skip');
     $this->game->skip();
     self::ajaxResponse();
@@ -111,6 +122,7 @@ class action_hardback extends APP_GameAction
   public function uncover()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('uncover');
     $cardId = self::getArg('cardId', AT_posint, true);
     $this->game->uncover($cardId);
@@ -120,6 +132,7 @@ class action_hardback extends APP_GameAction
   public function double()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('double');
     $cardId = self::getArg('cardId', AT_posint, true);
     $this->game->double($cardId);
@@ -129,6 +142,7 @@ class action_hardback extends APP_GameAction
   public function previewDraw()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('previewDraw');
     $this->game->previewDraw();
     self::ajaxResponse();
@@ -137,6 +151,7 @@ class action_hardback extends APP_GameAction
   public function previewReturn()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('previewReturn');
     $cardId = self::getArg('cardId', AT_posint, true);
     $this->game->previewReturn($cardId);
@@ -146,6 +161,7 @@ class action_hardback extends APP_GameAction
   public function previewDiscard()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('previewDiscard');
     $cardId = self::getArg('cardId', AT_posint, true);
     $this->game->previewDiscard($cardId);
@@ -155,6 +171,7 @@ class action_hardback extends APP_GameAction
   public function trash()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('trash');
     $cardId = self::getArg('cardId', AT_posint, true);
     $this->game->trash($cardId);
@@ -164,6 +181,7 @@ class action_hardback extends APP_GameAction
   public function trashDiscard()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('trashDiscard');
     $cardId = self::getArg('cardId', AT_posint, true);
     $this->game->trashDiscard($cardId);
@@ -173,6 +191,7 @@ class action_hardback extends APP_GameAction
   public function either()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('either');
     $cardId = self::getArg('cardId', AT_posint, true);
     $benefitId = self::getArg('benefitId', AT_posint, true);
@@ -184,6 +203,7 @@ class action_hardback extends APP_GameAction
   public function jail()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('jail');
     $cardId = self::getArg('cardId', AT_posint, true);
     $choice = self::getArg('choice', AT_alphanum, true);
@@ -198,6 +218,7 @@ class action_hardback extends APP_GameAction
   public function skipPurchase()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('skipPurchase');
     $this->game->skip();
     self::ajaxResponse();
@@ -206,6 +227,7 @@ class action_hardback extends APP_GameAction
   public function flush()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('flush');
     $this->game->flush();
     self::ajaxResponse();
@@ -214,6 +236,7 @@ class action_hardback extends APP_GameAction
   public function purchase()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('purchase');
     $cardId = self::getArg('cardId', AT_posint, true);
     $endGameConfirm = self::getArg('endGameConfirm', AT_bool, false, false);
@@ -224,6 +247,7 @@ class action_hardback extends APP_GameAction
   public function convert()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('convert');
     $endGameConfirm = self::getArg('endGameConfirm', AT_bool, false, false);
     $this->game->convert($endGameConfirm);
@@ -234,6 +258,7 @@ class action_hardback extends APP_GameAction
   public function doctor()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('doctor');
     $this->game->advert();
     self::ajaxResponse();
@@ -248,6 +273,7 @@ class action_hardback extends APP_GameAction
   public function skipWord()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkAction('skipWord');
     $this->game->skipWord();
     self::ajaxResponse();
@@ -260,6 +286,7 @@ class action_hardback extends APP_GameAction
   public function useInk()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkActionCustom('useInk');
     $endGameConfirm = self::getArg('endGameConfirm', AT_bool, false, false);
     $this->game->useInk($endGameConfirm);
@@ -269,6 +296,7 @@ class action_hardback extends APP_GameAction
   public function useRemover()
   {
     self::setAjaxMode();
+    self::checkVersion();
     $this->game->checkActionCustom('useInk');
     $cardId = self::getArg('cardId', AT_posint, true);
     $this->game->useRemover($cardId);
