@@ -214,9 +214,9 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         return CardMgr::getDiscardLocation($this->id);
     }
 
-    public function getTableau(string $sort = null): array
+    public function getTableau(string $sort = null, bool $includeTimeless = true): array
     {
-        return CardMgr::getTableau($this->id, $sort);
+        return CardMgr::getTableau($this->id, $sort, $includeTimeless);
     }
 
     public function getTableauCount(): int

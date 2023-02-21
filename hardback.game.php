@@ -501,7 +501,7 @@ class hardback extends Table
                 'word' => $player->getWord(),
                 'dict' => $info['dict'],
             ]);
-            $cards = CardMgr::getTableau(null);
+            $cards = $player->getTableau(null, false); // without timeless
             $this->acceptWord($cards);
             $this->gamestate->setAllPlayersNonMultiactive('accept');
         } else if ($result == 'reject') {
