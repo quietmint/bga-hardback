@@ -118,7 +118,7 @@
         </div>
 
         <!-- Myself only: Buttons for Cards -->
-        <div v-if="player.myself"
+        <div v-if="player.myself && gamestate.name != 'gameEnd'"
              class="buttongroup flex">
           <div id="tut_moveAll"
                @click="(buttonEnabled['playAll'] && moveAll(player.handLocation, player.tableauLocation)) || (buttonEnabled['returnAll'] && moveAll(player.tableauLocation, 'origin'))"
@@ -136,7 +136,7 @@
           </div>
         </div>
 
-        <div v-if="player.myself && buttonEnabled['lookup']"
+        <div v-if="player.myself && gamestate.name != 'gameEnd' && buttonEnabled['lookup']"
              class="buttongroup flex">
           <div id="tut_lookup"
                @click="showLookup()"
@@ -146,7 +146,7 @@
           </div>
         </div>
 
-        <div v-if="player.myself"
+        <div v-if="player.myself && gamestate.name != 'gameEnd'"
              class="buttongroup flex">
           <div id="tut_useInk"
                @click="buttonEnabled['useInk'] && useInk()"
@@ -157,7 +157,7 @@
           </div>
         </div>
 
-        <div v-if="player.myself"
+        <div v-if="player.myself && gamestate.name != 'gameEnd'"
              class="buttongroup grid grid-cols-3">
           <div id="tut_cards_sortLetter"
                @click="sort(visibleLocation, 'letter')"
@@ -182,7 +182,7 @@
         </div>
       </div>
 
-      <div v-if="player.myself"
+      <div v-if="player.myself && gamestate.name != 'gameEnd'"
            class="tabgroup"
            :class="player.colorBorder, player.colorTextDark">
         <!-- Myself: Tabs for Draw, Hand, Discard -->
@@ -212,7 +212,7 @@
         </div>
       </div>
 
-      <div v-if="player.myself"
+      <div v-if="player.myself && gamestate.name != 'gameEnd'"
            class="tabcontent"
            :class="player.colorBgTab">
         <HCardList :id="'tut_cards_' + player.id"
@@ -221,7 +221,8 @@
                    :ref="visibleLocation" />
       </div>
 
-      <div class="tabgroup"
+      <div v-if="gamestate.name != 'gameEnd'"
+           class="tabgroup"
            :class="player.colorBorder, player.colorTextDark">
         <!-- Opponents: Tabs for Draw, Hand -->
         <div v-if="!player.myself"
@@ -549,11 +550,11 @@ export default {
     buttonEnabled() {
       return {
         lookup: this.gamedatas.options.lookup && this.gamedatas.options.dictionary && !this.gamedatas.options.dictionary.voting,
-        playAll: (!this.gamestate.active || this.gamestate.name == "playerTurn") && this.handCards.length > 0,
-        resetAll: (!this.gamestate.active || this.gamestate.name == "playerTurn") && this.wildCards.length > 0,
-        returnAll: (!this.gamestate.active || this.gamestate.name == "playerTurn") && this.tableauCards.length > 0,
-        sortTableau: (!this.gamestate.active || this.gamestate.name == "playerTurn"),
-        useInk: (!this.gamestate.active || this.gamestate.name == "playerTurn") && this.myself.ink && (this.cardsInLocation(this.myself.drawLocation).length > 0 || this.cardsInLocation(this.myself.discardLocation).length > 0),
+        playAll: this.gamestate.safeToMove && this.handCards.length > 0,
+        resetAll: this.gamestate.safeToMove && this.wildCards.length > 0,
+        returnAll: this.gamestate.safeToMove && this.tableauCards.length > 0,
+        sortTableau: this.gamestate.safeToMove,
+        useInk: this.gamestate.safeToMove && this.myself.ink && (this.cardsInLocation(this.myself.drawLocation).length > 0 || this.cardsInLocation(this.myself.discardLocation).length > 0),
       };
     },
 
@@ -685,6 +686,9 @@ export default {
     sortCards(order, cards) {
       order = order || "order";
       let sorter = firstBy(order);
+      if (order != "genre") {
+        sorter = sorter.thenBy("genre");
+      }
       if (order != "letter") {
         sorter = sorter.thenBy("letter");
       }
@@ -1064,6 +1068,7 @@ export default {
         active: this.game.isCurrentPlayerActive(),
         instant: this.game.instantaneousMode,
       });
+      this.gamestate.safeToMove = this.gamestate.name != "gameEnd" && (!this.gamestate.active || this.gamestate.name == "playerTurn");
       let activeId = this.game.getActivePlayerId();
       if (stateName == "vote") {
         activeId = args.player_id;
@@ -1188,7 +1193,7 @@ export default {
 
     onEnteringState(stateName, args) {
       if (args && args.updateGameProgression) {
-        this.gamedatas.finalRound = args.updateGameProgression >= 100;
+        this.gamedatas.finalRound = this.gamestate.name != "gameEnd" && args.updateGameProgression >= 100;
       }
       if (this.gamestate.active && this.gamestate.name == "trashDiscard" && this.gamestate.args && !this.gamestate.args.skip) {
         this.tab = "discard";
@@ -1330,7 +1335,7 @@ export default {
     },
 
     moveAll(fromLocation, toLocation) {
-      if (!this.gamestate.active || this.gamestate.name == "playerTurn") {
+      if (this.gamestate.safeToMove) {
         return Promise.all(
           this.cardsInLocation(fromLocation).map((card) =>
             this.clickCard({

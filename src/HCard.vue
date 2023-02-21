@@ -297,7 +297,7 @@ export default {
     clickAction() {
       if (this.gamestate.active && this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
         return { action: "purchase" };
-      } else if (!this.gamestate.active || this.gamestate.name == "playerTurn") {
+      } else if (this.gamestate.safeToMove) {
         if (this.card.location == this.myself.value.tableauLocation) {
           return { action: "move", destination: this.card.origin };
         } else if (this.card.location == this.myself.value.handLocation || (this.gamestate.active && this.gamestate.name == "playerTurn" && this.card.location.startsWith("timeless"))) {
@@ -457,19 +457,15 @@ export default {
         }
       }
 
-      if (this.card.location.startsWith("jail") && this.gamestate.active && this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
-        return [actionRef.purchase];
-      }
-
       if (this.card.ink) {
-        if (this.myself.value.remover > 0 && (this.card.location == this.myself.value.handLocation || this.card.location == this.myself.value.tableauLocation)) {
+        if (this.gamestate.safeToMove && this.myself.value.remover > 0 && (this.card.location == this.myself.value.handLocation || this.card.location == this.myself.value.tableauLocation)) {
           return [actionRef.inkButton];
         } else {
           return [actionRef.inkText];
         }
       }
 
-      if (!this.card.origin.startsWith("timeless") && (this.card.location == this.myself.value.handLocation || this.card.location == this.myself.value.tableauLocation) && (!this.gamestate.active || this.gamestate.name == "playerTurn")) {
+      if (this.gamestate.safeToMove && (this.card.location == this.myself.value.handLocation || this.card.location == this.myself.value.tableauLocation) && !this.card.origin.startsWith("timeless")) {
         let reset = {
           action: "reset",
           text: this.i18n("resetButton", { x: this.card.letter }),
@@ -480,8 +476,9 @@ export default {
     },
 
     dragLocations() {
-      if (this.prefs.value[HConstants.PREF_DRAG_DROP] !== HConstants.DRAG_DROP_DISABLED) {
-        if (((!this.gamestate.active || this.gamestate.name == "playerTurn") && (this.card.location == this.myself.value.tableauLocation || this.card.location == this.myself.value.handLocation))
+      if (this.gamestate.safeToMove && this.prefs.value[HConstants.PREF_DRAG_DROP] !== HConstants.DRAG_DROP_DISABLED) {
+        if (this.card.location == this.myself.value.handLocation
+          || this.card.location == this.myself.value.tableauLocation
           || (this.gamestate.active && this.gamestate.name == "playerTurn" && this.card.location.startsWith("timeless"))) {
           let locations = [this.myself.value.tableauLocation, this.card.location, this.card.origin];
           let unique = [...new Set(locations)];
