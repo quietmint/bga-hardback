@@ -39,6 +39,7 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
 
       // Intiailize Vue
       var app = Vue.createApp(HGame);
+      app.config.unwrapInjectedRef = true;
       app.config.globalProperties.game = this;
       app.config.globalProperties.emitter = mitt();
       this.vue = app.mount("#HGame");
@@ -113,8 +114,8 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
       var selectBottom = document.getElementById("preference_fontrol_" + HConstants.PREF_CARD_SIZE);
       selectTop.style.visibility = "hidden";
       selectBottom.style.visibility = "hidden";
-      dojo.place('<input id="preference_range_' + HConstants.PREF_CARD_SIZE + '" class="preference_range" type="range" min="1" max="6" value="' + this.prefs[HConstants.PREF_CARD_SIZE].value + '"><small style="float: left">' + _("Small") + '</small><small style="float: right">' + _("Large") + "</small>", selectTop, "before");
-      dojo.place('<input id="preference_fange_' + HConstants.PREF_CARD_SIZE + '" class="preference_range" type="range" min="1" max="6" value="' + this.prefs[HConstants.PREF_CARD_SIZE].value + '"><small style="float: left">' + _("Small") + '</small><small style="float: right">' + _("Large") + "</small>", selectBottom, "before");
+      dojo.place('<input id="preference_range_' + HConstants.PREF_CARD_SIZE + '" class="preference_range" type="range" min="1" max="7" value="' + this.prefs[HConstants.PREF_CARD_SIZE].value + '"><small style="float: left">' + _("Small") + '</small><small style="float: right">' + _("Large") + "</small>", selectTop, "before");
+      dojo.place('<input id="preference_fange_' + HConstants.PREF_CARD_SIZE + '" class="preference_range" type="range" min="1" max="7" value="' + this.prefs[HConstants.PREF_CARD_SIZE].value + '"><small style="float: left">' + _("Small") + '</small><small style="float: right">' + _("Large") + "</small>", selectBottom, "before");
       dojo.query(".preference_range").connect("onclick", this, function (evt) {
         dojo.stopEvent(evt);
       });
@@ -214,7 +215,7 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
     onPrefChange: function (id, value) {
       console.log("Preference changed", id, value);
       if (id == HConstants.PREF_CARD_SIZE) {
-        dojo.removeClass("HGame", "cardsize-1 cardsize-2 cardsize-3 cardsize-4 cardsize-5 cardsize-6");
+        dojo.removeClass("HGame", "cardsize-1 cardsize-2 cardsize-3 cardsize-4 cardsize-5 cardsize-6 cardsize-7");
         dojo.addClass("HGame", "cardsize-" + value);
       }
       this.vue && this.vue.onPrefChange(id, value);

@@ -5,7 +5,7 @@ rm -vf modules/*.js* hardback.css
 
 # Build app
 cd src
-npx vite build
+npx vite build --mode production
 
 # Move JavaScript
 mv dist/*.js* ../modules/

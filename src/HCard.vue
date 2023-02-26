@@ -188,8 +188,8 @@ export default {
         }
         list.push({
           id: parseInt(id),
-          html: this.i18n(this.refs.value.benefits[id].short, { value }),
-          htmlLong: this.i18n(this.refs.value.benefits[id].long, { value }),
+          html: this.i18n(this.refs.benefits[id].short, { value }),
+          htmlLong: this.i18n(this.refs.benefits[id].long, { value }),
         });
       }
       list.sort(firstBy("id"));
@@ -205,8 +205,8 @@ export default {
         }
         list.push({
           id: parseInt(id),
-          html: this.i18n(this.refs.value.benefits[id].short, { value }),
-          htmlLong: this.i18n(this.refs.value.benefits[id].long, { value }),
+          html: this.i18n(this.refs.benefits[id].short, { value }),
+          htmlLong: this.i18n(this.refs.benefits[id].long, { value }),
         });
       }
       list.sort(firstBy("id"));
@@ -295,13 +295,15 @@ export default {
     },
 
     clickAction() {
-      if (this.gamestate.active && this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
-        return { action: "purchase" };
-      } else if (this.gamestate.safeToMove) {
-        if (this.card.location == this.myself.value.tableauLocation) {
-          return { action: "move", destination: this.card.origin };
-        } else if (this.card.location == this.myself.value.handLocation || (this.gamestate.active && this.gamestate.name == "playerTurn" && this.card.location.startsWith("timeless"))) {
-          return { action: "move", destination: this.myself.value.tableauLocation };
+      if (this.myself != null) { // not spectator
+        if (this.gamestate.active && this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
+          return { action: "purchase" };
+        } else if (this.gamestate.safeToMove) {
+          if (this.card.location == this.myself.tableauLocation) {
+            return { action: "move", destination: this.card.origin };
+          } else if (this.card.location == this.myself.handLocation || (this.gamestate.active && this.gamestate.name == "playerTurn" && this.card.location.startsWith("timeless"))) {
+            return { action: "move", destination: this.myself.tableauLocation };
+          }
         }
       }
     },
@@ -401,86 +403,88 @@ export default {
         },
       };
 
-      if (this.gamestate.active) {
-        if (this.gamestate.name == "uncover" && this.gamestate.args.cardIds.includes(this.card.id)) {
-          const text = this.i18n("uncoverButton", { x: this.card.letter });
-          const uncover = Object.assign({ text }, actionRef.uncover);
-          return [uncover];
-        } else if (this.gamestate.name == "double" && this.gamestate.args.cardIds.includes(this.card.id)) {
-          return [actionRef.double];
-        } else if (this.gamestate.name == "trash" && this.gamestate.args.cardIds.includes(this.card.id)) {
-          return [actionRef.trash];
-        } else if (this.gamestate.name == "trashDiscard" && this.card.location.startsWith("discard")) {
-          const text = this.i18n("trashCoinsButton", { coins: this.gamestate.args.amount });
-          const trashDiscard = Object.assign({ text }, actionRef.trashDiscard);
-          return [trashDiscard];
-        } else if ((this.gamestate.name == "trash" || this.gamestate.name == "trashDiscard" || this.gamestate.name == "specialRomancePrompt") && this.gamestate.args.previewDraw == this.card.id) {
-          return [actionRef.previewDraw];
-        } else if (this.gamestate.name == "specialRomance" && this.card.location.startsWith("hand")) {
-          return [actionRef.previewReturn, actionRef.previewDiscard];
-        } else if (this.gamestate.name.startsWith("either") && this.gamestate.args.sourceId == this.card.id) {
-          if (this.gamestate.args.benefit == HConstants.EITHER_INK) {
-            return [actionRef.eitherInk, actionRef.eitherRemover];
+      if (this.myself != null) { // not spectator
+        if (this.gamestate.active) {
+          if (this.gamestate.name == "uncover" && this.gamestate.args.cardIds.includes(this.card.id)) {
+            const text = this.i18n("uncoverButton", { x: this.card.letter });
+            const uncover = Object.assign({ text }, actionRef.uncover);
+            return [uncover];
+          } else if (this.gamestate.name == "double" && this.gamestate.args.cardIds.includes(this.card.id)) {
+            return [actionRef.double];
+          } else if (this.gamestate.name == "trash" && this.gamestate.args.cardIds.includes(this.card.id)) {
+            return [actionRef.trash];
+          } else if (this.gamestate.name == "trashDiscard" && this.card.location.startsWith("discard")) {
+            const text = this.i18n("trashCoinsButton", { coins: this.gamestate.args.amount });
+            const trashDiscard = Object.assign({ text }, actionRef.trashDiscard);
+            return [trashDiscard];
+          } else if ((this.gamestate.name == "trash" || this.gamestate.name == "trashDiscard" || this.gamestate.name == "specialRomancePrompt") && this.gamestate.args.previewDraw == this.card.id) {
+            return [actionRef.previewDraw];
+          } else if (this.gamestate.name == "specialRomance" && this.card.location.startsWith("hand")) {
+            return [actionRef.previewReturn, actionRef.previewDiscard];
+          } else if (this.gamestate.name.startsWith("either") && this.gamestate.args.sourceId == this.card.id) {
+            if (this.gamestate.args.benefit == HConstants.EITHER_INK) {
+              return [actionRef.eitherInk, actionRef.eitherRemover];
+            } else {
+              const eitherCoins = {
+                action: "either",
+                actionArgs: {
+                  benefitId: this.gamestate.args.benefit,
+                  choice: "coins",
+                },
+                text: `${this.gamestate.args.amount}¢`,
+                class: actionBlue,
+              };
+              const eitherPoints = {
+                action: "either",
+                actionArgs: {
+                  benefitId: this.gamestate.args.benefit,
+                  choice: "points",
+                },
+                text: this.gamestate.args.amount,
+                icon: "star",
+                class: actionBlue,
+              };
+              return [eitherCoins, eitherPoints];
+            }
+          } else if (this.gamestate.name == "jail" && this.card.location == "offer") {
+            let jailJail = actionRef.jailJail;
+            if (this.gamestate.args.jail) {
+              const confirmation = this.i18n("jailWarning", this.gamestate.args.jail);
+              jailJail = Object.assign({ confirmation }, actionRef.jailJail);
+            }
+            return [jailJail, actionRef.jailTrash];
+          } else if (this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
+            const text = this.i18n("purchaseButton", { coins: this.card.cost });
+            const purchase = Object.assign({ text }, actionRef.purchase);
+            return [purchase];
+          }
+        }
+
+        if (this.card.ink) {
+          if (this.gamestate.safeToMove && this.myself.remover > 0 && (this.card.location == this.myself.handLocation || this.card.location == this.myself.tableauLocation)) {
+            return [actionRef.inkButton];
           } else {
-            const eitherCoins = {
-              action: "either",
-              actionArgs: {
-                benefitId: this.gamestate.args.benefit,
-                choice: "coins",
-              },
-              text: `${this.gamestate.args.amount}¢`,
-              class: actionBlue,
-            };
-            const eitherPoints = {
-              action: "either",
-              actionArgs: {
-                benefitId: this.gamestate.args.benefit,
-                choice: "points",
-              },
-              text: this.gamestate.args.amount,
-              icon: "star",
-              class: actionBlue,
-            };
-            return [eitherCoins, eitherPoints];
+            return [actionRef.inkText];
           }
-        } else if (this.gamestate.name == "jail" && this.card.location == "offer") {
-          let jailJail = actionRef.jailJail;
-          if (this.gamestate.args.jail) {
-            const confirmation = this.i18n("jailWarning", this.gamestate.args.jail);
-            jailJail = Object.assign({ confirmation }, actionRef.jailJail);
-          }
-          return [jailJail, actionRef.jailTrash];
-        } else if (this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
-          const text = this.i18n("purchaseButton", { coins: this.card.cost });
-          const purchase = Object.assign({ text }, actionRef.purchase);
-          return [purchase];
         }
-      }
 
-      if (this.card.ink) {
-        if (this.gamestate.safeToMove && this.myself.value.remover > 0 && (this.card.location == this.myself.value.handLocation || this.card.location == this.myself.value.tableauLocation)) {
-          return [actionRef.inkButton];
-        } else {
-          return [actionRef.inkText];
+        if (this.gamestate.safeToMove && (this.card.location == this.myself.handLocation || this.card.location == this.myself.tableauLocation) && !this.card.origin.startsWith("timeless")) {
+          let reset = {
+            action: "reset",
+            text: this.i18n("resetButton", { x: this.card.letter }),
+            class: actionBlue,
+          };
+          return this.card.wild ? [reset] : [actionRef.wild];
         }
-      }
-
-      if (this.gamestate.safeToMove && (this.card.location == this.myself.value.handLocation || this.card.location == this.myself.value.tableauLocation) && !this.card.origin.startsWith("timeless")) {
-        let reset = {
-          action: "reset",
-          text: this.i18n("resetButton", { x: this.card.letter }),
-          class: actionBlue,
-        };
-        return this.card.wild ? [reset] : [actionRef.wild];
       }
     },
 
     dragLocations() {
-      if (this.gamestate.safeToMove && this.prefs.value[HConstants.PREF_DRAG_DROP] !== HConstants.DRAG_DROP_DISABLED) {
-        if (this.card.location == this.myself.value.handLocation
-          || this.card.location == this.myself.value.tableauLocation
+      if (this.myself != null && this.gamestate.safeToMove && this.prefs.drag) {
+        if (this.card.location == this.myself.handLocation
+          || this.card.location == this.myself.tableauLocation
           || (this.gamestate.active && this.gamestate.name == "playerTurn" && this.card.location.startsWith("timeless"))) {
-          let locations = [this.myself.value.tableauLocation, this.card.location, this.card.origin];
+          let locations = [this.myself.tableauLocation, this.card.location, this.card.origin];
           let unique = [...new Set(locations)];
           return unique;
         }
@@ -544,7 +548,7 @@ export default {
      * Tooltip
      */
     tooltipEnter(ev) {
-      if (this.prefs.value[HConstants.PREF_TOOLTIPS] == HConstants.TOOLTIPS_ENABLED) {
+      if (this.prefs.tooltip) {
         this.tooltip.timeout = setTimeout(() => this.tooltipShow(), HConstants.TOOLTIP_TIMEOUT);
       }
     },

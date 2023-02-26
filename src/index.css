@@ -39,21 +39,12 @@
   }
 }
 
-.chevron {
-  transition: transform 0.3s ease-out;
-}
-
-.chevron.collapsed {
-  transform: rotate(-90deg);
-}
-
 .title {
-  @apply font-bold text-17;
   text-shadow: 0 0 2px white, 1px 1px rgb(255 255 255 / 50%);
 }
 
 .buttongroup {
-  @apply mb-1 ml-2 rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer text-14 text-center divide-x divide-white self-center;
+  @apply mb-1 ml-2 rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer text-14 text-center divide-x divide-white self-start;
 }
 
 .button {
@@ -77,11 +68,11 @@
 }
 
 .button.disabled {
-  @apply cursor-not-allowed bg-gray-600 text-gray-300;
+  @apply cursor-not-allowed bg-gray-500 text-gray-300;
 }
 
 .tabgroup {
-  @apply flex justify-evenly pt-2 relative;
+  @apply flex flex-grow justify-evenly;
 }
 
 .tab {
@@ -123,21 +114,24 @@
 }
 
 .tailwind.cardsize-1 .card {
-  font-size: 11.1px;
+  font-size: 10px;
 }
 .tailwind.cardsize-2 .card {
-  font-size: 12.4px;
+  font-size: 11.1px;
 }
 .tailwind.cardsize-3 .card {
-  font-size: 13.7px;
+  font-size: 12.4px;
 }
 .tailwind.cardsize-4 .card {
-  font-size: 15px;
+  font-size: 13.7px;
 }
 .tailwind.cardsize-5 .card {
-  font-size: 16.3px;
+  font-size: 15px;
 }
 .tailwind.cardsize-6 .card {
+  font-size: 16.3px;
+}
+.tailwind.cardsize-7 .card {
   font-size: 17.6px;
 }
 
@@ -504,4 +498,10 @@
 .hpopup .hgenre .hicon {
   @apply inline text-110;
   vertical-align: -3px;
+}
+
+.no-animation .cardholder,
+.no-animation .gap,
+.no-animation .card {
+  transition: none !important;
 }

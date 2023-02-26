@@ -437,8 +437,17 @@ $game_options = [
 ];
 
 $game_preferences = [
-    H_PREF_DRAG_DROP => [
+    H_PREF_DRAG => [
         'name' => totranslate('Drag and drop'),
+        'needReload' => false,
+        'values' => [
+            0 => ['name' => totranslate('Enabled')],
+            1 => ['name' => totranslate('Disabled')],
+        ],
+    ],
+
+    H_PREF_ANIMATION => [
+        'name' => totranslate('Animation'),
         'needReload' => false,
         'values' => [
             0 => ['name' => totranslate('Enabled')],
@@ -449,7 +458,7 @@ $game_preferences = [
     H_PREF_CARD_SIZE => [
         'name' => totranslate('Card size'),
         'needReload' => false,
-        'default' => 3,
+        'default' => 4,
         'values' => [
             1 => ['name' => ''],
             2 => ['name' => ''],
@@ -457,6 +466,7 @@ $game_preferences = [
             4 => ['name' => ''],
             5 => ['name' => ''],
             6 => ['name' => ''],
+            7 => ['name' => ''],
         ],
     ],
 ];

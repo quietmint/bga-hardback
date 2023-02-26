@@ -56,7 +56,7 @@ export default {
 
   methods: {
     enter(ev) {
-      if (this.prefs.value[HConstants.PREF_TOOLTIPS] == HConstants.TOOLTIPS_ENABLED) {
+      if (this.prefs.tooltip) {
         this.timeout = setTimeout(() => this.show(), HConstants.TOOLTIP_TIMEOUT);
       }
     },

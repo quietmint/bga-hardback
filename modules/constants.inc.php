@@ -129,7 +129,8 @@ define('H_LANG_FR', 3);
 define('H_OPTION_VERSION', 300);
 
 // Game preferences
-define('H_PREF_DRAG_DROP', 100);
+define('H_PREF_DRAG', 100);
+define('H_PREF_ANIMATION', 150);
 define('H_PREF_CARD_SIZE', 151);
 
 // Game states

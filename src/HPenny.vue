@@ -66,13 +66,13 @@ export default {
   computed: {
     title() {
       if (this.penny.genre) {
-        return this.i18n(this.refs.value.signatures[this.penny.genre].title);
+        return this.i18n(this.refs.signatures[this.penny.genre].title);
       }
     },
 
     description() {
       if (this.penny.genre) {
-        return this.i18n(this.refs.value.signatures[this.penny.genre].description);
+        return this.i18n(this.refs.signatures[this.penny.genre].description);
       }
     },
 

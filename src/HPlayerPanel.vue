@@ -18,12 +18,12 @@
 
       <div class="panel-right flex items-center justify-around text-noshadow">
         <!-- Literary Award -->
-        <HTooltip v-if="options.value.awards"
+        <HTooltip v-if="options.awards"
                   position="left">
           <template v-slot:tip>
             <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-center whitespace-nowrap">
               <div class="p-2 bg-gray-200 font-bold">{{ i18n("award") }}</div>
-              <div v-for="(value, key) in refs.value.awards"
+              <div v-for="(value, key) in refs.awards"
                    :key="key"
                    class="px-2 py-1 border-t border-black border-opacity-30">
                 {{ i18n("awardLetters", { length: key }) }}
@@ -45,12 +45,12 @@
         </HTooltip>
 
         <!-- Adverts -->
-        <HTooltip v-if="options.value.adverts"
+        <HTooltip v-if="options.adverts"
                   position="left">
           <template v-slot:tip>
             <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-center whitespace-nowrap">
               <div class="p-2 bg-gray-200 font-bold">{{ i18n("adverts") }}</div>
-              <div v-for="(value, key) in refs.value.adverts"
+              <div v-for="(value, key) in refs.adverts"
                    :key="key"
                    class="px-2 py-1 border-t border-black border-opacity-30">
                 {{ key }}¢
