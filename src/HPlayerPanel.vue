@@ -72,6 +72,39 @@
         </HTooltip>
       </div>
 
+      <div class="panel-bottom mt-1 text-white text-17 font-bold flex justify-between text-noshadow">
+        <div :id="'count_' + player.drawLocation"
+             :class="{ 'cursor-pointer': player.myself && options.deck }"
+             class="rounded-lg bg-black bg-opacity-50 px-2 ml-1"
+             @click="player.myself && options.deck && clickTab('draw')"
+             :title="i18n('drawLocation') + ': ' + drawCards.length">
+          <Icon icon="drawLocation"
+                class="inline" /> {{ drawCards.length }}
+        </div>
+        <div :id="'count_' + player.handLocation"
+             class="rounded-lg bg-black bg-opacity-50 px-2 ml-1"
+             :class="{ 'cursor-pointer': player.myself }"
+             @click="player.myself && clickTab('hand')"
+             :title="i18n('handLocation') + ': ' + handCards.length">
+          <Icon icon="handLocation"
+                class="inline" /> {{ handCards.length }}
+        </div>
+        <div :id="'count_' + player.tableauLocation"
+             class="rounded-lg bg-black bg-opacity-50 px-2 ml-1"
+             :title="i18n('tableauLocation') + ': ' + tableauCards.length">
+          <Icon icon="tableauLocation"
+                class="inline" /> {{ tableauCards.length }}
+        </div>
+        <div :id="'count_' + player.discardLocation"
+             :class="{ 'cursor-pointer': player.myself }"
+             class="rounded-lg bg-black bg-opacity-50 px-2 ml-1"
+             @click="player.myself && clickTab('discard')"
+             :title="i18n('discardLocation') + ': ' + discardCards.length">
+          <Icon icon="discardLocation"
+                class="inline" /> {{ discardCards.length }}
+        </div>
+      </div>
+
       <HTooltip :id="'tut_genreCounts_p' + player.id"
                 class="genreCounts text-noshadow"
                 position="left">
@@ -112,7 +145,8 @@ import { Icon } from "@iconify/vue";
 
 export default {
   name: "HPlayerPanel",
-  inject: ["i18n", "options", "refs"],
+  emits: ["clickTab"],
+  inject: ["cardsInLocation", "i18n", "options", "refs"],
   components: { Icon, HTooltip },
 
   props: {
@@ -129,6 +163,14 @@ export default {
   computed: {
     teleportTo() {
       return "#player_board_" + this.player.id;
+    },
+
+    drawCards() {
+      return this.cardsInLocation(this.player.drawLocation);
+    },
+
+    discardCards() {
+      return this.cardsInLocation(this.player.discardLocation);
     },
 
     genreTotal() {
@@ -159,6 +201,20 @@ export default {
     genreCountsNonEmpty() {
       return this.genreCounts.filter((gc) => gc.count > 0);
     },
+
+    handCards() {
+      return this.cardsInLocation(this.player.handLocation);
+    },
+
+    tableauCards() {
+      return this.cardsInLocation(this.player.tableauLocation);
+    },
+  },
+
+  methods: {
+    clickTab(tab) {
+      this.emitter.emit("clickTab", tab);
+    }
   },
 };
 </script>

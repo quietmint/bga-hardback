@@ -14,14 +14,14 @@
           <span class="px-1 whitespace-nowrap"
                 :id="'ink_' + player.id"
                 :title="i18n('ink')">
-            <Icon icon="ink"
+            <Icon icon="inkCount"
                   class="inline text-18 text-black" /> {{ player.ink }}
           </span>
           &bull;
           <span class="px-1 whitespace-nowrap"
                 :id="'remover_' + player.id"
                 :title="i18n('remover')">
-            <Icon icon="remover"
+            <Icon icon="removerCount"
                   class="inline text-18 text-white" /> {{ player.remover }}
           </span>
         </span>
@@ -75,7 +75,7 @@
                @click="buttonEnabled['useInk'] && useInk()"
                class="button"
                :class="buttonEnabled['useInk'] ? 'black' : 'disabled'">
-            <Icon icon="ink"
+            <Icon icon="inkCount"
                   class="inline text-17" /> <span v-text="i18n('useInk', { count: player.ink })"></span>
           </div>
         </div>
@@ -91,7 +91,7 @@
              @click="options.deck && clickTab('draw')"
              class="tab"
              :class="[player.colorBgTab, { 'cursor-pointer': options.deck, 'cursor-not-allowed': !options.deck, 'active': tab == 'draw' }]">
-          <Icon icon="deck"
+          <Icon icon="drawLocation"
                 class="float-left text-20 mr-1" />
           <span>{{ i18n('drawLocation') }} ({{ drawCards.length }})</span>
         </div>
@@ -99,7 +99,7 @@
              @click="clickTab('hand')"
              class="tab cursor-pointer"
              :class="[player.colorBgTab, { 'active': tab == 'hand' }]">
-          <Icon icon="hand"
+          <Icon icon="handLocation"
                 class="float-left text-20 mr-1" />
           <span>{{ i18n('handLocation') }} ({{ handCards.length }})</span>
         </div>
@@ -107,7 +107,7 @@
              @click="clickTab('discard')"
              class="tab cursor-pointer"
              :class="[player.colorBgTab, { 'active': tab == 'discard' }]">
-          <Icon icon="shuffle"
+          <Icon icon="discardLocation"
                 class="float-left text-20 mr-1" />
           <span>{{ i18n('discardLocation') }} ({{ discardCards.length }})</span>
         </div>
@@ -146,6 +146,14 @@
 
     <div v-if="gamestate.name != 'gameEnd'"
          class="flex pt-3">
+      <!-- Opponents: Collapse -->
+      <Icon v-if="!player.myself"
+            :id="'chevron_' + player.id"
+            icon="chevron"
+            :class="{ collapsed }"
+            class="chevron text-24"
+            @click="clickChevron()" />
+
       <!-- Tabs -->
       <div class="tabgroup"
            :class="player.colorBorder, player.colorTextDark">
@@ -153,16 +161,16 @@
         <div v-if="!player.myself"
              :id="'tab_' + player.drawLocation"
              class="tab cursor-not-allowed"
-             :class="player.colorBgTab">
-          <Icon icon="deck"
+             :class="[player.colorBgTab, { 'border-b-2': collapsed }]">
+          <Icon icon="drawLocation"
                 class="float-left text-20 mr-1" />
           <span>{{ i18n('drawLocation') }} ({{ drawCards.length }})</span>
         </div>
         <div v-if="!player.myself"
              :id="'tab_' + player.handLocation"
              class="tab cursor-not-allowed"
-             :class="player.colorBgTab">
-          <Icon icon="hand"
+             :class="[player.colorBgTab, { 'border-b-2': collapsed }]">
+          <Icon icon="handLocation"
                 class="float-left text-20 mr-1" />
           <span>{{ i18n('handLocation') }} ({{ handCards.length }})</span>
         </div>
@@ -170,8 +178,8 @@
         <!-- Everyone: Tab for Tableau -->
         <div :id="'tab_' + player.tableauLocation"
              class="tab active"
-             :class="player.colorBgTab">
-          <Icon icon="starter"
+             :class="[player.colorBgTab, { 'border-b-2': collapsed }]">
+          <Icon icon="tableauLocation"
                 class="float-left text-20 mr-1" />
           <span>{{ i18n('tableauLocation') }} ({{ tableauCards.length }})</span>
         </div>
@@ -180,8 +188,8 @@
         <div v-if="!player.myself"
              :id="'tab_' + player.discardLocation"
              class="tab cursor-not-allowed"
-             :class="player.colorBgTab">
-          <Icon icon="shuffle"
+             :class="[player.colorBgTab, { 'border-b-2': collapsed }]">
+          <Icon icon="discardLocation"
                 class="float-left text-20 mr-1" />
           <span>{{ i18n('discardLocation') }} ({{ discardCards.length }})</span>
         </div>
@@ -215,7 +223,8 @@
     </div>
 
     <!-- Tableau cards -->
-    <div class="tabcontent"
+    <div v-if="!collapsed"
+         class="tabcontent"
          :class="player.colorBgTab">
       <HCardList :cards="tableauCards"
                  :location="player.tableauLocation" />
@@ -242,6 +251,7 @@ export default {
 
   data() {
     return {
+      collapsed: false,
       tab: "",
     };
   },
@@ -305,13 +315,23 @@ export default {
   },
 
   methods: {
+    clickChevron() {
+      this.collapsed = !this.collapsed;
+      if (this.collapsed) {
+        this.locationVisible.delete(this.player.tableauLocation);
+      } else {
+        this.locationVisible.add(this.player.tableauLocation);
+      }
+      console.log('👀 ' + (this.collapsed ? 'Collapse' : 'Expand'), this.player.id);
+    },
+
     clickTab(tab) {
       this.tab = tab;
       this.locationVisible.delete(this.player.drawLocation);
       this.locationVisible.delete(this.player.discardLocation);
       this.locationVisible.delete(this.player.handLocation);
       this.locationVisible.add(this.visibleLocation);
-      console.log('👀 Click tab', this.visibleLocation);
+      console.log('👀 Tab', this.visibleLocation);
     },
 
     playAll() {

@@ -230,9 +230,11 @@ import starOutlined from "@iconify-icons/ant-design/star-outlined";
 import backspaceIcon from "@iconify-icons/mdi/backspace";
 import bookOpenPageVariant from "@iconify-icons/mdi/book-open-page-variant";
 import cardsIcon from "@iconify-icons/mdi/cards";
+import chevronDown from "@iconify-icons/mdi/chevron-down";
 import clockOutline from "@iconify-icons/mdi/clock-outline";
 import flipHorizontal from "@iconify-icons/mdi/flip-horizontal";
 import handRight from "@iconify-icons/mdi/hand-right";
+import leadPencil from "@iconify-icons/mdi/lead-pencil";
 import plusBox from "@iconify-icons/mdi/plus-box";
 import shuffleVariant from "@iconify-icons/mdi/shuffle-variant";
 import swapVerticalBold from "@iconify-icons/mdi/swap-vertical-bold";
@@ -244,6 +246,7 @@ import loadingIcon from "@iconify-icons/mdi/loading";
 
 export default {
   name: "HGame",
+  emits: ["clickTab"],
   components: { Icon, HCardList, HKeyboard, HLookup, HPenny, HPlayerArea, HPlayerPanel },
 
   provide() {
@@ -337,26 +340,29 @@ export default {
         offer: "order",
         timeless: "location",
       },
-      locationVisible: new Set(),
+      locationVisible: new Set(['offer']),
       icons: {
         adventure: mdiCompass,
+        chevron: chevronDown,
         clock: clockOutline,
-        deck: cardsIcon,
         dictionary: bookOpenPageVariant,
-        hand: handRight,
+        discardLocation: shuffleVariant,
+        drawLocation: cardsIcon,
+        handLocation: handRight,
         horror: mdiSkull,
-        ink: plusBox,
+        inkCount: plusBox,
         jail: lockIcon,
         loading: loadingIcon,
         move: swapVerticalBold,
         mystery: magnifyingGlass,
         no: closeCircle,
-        remover: backspaceIcon,
+        removerCount: backspaceIcon,
         reset: flipHorizontal,
         romance: mdiHeart,
         shuffle: shuffleVariant,
         star: starOutlined,
         starter: bookmarkIcon,
+        tableauLocation: leadPencil,
         timeless: cachedIcon,
         yes: checkCircle,
       },
@@ -626,7 +632,7 @@ export default {
         start = getRect(cardEl);
       }
 
-      let visible = card.location == "offer" || card.location.startsWith("jail") || card.location.startsWith("timeless") || card.location.startsWith("tableau") || this.locationVisible.has(card.location);
+      const visible = card.location.startsWith("jail") || card.location.startsWith("timeless") || this.locationVisible.has(card.location);
       if (!start && !visible) {
         // Invisible card movement, no animation
         this.gamedatas.cards[card.id] = card;
@@ -953,7 +959,7 @@ export default {
       let possible = this.gamestate.possibleactions;
       possible.forEach((p, index) => {
         const action = actionRef[p];
-        let visible = action != null && (action.condition == null || action.condition.apply(this));
+        const visible = action != null && (action.condition == null || action.condition.apply(this));
         if (visible) {
           let text = action.text;
           if (typeof text == "function") {

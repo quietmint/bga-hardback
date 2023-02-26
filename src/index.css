@@ -39,6 +39,14 @@
   }
 }
 
+.chevron {
+  transition: transform 0.3s ease-out;
+}
+
+.chevron.collapsed {
+  transform: rotate(-90deg);
+}
+
 .title {
   text-shadow: 0 0 2px white, 1px 1px rgb(255 255 255 / 50%);
 }
@@ -76,7 +84,7 @@
 }
 
 .tab {
-  @apply border-2 border-b-0 rounded-t-lg px-4 py-2 font-bold bg-opacity-10 transition-colors duration-300;
+  @apply border-t-2 border-l-2 border-r-2 rounded-t-lg px-4 py-2 font-bold bg-opacity-10 transition-colors duration-300;
   border-color: inherit;
 }
 
@@ -502,6 +510,7 @@
 
 .no-animation .cardholder,
 .no-animation .gap,
-.no-animation .card {
+.no-animation .card,
+.no-animation .chevron {
   transition: none !important;
 }
