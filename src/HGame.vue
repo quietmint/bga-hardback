@@ -258,6 +258,7 @@ export default {
       locationVisible: computed(() => this.locationVisible),
       myself: computed(() => this.myself),
       options: computed(() => this.gamedatas.options),
+      playerGenreCounts: this.playerGenreCounts,
       prefs: computed(() => this.prefs),
       refs: computed(() => this.gamedatas.refs),
     };
@@ -411,9 +412,7 @@ export default {
     },
 
     timelessVisible() {
-      return this.timelessCards.length > 0 || Object.values(this.gamedatas.cards).some((card) => {
-        return card.origin.startsWith("timeless");
-      });
+      return this.timelessCards.length > 0 || Object.values(this.gamedatas.cards).some((card) => card.origin.startsWith("timeless"));
     },
 
     warningVisible() {
@@ -460,13 +459,29 @@ export default {
         location = "timeless";
       }
       let cards = this.populateCards(
-        Object.values(this.gamedatas.cards).filter((card) => {
-          return card.location.startsWith(location);
-        })
+        Object.values(this.gamedatas.cards).filter((card) => card.location.startsWith(location))
       );
       let prefix = location.split("_")[0];
       this.sortCards(this.locationOrder[prefix], cards);
       return cards;
+    },
+
+    playerGenreCounts(playerId) {
+      let cards = this.populateCards(
+        Object.values(this.gamedatas.cards).filter((card) => card.origin.endsWith('_' + playerId) && !card.origin.startsWith('jail'))
+      );
+      return [HConstants.ADVENTURE, HConstants.HORROR, HConstants.MYSTERY, HConstants.ROMANCE, HConstants.STARTER].map((id) => {
+        const count = cards.filter((card) => card.genre == id).length;
+        const percent = (count / cards.length) * 100;
+        const genre = HConstants.GENRES[id];
+        return {
+          class: `${genre.bg} ${genre.textLight}`,
+          count: count,
+          display: `${count} (${percent.toFixed(0)}%)`,
+          genre: genre.icon,
+          percent: percent,
+        };
+      });
     },
 
     sortCards(order, cards) {

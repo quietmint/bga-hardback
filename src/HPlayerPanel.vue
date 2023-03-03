@@ -146,7 +146,7 @@ import { Icon } from "@iconify/vue";
 export default {
   name: "HPlayerPanel",
   emits: ["clickTab"],
-  inject: ["cardsInLocation", "i18n", "options", "refs"],
+  inject: ["cardsInLocation", "i18n", "options", "playerGenreCounts", "refs"],
   components: { Icon, HTooltip },
 
   props: {
@@ -181,21 +181,7 @@ export default {
     },
 
     genreCounts() {
-      if (this.genreTotal == 0) {
-        return [];
-      }
-      return [HConstants.ADVENTURE, HConstants.HORROR, HConstants.MYSTERY, HConstants.ROMANCE, HConstants.STARTER].map((id) => {
-        const count = this.player.genreCounts[id];
-        const genre = HConstants.GENRES[id];
-        const percent = (count / this.genreTotal) * 100;
-        return {
-          class: `${genre.bg} ${genre.textLight}`,
-          count: count,
-          display: `${count} (${percent.toFixed(0)}%)`,
-          genre: genre.icon,
-          percent: percent,
-        };
-      });
+      return this.playerGenreCounts(this.player.id);
     },
 
     genreCountsNonEmpty() {

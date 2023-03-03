@@ -62,7 +62,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
             'coins' => $this->coins,
             'discardLocation' => $this->getDiscardLocation(),
             'drawLocation' => $this->getDrawLocation(),
-            'genreCounts' => $this->getGenreCounts(),
             'handLocation' => $this->getHandLocation(),
             'ink' => $this->ink,
             'jailLocation' => $this->getJailLocation(),
@@ -247,11 +246,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     public function getTimelessLocation(): string
     {
         return CardMgr::getTimelessLocation($this->id);
-    }
-
-    public function getGenreCounts(): array
-    {
-        return CardMgr::getGenreCounts(CardMgr::getCardsOwnedByPlayer($this->id), true);
     }
 
     /***** Player Functions *****/

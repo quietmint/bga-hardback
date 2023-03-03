@@ -256,13 +256,6 @@ class CardMgr extends APP_GameClass
         return self::getCards($cardIds);
     }
 
-    public static function getCardsOwnedByPlayer(int $playerId): array
-    {
-        $sql = "SELECT `id` FROM card WHERE `origin` LIKE '%_$playerId'";
-        $cardIds = self::getObjectListFromDB($sql, true);
-        return self::getCards($cardIds);
-    }
-
     public static function getCountInLocation(string $location): int
     {
         $count = self::getUniqueValueFromDB("SELECT COUNT(*) FROM card WHERE `location` = '$location'");
