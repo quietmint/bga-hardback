@@ -68,6 +68,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
             'remover' => $this->remover,
             'score' => $this->score,
             'tableauLocation' => $this->getTableauLocation(),
+            'word' => $this->word,
         ];
         if (hardback::$instance->gamestate->table_globals[H_OPTION_AWARDS]) {
             $json['award'] = $this->award;

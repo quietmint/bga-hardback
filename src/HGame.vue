@@ -8,6 +8,12 @@
     <HPenny v-if="gamedatas.penny"
             :penny="gamedatas.penny" />
 
+    <!-- Current word -->
+    <teleport to="#pagemaintitle_wrap">
+      <div id="hword"
+           :class="{ hidden: !currentWord || gamestate.name == 'gameEnd' }">{{ currentWord }}</div>
+    </teleport>
+
     <!-- Icons -->
     <div class="hidden">
       <Icon :id="'icon_' + key"
@@ -372,6 +378,12 @@ export default {
   },
 
   computed: {
+    currentWord() {
+      if (this.gamestate.activeId) {
+        return this.players[this.gamestate.activeId].word;
+      }
+    },
+
     handCards() {
       return this.cardsInLocation(this.myself.handLocation);
     },

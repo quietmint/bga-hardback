@@ -213,3 +213,10 @@ a:visited.playername {
 #player_board_inner_000000 .player_score {
   padding-left: 5px;
 }
+
+#hword {
+  border-top: 1px dotted #999;
+  margin-top: 6px;
+  padding: 6px 0 1px;
+  line-height: 1;
+}
