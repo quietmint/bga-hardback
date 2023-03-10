@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css2?family=Almendra+Display&family=Big+Shoulders+Inline+Text:wght@900&family=Bodoni+Moda:wght@700&family=Finger+Paint&family=New+Rocker&display=swap);
+@import url(https://fonts.googleapis.com/css2?family=Almendra+Display&family=Big+Shoulders+Inline+Text:wght@900&family=Bodoni+Moda:wght@700&family=Dancing+Script&family=Finger+Paint&family=Love+Light&family=New+Rocker&display=swap);
 @font-face {
   font-family: "Deutsch Gothic";
   src: url(Deutsch-Gothic.woff2) format("woff2"), url(Deutsch-Gothic.woff) format("woff");
@@ -331,14 +331,21 @@
   margin-top: 9.5%;
 }
 
-.card-romance .letter.letter-G,
-.card-romance .letter.letter-Q {
+.card-romance .letter.letter-G {
   margin-top: 7.2%;
 }
 
-.card-romance .letter.letter-I,
 .card-romance .letter.letter-J {
+  font-family: "Dancing Script", serif;
   font-size: 5.25em;
+  margin-top: 14%;
+  margin-left: -3%;
+}
+
+.card-romance .letter.letter-Q {
+  font-family: "Love Light", serif;
+  font-size: 5.75em;
+  margin-top: 10%;
 }
 
 .card-romance.timeless .letter {
