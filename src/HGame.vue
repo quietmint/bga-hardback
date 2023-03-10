@@ -59,23 +59,23 @@
 
     <!-- Timeless Classics -->
     <div v-if="timelessVisible"
-         class="py-2 border-t-2 border-black">
-      <div class="flex leading-7">
+         class="px-1 py-3 border-t-2 border-black">
+      <div class="flex leading-8">
         <div id="tut_timeless_title"
-             class="title text-17 font-bold ml-2 flex-grow">{{ i18n('timelessLocation') }} ({{ timelessCards.length }})</div>
+             class="title text-17 font-bold flex-grow">{{ i18n('timelessLocation') }} ({{ timelessCards.length }})</div>
       </div>
       <HCardList :cards="timelessCards"
                  location="timeless" />
     </div>
 
     <!-- Offer -->
-    <div class="py-2 border-t-2 border-black">
-      <div class="flex leading-7">
+    <div class="px-1 py-3 border-t-2 border-black">
+      <div class="flex leading-8">
         <div id="tut_offer_title"
-             class="title text-17 font-bold ml-2 flex-grow"
+             class="title text-17 font-bold flex-grow"
              v-text="i18n('offerLocation')"></div>
 
-        <div class="buttongroup mr-2 grid grid-cols-4">
+        <div class="buttongroup grid grid-cols-4">
           <div id="sort_offer_letter"
                @click="sort('offer', 'letter')"
                class="button blue"
@@ -92,7 +92,7 @@
                :class="{ active: locationOrder.offer == 'genre' }"
                :title="i18n('sortGenreTip')">
             <Icon icon="starter"
-                  class="inline text-17 h-7" />
+                  class="inline text-17 h-8" />
           </div>
           <div id="sort_offer_time"
                @click="sort('offer', 'order')"
@@ -100,7 +100,7 @@
                :class="{ active: locationOrder.offer == 'order' }"
                :title="i18n('sortTimeTip')">
             <Icon icon="clock"
-                  class="inline text-17 h-7" />
+                  class="inline text-17 h-8" />
           </div>
         </div>
       </div>
@@ -1084,6 +1084,20 @@ export default {
       } else if (id == HConstants.PREF_TOOLTIP) {
         this.prefs.tooltip = value == HConstants.TOOLTIP_ENABLED;
       }
+    },
+
+    onSetup() {
+      console.log('🐣 Setup');
+      const threedEl = document.getElementById('ingame_menu_3d');
+      if (threedEl != null) {
+        threedEl.style.display = 'none';
+      }
+      Object.keys(this.gamedatas.players).forEach((id) => {
+        const totalEl = document.createElement('span');
+        totalEl.textContent = ' / ' + this.gamedatas.gameLength;
+        const scoreEl = document.getElementById('player_score_' + id);
+        scoreEl.insertAdjacentElement('afterend', totalEl);
+      });
     },
 
     /*

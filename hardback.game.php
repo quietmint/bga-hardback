@@ -209,6 +209,7 @@ class hardback extends Table
             'version' => intval($this->gamestate->table_globals[H_OPTION_VERSION]),
             'players' => $playersAsArray,
             'cards' => $cards,
+            'gameLength' => $this->getGameLength(),
             'finalRound' => $this->getGameProgression() >= 100,
             'options' => [
                 'adverts' => $this->gamestate->table_globals[H_OPTION_ADVERTS] > 0,

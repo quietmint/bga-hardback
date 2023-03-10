@@ -27,9 +27,22 @@
   margin: 0;
 }
 
+#tableinfos {
+  font-size: 14px;
+  line-height: 1;
+}
+
+#pr_gameprogression {
+  font-weight: bold;
+}
+
 #ingame_menu_content {
-  opacity: 0.95;
-  width: 600px;
+  width: 550px;
+}
+
+.ingame_menu_item,
+.row-data-large .row-label {
+  width: 250px;
 }
 
 .preference_range {

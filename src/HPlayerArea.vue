@@ -1,34 +1,30 @@
 <template>
   <div :id="'area_' + player.id"
-       class="p-2 border-t-2 border-black">
-    <div class="flex leading-7">
-      <div class="title flex-grow">
+       class="px-1 py-3 border-t-2 border-black">
+    <div class="flex leading-8">
+      <div class="title flex-grow leading-none">
         <!-- Player name -->
         <span :class="player.colorText"
               class="text-17 font-bold"
               v-text="player.name"></span>
 
         <!-- Ink, remover counts -->
-        <span class="px-1 text-15 font-bold leading-none">
-          &bull;
-          <span class="px-1 whitespace-nowrap"
-                :id="'ink_' + player.id"
-                :title="i18n('ink')">
+        <div class="text-15 font-bold">
+          <span class="whitespace-nowrap"
+                :id="'counts_' + player.id">
             <Icon icon="inkCount"
-                  class="inline text-18 text-black" /> {{ player.ink }}
-          </span>
-          &bull;
-          <span class="px-1 whitespace-nowrap"
-                :id="'remover_' + player.id"
-                :title="i18n('remover')">
+                  class="inline text-18 text-black"
+                  :title="i18n('ink')" /> {{ player.ink }}
+            <span class="px-2">&bull;</span>
             <Icon icon="removerCount"
-                  class="inline text-18 text-white" /> {{ player.remover }}
+                  class="inline text-18 text-white"
+                  :title="i18n('remover')" /> {{ player.remover }}
           </span>
-        </span>
-
-        <!-- First player marker -->
-        <div v-if="player.order == 1"
-             class="text-13 leading-none">{{ i18n('first') }}</div>
+          <!-- First player marker -->
+          <span v-if="player.order == 1"
+                class="px-2">&bull;</span>
+          <span v-if="player.order == 1">{{ i18n('first') }}</span>
+        </div>
       </div>
 
       <!-- Myself only: Action buttons (lookup, play all, ink) -->
@@ -114,7 +110,7 @@
       </div>
 
       <!-- Myself: Sort for visible location -->
-      <div class="buttongroup grid grid-cols-3 leading-7">
+      <div class="buttongroup grid grid-cols-3 leading-8">
         <div id="sort_visible_letter"
              @click="sort(visibleLocation, 'letter')"
              class="button blue"
@@ -124,14 +120,14 @@
              class="button blue"
              :title="i18n('sortGenreTip')">
           <Icon icon="starter"
-                class="inline text-17 h-7" />
+                class="inline text-17 h-8" />
         </div>
         <div id="sort_visible_shuffle"
              @click="sort(visibleLocation, 'shuffle')"
              class="button blue"
              :title="i18n('shuffleTip')">
           <Icon icon="shuffle"
-                class="inline text-17 h-7" />
+                class="inline text-17 h-8" />
         </div>
       </div>
     </div>
@@ -197,7 +193,7 @@
 
       <!-- Myself: Sort for Tableau -->
       <div v-if="player.myself"
-           class="buttongroup grid grid-cols-3 leading-7">
+           class="buttongroup grid grid-cols-3 leading-8">
         <div id="sort_tableau_letter"
              @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'letter')"
              class="button"
@@ -209,7 +205,7 @@
              :class="buttonEnabled['sortTableau'] ? 'blue' : 'disabled'"
              :title="i18n('sortGenreTip')">
           <Icon icon="starter"
-                class="inline text-17 h-7" />
+                class="inline text-17 h-8" />
         </div>
         <div id="sort_tableau_shuffle"
              @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'shuffle')"
@@ -217,7 +213,7 @@
              :class="buttonEnabled['sortTableau'] ? 'blue' : 'disabled'"
              :title="i18n('shuffleTip')">
           <Icon icon="shuffle"
-                class="inline text-17 h-7" />
+                class="inline text-17 h-8" />
         </div>
       </div>
     </div>

@@ -30,16 +30,13 @@
                 :icon="card.genreName"
                 class="icon" />
           <div v-if="card.cost">{{ card.cost }}¢</div>
-          <div v-if="card.points">{{ card.points }}
-            <Icon icon="star"
-                  class="inline star" />
-          </div>
+          <div v-if="card.points">{{ card.points }}<Icon icon="star" class="inline star" /></div>
         </div>
 
         <!-- Letter -->
         <div :class="letterClass"
              class="absolute letter text-center leading-none">
-          {{ letterDisplay }}
+          {{ card.letter }}
         </div>
 
         <!-- Benefits -->
@@ -114,7 +111,7 @@
     </div>
 
     <!-- Footer -->
-    <div class="h-7 leading-7 flex items-start justify-evenly text-center text-14 whitespace-nowrap">
+    <div class="h-8 leading-8 flex items-start justify-evenly text-center text-14 whitespace-nowrap">
       <div :id="'tut_a' + index + '_c' + this.card.id"
            v-for="(action, index) in footerActions"
            :key="action"
@@ -211,13 +208,6 @@ export default {
       }
       list.sort(firstBy("id"));
       return list;
-    },
-
-    letterDisplay() {
-      if (this.card.letter == "I" && this.card.genre == HConstants.ROMANCE) {
-        return "|";
-      }
-      return this.card.letter;
     },
 
     holderClass() {

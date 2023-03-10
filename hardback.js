@@ -44,6 +44,7 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
       app.config.globalProperties.emitter = mitt();
       this.vue = app.mount("#HGame");
       this.vue.gamedatas = this.gamedatas;
+      this.vue.onSetup();
 
       // Setup notifications
       dojo.subscribe("cards", this, "onNotify");
@@ -150,7 +151,7 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
 
       // Force mobile view in landscape orientation
       var landscape = window.orientation === -90 || window.orientation === 90;
-      var width = chatVisible ? "device-width" : landscape ? 980 : 740;
+      var width = chatVisible ? "device-width" : landscape ? 980 : 665;
       this.interface_min_width = width;
       this.default_viewport = "width=" + width;
       return this.default_viewport;
