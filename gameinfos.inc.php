@@ -113,7 +113,7 @@ $gameinfos = [
 
     // Game interface width range (pixels)
     'game_interface_width' => [
-        'min' => 665,
+        'min' => 685,
         'max' => null
     ],
 

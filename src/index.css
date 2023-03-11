@@ -125,22 +125,22 @@
   font-size: 10px;
 }
 .tailwind.cardsize-2 .card {
-  font-size: 11.1px;
+  font-size: 11px;
 }
 .tailwind.cardsize-3 .card {
-  font-size: 12.4px;
+  font-size: 12.1px;
 }
 .tailwind.cardsize-4 .card {
-  font-size: 13.7px;
+  font-size: 13.3px;
 }
 .tailwind.cardsize-5 .card {
-  font-size: 15px;
+  font-size: 14.5px;
 }
 .tailwind.cardsize-6 .card {
-  font-size: 16.3px;
+  font-size: 15.8px;
 }
 .tailwind.cardsize-7 .card {
-  font-size: 17.6px;
+  font-size: 17.1px;
 }
 
 .card.timeless:not(.wild) {

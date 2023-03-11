@@ -174,10 +174,7 @@ export default {
     },
 
     genreTotal() {
-      if (!this.player.genreCounts) {
-        return 0;
-      }
-      return this.player.genreCounts.reduce((acc, cur) => acc + cur);
+      return this.genreCounts.reduce((sum, gc) => sum + gc.count, 0);
     },
 
     genreCounts() {
