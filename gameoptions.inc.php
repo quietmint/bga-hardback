@@ -329,20 +329,16 @@ $game_options = [
         'name' => totranslate('Game Length'),
         'default' => 60,
         'values' => [
-            40 => [
-                'name' => totranslate('Shorter (40 Points)'),
-                'tmdisplay' => totranslate('Shorter (40 Points)'),
-            ],
             60 => [
                 'name' => totranslate('Standard (60 Points)'),
             ],
-            80 => [
-                'name' => totranslate('Longer (80 Points)'),
-                'tmdisplay' => totranslate('Longer (80 Points)'),
+            90 => [
+                'name' => totranslate('Longer (90 Points)'),
+                'tmdisplay' => totranslate('Longer (90 Points)'),
             ],
-            160 => [
-                'name' => totranslate('Marathon (160 Points)'),
-                'tmdisplay' => totranslate('Marathon (160 Points)'),
+            180 => [
+                'name' => totranslate('Marathon (180 Points)'),
+                'tmdisplay' => totranslate('Marathon (180 Points)'),
             ],
         ],
         'displaycondition' => [
