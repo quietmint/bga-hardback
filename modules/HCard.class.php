@@ -43,6 +43,7 @@ class HCard extends APP_GameClass implements JsonSerializable
             'order' => $this->order,
             'origin' => $this->origin,
             'refId' => $this->refId,
+            'remover' => $this->hasRemover(),
             'wild' => $this->isWild() ? $this->wild : null,
         ];
     }

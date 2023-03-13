@@ -726,7 +726,7 @@ class CardMgr extends APP_GameClass
 
     public static function inkCard(HCard $card, int $inkValue = H_HAS_INK): void
     {
-        $sql = "UPDATE card SET `ink` = $inkValue WHERE `id` = {$card->getId()}";
+        $sql = "UPDATE card SET `ink` = $inkValue, `wild` = NULL WHERE `id` = {$card->getId()}";
         self::DbQuery($sql);
         $card->setInk($inkValue);
     }

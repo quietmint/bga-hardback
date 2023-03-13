@@ -30,7 +30,10 @@
                 :icon="card.genreName"
                 class="icon" />
           <div v-if="card.cost">{{ card.cost }}¢</div>
-          <div v-if="card.points">{{ card.points }}<Icon icon="star" class="inline star" /></div>
+          <div v-if="card.points">{{ card.points }}
+            <Icon icon="star"
+                  class="inline star" />
+          </div>
         </div>
 
         <!-- Letter -->
@@ -112,6 +115,11 @@
 
     <!-- Footer -->
     <div class="h-8 leading-8 flex items-start justify-evenly text-center text-14 whitespace-nowrap">
+      <span v-if="!footerActions && card.oldest"
+            :title="i18n('oldestTip')">
+        <Icon icon="clock"
+              class="inline text-17 h-8" />
+      </span>
       <div :id="'tut_a' + index + '_c' + this.card.id"
            v-for="(action, index) in footerActions"
            :key="action"
@@ -286,7 +294,7 @@ export default {
 
     clickAction() {
       if (this.myself != null) { // not spectator
-        if (this.gamestate.active && this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
+        if (this.gamestate.active && this.gamestate.name == "purchase" && this.card.location == "offer" && this.gamestate.args.cardIds.includes(this.card.id)) {
           return { action: "purchase" };
         } else if (this.gamestate.safeToMove) {
           if (this.card.location == this.myself.tableauLocation) {
@@ -310,6 +318,11 @@ export default {
         inkButton: {
           action: "useRemover",
           text: this.i18n("useRemoverButton"),
+          class: actionBlack,
+        },
+        undoButton: {
+          action: "undoRemover",
+          text: this.i18n("undoRemoverButton"),
           class: actionBlack,
         },
         wild: {
@@ -443,7 +456,7 @@ export default {
               jailJail = Object.assign({ confirmation }, actionRef.jailJail);
             }
             return [jailJail, actionRef.jailTrash];
-          } else if (this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
+          } else if (this.gamestate.name == "purchase" && this.card.location == "offer" && this.gamestate.args.cardIds.includes(this.card.id)) {
             const text = this.i18n("purchaseButton", { coins: this.card.cost });
             const purchase = Object.assign({ text }, actionRef.purchase);
             return [purchase];
@@ -461,10 +474,14 @@ export default {
         if (this.gamestate.safeToMove && (this.card.location == this.myself.handLocation || this.card.location == this.myself.tableauLocation) && !this.card.origin.startsWith("timeless")) {
           let reset = {
             action: "reset",
-            text: this.i18n("resetButton", { x: this.card.letter }),
+            text: this.i18n("uncoverButton", { x: this.card.letter }),
             class: actionBlue,
           };
-          return this.card.wild ? [reset] : [actionRef.wild];
+          if (this.card.wild) {
+            return [reset];
+          } else {
+            return this.card.remover ? [actionRef.wild, actionRef.undoButton] : [actionRef.wild];
+          }
         }
       }
     },

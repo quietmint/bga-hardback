@@ -1606,9 +1606,26 @@ class hardback extends Table
             throw new BgaVisibleSystemException("useRemover: Card $card is not inked");
         }
         $player->spendRemover();
-        $player->notifyRemover($card);
         CardMgr::inkCard($card, H_HAS_REMOVER);
+        $player->notifyRemover($card);
         $this->incStat(1, 'useRemover', $player->getId());
+        CardMgr::notifyCards($card);
+    }
+
+    function undoRemover(int $cardId): void
+    {
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $card = CardMgr::getCard($cardId);
+        if ($card == null || !$card->isLocation($player->getHandLocation(), $player->getTableauLocation())) {
+            throw new BgaVisibleSystemException("undoRemover: Card $card is unavailable to $player");
+        }
+        if (!$card->hasRemover()) {
+            throw new BgaVisibleSystemException("undoRemover: Card $card was not inked");
+        }
+        $player->addRemover();
+        CardMgr::inkCard($card);
+        $player->notifyRemover($card);
+        $this->incStat(-1, 'useRemover', $player->getId());
         CardMgr::notifyCards($card);
     }
 

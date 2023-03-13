@@ -57,12 +57,12 @@
             <Icon icon="move"
                   class="inline text-17" /> <span v-text="i18n('returnAll')"></span>
           </div>
-          <div id="button_resetAll"
-               @click="buttonEnabled['resetAll'] && resetAll()"
+          <div id="button_uncoverAll"
+               @click="buttonEnabled['uncoverAll'] && uncoverAll()"
                class="button"
-               :class="buttonEnabled['resetAll'] ? 'blue' : 'disabled'">
-            <Icon icon="reset"
-                  class="inline text-17" /> <span v-text="i18n('resetAll')"></span>
+               :class="buttonEnabled['uncoverAll'] ? 'blue' : 'disabled'">
+            <Icon icon="uncover"
+                  class="inline text-17" /> <span v-text="i18n('uncoverAll')"></span>
           </div>
         </div>
 
@@ -87,25 +87,34 @@
              @click="options.deck && clickTab('draw')"
              class="tab"
              :class="[player.colorBgTab, { 'cursor-pointer': options.deck, 'cursor-not-allowed': !options.deck, 'active': tab == 'draw' }]">
-          <Icon icon="drawLocation"
-                class="float-left text-20 mr-1" />
-          <span>{{ i18n('drawLocation') }} ({{ drawCards.length }})</span>
+          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+            <Icon icon="drawLocation"
+                  class="text-20 mr-1" />
+            {{ drawCards.length }}
+          </span>
+          {{ i18n('drawLocation') }}
         </div>
         <div :id="'tab_' + player.handLocation"
              @click="clickTab('hand')"
              class="tab cursor-pointer"
              :class="[player.colorBgTab, { 'active': tab == 'hand' }]">
-          <Icon icon="handLocation"
-                class="float-left text-20 mr-1" />
-          <span>{{ i18n('handLocation') }} ({{ handCards.length }})</span>
+          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+            <Icon icon="handLocation"
+                  class="text-20 mr-1" />
+            {{ handCards.length }}
+          </span>
+          {{ i18n('handLocation') }}
         </div>
         <div :id="'tab_' + player.discardLocation"
              @click="clickTab('discard')"
              class="tab cursor-pointer"
              :class="[player.colorBgTab, { 'active': tab == 'discard' }]">
-          <Icon icon="discardLocation"
-                class="float-left text-20 mr-1" />
-          <span>{{ i18n('discardLocation') }} ({{ discardCards.length }})</span>
+          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+            <Icon icon="discardLocation"
+                  class="text-20 mr-1" />
+            {{ discardCards.length }}
+          </span>
+          {{ i18n('discardLocation') }}
         </div>
       </div>
 
@@ -158,26 +167,35 @@
              :id="'tab_' + player.drawLocation"
              class="tab cursor-not-allowed"
              :class="[player.colorBgTab, { 'border-b-2': collapsed }]">
-          <Icon icon="drawLocation"
-                class="float-left text-20 mr-1" />
-          <span>{{ i18n('drawLocation') }} ({{ drawCards.length }})</span>
+          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+            <Icon icon="drawLocation"
+                  class="text-20 mr-1" />
+            {{ drawCards.length }}
+          </span>
+          {{ i18n('drawLocation') }}
         </div>
         <div v-if="!player.myself"
              :id="'tab_' + player.handLocation"
              class="tab cursor-not-allowed"
              :class="[player.colorBgTab, { 'border-b-2': collapsed }]">
-          <Icon icon="handLocation"
-                class="float-left text-20 mr-1" />
-          <span>{{ i18n('handLocation') }} ({{ handCards.length }})</span>
+          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+            <Icon icon="handLocation"
+                  class="text-20 mr-1" />
+            {{ handCards.length }}
+          </span>
+          {{ i18n('handLocation') }}
         </div>
 
         <!-- Everyone: Tab for Tableau -->
         <div :id="'tab_' + player.tableauLocation"
              class="tab active"
              :class="[player.colorBgTab, { 'border-b-2': collapsed }]">
-          <Icon icon="tableauLocation"
-                class="float-left text-20 mr-1" />
-          <span>{{ i18n('tableauLocation') }} ({{ tableauCards.length }})</span>
+          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+            <Icon icon="tableauLocation"
+                  class="text-20 mr-1" />
+            {{ tableauCards.length }}
+          </span>
+          {{ i18n('tableauLocation') }}
         </div>
 
         <!-- Opponents: Tab for Discard -->
@@ -185,9 +203,12 @@
              :id="'tab_' + player.discardLocation"
              class="tab cursor-not-allowed"
              :class="[player.colorBgTab, { 'border-b-2': collapsed }]">
-          <Icon icon="discardLocation"
-                class="float-left text-20 mr-1" />
-          <span>{{ i18n('discardLocation') }} ({{ discardCards.length }})</span>
+          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+            <Icon icon="discardLocation"
+                  class="text-20 mr-1" />
+            {{ discardCards.length }}
+          </span>
+          {{ i18n('discardLocation') }}
         </div>
       </div>
 
@@ -271,9 +292,9 @@ export default {
       return {
         lookup: this.options.lookup && this.options.dictionary && !this.options.dictionary.voting,
         playAll: this.gamestate.safeToMove && this.handCards.length > 0,
-        resetAll: this.gamestate.safeToMove && this.wildCards.length > 0,
         returnAll: this.gamestate.safeToMove && this.tableauCards.length > 0,
         sortTableau: this.gamestate.safeToMove,
+        uncoverAll: this.gamestate.safeToMove && this.wildCards.length > 0,
         useInk: this.gamestate.safeToMove && this.player.ink && (this.drawCards.length > 0 || this.discardCards.length > 0),
       };
     },
@@ -336,7 +357,7 @@ export default {
       });
     },
 
-    resetAll() {
+    uncoverAll() {
       this.wildCards.forEach((card) => {
         this.emitter.emit("clickFooter", { action: { action: "reset" }, card });
       });

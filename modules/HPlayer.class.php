@@ -279,7 +279,8 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     public function notifyRemover(HCard $card): void
     {
-        hardback::$instance->notifyAllPlayers('ink', hardback::$instance->msg['useRemover'], [
+        $msg = $card->hasRemover() ? hardback::$instance->msg['useRemover'] : hardback::$instance->msg['undoRemover'];
+        hardback::$instance->notifyAllPlayers('ink', $msg, [
             'player_id' => $this->id,
             'player_name' => $this->name,
             'genre' => $card->getGenreName(),

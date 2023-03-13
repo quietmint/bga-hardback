@@ -302,4 +302,14 @@ class action_hardback extends APP_GameAction
     $this->game->useRemover($cardId);
     self::ajaxResponse();
   }
+
+  public function undoRemover()
+  {
+    self::setAjaxMode();
+    self::checkVersion();
+    $this->game->checkActionCustom('useInk');
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $this->game->undoRemover($cardId);
+    self::ajaxResponse();
+  }
 }

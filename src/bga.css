@@ -229,7 +229,6 @@ a:visited.playername {
 
 #hword {
   border-top: 1px dotted #999;
-  margin-top: 6px;
-  padding: 6px 0 1px;
-  line-height: 1;
+  margin-top: 5px;
+  padding-top: 5px;
 }

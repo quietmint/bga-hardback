@@ -364,13 +364,13 @@ export default {
         mystery: magnifyingGlass,
         no: closeCircle,
         removerCount: backspaceIcon,
-        reset: flipHorizontal,
         romance: mdiHeart,
         shuffle: shuffleVariant,
         star: starOutlined,
         starter: bookmarkIcon,
         tableauLocation: leadPencil,
         timeless: cachedIcon,
+        uncover: flipHorizontal,
         yes: checkCircle,
       },
       icons105: {},
@@ -475,6 +475,15 @@ export default {
       );
       let prefix = location.split("_")[0];
       this.sortCards(this.locationOrder[prefix], cards);
+      if (cards.length > 0 && prefix == "offer") {
+        // Compute oldest card
+        let cardsOrder = cards;
+        if (this.locationOrder[prefix] != "order") {
+          cardsOrder = cards.slice();
+          cardsOrder.sort(firstBy("order"));
+        }
+        cardsOrder[cardsOrder.length - 1].oldest = true;
+      }
       return cards;
     },
 
