@@ -4,7 +4,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 {
     protected $id;
     protected $advert;
-    protected $attempts;
     protected $award;
     protected $coins;
     protected $color;
@@ -22,7 +21,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     {
         $this->id = intval($dbplayer['player_id']);
         $this->advert = intval($dbplayer['advert']);
-        $this->attempts = intval($dbplayer['attempts']);
         $this->award = intval($dbplayer['award']);
         $this->coins = intval($dbplayer['coins']);
         $this->color = $dbplayer['player_color'];
@@ -58,7 +56,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     {
         $json = [
             'id' => $this->id,
-            'attempts' => $this->attempts,
             'coins' => $this->coins,
             'discardLocation' => $this->getDiscardLocation(),
             'drawLocation' => $this->getDrawLocation(),
@@ -87,11 +84,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     public function getAdvert(): int
     {
         return $this->advert;
-    }
-
-    public function getAttempts(): int
-    {
-        return $this->attempts;
     }
 
     public function getAward(): int
@@ -288,14 +280,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         ]);
     }
 
-    public function addAttempt(): void
-    {
-        $this->DbLock();
-        self::DbQuery("UPDATE player SET attempts = attempts + 1 WHERE player_id = {$this->id}");
-        $this->attempts += 1;
-        $this->notifyPanel();
-    }
-
     public function addCoins(int $amount): void
     {
         if ($amount <= 0) {
@@ -394,14 +378,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($notifyPanel) {
             $this->notifyPanel();
         }
-    }
-
-    public function resetAttempts(): void
-    {
-        $this->DbLock();
-        self::DbQuery("UPDATE player SET attempts = 0 WHERE player_id = {$this->id}");
-        $this->attempts = 0;
-        $this->notifyPanel();
     }
 
     public function buyAdvert(int $points, int $coins): void

@@ -6,12 +6,10 @@
            @click.stop>
         <div v-text="i18n(options.dictionary.dict) + ' (' + options.dictionary.lang + ')'"
              class="text-center"></div>
-        <div class="mb-4 text-16 text-center">{{ attemptText }}</div>
-        <input v-if="!disabled"
-               id="lookupInput"
+        <input id="lookupInput"
                @input="input"
                :placeholder="i18n('lookupPlaceholder')"
-               class="w-96 text-24 text-center bg-blue-100 text-blue-600 dark:bg-blue-900 dark:bg-opacity-75 dark:text-blue-300 rounded-lg p-3 mb-4"
+               class="w-96 text-24 text-center bg-blue-100 text-blue-600 dark:bg-blue-900 dark:bg-opacity-75 dark:text-blue-300 rounded-lg p-3 my-4"
                autocomplete="off"
                autofocus />
         <div v-for="hist in history"
@@ -64,22 +62,8 @@ export default {
     inputEl.value = this.lookupPopup.word;
     inputEl.focus();
     inputEl.select();
-    if (this.options.unlimited) {
-      // Automatic submit
-      this.emitter.emit("clickLookup", this.lookupPopup.word);
-    }
-  },
-
-  computed: {
-    attemptText() {
-      if (!this.options.unlimited) {
-        return this.i18n("lookupAttempts", { remaining: 3 - this.myself.attempts });
-      }
-    },
-
-    disabled() {
-      return !this.options.unlimited && this.myself.attempts >= 3;
-    },
+    // Automatic submit
+    this.emitter.emit("clickLookup", this.lookupPopup.word);
   },
 
   beforeUnmount() {

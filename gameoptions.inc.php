@@ -351,23 +351,6 @@ $game_options = [
         'notdisplayedmessage' => totranslate('Standard (60 Points)'),
     ],
 
-    H_OPTION_UNLIMITED => [
-        'name' => totranslate('Unlimited Misspellings'),
-        'default' => H_YES,
-        'values' => [
-            H_NO => [
-                'name' => totranslate('No'),
-                'tmdisplay' => totranslate('3 Misspellings'),
-                'description' => totranslate('Spelling 3 invalid words ends your turn'),
-            ],
-            H_YES => [
-                'name' => totranslate('Yes'),
-                'tmdisplay' => totranslate('Unlimited Misspellings'),
-                'description' => totranslate('No penalty for spelling invalid words'),
-            ],
-        ],
-    ],
-
     H_OPTION_LOOKUP => [
         'name' => totranslate('Word Lookups'),
         'default' => H_YES,
@@ -385,18 +368,17 @@ $game_options = [
     ],
 
     H_OPTION_DECK => [
-        'name' => totranslate('Deck Visibile'),
+        'name' => totranslate('Draw Pile Visible'),
         'default' => H_YES,
         'values' => [
             H_NO => [
                 'name' => totranslate('No'),
-                'tmdisplay' => totranslate('Deck Invisible'),
-                'description' => totranslate('Cannot see cards remaining in your deck'),
+                'tmdisplay' => totranslate('Draw Pile Invisible'),
             ],
             H_YES => [
                 'name' => totranslate('Yes'),
-                'tmdisplay' => totranslate('Deck Visible'),
-                'description' => totranslate('View cards remaining in your deck anytime (helpful in turn-based games)'),
+                'tmdisplay' => totranslate('Draw Pile Visible'),
+                'description' => totranslate('View cards in your draw pile anytime (helpful in turn-based games)'),
             ]
         ],
     ],

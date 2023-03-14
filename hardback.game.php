@@ -218,7 +218,6 @@ class hardback extends Table
                 'deck' => $this->gamestate->table_globals[H_OPTION_DECK] > 0,
                 'dictionary' => WordMgr::getDictionaryInfo(),
                 'lookup' => $this->gamestate->table_globals[H_OPTION_LOOKUP] > 0,
-                'unlimited' => $this->gamestate->table_globals[H_OPTION_UNLIMITED] > 0,
             ],
             'refs' => [
                 'benefits' => $this->benefits,
@@ -431,35 +430,17 @@ class hardback extends Table
 
     function rejectWord(HPlayer $player, string $word): bool
     {
-        $msg = $this->msg['rejectedWord'];
-        $remaining = null;
-        $player->addAttempt();
-        if ($this->gamestate->table_globals[H_OPTION_UNLIMITED] == H_NO) {
-            $msg = $this->msg['rejectedWordRemaining'];
-            $remaining = max(0, 3 - $player->getAttempts());
-        }
-
         $this->incStat(1, 'invalidWords');
         $this->incStat(1, 'invalidWords', $player->getId());
         $info = WordMgr::getDictionaryInfo();
-        self::notifyAllPlayers('invalid', $msg, [
+        self::notifyAllPlayers('invalid', $this->msg['rejectedWord'], [
             'i18n' => ['dict'],
             'player_id' => $player->getId(),
             'player_name' => $player->getName(),
             'word' => $word,
             'dict' => $info['dict'],
             'lang' => $info['lang'],
-            'remaining' => $remaining,
         ]);
-
-        if ($remaining === 0) {
-            if ($this->gamestate->state()['type'] == 'multipleactiveplayer') { // during voting
-                $this->gamestate->setAllPlayersNonMultiactive('skip');
-            } else {
-                $this->skipWord();
-            }
-            return true;
-        }
         return false;
     }
 
@@ -523,26 +504,14 @@ class hardback extends Table
         if ($this->gamestate->table_globals[H_OPTION_LOOKUP] == 0) {
             throw new BgaVisibleSystemException("lookup: Not possible for $player to lookup in this game");
         }
-        if ($this->gamestate->table_globals[H_OPTION_UNLIMITED] == H_NO && $player->getAttempts() >= 3) {
-            throw new BgaVisibleSystemException("lookup: Not possible for $player to lookup with {$player->getAttempts()} invalid attempts");
-        }
 
         $valid = WordMgr::isWord($word);
         if (!$valid) {
-            $msg = '';
-            $remaining = null;
-            $player->addAttempt();
-            if ($this->gamestate->table_globals[H_OPTION_UNLIMITED] == H_NO) {
-                $msg = $this->msg['rejectedWordRemaining'];
-                $remaining = max(0, 3 - $player->getAttempts());
-            } else {
-                $this->not_a_move_notification = true;
-            }
-
             $this->incStat(1, 'invalidWords');
             $this->incStat(1, 'invalidWords', $player->getId());
             $info = WordMgr::getDictionaryInfo();
-            self::notifyPlayer($player->getId(), 'lookup', $msg, [
+            $this->not_a_move_notification = true;
+            self::notifyPlayer($player->getId(), 'lookup', '', [
                 'word' => $word,
                 'valid' => $valid,
                 'i18n' => ['dict'],
@@ -550,7 +519,6 @@ class hardback extends Table
                 'player_name' => $player->getName(),
                 'dict' => $info['dict'],
                 'lang' => $info['lang'],
-                'remaining' => $remaining,
             ]);
         } else {
             $this->not_a_move_notification = true;
@@ -1363,7 +1331,6 @@ class hardback extends Table
 
         // Reset hand and tableau
         CardMgr::reset($player->getId(), true);
-        $player->resetAttempts();
         $this->gamestate->nextState('next');
     }
 
@@ -1390,7 +1357,6 @@ class hardback extends Table
         // Reset hand and tableau
         CardMgr::reset($player->getId());
         $player->setWord(null);
-        $player->resetAttempts();
         $this->gamestate->nextState('next');
     }
 
@@ -1732,8 +1698,6 @@ class hardback extends Table
             [2112060213, "UPDATE DBPREFIX_global SET `global_value` = 1 WHERE `global_id` = 207 AND `global_value` IN (4, 5)"],
             [2112060213, "UPDATE DBPREFIX_global SET `global_id` = 100 WHERE `global_id` IN (124, 125)"],
             [2112060213, "UPDATE DBPREFIX_global SET `global_value` = 90 WHERE `global_id` = 100 AND `global_value` = 80"],
-            [2209030117, "ALTER TABLE DBPREFIX_player ADD `attempts` INT NOT NULL DEFAULT 0"],
-            [2209030117, "UPDATE DBPREFIX_player SET `attempts` = (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 40) WHERE `player_id` = (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 2)"],
             [2209030442, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (171, 1)"],
             [2209270419, "INSERT INTO DBPREFIX_global SELECT 107 AS `global_id`, CASE `global_value` WHEN 0 THEN 1 ELSE 0 END AS `global_value` FROM DBPREFIX_global WHERE `global_id` = 106"],
             [2209270419, "ALTER TABLE DBPREFIX_player ADD `award` INT NOT NULL DEFAULT 0"],
