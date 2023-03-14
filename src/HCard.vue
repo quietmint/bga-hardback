@@ -294,7 +294,7 @@ export default {
 
     clickAction() {
       if (this.myself != null) { // not spectator
-        if (this.gamestate.active && this.gamestate.name == "purchase" && this.card.location == "offer" && this.gamestate.args.cardIds.includes(this.card.id)) {
+        if (this.gamestate.active && this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
           return { action: "purchase" };
         } else if (this.gamestate.safeToMove) {
           if (this.card.location == this.myself.tableauLocation) {
@@ -456,7 +456,7 @@ export default {
               jailJail = Object.assign({ confirmation }, actionRef.jailJail);
             }
             return [jailJail, actionRef.jailTrash];
-          } else if (this.gamestate.name == "purchase" && this.card.location == "offer" && this.gamestate.args.cardIds.includes(this.card.id)) {
+          } else if (this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
             const text = this.i18n("purchaseButton", { coins: this.card.cost });
             const purchase = Object.assign({ text }, actionRef.purchase);
             return [purchase];
