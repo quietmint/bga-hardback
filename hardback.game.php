@@ -344,6 +344,12 @@ class hardback extends Table
             'definitions' => '',
         ]);
 
+        if ($this->gamestate->table_globals[H_OPTION_UNIQUE] && !WordMgr::isUniqueWord($word)) {
+            // Word must be unique
+            $this->rejectWord($player, $word, false);
+            return;
+        }
+
         $info = WordMgr::getDictionaryInfo();
         if ($info['voting']) {
             // Database pre-commit 
@@ -428,11 +434,14 @@ class hardback extends Table
         $this->giveExtraTime($player->getId());
     }
 
-    function rejectWord(HPlayer $player, string $word): bool
+    function rejectWord(HPlayer $player, string $word, bool $unique = true): bool
     {
         $this->incStat(1, 'invalidWords');
         $this->incStat(1, 'invalidWords', $player->getId());
         $info = WordMgr::getDictionaryInfo();
+        if (!$unique) {
+            $info['dict'] = clienttranslate('Unique Words');
+        }
         self::notifyAllPlayers('invalid', $this->msg['rejectedWord'], [
             'i18n' => ['dict'],
             'player_id' => $player->getId(),
@@ -505,28 +514,21 @@ class hardback extends Table
             throw new BgaVisibleSystemException("lookup: Not possible for $player to lookup in this game");
         }
 
-        $valid = WordMgr::isWord($word);
+        $unique = true;
+        if ($this->gamestate->table_globals[H_OPTION_UNIQUE]) {
+            $unique = WordMgr::isUniqueWord($word);
+        }
+        $valid = $unique && WordMgr::isWord($word);
         if (!$valid) {
             $this->incStat(1, 'invalidWords');
             $this->incStat(1, 'invalidWords', $player->getId());
-            $info = WordMgr::getDictionaryInfo();
-            $this->not_a_move_notification = true;
-            self::notifyPlayer($player->getId(), 'lookup', '', [
-                'word' => $word,
-                'valid' => $valid,
-                'i18n' => ['dict'],
-                'player_id' => $player->getId(),
-                'player_name' => $player->getName(),
-                'dict' => $info['dict'],
-                'lang' => $info['lang'],
-            ]);
-        } else {
-            $this->not_a_move_notification = true;
-            self::notifyPlayer($player->getId(), 'lookup', '', [
-                'word' => $word,
-                'valid' => $valid,
-            ]);
         }
+        $this->not_a_move_notification = true;
+        self::notifyPlayer($player->getId(), 'lookup', '', [
+            'word' => $word,
+            'valid' => $valid,
+            'unique' => $unique,
+        ]);
     }
 
     /*
@@ -1094,10 +1096,11 @@ class hardback extends Table
     {
         // Summary of all earnings
         $player = PlayerMgr::getPlayer();
-        $points = $player->getScore() - $this->getGameStateValue('startScore');
+        $score = $player->getScore() - $this->getGameStateValue('startScore');
+        WordMgr::recordWord($player->getWord(), $player->getId(), $score, $player->getCoins());
         $earnings = [
             '¢' => $player->getCoins(),
-            'star' => $points,
+            'star' => $score,
             'ink' => $player->getInk() - $this->getGameStateValue('startInk'),
             'remover' => $player->getRemover() - $this->getGameStateValue('startRemover'),
         ];
@@ -1122,12 +1125,12 @@ class hardback extends Table
 
         // Highest-scoring word
         $best = $this->getStat('bestWord', $player->getId());
-        if ($points > $best) {
-            $this->setStat($points, 'bestWord', $player->getId());
+        if ($score > $best) {
+            $this->setStat($score, 'bestWord', $player->getId());
         }
         $best = $this->getStat('bestWord');
-        if ($points > $best) {
-            $this->setStat($points, 'bestWord');
+        if ($score > $best) {
+            $this->setStat($score, 'bestWord');
         }
 
         if (!$this->gamestate->state()['args']['possible']) {
@@ -1706,6 +1709,9 @@ class hardback extends Table
             [2301081942, "UPDATE DBPREFIX_card SET `location` = CONCAT('jail_', `order`), `origin` = CONCAT('jail_', `order`) WHERE `location` = 'jail'"],
             [2301081942, "UPDATE DBPREFIX_card SET `location` = REPLACE(`location`, 'deck_', 'draw_') WHERE `location` LIKE 'deck_%'"],
             [2301081942, "UPDATE DBPREFIX_card SET `origin` = REPLACE(`origin`, 'deck_', 'draw_') WHERE `origin` LIKE 'deck_%'"],
+            [2303140155, "DELETE FROM DBPREFIX_global WHERE `global_id` = 108"],
+            [2303140155, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (108, 0)"],
+            [2303140155, "CREATE TABLE IF NOT EXISTS DBPREFIX_word ( `id` int(3) unsigned NOT NULL AUTO_INCREMENT, `word` VARCHAR(32) NOT NULL, `player_id` int(10) unsigned NOT NULL, `score` INT NOT NULL DEFAULT 0, `coins` INT NOT NULL DEFAULT 0, PRIMARY KEY (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1"],
         ];
 
         foreach ($changes as [$version, $sql]) {

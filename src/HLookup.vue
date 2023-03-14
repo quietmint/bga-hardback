@@ -16,8 +16,8 @@
              :key="hist"
              class="flex items-center mb-2">
           <Icon :icon="hist.icon"
-                :class="{ 'text-red-600': hist.icon == 'no', 'text-green-600': hist.icon == 'yes', 'animate-spin': hist.icon == 'loading' }"
-                class="inline mr-1" />
+                :class="{ 'text-red-600': hist.icon == 'no' || hist.icon == 'equal', 'text-green-600': hist.icon == 'yes', 'animate-spin': hist.icon == 'loading' }"
+                class="inline text-24 mr-1" />
           <div class="flex-grow">{{ hist.word }}</div>
           <div class="text-15">{{ hist.word.length }}</div>
         </div>

@@ -125,7 +125,7 @@ import HPlayerPanel from "./HPlayerPanel.vue";
 import { Icon, addIcon } from "@iconify/vue";
 import { firstBy } from "thenby";
 import { nextTick, computed } from "vue";
-import { throttle } from "lodash-es";
+import { remove, throttle } from "lodash-es";
 
 let lastErrorCode = null;
 
@@ -246,8 +246,9 @@ import shuffleVariant from "@iconify-icons/mdi/shuffle-variant";
 import swapVerticalBold from "@iconify-icons/mdi/swap-vertical-bold";
 
 // Lookup word icons
-import checkCircle from "@iconify-icons/mdi/check-circle";
-import closeCircle from "@iconify-icons/mdi/close-circle";
+import approximatelyEqualBox from "@iconify-icons/mdi/approximately-equal-box";
+import checkboxMarked from "@iconify-icons/mdi/checkbox-marked";
+import closeBox from "@iconify-icons/mdi/close-box";
 import loadingIcon from "@iconify-icons/mdi/loading";
 
 export default {
@@ -355,6 +356,7 @@ export default {
         dictionary: bookOpenPageVariant,
         discardLocation: shuffleVariant,
         drawLocation: cardsIcon,
+        equal: approximatelyEqualBox,
         handLocation: handRight,
         horror: mdiSkull,
         inkCount: plusBox,
@@ -362,7 +364,7 @@ export default {
         loading: loadingIcon,
         move: swapVerticalBold,
         mystery: magnifyingGlass,
-        no: closeCircle,
+        no: closeBox,
         removerCount: backspaceIcon,
         romance: mdiHeart,
         shuffle: shuffleVariant,
@@ -371,7 +373,7 @@ export default {
         tableauLocation: leadPencil,
         timeless: cachedIcon,
         uncover: flipHorizontal,
-        yes: checkCircle,
+        yes: checkboxMarked,
       },
       icons105: {},
     };
@@ -1056,7 +1058,7 @@ export default {
           let hist = this.lookupHistory[i];
           // onFormatString may add bold tag
           if (notif.args.word == hist.word || notif.args.word == `<b>${hist.word}</b>`) {
-            hist.icon = notif.args.valid ? "yes" : "no";
+            hist.icon = notif.args.valid ? "yes" : notif.args.unique ? "no" : "equal";
             break;
           }
         }
@@ -1245,8 +1247,9 @@ export default {
 
     clickLookup(word) {
       if (word) {
-        let ignore = word.length == 1 || this.lookupHistory.some((hist) => hist.word == word);
+        let ignore = word.length == 1;
         if (!ignore) {
+          remove(this.lookupHistory, (w) => w.word == word);
           this.lookupHistory.unshift({
             icon: "loading",
             word: word,

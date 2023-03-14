@@ -68,4 +68,18 @@ class WordMgr extends APP_GameClass
             throw new BgaVisibleSystemException("{$info['dict']} ({$info['lang']}) error: " . $e->getMessage());
         }
     }
+
+    public static function isUniqueWord(string $word): bool
+    {
+        return self::getUniqueValueFromDB("SELECT 1 FROM word WHERE `word` = '$word' LIMIT 1") == null;
+    }
+
+    public static function recordWord(string $word, int $player_id, int $score, int $coins): void
+    {
+        try {
+            self::DbQuery("INSERT INTO word (`word`, `player_id`, `score`, `coins`)  VALUES ('$word', $player_id, $score, $coins)");
+        } catch (Exception $e) {
+            self::warn("Cannot record word: $word");
+        }
+    }
 }

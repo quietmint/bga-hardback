@@ -105,6 +105,7 @@ define('H_VOTE_100', 91);
 define('H_OPTION_LENGTH', 105);
 define('H_OPTION_AWARDS', 101);
 define('H_OPTION_ADVERTS', 102);
+define('H_OPTION_UNIQUE', 108);
 define('H_NO', 0);
 define('H_YES', 1);
 

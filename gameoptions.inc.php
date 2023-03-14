@@ -54,8 +54,8 @@ $game_options = [
                 'description' => totranslate('Offer row doesn\'t refresh automatically. Only one player can win the top literary award.'),
             ],
             2 => [
-                'name' => totranslate('Second edition (NEW!)'),
-                'tmdisplay' => totranslate('Second edition (NEW!)'),
+                'name' => totranslate('Second edition'),
+                'tmdisplay' => totranslate('Second edition'),
                 'description' => totranslate('Discard the oldest offer row card when you do not purchase any cards. All players can win the top literary award.'),
             ],
         ]
@@ -409,6 +409,22 @@ $game_options = [
                 'name' => totranslate('Yes'),
                 'tmdisplay' => totranslate('Adverts'),
                 'description' => totranslate('Purchase points with coins'),
+            ]
+        ],
+    ],
+
+    H_OPTION_UNIQUE => [
+        'name' => totranslate('Unique Words'),
+        'default' => H_NO,
+        'values' => [
+            H_NO => [
+                'name' => totranslate('No'),
+            ],
+            H_YES => [
+                'name' => totranslate('Yes'),
+                'tmdisplay' => totranslate('Unique Words'),
+                'description' => totranslate('Reject duplicate words'),
+                'nobeginner' => true,
             ]
         ],
     ],
