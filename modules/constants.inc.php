@@ -49,7 +49,7 @@ define('H_COUNT_ACTIVE_ROMANCE', 14);
 define('H_START_SCORE', 20);
 define('H_START_INK', 21);
 define('H_START_REMOVER', 22);
-define('H_PURCHASES', 31);
+define('H_CYCLED', 31);
 
 // Game statistics
 define('H_STAT_TURNS', 10);
@@ -68,7 +68,7 @@ define('H_STAT_FLUSH', 53);
 define('H_STAT_VOTES_ACCEPT', 54);
 define('H_STAT_VOTES_REJECT', 55);
 define('H_STAT_BEST_WORD', 56);
-define('H_STAT_PURCHASE_NONE', 57);
+define('H_STAT_CYCLED', 57);
 define('H_STAT_USE_INK', 60);
 define('H_STAT_USE_REMOVER', 61);
 define('H_STAT_STARTER_CARD1', 70);

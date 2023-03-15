@@ -282,7 +282,8 @@ $machinestates = [
         'action' => 'stCleanup',
         'possibleactions' => [],
         'transitions' => [
-            'next' => H_ST_COOP_TURN,
+            'coop' => H_ST_COOP_TURN,
+            'nextPlayer' => H_ST_NEXT_PLAYER,
         ],
     ],
 
@@ -294,7 +295,8 @@ $machinestates = [
         'action' => 'stSkipTurn',
         'possibleactions' => [],
         'transitions' => [
-            'next' => H_ST_COOP_TURN,
+            'coop' => H_ST_COOP_TURN,
+            'nextPlayer' => H_ST_NEXT_PLAYER,
         ],
     ],
 

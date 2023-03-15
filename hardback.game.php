@@ -31,6 +31,9 @@ class hardback extends Table
 {
     public static $instance = null;
 
+    // Hold notifications until state transition or end of action
+    private $notifyQueue = [];
+
     function __construct()
     {
         parent::__construct();
@@ -47,8 +50,8 @@ class hardback extends Table
             'countActive' . H_HORROR => H_COUNT_ACTIVE_HORROR,
             'countActive' . H_MYSTERY => H_COUNT_ACTIVE_MYSTERY,
             'countActive' . H_ROMANCE => H_COUNT_ACTIVE_ROMANCE,
+            'cycled' => H_CYCLED,
             'deck' => H_OPTION_DECK,
-            'purchases' => H_PURCHASES,
             'startInk' => H_START_INK,
             'startRemover' => H_START_REMOVER,
             'startScore' => H_START_SCORE,
@@ -89,7 +92,7 @@ class hardback extends Table
         self::setGameStateInitialValue('countActive' . H_HORROR, 0);
         self::setGameStateInitialValue('countActive' . H_MYSTERY, 0);
         self::setGameStateInitialValue('countActive' . H_ROMANCE, 0);
-        self::setGameStateInitialValue('purchases', 0);
+        self::setGameStateInitialValue('cycled', 0);
         self::setGameStateInitialValue('startInk', 0);
         self::setGameStateInitialValue('startRemover', 0);
         self::setGameStateInitialValue('startScore', 0);
@@ -115,7 +118,7 @@ class hardback extends Table
         } else {
             self::initStat('table', 'flush', 0);
             if ($this->gamestate->table_globals[H_OPTION_RULESET] == 2) {
-                self::initStat('table', 'purchaseNone', 0);
+                self::initStat('table', 'cycled', 0);
             }
         }
 
@@ -173,11 +176,95 @@ class hardback extends Table
         return !$invalid;
     }
 
-    public function checkVersion(int $clientVersion)
+    public function checkVersion(int $clientVersion): void
     {
         $gameVersion = $this->gamestate->table_globals[H_OPTION_VERSION];
         if ($clientVersion != $gameVersion) {
             throw new BgaVisibleSystemException(self::_("A new version of this game is now available. Please reload the page (F5)."));
+        }
+    }
+
+    /*
+        enqueueCards:
+        
+        Enqueue a 'card' notification to eventually update the cards in the UI.
+        Should be called by CardMgr whenever a card is changed.
+    */
+    public function enqueueCards(array $cardIds): void
+    {
+        if (!array_key_exists('cardIds', $this->notifyQueue)) {
+            $this->notifyQueue['cardIds'] = [];
+        }
+        $this->notifyQueue['cardIds'] = array_merge($this->notifyQueue['cardIds'], $cardIds);
+    }
+
+    /*
+        enqueuePlayer:
+        
+        Enqueue a 'player' notification to eventually update the player panel in the UI.
+        Should be called by HPlayer whenever player info changes.
+    */
+    public function enqueuePlayer(int $playerId): void
+    {
+        if (!array_key_exists('playerIds', $this->notifyQueue)) {
+            $this->notifyQueue['playerIds'] = [];
+        }
+        $this->notifyQueue['playerIds'][$playerId] = true;
+    }
+
+    /*
+        enqueuePenny:
+        
+        Enqueue a 'penny' notification to eventually update Penny Dreadful's panel in the UI.
+        Should be called by HPenny whenever Penny's score changes.
+    */
+    public function enqueuePenny(): void
+    {
+        $this->notifyQueue['penny'] = true;
+    }
+
+    /*
+        sendNotify:
+        
+        Transmit all queued notifications to the UI.
+        Should be called before state transition and at the end of action processing.
+    */
+    private function sendNotify(): void
+    {
+        // Send player panel notifications
+        if (array_key_exists('playerIds', $this->notifyQueue)) {
+            foreach ($this->notifyQueue['playerIds'] as $playerId => $true) {
+                $player = PlayerMgr::getPlayer($playerId);
+                $this->notifyAllPlayers('player', '', [
+                    'player' => $player->jsonSerializeForPanel(),
+                ]);
+            }
+        }
+        if (array_key_exists('penny', $this->notifyQueue)) {
+            $penny = PlayerMgr::getPenny();
+            $this->notifyAllPlayers('penny', '', [
+                'penny' => $penny,
+            ]);
+        }
+
+        // Send card notifications
+        if (array_key_exists('cardIds', $this->notifyQueue)) {
+            $this->notifyAllPlayers('cards', '', [
+                'cards' => CardMgr::getCards($this->notifyQueue['cardIds'])
+            ]);
+        }
+
+        // Empty the notification queue
+        $this->notifyQueue = [];
+    }
+
+    public function nextState(string $to, bool $multiactive = false): void
+    {
+        $this->sendNotify();
+        if ($multiactive) {
+            $this->gamestate->setAllPlayersNonMultiactive($to);
+        } else {
+            $this->gamestate->nextState($to);
         }
     }
 
@@ -266,7 +353,7 @@ class hardback extends Table
     function stStart(): void
     {
         $this->notifyAllPlayers('message', $this->msg['dictionary'], WordMgr::getDictionaryInfo());
-        $this->gamestate->nextState('next');
+        $this->nextState('next');
     }
 
     /*
@@ -359,7 +446,7 @@ class hardback extends Table
 
             // Start the vote
             PlayerMgr::resetVoteResult();
-            $this->gamestate->nextState('vote');
+            $this->nextState('vote');
         } else {
             // Word must be valid
             $valid = WordMgr::isWord($word);
@@ -369,11 +456,11 @@ class hardback extends Table
             }
             $player->setWord($word);
             $this->acceptWord($cards);
-            $this->gamestate->nextState('next');
+            $this->nextState('next');
         }
     }
 
-    function acceptWord(array $cards)
+    function acceptWord(array $cards): void
     {
         $player = PlayerMgr::getPlayer();
         $word = $player->getWord();
@@ -383,7 +470,6 @@ class hardback extends Table
 
         // Database commit
         CardMgr::commitWord($player->getId(), $cards);
-        $player->notifyPanel();
         $this->setGameStateValue('startInk', $player->getInk());
         $this->setGameStateValue('startRemover', $player->getRemover());
         $this->setGameStateValue('startScore', $player->getScore());
@@ -421,10 +507,8 @@ class hardback extends Table
                         $msg = $this->msg['awardSecond'];
                         $args['player_name2'] = $loser->getName();
                         $loser->setAward(0);
-                        $loser->notifyPanel();
                     }
                     $player->setAward($points);
-                    $player->notifyPanel();
                     self::notifyAllPlayers('award', $msg, $args);
                 }
             }
@@ -434,7 +518,7 @@ class hardback extends Table
         $this->giveExtraTime($player->getId());
     }
 
-    function rejectWord(HPlayer $player, string $word, bool $unique = true): bool
+    function rejectWord(HPlayer $player, string $word, bool $unique = true): void
     {
         $this->incStat(1, 'invalidWords');
         $this->incStat(1, 'invalidWords', $player->getId());
@@ -450,10 +534,9 @@ class hardback extends Table
             'dict' => $info['dict'],
             'lang' => $info['lang'],
         ]);
-        return false;
     }
 
-    function argVote()
+    function argVote(): array
     {
         $player = PlayerMgr::getPlayer();
         return [
@@ -463,7 +546,7 @@ class hardback extends Table
         ];
     }
 
-    function stVote()
+    function stVote(): void
     {
         $voters = PlayerMgr::getPlayerIds(self::getActivePlayerId());
         foreach ($voters as $voter) {
@@ -472,7 +555,7 @@ class hardback extends Table
         $this->gamestate->setPlayersMultiactive($voters, '', true);
     }
 
-    function voteWord(bool $vote, int $currentId = null)
+    function voteWord(bool $vote, int $currentId = null): void
     {
         $current = PlayerMgr::getPlayer($currentId ?? self::getCurrentPlayerId());
         $current->setVote($vote);
@@ -494,20 +577,18 @@ class hardback extends Table
             ]);
             $cards = $player->getTableau(null, false); // without timeless
             $this->acceptWord($cards);
-            $this->gamestate->setAllPlayersNonMultiactive('accept');
+            $this->nextState('accept', true);
         } else if ($result == 'reject') {
             $player = PlayerMgr::getPlayer();
-            $didTransition = $this->rejectWord($player, $player->getWord());
+            $this->rejectWord($player, $player->getWord());
             $player->setWord(null);
-            if (!$didTransition) {
-                $this->gamestate->setAllPlayersNonMultiactive('reject');
-            }
+            $this->nextState('reject', true);
         } else {
             $this->gamestate->setPlayerNonMultiactive($current->getId(), '');
         }
     }
 
-    function lookup(string $word)
+    function lookup(string $word): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
         if ($this->gamestate->table_globals[H_OPTION_LOOKUP] == 0) {
@@ -603,7 +684,7 @@ class hardback extends Table
             'letter' => $card->getLetter(),
         ]);
 
-        $this->gamestate->nextState('again');
+        $this->nextState('again');
     }
 
     /*
@@ -664,7 +745,7 @@ class hardback extends Table
             'letter' => $card->getLetter(),
         ]);
 
-        $this->gamestate->nextState('again');
+        $this->nextState('again');
     }
 
     /*
@@ -738,7 +819,7 @@ class hardback extends Table
         } else if ($benefitId == H_EITHER_INK && $choice = 'remover') {
             $player->addRemover();
         }
-        $this->gamestate->nextState('again');
+        $this->nextState('again');
     }
 
     /*
@@ -760,7 +841,7 @@ class hardback extends Table
                 $player->addPoints($benefit['value'], $stat);
             }
         }
-        $this->gamestate->nextState('next');
+        $this->nextState('next');
     }
 
     /*
@@ -817,7 +898,7 @@ class hardback extends Table
                 $player->addPoints($score, 'pointsGenre');
             }
         }
-        $this->gamestate->nextState('next');
+        $this->nextState('next');
     }
 
     function argSpecialRomancePrompt(): array
@@ -865,9 +946,8 @@ class hardback extends Table
             'player_name' => $player->getName(),
             'count' => $previewCount,
         ]);
-        $player->notifyPanel();
         CardMgr::notifyCards($cards);
-        $this->gamestate->nextState('romance');
+        $this->nextState('romance');
     }
 
     function previewReturn(int $cardId): void
@@ -878,9 +958,10 @@ class hardback extends Table
             throw new BgaVisibleSystemException("previewReturn: Not possible for $player to use card $card");
         }
         CardMgr::previewReturn($card, $player->getDrawLocation());
-        $player->notifyPanel();
         if ($player->getHandCount() == 0) {
-            $this->gamestate->nextState('next');
+            $this->nextState('next');
+        } else {
+            $this->sendNotify();
         }
     }
 
@@ -892,9 +973,10 @@ class hardback extends Table
             throw new BgaVisibleSystemException("previewDiscard: Not possible for $player to use card $card");
         }
         CardMgr::discard($card, $player->getDiscardLocation());
-        $player->notifyPanel();
         if ($player->getHandCount() == 0) {
-            $this->gamestate->nextState('next');
+            $this->nextState('next');
+        } else {
+            $this->sendNotify();
         }
     }
 
@@ -962,7 +1044,7 @@ class hardback extends Table
         ]);
         $this->incStat(1, 'cardsTrash', $player->getId());
         $this->incStat(-1, 'deck' . $card->getGenre(), $player->getId());
-        $this->gamestate->nextState('again');
+        $this->nextState('again');
     }
 
 
@@ -1017,7 +1099,7 @@ class hardback extends Table
         ]);
         $this->incStat(1, 'cardsTrash', $player->getId());
         $this->incStat(-1, 'deck' . $card->getGenre(), $player->getId());
-        $this->gamestate->nextState('again');
+        $this->nextState('again');
     }
 
     /*
@@ -1076,7 +1158,8 @@ class hardback extends Table
             CardMgr::jail($player->getId(), $card);
         }
         $this->drawOfferRow();
-        $this->gamestate->nextState('again');
+        $this->setGameStateValue('cycled', 1);
+        $this->nextState('again');
     }
 
     /*
@@ -1147,6 +1230,7 @@ class hardback extends Table
         self::notifyAllPlayers('message', $this->msg['flush'], [
             'player_name' => $player->getName(),
         ]);
+        $this->setGameStateValue('cycled', 1);
         $this->skip();
     }
 
@@ -1237,17 +1321,17 @@ class hardback extends Table
                 if (!$endGameConfirm) {
                     throw new BgaUserException('!!!endGameWarning');
                 }
-                $this->gamestate->nextState('end');
+                $this->nextState('end');
             }
         }
 
         if ($oldLocation == 'offer') {
             $this->drawOfferRow();
         }
-        $this->incGameStateValue('purchases', 1);
+        $this->setGameStateValue('cycled', 1);
         $this->incStat(1, 'cardsPurchase', $player->getId());
         $this->incStat(1, 'deck' . $card->getGenre(), $player->getId());
-        $this->gamestate->nextState('again');
+        $this->nextState('again');
     }
 
     function convert(bool $endGameConfirm = false): void
@@ -1258,7 +1342,7 @@ class hardback extends Table
             throw new BgaVisibleSystemException("convert: Not possible for $player to convert ink");
         }
 
-        $player->spendInk($convert['ink'], false);
+        $player->spendInk($convert['ink']);
         $player->addCoins($convert['coins']);
         self::notifyAllPlayers('message', $this->msg['convert'], [
             'player_name' => $player->getName(),
@@ -1283,11 +1367,11 @@ class hardback extends Table
                 if (!$endGameConfirm) {
                     throw new BgaUserException('!!!endGameWarning');
                 }
-                $this->gamestate->nextState('end');
+                $this->nextState('end');
             }
         }
 
-        $this->gamestate->nextState('again');
+        $this->nextState('again');
     }
 
     function advert(): void
@@ -1306,12 +1390,12 @@ class hardback extends Table
             'coins' => $advert['coins'],
             'iconCoins' => '¢',
         ]);
-        $this->gamestate->nextState('again');
+        $this->nextState('again');
     }
 
     function skip(): void
     {
-        $this->gamestate->nextState('next');
+        $this->nextState('next');
     }
 
     /*
@@ -1321,20 +1405,19 @@ class hardback extends Table
 
     function skipWord(): void
     {
-        $this->gamestate->nextState('skip');
+        $this->nextState('skip');
     }
 
     function stSkipTurn(): void
     {
         $player = PlayerMgr::getPlayer();
-        self::notifyAllPlayers('message', $this->msg['skipWord'], [
+        self::notifyAllPlayers('pause', $this->msg['skipWord'], [
             'player_name' => $player->getName(),
             'duration' => 1500,
         ]);
 
         // Reset hand and tableau
-        CardMgr::reset($player->getId(), true);
-        $this->gamestate->nextState('next');
+        $this->cleanup(true);
     }
 
     function stCleanup(): void
@@ -1343,7 +1426,7 @@ class hardback extends Table
         $amount = $player->getCoins();
         if ($amount > 0) {
             // Purchase ink with remaining coins
-            $player->spendCoins($amount, false);
+            $player->spendCoins($amount);
             $player->addInk($amount);
             $this->notifyAllPlayers('pause', $this->msg['endTurnInk'], [
                 'player_name' => $player->getName(),
@@ -1358,47 +1441,51 @@ class hardback extends Table
         }
 
         // Reset hand and tableau
-        CardMgr::reset($player->getId());
+        $this->cleanup();
+    }
+
+    function cleanup(bool $skipWord = false): void
+    {
+        // Reset hand and tableau
+        $player = PlayerMgr::getPlayer();
+        CardMgr::reset($player->getId(), $skipWord);
         $player->setWord(null);
-        $this->gamestate->nextState('next');
+
+        if ($this->gamestate->table_globals[H_OPTION_COOP] == H_NO) {
+            if ($this->gamestate->table_globals[H_OPTION_RULESET] == 2) {
+                // New rules: Cycle the offer row
+                $cycled = intval($this->getGameStateValue('cycled'));
+                if ($cycled == 0) {
+                    // Discard the oldest offer row card
+                    $offer = CardMgr::getOffer();
+                    $card = end($offer);
+                    CardMgr::discard($card, 'discard');
+                    $this->incStat(1, 'cycled');
+                    self::notifyAllPlayers('message', $this->msg['cycled'], [
+                        'genre' => $card->getGenreName(),
+                        'letter' => $card->getLetter(),
+                    ]);
+                    // Draw a new card
+                    $this->drawOfferRow();
+                }
+            }
+            $this->setGameStateValue('cycled', 0);
+            $this->nextState('nextPlayer');
+        } else {
+            $this->nextState('coop');
+        }
     }
 
     /*
      * COOPERATIVE ANTHOLOGY
      */
 
-    function stCoopTurn()
+    function stCoopTurn(): void
     {
-        // New rules: Cycle the offer row
-        $player = PlayerMgr::getPlayer();
-        if ($this->gamestate->table_globals[H_OPTION_RULESET] == 2 && $this->gamestate->table_globals[H_OPTION_COOP] == H_NO) {
-            $purchases = intval($this->getGameStateValue('purchases'));
-            if ($purchases == 0) {
-                // Discard the oldest offer row card
-                $offer = CardMgr::getOffer();
-                $card = end($offer);
-                CardMgr::discard($card, 'discard');
-                $this->incStat(1, 'purchaseNone');
-                self::notifyAllPlayers('message', $this->msg['purchaseNone'], [
-                    'player_name' => $player->getName(),
-                    'genre' => $card->getGenreName(),
-                    'letter' => $card->getLetter(),
-                ]);
-                // Draw a new card
-                $draw = $this->drawOfferRow();
-            }
-        }
-        $this->setGameStateValue('purchases', 0);
-
-        if ($this->gamestate->table_globals[H_OPTION_COOP] == H_NO || $player->isEliminated() || $player->isZombie()) {
-            $this->gamestate->nextState('next');
-            return;
-        }
-
         // Check for win
         $penny = PlayerMgr::getPenny();
         if ($this->getGameProgression() >= 100) {
-            $this->gamestate->nextState('end');
+            $this->nextState('end');
             return;
         }
 
@@ -1440,7 +1527,6 @@ class hardback extends Table
                 'letter' => $card->getLetter(),
             ]);
             CardMgr::discard($card, 'discard');
-            $penny->notifyPanel();
             $this->drawOfferRow();
         }
 
@@ -1449,9 +1535,9 @@ class hardback extends Table
 
         // Check for lose
         if ($penny->getScore() >= $this->getGameLength()) {
-            $this->gamestate->nextState('end');
+            $this->nextState('end');
         } else {
-            $this->gamestate->nextState('next');
+            $this->nextState('next');
         }
     }
 
@@ -1477,7 +1563,6 @@ class hardback extends Table
                     ]);
                     CardMgr::discard($discard, $player->getDiscardLocation(), false);
                     $discard = CardMgr::getCard($discard->getId());
-                    $player->notifyPanel();
                     CardMgr::notifyCards([
                         $draw->getId() => $draw,
                         $discard->getId() => $discard,
@@ -1508,7 +1593,7 @@ class hardback extends Table
         if ($player->getOrder() == 1) {
             // Check for game end
             if ($this->getGameProgression() >= 100) {
-                $this->gamestate->nextState('end');
+                $this->nextState('end');
                 return;
             }
 
@@ -1518,7 +1603,7 @@ class hardback extends Table
 
         // Give extra time
         $this->giveExtraTime($player->getId());
-        $this->gamestate->nextState('playerTurn');
+        $this->nextState('playerTurn');
     }
 
     /*
@@ -1533,11 +1618,17 @@ class hardback extends Table
             throw new BgaUserException($this->msg['errorEmpty']);
         }
         $card = reset($cards);
-        $player->spendInk();
-        $player->notifyInk($card);
         CardMgr::inkCard($card);
+        $player->spendInk();
         $this->incStat(1, 'useInk', $player->getId());
+        $this->notifyAllPlayers('ink', $this->msg['useInk'], [
+            'player_id' => $player->getId(),
+            'player_name' => $player->getName(),
+            'genre' => $card->getGenreName(),
+            'letter' => $card->getLetter(),
+        ]);
         CardMgr::notifyCards($cards);
+        $this->sendNotify();
 
         $penny = PlayerMgr::getPenny();
         if ($penny->isGenreActive(H_HORROR)) {
@@ -1559,7 +1650,7 @@ class hardback extends Table
                 if (!$endGameConfirm) {
                     throw new BgaUserException('!!!endGameWarning');
                 }
-                $this->gamestate->nextState('end');
+                $this->nextState('end');
             }
         }
     }
@@ -1574,11 +1665,17 @@ class hardback extends Table
         if (!$card->hasInk()) {
             throw new BgaVisibleSystemException("useRemover: Card $card is not inked");
         }
-        $player->spendRemover();
         CardMgr::inkCard($card, H_HAS_REMOVER);
-        $player->notifyRemover($card);
+        $player->spendRemover();
         $this->incStat(1, 'useRemover', $player->getId());
+        $this->notifyAllPlayers('ink', $this->msg['useRemover'], [
+            'player_id' => $player->getId(),
+            'player_name' => $player->getName(),
+            'genre' => $card->getGenreName(),
+            'letter' => $card->getLetter(),
+        ]);
         CardMgr::notifyCards($card);
+        $this->sendNotify();
     }
 
     function undoRemover(int $cardId): void
@@ -1591,11 +1688,17 @@ class hardback extends Table
         if (!$card->hasRemover()) {
             throw new BgaVisibleSystemException("undoRemover: Card $card was not inked");
         }
-        $player->addRemover();
         CardMgr::inkCard($card);
-        $player->notifyRemover($card);
+        $player->addRemover();
         $this->incStat(-1, 'useRemover', $player->getId());
+        $this->notifyAllPlayers('ink', $this->msg['undoRemover'], [
+            'player_id' => $player->getId(),
+            'player_name' => $player->getName(),
+            'genre' => $card->getGenreName(),
+            'letter' => $card->getLetter(),
+        ]);
         CardMgr::notifyCards($card);
+        $this->sendNotify();
     }
 
     /*
@@ -1641,7 +1744,7 @@ class hardback extends Table
         // Move all cards to tableau
         CardMgr::endGameCleanup();
         CardMgr::deletePreviewNotifications();
-        $this->gamestate->nextState('gameEnd');
+        $this->nextState('gameEnd');
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1666,7 +1769,7 @@ class hardback extends Table
         if ($state['name'] == 'vote') {
             $this->voteWord(true, $active_player);
         } else {
-            $this->gamestate->nextState('zombie');
+            $this->nextState('zombie');
         }
     }
 
@@ -1685,7 +1788,7 @@ class hardback extends Table
     
     */
 
-    function upgradeTableDb($from_version)
+    function upgradeTableDb($from_version): void
     {
         $changes = [
             [2103240527, "UPDATE DBPREFIX_card SET `location` = 'discard', `origin` = 'discard' WHERE `location` IN ('discard_0', 'trash') AND `refId` <= 140"],
@@ -1737,7 +1840,7 @@ class hardback extends Table
     ////////// Production bug report handler
     //////////
 
-    public function loadBug($reportId)
+    public function loadBug($reportId): void
     {
         $db = explode('_', self::getUniqueValueFromDB("SELECT SUBSTRING_INDEX(DATABASE(), '_', -2)"));
         $game = $db[0];
@@ -1752,7 +1855,7 @@ class hardback extends Table
         ]);
     }
 
-    public function loadBugSQL($reportId)
+    public function loadBugSQL($reportId): void
     {
         $studioPlayer = self::getCurrentPlayerId();
         $playerIds = self::getObjectListFromDb("SELECT player_id FROM player", true);

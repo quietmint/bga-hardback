@@ -93,8 +93,8 @@ $stats_type = [
             'name' => totranslate('Flush Offer Row'),
             'type' => 'int',
         ],
-        'purchaseNone' => [
-            'id' => H_STAT_PURCHASE_NONE,
+        'cycled' => [
+            'id' => H_STAT_CYCLED,
             'name' => totranslate('Discard Offer Row (No Purchase)'),
             'type' => 'int',
         ],

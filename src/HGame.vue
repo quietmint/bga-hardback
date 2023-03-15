@@ -1069,8 +1069,8 @@ export default {
         Object.assign(this.gamedatas.penny, notif.args.penny);
       } else if (notif.type == "player") {
         Object.assign(this.gamedatas.players[notif.args.player.id], notif.args.player);
-        if (notif.args.allScore) {
-          Object.keys(this.gamedatas.players).forEach((id) => this.game.scoreCtrl[id].setValue(notif.args.allScore));
+        if (this.gamedatas.options.coop) {
+          Object.keys(this.gamedatas.players).forEach((id) => this.game.scoreCtrl[id].setValue(notif.args.player.score));
         } else {
           this.game.scoreCtrl[notif.args.player.id].setValue(notif.args.player.score);
         }

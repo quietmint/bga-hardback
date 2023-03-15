@@ -476,7 +476,6 @@ class CardMgr extends APP_GameClass
             $locations[] = $location;
             $sql = "UPDATE card SET `ink` = NULL, `wild` = NULL, `factor` = 1, `origin` = '$location', `location` = '$location', `order` = -1 WHERE `origin` LIKE '%_{$player->getId()}'";
             self::DbQuery($sql);
-            $player->notifyPanel();
         }
         self::notifyCards(self::getCardsInLocation($locations));
     }
@@ -651,7 +650,6 @@ class CardMgr extends APP_GameClass
 
         // Disposition cards
         $discardIds = [];
-        $owners = [];
         foreach ($cards as $card) {
             if ($card->isTimeless() && !$card->isWild() && $card->isLocation('tableau')) {
                 $owner = $card->getOwner() ?? $playerId;
@@ -669,15 +667,11 @@ class CardMgr extends APP_GameClass
                 } else {
                     // Discard to owner
                     self::discard($card, self::getDiscardLocation($owner), false);
-                    $owners[$owner] = true;
                 }
             } else {
                 // Discard normally
                 $discardIds[] = $card->getId();
             }
-        }
-        foreach ($owners as $ownerId => $true) {
-            PlayerMgr::getPlayer($ownerId)->notifyPanel();
         }
 
         // Discard remaining cards

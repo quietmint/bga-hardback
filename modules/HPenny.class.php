@@ -13,13 +13,6 @@ class HPenny extends APP_GameClass implements JsonSerializable
 
     /***** Coop Functions *****/
 
-    public function notifyPanel(): void
-    {
-        hardback::$instance->notifyAllPlayers('penny', '', [
-            'penny' => $this,
-        ]);
-    }
-
     public function getGenre(): int
     {
         return intval(hardback::$instance->getStat('coopGenre'));
@@ -59,6 +52,6 @@ class HPenny extends APP_GameClass implements JsonSerializable
             return;
         }
         hardback::$instance->incStat($amount, 'coopScore');
-        $this->notifyPanel();
+        hardback::$instance->enqueuePenny();
     }
 }

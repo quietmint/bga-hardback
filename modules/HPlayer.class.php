@@ -248,38 +248,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         return $this->id == hardback::$instance->getActivePlayerId();
     }
 
-    public function notifyPanel(string $hint = null): void
-    {
-        $args = [
-            'player' => $this->jsonSerializeForPanel(),
-        ];
-        if ($hint == 'allScore') {
-            $args['allScore'] = $this->score;
-        }
-        hardback::$instance->notifyAllPlayers('player', '', $args);
-    }
-
-    public function notifyInk(HCard $card): void
-    {
-        hardback::$instance->notifyAllPlayers('ink', hardback::$instance->msg['useInk'], [
-            'player_id' => $this->id,
-            'player_name' => $this->name,
-            'genre' => $card->getGenreName(),
-            'letter' => $card->getLetter(),
-        ]);
-    }
-
-    public function notifyRemover(HCard $card): void
-    {
-        $msg = $card->hasRemover() ? hardback::$instance->msg['useRemover'] : hardback::$instance->msg['undoRemover'];
-        hardback::$instance->notifyAllPlayers('ink', $msg, [
-            'player_id' => $this->id,
-            'player_name' => $this->name,
-            'genre' => $card->getGenreName(),
-            'letter' => $card->getLetter(),
-        ]);
-    }
-
     public function addCoins(int $amount): void
     {
         if ($amount <= 0) {
@@ -288,7 +256,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->DbLock();
         self::DbQuery("UPDATE player SET coins = coins + $amount WHERE player_id = {$this->id}");
         $this->coins += $amount;
-        $this->notifyPanel();
+        hardback::$instance->enqueuePlayer($this->id);
     }
 
     public function addPoints(int $amount, string $stat): void
@@ -297,17 +265,14 @@ class HPlayer extends APP_GameClass implements JsonSerializable
             return;
         }
         hardback::$instance->incStat($amount, $stat, $this->id);
-        $hint = null;
         $this->DbLock();
         $sql = "UPDATE player SET player_score = player_score + $amount";
         if (hardback::$instance->gamestate->table_globals[H_OPTION_COOP] == H_NO) {
             $sql .= " WHERE player_id = {$this->id}";
-        } else {
-            $hint = 'allScore';
         }
         self::DbQuery($sql);
         $this->score += $amount;
-        $this->notifyPanel($hint);
+        hardback::$instance->enqueuePlayer($this->id);
     }
 
     public function addInk(int $amount = 1): void
@@ -318,7 +283,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->DbLock();
         self::DbQuery("UPDATE player SET ink = ink + $amount WHERE player_id = {$this->id}");
         $this->ink += $amount;
-        $this->notifyPanel();
+        hardback::$instance->enqueuePlayer($this->id);
     }
 
     public function addRemover(int $amount = 1): void
@@ -329,10 +294,10 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->DbLock();
         self::DbQuery("UPDATE player SET remover = remover + $amount WHERE player_id = {$this->id}");
         $this->remover += $amount;
-        $this->notifyPanel();
+        hardback::$instance->enqueuePlayer($this->id);
     }
 
-    public function spendCoins(int $amount, bool $notifyPanel = true): void
+    public function spendCoins(int $amount): void
     {
         if ($amount <= 0) {
             return;
@@ -343,12 +308,10 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if (self::DbAffectedRow() == 0) {
             throw new BgaVisibleSystemException("spendCoins: $this does not have {$amount}¢");
         }
-        if ($notifyPanel) {
-            $this->notifyPanel();
-        }
+        hardback::$instance->enqueuePlayer($this->id);
     }
 
-    public function spendInk(int $amount = 1, bool $notifyPanel = true): void
+    public function spendInk(int $amount = 1): void
     {
         if ($amount <= 0) {
             return;
@@ -359,12 +322,10 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if (self::DbAffectedRow() == 0) {
             throw new BgaVisibleSystemException("spendInk: $this does not have $amount ink");
         }
-        if ($notifyPanel) {
-            $this->notifyPanel();
-        }
+        hardback::$instance->enqueuePlayer($this->id);
     }
 
-    public function spendRemover(int $amount = 1, bool $notifyPanel = true): void
+    public function spendRemover(int $amount = 1): void
     {
         if ($amount <= 0) {
             return;
@@ -375,9 +336,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if (self::DbAffectedRow() == 0) {
             throw new BgaVisibleSystemException("spendRemover: $this does not have $amount remover");
         }
-        if ($notifyPanel) {
-            $this->notifyPanel();
-        }
+        hardback::$instance->enqueuePlayer($this->id);
     }
 
     public function buyAdvert(int $points, int $coins): void
@@ -385,7 +344,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->DbLock();
         self::DbQuery("UPDATE player SET advert = $points WHERE player_id = {$this->id}");
         $this->advert = $points;
-        $this->spendCoins($coins, false);
+        $this->spendCoins($coins);
         $this->addPoints($points, 'pointsAdvert');
     }
 
@@ -394,6 +353,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->DbLock();
         self::DbQuery("UPDATE player SET award = $points WHERE player_id = {$this->id}");
         $this->award = $points;
+        hardback::$instance->enqueuePlayer($this->id);
     }
 
     public function setVote(bool $vote): void
@@ -409,6 +369,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->DbLock();
         self::DbQuery("UPDATE player SET word = " . ($word == null ? "NULL" : "'$word'") . " WHERE player_id = {$this->id}");
         $this->word = $word;
+        hardback::$instance->enqueuePlayer($this->id);
     }
 
     private function DbLock()
