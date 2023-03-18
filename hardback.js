@@ -51,6 +51,7 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
       this.notifqueue.setSynchronous("cards");
       dojo.subscribe("cardsPreview", this, "onNotify");
       this.notifqueue.setSynchronous("cardsPreview");
+      dojo.subscribe("history", this, "onNotify");
       dojo.subscribe("ink", this, "onNotify");
       dojo.subscribe("invalid", this, "onNotify");
       dojo.subscribe("lookup", this, "onNotify");

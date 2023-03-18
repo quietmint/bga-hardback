@@ -30,7 +30,7 @@
                 :icon="card.genreName"
                 class="icon" />
           <div v-if="card.cost">{{ card.cost }}¢</div>
-          <div v-if="card.points">{{ card.points }}
+          <div v-if="card.points">{{ card.points }}-NO-BREAK-
             <Icon icon="star"
                   class="inline star" />
           </div>

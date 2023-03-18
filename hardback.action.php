@@ -81,9 +81,9 @@ class action_hardback extends APP_GameAction
     self::setAjaxMode();
     self::checkVersion();
     $this->game->checkAction('confirmWord');
-    $cardIds = $this->getArgIdList('cardIds', true);
-    $wildMask = self::getArg('wildMask', AT_alphanum, true);
-    $this->game->confirmWord($cardIds, $wildMask);
+    $tableauIds = $this->getArgIdList('tableauIds', true);
+    $tableauMask = self::getArg('tableauMask', AT_alphanum, true);
+    $this->game->confirmWord($tableauIds, $tableauMask);
     self::ajaxResponse();
   }
 

@@ -39,10 +39,10 @@ CREATE TABLE IF NOT EXISTS `resolve` (
 
 CREATE TABLE IF NOT EXISTS `word` (
   `id` int(3) unsigned NOT NULL AUTO_INCREMENT,
-  `word` VARCHAR(32) NOT NULL,
   `player_id` int(10) unsigned NOT NULL,
-  `score` INT NOT NULL DEFAULT 0,
+  `word` VARCHAR(32) NOT NULL,
   `coins` INT NOT NULL DEFAULT 0,
+  `score` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 

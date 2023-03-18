@@ -138,6 +138,15 @@ class APP_GameAction extends APP_GameClass
 
 class Table extends APP_GameClass
 {
+    public $adverts;
+    public $awards;
+    public $benefits;
+    public $cards;
+    public $gamestate;
+    public $i18n;
+    public $msg;
+    public $not_a_move_notification = false;
+    public $signatures;
 
     static function getGameinfos()
     {

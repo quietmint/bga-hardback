@@ -12,11 +12,11 @@
                class="w-96 text-24 text-center bg-blue-100 text-blue-600 dark:bg-blue-900 dark:bg-opacity-75 dark:text-blue-300 rounded-lg p-3 my-4"
                autocomplete="off"
                autofocus />
-        <div v-for="hist in history"
+        <div v-for="hist in lookupHistory"
              :key="hist"
              class="flex items-center mb-2">
           <Icon :icon="hist.icon"
-                :class="{ 'text-red-600': hist.icon == 'no' || hist.icon == 'equal', 'text-green-600': hist.icon == 'yes', 'animate-spin': hist.icon == 'loading' }"
+                :class="{ 'text-red-600': hist.icon == 'no', 'text-green-600': hist.icon == 'yes', 'animate-spin': hist.icon == 'loading' }"
                 class="inline text-24 mr-1" />
           <div class="flex-grow">{{ hist.word }}</div>
           <div class="text-15">{{ hist.word.length }}</div>
@@ -38,7 +38,7 @@ export default {
   components: { Icon },
 
   props: {
-    history: {
+    lookupHistory: {
       type: Array,
       required: true,
     },

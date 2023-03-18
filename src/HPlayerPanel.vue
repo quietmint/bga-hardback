@@ -27,7 +27,7 @@
                    :key="key"
                    class="px-2 py-1 border-t border-black border-opacity-30">
                 {{ i18n("awardLetters", { length: key }) }}
-                <span class="pl-4">{{ value }}
+                <span class="pl-4">{{ value }}-NO-BREAK-
                   <Icon icon="star"
                         class="inline text-18" />
                 </span>
@@ -36,7 +36,7 @@
           </template>
           <template v-slot:default>
             <div :id="'tut_award_p' + player.id"
-                 class="panel-opt">{{ player.award || "" }}
+                 class="panel-opt">{{ player.award || "" }}-NO-BREAK-
               <Icon v-if="player.award"
                     class="inline text-20"
                     icon="star" />
@@ -54,7 +54,7 @@
                    :key="key"
                    class="px-2 py-1 border-t border-black border-opacity-30">
                 {{ key }}¢
-                <span class="pl-4">{{ value }}
+                <span class="pl-4">{{ value }}-NO-BREAK-
                   <Icon icon="star"
                         class="inline text-18" />
                 </span>
@@ -63,7 +63,7 @@
           </template>
           <template v-slot:default>
             <div :id="'tut_advert_p' + player.id"
-                 class="panel-opt">{{ player.advert || "" }}
+                 class="panel-opt">{{ player.advert || "" }}-NO-BREAK-
               <Icon v-if="player.advert"
                     class="inline text-20"
                     icon="star" />

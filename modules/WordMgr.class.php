@@ -69,17 +69,37 @@ class WordMgr extends APP_GameClass
         }
     }
 
-    public static function isUniqueWord(string $word): bool
+    public static function getHistory(): array
     {
-        return self::getUniqueValueFromDB("SELECT 1 FROM word WHERE `word` = '$word' LIMIT 1") == null;
+        $history = [];
+        try {
+            $sql = "SELECT `id`, `player_id`, `word`, `score`, `coins` FROM word ORDER BY `id`";
+            $history = array_values(array_map(function ($dbrow) {
+                return [
+                    'id' => intval($dbrow['id']),
+                    'player_id' => intval($dbrow['player_id']),
+                    'word' => $dbrow['word'],
+                    'score' => intval($dbrow['score']),
+                    'coins' => intval($dbrow['coins']),
+                ];
+            }, self::getCollectionFromDb($sql)));
+        } catch (Exception $e) {
+            self::warn("Cannot get word history");
+        }
+        return $history;
     }
 
-    public static function recordWord(string $word, int $player_id, int $score, int $coins): void
+    public static function isHistory(string $word): bool
+    {
+        return self::getUniqueValueFromDB("SELECT 1 FROM word WHERE `word` = '$word' LIMIT 1") != null;
+    }
+
+    public static function recordHistory(int $player_id, string $word, int $coins, int $score): void
     {
         try {
-            self::DbQuery("INSERT INTO word (`word`, `player_id`, `score`, `coins`)  VALUES ('$word', $player_id, $score, $coins)");
+            self::DbQuery("INSERT INTO word (`player_id`, `word`, `coins`, `score`) VALUES ($player_id, '$word', $coins, $score)");
         } catch (Exception $e) {
-            self::warn("Cannot record word: $word");
+            self::warn("Cannot record word history: $word");
         }
     }
 }

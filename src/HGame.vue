@@ -31,7 +31,7 @@
     <!-- Lookup popup -->
     <transition name="fade">
       <HLookup v-if="lookupPopup"
-               :history="lookupHistory"
+               :lookupHistory="lookupHistory"
                :lookupPopup="lookupPopup"
                :myself="myself"
                :options="gamedatas.options" />
@@ -53,6 +53,57 @@
          class="m-4 p-3 text-17 text-center font-bold border-2 border-red-700 bg-white bg-opacity-50"
          v-text="i18n('finalRound')"></div>
 
+    <!-- Final word history -->
+    <div v-if="wordHistory"
+         class="select-text pagesection">
+      <table class="statstable">
+        <thead>
+          <tr>
+            <th @click="historySort = 'id'"
+                class="cursor-pointer"
+                width="5%">#</th>
+            <th v-text="i18n('playerHeader')"
+                @click="historySort = 'player.order'"
+                class="cursor-pointer"></th>
+            <th v-text="i18n('wordHeader')"
+                @click="historySort = 'word'"
+                class="cursor-pointer"></th>
+            <th v-text="i18n('lengthHeader')"
+                @click="historySort = '-length'"
+                class="cursor-pointer"
+                width="10%"></th>
+            <th @click="historySort = '-coins'"
+                class="cursor-pointer"
+                width="10%">¢</th>
+            <th @click="historySort = '-score'"
+                class="cursor-pointer"
+                width="10%">
+              <Icon icon="star"
+                    class="inline text-18" />
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="hist in wordHistory"
+              :key="hist.id"
+              :class="hist.player.colorBg"
+              class="bg-opacity-20">
+            <td>{{ hist.id }}</td>
+            <td :class="hist.player.colorText"
+                class="font-bold break-all"
+                v-text="hist.player.name"></td>
+            <td>{{ hist.word }}</td>
+            <td>{{ hist.word.length }}</td>
+            <td>{{ hist.coins }}¢</td>
+            <td class="whitespace-nowrap">{{ hist.score }}-NO-BREAK-
+              <Icon icon="star"
+                    class="inline text-18" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- Myself area -->
     <HPlayerArea v-if="myself"
                  :player="myself" />
@@ -62,7 +113,7 @@
          class="px-1 py-3 border-t-2 border-black">
       <div class="flex leading-8">
         <div id="tut_timeless_title"
-             class="title text-17 font-bold flex-grow">{{ i18n('timelessLocation') }} ({{ timelessCards.length }})</div>
+             class="title text-17 font-bold flex-grow">{{ i18n("timelessLocation") }} ({{ timelessCards.length }})</div>
       </div>
       <HCardList :cards="timelessCards"
                  location="timeless" />
@@ -204,21 +255,6 @@ const getIcon = (key, cssClass) => {
     return el.outerHTML.replace(/ id=.*? /, ` class="icon-${key} ${cssClass}" `);
   }
 };
-const transitionEnd = (el) => {
-  return new Promise((resolve) => {
-    function onTransition(ev) {
-      if (ev.target == el) {
-        el.removeEventListener("transitionend", onTransition);
-        el.removeEventListener("transitioncancel", onTransition);
-        clearTimeout(timeout);
-        resolve();
-      }
-    }
-    el.addEventListener("transitionend", onTransition);
-    el.addEventListener("transitioncancel", onTransition);
-    const timeout = setTimeout(() => onTransition({ target: el }), 2400);
-  });
-};
 
 // Genre icons
 import bookmarkIcon from "@iconify-icons/mdi/bookmark";
@@ -272,7 +308,7 @@ export default {
   },
 
   created() {
-    this.previewWord = throttle(this.previewWord, 1500);
+    this.previewWord = throttle(this.previewWord, 1000, { leading: false, trailing: true });
     this.takeActionAjax = queue(this.takeActionAjax);
     for (const key in this.icons) {
       addIcon(key, this.icons[key]);
@@ -318,6 +354,8 @@ export default {
       gamedatas: {
         cards: {},
         finalRound: false,
+        gameLength: 0,
+        history: [],
         options: {},
         penny: {},
         players: {},
@@ -334,6 +372,7 @@ export default {
       gamestate: {},
 
       drag: null,
+      historySort: "id",
       keyboardPopup: null,
       lookupHistory: [],
       lookupPopup: null,
@@ -432,6 +471,27 @@ export default {
     warningVisible() {
       return window.PointerEvent === undefined && this.prefs.drag;
     },
+
+    wordHistory() {
+      if (this.gamedatas.history && this.gamedatas.history.length > 0) {
+        const history = this.gamedatas.history.map(this.populateWordHistory);
+        let sorter = null;
+        if (this.historySort == "-length") {
+          sorter = firstBy((hist) => hist.word.length, "desc");
+        } else if (this.historySort == "player.order") {
+          sorter = firstBy((hist) => hist.player.order);
+        } else if (this.historySort.startsWith("-")) {
+          sorter = firstBy(this.historySort.substring(1), "desc");
+        } else {
+          sorter = firstBy(this.historySort);
+        }
+        if (this.historySort != "id") {
+          sorter = sorter.thenBy("id");
+        }
+        history.sort(sorter);
+        return history;
+      }
+    },
   },
 
   methods: {
@@ -529,7 +589,7 @@ export default {
 
     nextOrderInLocation(location) {
       const cards = this.cardsInLocation(location);
-      const max = cards.map((card) => card.order).reduce((acc, cur) => Math.max(acc, cur), -1);
+      const max = cards.map((card) => card.order).reduce((acc, cur) => Math.max(acc, cur), 0);
       return max + 1;
     },
 
@@ -636,123 +696,115 @@ export default {
       return players;
     },
 
+    populateWordHistory(hist) {
+      hist.player = this.players[hist.player_id] || {};
+      return hist;
+    },
+
     /*
      * Animation
      */
-    async animateCard(card, changes) {
-      if (changes) {
-        card = Object.assign({}, card, changes);
-      }
-
-      if (this.gamestate.instant || !this.prefs.animation) {
-        // Instant replay, no animation
-        this.gamedatas.cards[card.id] = card;
-        return;
-      }
-
-      const oldCard = this.gamedatas.cards[card.id];
-      if (oldCard != null && (oldCard.location == card.location || (oldCard.location == "offer" && card.location.startsWith("jail")))) {
-        // Same location, no animation
-        this.gamedatas.cards[card.id] = card;
-        // Delay for Vue to animate the reorder
-        if (oldCard.order != card.order || (oldCard.location == "offer" && card.location.startsWith("jail"))) {
-          await sleep(600);
-        }
-        return;
-      }
-
-      // Compute start position
-      let cardEl = null;
-      let start = null;
-      let end = null;
-      if (oldCard != null) {
-        cardEl = this.getCardEl(oldCard);
-        start = getRect(cardEl);
-      }
-
-      const visible = card.location.startsWith("jail") || card.location.startsWith("timeless") || this.locationVisible.has(card.location);
-      if (!start && !visible) {
-        // Invisible card movement, no animation
-        this.gamedatas.cards[card.id] = card;
-        return;
-      }
-
-      let mode = null;
-      if (start && !visible) {
-        mode = "leave";
-        let tabEl = document.getElementById("tab_" + card.location);
-        if (tabEl) {
-          // Exit to tab
-          end = getRect(tabEl);
-        }
-        if (end == null) {
-          // Exit below
-          end = { top: window.innerHeight + start.height, left: start.left };
-        }
-
-        // Clone, which will be animated
-        const rootEl = document.getElementById("HGame");
-        const root = getRect(rootEl);
-        const top = end.top - root.top;
-        const left = end.left - root.left;
-        cardEl = cardEl.cloneNode(true);
-        cardEl.id = "";
-        cardEl.style.position = "absolute";
-        cardEl.style.top = top + "px";
-        cardEl.style.left = left + "px";
-        rootEl.appendChild(cardEl);
-        await repaint();
-        end = getRect(cardEl);
-
-        // Vue will delete the original
-        this.gamedatas.cards[card.id] = card;
-        await nextTick();
-      } else {
-        mode = "enter";
-        // Vue will create the card
-        this.gamedatas.cards[card.id] = card;
-        await nextTick();
-        cardEl = this.getCardEl(card);
-        if (!cardEl) {
-          console.warn(`Animate card ${card.id} ${mode} element not found`);
-          return;
-        }
-        end = getRect(cardEl);
-        if (start == null && oldCard != null) {
-          let tabEl = document.getElementById("tab_" + oldCard.location);
-          if (tabEl) {
-            // Enter from tab
-            start = getRect(tabEl);
-          }
-        }
-        if (start == null) {
-          // Enter from left
-          start = { top: end.top, left: -end.width };
-        }
-      }
-
-      // Animate
-      await this.animateFlip(cardEl, start, end);
-      if (mode == "leave") {
-        // Destroy the clone
-        cardEl.remove();
-      }
+    async animate(cards) {
+      const prep = this.prepareAnimate(cards);
+      await this.runAnimate(prep);
+      const promises = prep.map((p) => p.promise);
+      await Promise.allSettled(promises);
     },
 
-    async animateFlip(el, start, end) {
-      // FLIP technique: https://aerotwist.com/blog/flip-your-animations/
-      // Element is already at the end position
-      // Immediately translate it back to the start position
-      // Then run a normal CSS transition in "reverse"
-      const diffX = start.left - end.left;
-      const diffY = start.top - end.top;
-      el.style.transition = "none";
-      el.style.transform = "translate(" + diffX + "px, " + diffY + "px)";
+    prepareAnimate(cards) {
+      const prep = [];
+      for (const card of cards) {
+        if (!this.gamestate.instant && this.prefs.animation) {
+          const oldCard = this.gamedatas.cards[card.id];
+          let cardEl = this.getCardEl(oldCard);
+          const jailed = oldCard != null && oldCard.location == "offer" && card.location.startsWith("jail");
+          const sameLocation = jailed || (oldCard != null && oldCard.location == card.location);
+          if (sameLocation) {
+            if (jailed || oldCard.order != card.order) {
+              // DELAY -- Vue will animate the card
+              prep.push({ mode: 'delay', card });
+            }
+
+          } else {
+            // Compute start position
+            const visible = card.location.startsWith("jail") || card.location.startsWith("timeless") || this.locationVisible.has(card.location);
+            let start = null;
+            if (oldCard != null) {
+              start = getRect(cardEl);
+              if (start == null) {
+                start = getRect(document.getElementById("tab_" + oldCard.location));
+              }
+            }
+
+            if (visible && cardEl != null) {
+              // MOVE -- card exists and is moving
+              prep.push({ mode: 'move', card, start });
+            } else if (visible && cardEl == null) {
+              // ENTER -- card doesn't exist and is appearing
+              prep.push({ mode: 'enter', card, start });
+            } else if (!visible && cardEl != null) {
+              // EXIT -- card exists and is disapparing
+              let end = getRect(document.getElementById("tab_" + card.location));
+              if (end == null) {
+                end = { top: start.top, left: window.innerWidth }; // to right
+              }
+
+              // Vue will destroy the card, so we need a clone for the animation
+              const rootEl = document.getElementById("HGame");
+              const root = getRect(rootEl);
+              const top = end.top - root.top;
+              const left = end.left - root.left;
+              cardEl = cardEl.cloneNode(true);
+              cardEl.id = "";
+              cardEl.style.position = "absolute";
+              cardEl.style.top = top + "px";
+              cardEl.style.left = left + "px";
+              rootEl.appendChild(cardEl);
+              prep.push({ mode: 'exit', card, start, end, cardEl });
+            }
+          }
+        }
+        this.gamedatas.cards[card.id] = card;
+      }
+      return prep;
+    },
+
+    async runAnimate(prep) {
       await repaint();
-      el.style.transition = "";
-      el.style.transform = "";
+      await nextTick();
+      for (const p of prep) {
+        if (p.mode == 'enter' || p.mode == 'move') {
+          // Vue just created the card
+          p.cardEl = this.getCardEl(p.card);
+          p.end = getRect(p.cardEl);
+          if (p.start == null) {
+            p.start = { top: p.end.top, left: -p.end.width }; // from left
+          }
+        }
+        if (p.mode == 'enter' || p.mode == 'move' || p.mode == 'exit' && (p.start != null && p.end != null && p.cardEl != null)) {
+          // FLIP technique: https://aerotwist.com/blog/flip-your-animations/
+          // Element is already at the end position
+          // Immediately translate it back to the start position
+          const diffX = p.start.left - p.end.left;
+          const diffY = p.start.top - p.end.top;
+          p.cardEl.style.transition = "none";
+          p.cardEl.style.transform = "translate(" + diffX + "px, " + diffY + "px)";
+        }
+      }
       await repaint();
-      return transitionEnd(el);
+      for (const p of prep) {
+        if (p.mode == 'delay') {
+          p.promise = sleep(500);
+        } else if (p.mode == 'enter' || p.mode == 'move' || p.mode == 'exit') {
+          // Run CSS transition in "reverse"
+          p.cardEl.style.transition = "";
+          p.cardEl.style.transform = "";
+          p.promise = sleep(500);
+          if (p.mode == 'exit') {
+            p.promise = p.promise.then(() => { p.cardEl.remove(); });
+          }
+        }
+      }
     },
 
     /*
@@ -831,33 +883,29 @@ export default {
           if (this.gamedatas.options.dictionary.langId == HConstants.LANG_EN) {
             links = [
               [
-                `<a target="hdefine" href="https://dictionary.cambridge.org/search/english/direct/?q=${q}">Cambridge</a>`, //
-                `<a target="hdefine" href="https://www.merriam-webster.com/dictionary/${q}">Merriam-Webster</a>`, //
+                `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`,
+                `<a target="hdefine" href="https://www.google.com/search?q=define+${q}">Google</a>`,
               ],
               [
-                `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`, //
-                `<a target="hdefine" href="https://www.lexico.com/en/definition/${q}">Oxford Lexico</a>`, //
-              ],
-              [
-                `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`, //
-                `<a target="hdefine" href="https://en.wiktionary.org/wiki/${q}">Wiktionary</a>`, //
+                `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`,
+                `<a target="hdefine" href="https://www.merriam-webster.com/dictionary/${q}">Merriam-Webster</a>`,
               ],
             ];
           } else if (this.gamedatas.options.dictionary.langId == HConstants.LANG_DE) {
             links = [
               [
-                `<a target="hdefine" href="https://www.duden.de/suchen/dudenonline/${q}">Duden</a>`, //
+                `<a target="hdefine" href="https://www.duden.de/suchen/dudenonline/${q}">Duden</a>`,
               ],
             ];
           } else if (this.gamedatas.options.dictionary.langId == HConstants.LANG_FR) {
             links = [
               [
-                `<a target="hdefine" href="https://www.cnrtl.fr/definition/academie9/${q}">Académie Française</a>`, //
-                `<a target="hdefine" href="https://dictionnaire.lerobert.com/definition/${q}">Le Robert</a>`, //
+                `<a target="hdefine" href="https://www.cnrtl.fr/definition/academie9/${q}">Académie Française</a>`,
+                `<a target="hdefine" href="https://dictionnaire.lerobert.com/definition/${q}">Le Robert</a>`,
               ],
               [
-                `<a target="hdefine" href="https://www.larousse.fr/dictionnaires/francais/${q}">Larousse</a>`, //
-                `<a target="hdefine" href="https://www.cnrtl.fr/definition/${q}">Trésor</a>`, //
+                `<a target="hdefine" href="https://www.larousse.fr/dictionnaires/francais/${q}">Larousse</a>`,
+                `<a target="hdefine" href="https://www.cnrtl.fr/definition/${q}">Trésor</a>`,
               ],
             ];
           }
@@ -895,10 +943,11 @@ export default {
         active: this.game.isCurrentPlayerActive(),
         instant: this.game.instantaneousMode,
       });
-      this.gamestate.safeToMove = this.gamestate.name != "gameEnd" && (!this.gamestate.active || this.gamestate.name == "playerTurn");
+      this.gamestate.safeToMove = stateName != "gameEnd" && (!this.gamestate.active || stateName == "playerTurn");
       let activeId = this.game.getActivePlayerId();
       if (stateName == "vote") {
         activeId = args.player_id;
+        this.gamestate.safeToMove = activeId != this.game.player_id;
       }
       if (activeId) {
         this.gamestate.activeId = activeId;
@@ -912,11 +961,13 @@ export default {
           async function() {
             if (this.tableauCards.length == 0) {
               // Did you forget to play any cards?
-              await this.moveAll(this.myself.handLocation, this.myself.tableauLocation);
+              await Promise.allSettled(
+                this.handCards.map((card) => this.clickCard({ card, action: { action: "move", destination: this.myself.tableauLocation } }))
+              );
             }
-            let cardIds = this.cardIds(this.tableauCards);
-            let wildMask = this.wildMask(this.tableauCards);
-            this.takeAction("confirmWord", { cardIds, wildMask });
+            let tableauIds = this.cardIds(this.tableauCards);
+            let tableauMask = this.wildMask(this.tableauCards);
+            this.takeAction("confirmWord", { tableauIds, tableauMask });
           },
         },
         voteAccept: {
@@ -1042,31 +1093,40 @@ export default {
         }
         let cards = Object.values(notif.args.cards);
         cards.sort(firstBy("location").thenBy("order").thenBy("id"));
-        Promise.all(cards.map(this.animateCard)).then(() => {
+        this.animate(cards).then(() => {
           this.game.notifqueue.setSynchronousDuration(1);
         });
+
+      } else if (notif.type == "history") {
+        this.gamedatas.history = notif.args.history;
+
       } else if (notif.type == "ink") {
         if (this.game.player_id != notif.args.player_id) {
           this.game.disableNextMoveSound();
         }
+
       } else if (notif.type == "invalid") {
         if (!this.gamestate.instant && this.game.player_id == notif.args.player_id) {
           this.game.showMessage(this.i18n(notif.log, notif.args), "error no_log");
         }
+
       } else if (notif.type == "lookup") {
         for (let i = 0; i < this.lookupHistory.length; i++) {
           let hist = this.lookupHistory[i];
           // onFormatString may add bold tag
           if (notif.args.word == hist.word || notif.args.word == `<b>${hist.word}</b>`) {
-            hist.icon = notif.args.valid ? "yes" : notif.args.unique ? "no" : "equal";
+            hist.icon = notif.args.valid ? "yes" : notif.args.history ? "equal" : "no";
             break;
           }
         }
+
       } else if (notif.type == "pause") {
         const duration = this.gamestate.instant || window.g_archive_mode ? 1 : notif.args.duration;
         this.game.notifqueue.setSynchronousDuration(duration);
+
       } else if (notif.type == "penny") {
         Object.assign(this.gamedatas.penny, notif.args.penny);
+
       } else if (notif.type == "player") {
         Object.assign(this.gamedatas.players[notif.args.player.id], notif.args.player);
         if (this.gamedatas.options.coop) {
@@ -1176,31 +1236,14 @@ export default {
       });
     },
 
-    moveAll(fromLocation, toLocation) {
-      if (this.gamestate.safeToMove) {
-        return Promise.all(
-          this.cardsInLocation(fromLocation).map((card) =>
-            this.clickCard({
-              card: card,
-              action: {
-                action: "move",
-                destination: toLocation == "origin" ? card.origin : toLocation,
-              },
-            })
-          )
-        );
-      } else {
-        return Promise.resolve([]);
-      }
-    },
-
     clickCard(e) {
       let { action, card } = e;
       if (action.action == "move") {
-        return this.animateCard(card, {
+        const newCard = Object.assign({}, card, {
           location: action.destination,
           order: this.nextOrderInLocation(action.destination),
-        }).then(this.previewWord, this.previewWord);
+        });
+        return this.animate([newCard]).then(this.previewWord);
       } else {
         let args = { cardId: card.id };
         if (action.actionArgs) {
@@ -1493,7 +1536,6 @@ export default {
         const locationEl = this.getLocationEl(location);
         if (locationEl) {
           locationEl.style.minHeight = "";
-          locationEl.classList.remove("dragging");
         }
       }
 

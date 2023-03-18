@@ -65,7 +65,7 @@ $stats_type = [
     'table' => [
         'turns' => [
             'id' => H_STAT_TURNS,
-            'name' => totranslate('Turns'),
+            'name' => totranslate('Rounds'),
             'type' => 'int',
         ],
         'words' => [
@@ -95,7 +95,7 @@ $stats_type = [
         ],
         'cycled' => [
             'id' => H_STAT_CYCLED,
-            'name' => totranslate('Discard Offer Row (No Purchase)'),
+            'name' => totranslate('Cycle Offer Row'),
             'type' => 'int',
         ],
         'coopScore' => [

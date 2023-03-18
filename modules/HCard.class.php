@@ -40,7 +40,7 @@ class HCard extends APP_GameClass implements JsonSerializable
             'factor' => $this->factor,
             'ink' => $this->hasInk(),
             'location' => $this->location,
-            'order' => $this->order,
+            'order' => $this->isLocation('deck', 'draw') ? -1 : $this->order,
             'origin' => $this->origin,
             'refId' => $this->refId,
             'remover' => $this->hasRemover(),

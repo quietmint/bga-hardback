@@ -357,12 +357,6 @@ export default {
       });
     },
 
-    uncoverAll() {
-      this.wildCards.forEach((card) => {
-        this.emitter.emit("clickFooter", { action: { action: "reset" }, card });
-      });
-    },
-
     returnAll() {
       this.tableauCards.forEach((card) => {
         this.emitter.emit("clickCard", { action: { action: "move", destination: card.origin }, card });
@@ -381,6 +375,12 @@ export default {
 
     sort(location, order) {
       this.emitter.emit("clickSort", { location, order });
+    },
+
+    uncoverAll() {
+      this.wildCards.forEach((card) => {
+        this.emitter.emit("clickFooter", { action: { action: "reset" }, card });
+      });
     },
 
     useInk() {
