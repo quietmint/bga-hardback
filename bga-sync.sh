@@ -8,6 +8,7 @@ cd src
 npx vite build --mode production
 
 # Move JavaScript
+perl -0777 -p -i'*' -e 's~\s*-NO-BREAK-\s*~~g' dist/index.js
 mv dist/*.js* ../modules/
 
 # Move and rewrite CSS
