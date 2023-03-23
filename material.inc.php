@@ -133,9 +133,9 @@ $this->i18n = [
 
 $this->msg = [
     'acceptedWord' => clienttranslate('${word} is accepted by ${dict}'),
-    'awardEnd' => clienttranslate('${player_name} earns ${amount}${icon} for the literary award'),
-    'awardFirst' => clienttranslate('${player_name} spells the first ${length}-letter word and takes the literary award (worth ${points}${iconPoints} at game end)${award}'),
-    'awardSecond' => clienttranslate('${player_name} spells the first ${length}-letter word and takes the literary award from ${player_name2} (worth ${points}${iconPoints} at game end)${award}'),
+    'awardEnd' => clienttranslate('${player_name} earns ${amount}${icon} for the ${length}-letter literary award'),
+    'awardLose' => clienttranslate('${player_name} loses the ${length}-letter literary award'),
+    'awardWin' => clienttranslate('${player_name} wins the ${length}-letter literary award (worth ${amount}${icon} at game end)${award}'),
     'confirmWord' => clienttranslate('${player_name} spells ${word}${definitions}'),
     'convert' => clienttranslate('${player_name} converts ${ink} ink to ${amount}${icon}'),
     'coopLose' => clienttranslate('Failure! The players are defeated and ${player_name} wins!'),

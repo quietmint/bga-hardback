@@ -503,22 +503,23 @@ class hardback extends Table
                 $win = $maxAward == null || $points > $maxAward['award'];
                 $winShared = $this->gamestate->table_globals[H_OPTION_RULESET] == 2 && $this->gamestate->table_globals[H_OPTION_COOP] == H_NO && $length == 12 && $maxAward != null && $points == $maxAward['award'];
                 if ($win || $winShared) {
-                    $msg = $this->msg['awardFirst'];
-                    $args = [
+                    self::notifyAllPlayers('award', $this->msg['awardWin'], [
                         'player_name' => $player->getName(),
-                        'points' => $points,
-                        'iconPoints' => 'star',
+                        'amount' => $points,
+                        'icon' => 'star',
                         'length' => $length,
                         'award' => $length,
-                    ];
+                    ]);
+                    $player->setAward($points);
                     if (!$winShared && $maxAward != null && $maxAward['player_id'] != $player->getId()) {
                         $loser = PlayerMgr::getPlayer($maxAward['player_id']);
-                        $msg = $this->msg['awardSecond'];
-                        $args['player_name2'] = $loser->getName();
+                        $length = array_flip($this->awards)[$loser->getAward()];
+                        self::notifyAllPlayers('award', $this->msg['awardLose'], [
+                            'player_name' => $loser->getName(),
+                            'length' => $length,
+                        ]);
                         $loser->setAward(0);
                     }
-                    $player->setAward($points);
-                    self::notifyAllPlayers('award', $msg, $args);
                 }
             }
         }
@@ -1707,12 +1708,14 @@ class hardback extends Table
             foreach (PlayerMgr::getPlayers() as $player) {
                 $points = $player->getAward();
                 if ($points > 0) {
-                    $player->addPoints($points, 'pointsAward');
+                    $length = array_flip($this->awards)[$points];
                     self::notifyAllPlayers('message', $this->msg['awardEnd'], [
                         'player_name' => $player->getName(),
                         'amount' => $points,
                         'icon' => 'star',
+                        'length' => $length,
                     ]);
+                    $player->addPoints($points, 'pointsAward');
                 }
             }
         }
