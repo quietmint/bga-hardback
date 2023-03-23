@@ -45,25 +45,24 @@
         <!-- Benefits -->
         <div @pointerenter="tooltipEnter"
              @pointerleave="tooltipLeave"
-             class="benefits absolute text-115 leading-120 tracking-tight font-bold text-center flex flex-col flex-grow whitespace-nowrap"
+             class="benefits absolute text-115 leading-120 tracking-tight font-bold text-center flex flex-col grow whitespace-nowrap"
              ref="benefits">
           <!-- Basic Benefits -->
           <div :class="basicSectionClass"
-               class="flex-grow flex items-center justify-evenly">
+               class="grow flex items-center justify-evenly">
             <div v-for="benefit in basicBenefitsList"
                  :key="benefit.id"
-                 class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white border-black"
+                 class="rounded-lg px-1 border border-black/25 bg-white/50 border-black"
                  v-html="benefit.html"></div>
           </div>
 
           <!-- Genre Benefits -->
           <div v-if="genreBenefitsList.length"
                :class="genreSectionClass"
-               class="flex-grow flex items-center justify-evenly border-t-2 border-black">
+               class="grow flex items-center justify-evenly border-t-2">
             <div v-for="benefit in genreBenefitsList"
                  :key="benefit.id"
-                 :class="genreBubbleClass"
-                 class="rounded-lg px-1 bg-opacity-50 border border-opacity-30 bg-white"
+                 class="rounded-lg px-1 bg-white/50"
                  v-html="benefit.html"></div>
           </div>
         </div>
@@ -103,9 +102,9 @@
           {{ card.wild }}
         </div>
         <div v-if="card.wild"
-             class="absolute bottom-1 w-full flex flex-grow justify-evenly text-16 bold">
+             class="absolute bottom-1 w-full flex grow justify-evenly text-16 bold">
           <div :class="titleClass"
-               class="rounded-lg px-2 bg-opacity-80">
+               class="rounded-lg px-2">
             <Icon :icon="card.genreName"
                   class="icon inline text-105" />{{ card.letter }}
           </div>
@@ -143,7 +142,7 @@ import { nextTick } from "vue";
 export default {
   name: "HCard",
   emits: ["clickCard", "clickFooter", "dragStart"],
-  inject: ["gamestate", "getRect", "i18n", "myself", "prefs", "refs"],
+  inject: ["gamestate", "genreCounts", "getRect", "i18n", "myself", "prefs", "refs"],
   components: { Icon },
 
   props: {
@@ -239,7 +238,7 @@ export default {
     },
 
     titleClass() {
-      return `${HConstants.GENRES[this.card.genre].bg} ${HConstants.GENRES[this.card.genre].textLight}`;
+      return `${HConstants.GENRES[this.card.genre].bg80} ${HConstants.GENRES[this.card.genre].textLight}`;
     },
 
     bookmarkClass() {
@@ -251,20 +250,41 @@ export default {
       return "letter-" + this.card.letter;
     },
 
+    basicInactive() {
+      return this.card.location.startsWith("tableau") && !this.card.triggering;
+    },
+
     basicSectionClass() {
-      return this.card.timeless ? "flex-col" : "flex";
+      let c = this.card.timeless ? "flex-col " : "flex ";
+      if (this.basicInactive) {
+        c += "hatch text-gray-500";
+      }
+      return c;
+    },
+
+    genreInactive() {
+      if (this.basicInactive) {
+        return true;
+      }
+      if (this.genreCounts && this.card.ownerId) {
+        const ownerGenreCounts = this.genreCounts[this.card.ownerId];
+        const ownerTriggering = ownerGenreCounts != null && ownerGenreCounts[this.card.genreName] && ownerGenreCounts[this.card.genreName].triggering >= 2;
+        return this.card.triggering && !ownerTriggering;
+      }
     },
 
     genreSectionClass() {
-      return `${this.basicSectionClass} ${HConstants.GENRES[this.card.genre].text} ${HConstants.GENRES[this.card.genre].bg} bg-opacity-25`;
-    },
-
-    genreBubbleClass() {
-      return `${HConstants.GENRES[this.card.genre].border}`;
+      let c = this.card.timeless ? "flex-col " : "flex ";
+      if (this.genreInactive) {
+        c += HConstants.GENRES[this.card.genre].hatch + " border-gray-500 text-gray-500";
+      } else {
+        c += HConstants.GENRES[this.card.genre].border + " " + HConstants.GENRES[this.card.genre].bg25 + " " + HConstants.GENRES[this.card.genre].text;
+      }
+      return c;
     },
 
     genreTooltipClass() {
-      return `${HConstants.GENRES[this.card.genre].text} ${HConstants.GENRES[this.card.genre].bg} bg-opacity-25`;
+      return `${HConstants.GENRES[this.card.genre].text} ${HConstants.GENRES[this.card.genre].bg25}`;
     },
 
     header() {

@@ -80,21 +80,12 @@
 }
 
 .tabgroup {
-  @apply flex flex-grow justify-evenly;
+  @apply flex grow justify-evenly;
 }
 
 .tab {
-  @apply border-t-2 border-l-2 border-r-2 rounded-t-lg px-4 py-2 font-bold bg-opacity-10;
+  @apply border-t-2 border-l-2 border-r-2 rounded-t-lg px-4 py-2 font-bold;
   border-color: inherit;
-}
-
-.tab.active,
-.tab.cursor-pointer:hover {
-  @apply bg-opacity-50 text-black;
-}
-
-.tabcontent {
-  @apply rounded-lg p-1 bg-opacity-50;
 }
 
 .cardholder {
@@ -175,6 +166,10 @@
   text-shadow: -2px 2px theme("colors.blue.400"), 1px -1px theme("colors.blue.700"), 0 0 4px #0008;
 }
 
+.hatch {
+  background: repeating-linear-gradient(45deg, rgba(0 0 0 / var(--hatch-opacity)), rgba(0 0 0 / var(--hatch-opacity)) 1px, transparent 1px, transparent var(--hatch-size)), transparent;
+}
+
 .card .letter {
   width: 100%;
 }
@@ -193,7 +188,7 @@
 }
 
 .card.timeless .benefits {
-  top: 15%;
+  top: 13%;
   bottom: 0;
   left: unset;
   right: 0;
@@ -462,7 +457,7 @@
 }
 
 .panel-opt {
-  @apply rounded-full bg-white bg-opacity-75 text-black border-3 border-dashed border-gray-800 text-17 text-center font-bold shadow whitespace-nowrap;
+  @apply rounded-full bg-white/75 text-black border-3 border-dashed border-gray-800 text-17 text-center font-bold shadow whitespace-nowrap;
   width: 45px;
   height: 45px;
   line-height: 39px;
@@ -486,10 +481,6 @@
 
 .genreCounts div {
   transition: width 0.3s ease-in;
-}
-
-.genreCounts svg {
-  height: 22px;
 }
 
 .icon-left,

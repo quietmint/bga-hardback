@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed z-top inset-0 bg-white bg-opacity-75 dark:bg-black dark:bg-opacity-75"
+  <div class="fixed z-top inset-0 bg-white/75 dark:bg-black/75"
        @click="click(null)">
     <div class="flex items-start justify-center min-h-screen">
       <div class="hpopup flex flex-col items-center justify-center bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow text-20 p-6 mt-18"

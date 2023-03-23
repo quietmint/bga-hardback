@@ -2,7 +2,7 @@
   <div :id="'area_' + player.id"
        class="px-1 py-3 border-t-2 border-black">
     <div class="flex leading-8">
-      <div class="title flex-grow leading-none">
+      <div class="title grow leading-none">
         <!-- Player name -->
         <span :class="player.colorText"
               class="text-17 font-bold"
@@ -86,8 +86,8 @@
         <div :id="'tab_' + player.drawLocation"
              @click="options.deck && clickTab('draw')"
              class="tab"
-             :class="[player.colorBgTab, { 'cursor-pointer': options.deck, 'cursor-not-allowed': !options.deck, 'active': tab == 'draw' }]">
-          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+             :class="[tab == 'draw' ? player.colorBg50 + ' text-black' : player.colorBg20, options.deck ? 'cursor-pointer hover:text-black' : 'cursor-not-allowed']">
+          <span class="float-left flex items-center bg-white/50 rounded-lg px-1 mr-1">
             <Icon icon="drawLocation"
                   class="text-20 mr-1" />
             {{ drawCards.length }}
@@ -96,9 +96,9 @@
         </div>
         <div :id="'tab_' + player.handLocation"
              @click="clickTab('hand')"
-             class="tab cursor-pointer"
-             :class="[player.colorBgTab, { 'active': tab == 'hand' }]">
-          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+             class="tab cursor-pointer hover:text-black"
+             :class="[tab == 'hand' ? player.colorBg50 + ' text-black' : player.colorBg20]">
+          <span class="float-left flex items-center bg-white/50 rounded-lg px-1 mr-1">
             <Icon icon="handLocation"
                   class="text-20 mr-1" />
             {{ handCards.length }}
@@ -107,9 +107,9 @@
         </div>
         <div :id="'tab_' + player.discardLocation"
              @click="clickTab('discard')"
-             class="tab cursor-pointer"
-             :class="[player.colorBgTab, { 'active': tab == 'discard' }]">
-          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+             class="tab cursor-pointer hover:text-black"
+             :class="[tab == 'discard' ? player.colorBg50 + ' text-black' : player.colorBg20]">
+          <span class="float-left flex items-center bg-white/50 rounded-lg px-1 mr-1">
             <Icon icon="discardLocation"
                   class="text-20 mr-1" />
             {{ discardCards.length }}
@@ -143,8 +143,8 @@
 
     <!-- Draw/Hand/Discard cards -->
     <div v-if="player.myself && gamestate.name != 'gameEnd'"
-         class="tabcontent"
-         :class="player.colorBgTab">
+         class="rounded-lg p-1"
+         :class="player.colorBg50">
       <HCardList :cards="visibleCards"
                  :location="visibleLocation" />
     </div>
@@ -166,8 +166,8 @@
         <div v-if="!player.myself"
              :id="'tab_' + player.drawLocation"
              class="tab cursor-not-allowed"
-             :class="[player.colorBgTab, { 'border-b-2': collapsed }]">
-          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+             :class="[player.colorBg20, { 'border-b-2': collapsed }]">
+          <span class="float-left flex items-center bg-white/50 rounded-lg px-1 mr-1">
             <Icon icon="drawLocation"
                   class="text-20 mr-1" />
             {{ drawCards.length }}
@@ -177,8 +177,8 @@
         <div v-if="!player.myself"
              :id="'tab_' + player.handLocation"
              class="tab cursor-not-allowed"
-             :class="[player.colorBgTab, { 'border-b-2': collapsed }]">
-          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+             :class="[player.colorBg20, { 'border-b-2': collapsed }]">
+          <span class="float-left flex items-center bg-white/50 rounded-lg px-1 mr-1">
             <Icon icon="handLocation"
                   class="text-20 mr-1" />
             {{ handCards.length }}
@@ -188,9 +188,9 @@
 
         <!-- Everyone: Tab for Tableau -->
         <div :id="'tab_' + player.tableauLocation"
-             class="tab active"
-             :class="[player.colorBgTab, { 'border-b-2': collapsed }]">
-          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+             class="tab text-black"
+             :class="[player.colorBg50, { 'border-b-2': collapsed }]">
+          <span class="float-left flex items-center bg-white/50 rounded-lg px-1 mr-1">
             <Icon icon="tableauLocation"
                   class="text-20 mr-1" />
             {{ tableauCards.length }}
@@ -202,8 +202,8 @@
         <div v-if="!player.myself"
              :id="'tab_' + player.discardLocation"
              class="tab cursor-not-allowed"
-             :class="[player.colorBgTab, { 'border-b-2': collapsed }]">
-          <span class="float-left flex items-center bg-white bg-opacity-50 rounded-lg px-1 mr-1">
+             :class="[player.colorBg20, { 'border-b-2': collapsed }]">
+          <span class="float-left flex items-center bg-white/50 rounded-lg px-1 mr-1">
             <Icon icon="discardLocation"
                   class="text-20 mr-1" />
             {{ discardCards.length }}
@@ -241,8 +241,8 @@
 
     <!-- Tableau cards -->
     <div v-if="!collapsed"
-         class="tabcontent"
-         :class="player.colorBgTab">
+         class="rounded-lg p-1"
+         :class="player.colorBg50">
       <HCardList :cards="tableauCards"
                  :location="player.tableauLocation" />
     </div>

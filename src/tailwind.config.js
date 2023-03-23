@@ -1,15 +1,17 @@
 const colors = require("tailwindcss/colors");
+const plugin = require("tailwindcss/plugin");
+const flattenColorPalette = require("tailwindcss/lib/util/flattenColorPalette").default;
+const { parseColor } = require("tailwindcss/lib/util/color");
 
 module.exports = {
-  purge: ["*.js", "*.vue"],
-  darkMode: "media",
+  content: ["*.js", "*.vue"],
   theme: {
     colors: {
       transparent: "transparent",
       current: "currentColor",
       black: colors.black,
       white: colors.white,
-      gray: colors.trueGray,
+      gray: colors.neutral,
       red: colors.red,
       yellow: colors.yellow,
       green: colors.lime,
@@ -30,6 +32,7 @@ module.exports = {
         16: "16px",
         17: "17px",
         18: "18px",
+        19: "19px",
         20: "20px",
         24: "24px",
         90: "90%",
@@ -53,5 +56,19 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(({ matchUtilities, theme }) => {
+      matchUtilities(
+        {
+          hatch: (value) => {
+            const { color } = parseColor(value);
+            return {
+              background: `repeating-linear-gradient(45deg, rgba(0 0 0 / var(--hatch-opacity)), rgba(0 0 0 / var(--hatch-opacity)) 1px, transparent 1px, transparent var(--hatch-size)), rgba(${color[0]} ${color[1]} ${color[2]} / 0.25)`,
+            };
+          },
+        },
+        { values: flattenColorPalette(theme("colors")), type: "color" }
+      );
+    }),
+  ],
 };

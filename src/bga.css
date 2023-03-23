@@ -1,3 +1,8 @@
+:root {
+  --hatch-opacity: 0.2;
+  --hatch-size: 10px;
+}
+
 #browser-error {
   display: none;
   background: #d50000;

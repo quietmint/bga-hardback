@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed z-top inset-0 bg-white bg-opacity-75 dark:bg-black dark:bg-opacity-75"
+  <div class="fixed z-top inset-0 bg-white/75 dark:bg-black/75"
        @click="hide()">
     <div class="flex items-start justify-center min-h-screen">
       <div class="hpopup bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow text-20 p-6 mt-18"
@@ -9,7 +9,7 @@
         <input id="lookupInput"
                @input="input"
                :placeholder="i18n('lookupPlaceholder')"
-               class="w-96 text-24 text-center bg-blue-100 text-blue-600 dark:bg-blue-900 dark:bg-opacity-75 dark:text-blue-300 rounded-lg p-3 my-4"
+               class="w-96 text-24 text-center bg-blue-100 text-blue-600 dark:bg-blue-900/75 dark:text-blue-300 rounded-lg p-3 my-4"
                autocomplete="off"
                autofocus />
         <div v-for="hist in lookupHistory"
@@ -18,7 +18,7 @@
           <Icon :icon="hist.icon"
                 :class="{ 'text-red-600': hist.icon == 'no', 'text-green-600': hist.icon == 'yes', 'animate-spin': hist.icon == 'loading' }"
                 class="inline text-24 mr-1" />
-          <div class="flex-grow">{{ hist.word }}</div>
+          <div class="grow">{{ hist.word }}</div>
           <div class="text-15">{{ hist.word.length }}</div>
         </div>
       </div>

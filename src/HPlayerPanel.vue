@@ -25,7 +25,7 @@
               <div class="p-2 bg-gray-200 font-bold">{{ i18n("award") }}</div>
               <div v-for="(value, key) in refs.awards"
                    :key="key"
-                   class="px-2 py-1 border-t border-black border-opacity-30">
+                   class="px-2 py-1 border-t border-black/25">
                 {{ i18n("awardLetters", { length: key }) }}
                 <span class="pl-4">{{ value }}-NO-BREAK-
                   <Icon icon="star"
@@ -52,7 +52,7 @@
               <div class="p-2 bg-gray-200 font-bold">{{ i18n("adverts") }}</div>
               <div v-for="(value, key) in refs.adverts"
                    :key="key"
-                   class="px-2 py-1 border-t border-black border-opacity-30">
+                   class="px-2 py-1 border-t border-black/25">
                 {{ key }}¢
                 <span class="pl-4">{{ value }}-NO-BREAK-
                   <Icon icon="star"
@@ -72,17 +72,17 @@
         </HTooltip>
       </div>
 
-      <div class="panel-bottom mt-1 text-white text-17 font-bold flex justify-between text-noshadow">
+      <div class="panel-bottom my-1 text-white text-17 font-bold flex justify-between text-noshadow">
         <div :id="'count_' + player.drawLocation"
              :class="{ 'cursor-pointer': player.myself && options.deck }"
-             class="rounded-lg bg-black bg-opacity-80 px-2 ml-1"
+             class="rounded-lg bg-black/75 px-2 ml-1"
              @click="player.myself && options.deck && clickTab('draw')"
              :title="i18n('drawLocation') + ': ' + drawCards.length">
           <Icon icon="drawLocation"
                 class="inline" /> {{ drawCards.length }}
         </div>
         <div :id="'count_' + player.handLocation"
-             class="rounded-lg bg-black bg-opacity-80 px-2 ml-1"
+             class="rounded-lg bg-black/75 px-2 ml-1"
              :class="{ 'cursor-pointer': player.myself }"
              @click="player.myself && clickTab('hand')"
              :title="i18n('handLocation') + ': ' + handCards.length">
@@ -90,14 +90,14 @@
                 class="inline" /> {{ handCards.length }}
         </div>
         <div :id="'count_' + player.tableauLocation"
-             class="rounded-lg bg-black bg-opacity-80 px-2 ml-1"
+             class="rounded-lg bg-black/75 px-2 ml-1"
              :title="i18n('tableauLocation') + ': ' + tableauCards.length">
           <Icon icon="tableauLocation"
                 class="inline" /> {{ tableauCards.length }}
         </div>
         <div :id="'count_' + player.discardLocation"
              :class="{ 'cursor-pointer': player.myself }"
-             class="rounded-lg bg-black bg-opacity-80 px-2 ml-1"
+             class="rounded-lg bg-black/75 px-2 ml-1"
              @click="player.myself && clickTab('discard')"
              :title="i18n('discardLocation') + ': ' + discardCards.length">
           <Icon icon="discardLocation"
@@ -111,25 +111,25 @@
         <template v-slot:tip>
           <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-left whitespace-nowrap">
             <div class="p-2 bg-gray-200 font-bold text-center"
-                 v-html="i18n('genreCountsTip', { player_name: `<span class='${player.colorText}'>${player.name}</span>`, count: genreTotal })"></div>
-            <div v-for="gc in genreCountsNonEmpty"
+                 v-html="i18n('genreCountsTip', { player_name: `<span class='${player.colorText}'>${player.name}</span>`, count: myGenreCounts.starter.total })"></div>
+            <div v-for="gc in myGenreCounts"
                  :key="gc.genre"
-                 class="px-2 py-1 border-t border-black border-opacity-30"
+                 class="px-2 py-1 flex"
                  :class="gc.class">
-              <Icon class="inline text-20"
+              <Icon class="text-19 mr-1"
                     :icon="gc.genre" /> {{ i18n(gc.genre) }}
-              <div class="float-right pt-1 pl-4">{{ gc.display }}</div>
+              <div class="grow text-right">{{ gc.display }}</div>
             </div>
           </div>
         </template>
         <template v-slot:default>
-          <div class="rounded-bl-lg flex flex-grow overflow-hidden text-center">
-            <div v-for="gc in genreCounts"
+          <div class="rounded-bl-lg flex grow overflow-hidden whitespace-nowrap text-center h-6 leading-6 text-14">
+            <div v-for="gc in myGenreCounts"
                  :key="gc.genre"
                  :style="{ width: gc.percent + '%' }"
                  :class="gc.class">
-              <Icon class="inline"
-                    :icon="gc.genre" />
+              <Icon class="inline text-16"
+                    :icon="gc.genre" />{{ gc.count }}
             </div>
           </div>
         </template>
@@ -146,7 +146,7 @@ import { Icon } from "@iconify/vue";
 export default {
   name: "HPlayerPanel",
   emits: ["clickTab"],
-  inject: ["cardsInLocation", "i18n", "options", "playerGenreCounts", "refs"],
+  inject: ["cardsInLocation", "genreCounts", "i18n", "options", "refs"],
   components: { Icon, HTooltip },
 
   props: {
@@ -173,20 +173,12 @@ export default {
       return this.cardsInLocation(this.player.discardLocation);
     },
 
-    genreTotal() {
-      return this.genreCounts.reduce((sum, gc) => sum + gc.count, 0);
-    },
-
-    genreCounts() {
-      return this.playerGenreCounts(this.player.id);
-    },
-
-    genreCountsNonEmpty() {
-      return this.genreCounts.filter((gc) => gc.count > 0);
-    },
-
     handCards() {
       return this.cardsInLocation(this.player.handLocation);
+    },
+
+    myGenreCounts() {
+      return this.genreCounts[this.player.id];
     },
 
     tableauCards() {

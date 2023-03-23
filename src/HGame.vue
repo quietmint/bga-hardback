@@ -39,7 +39,7 @@
 
     <!-- Browser warning (Safari 12, etc.) -->
     <div v-if="warningVisible"
-         class="m-4 p-3 text-17 font-bold text-center border-2 border-red-700 bg-white bg-opacity-50">
+         class="m-4 p-3 text-17 font-bold text-center border-2 border-red-700 bg-white/50">
       <a href="https://browsehappy.com/"
          target="_blank"
          class="block text-blue-700"
@@ -50,7 +50,7 @@
 
     <!-- Final round reminder -->
     <div v-if="gamedatas.finalRound && !gamedatas.options.coop"
-         class="m-4 p-3 text-17 text-center font-bold border-2 border-red-700 bg-white bg-opacity-50"
+         class="m-4 p-3 text-17 text-center font-bold border-2 border-red-700 bg-white/50"
          v-text="i18n('finalRound')"></div>
 
     <!-- Final word history -->
@@ -86,8 +86,7 @@
         <tbody>
           <tr v-for="hist in wordHistory"
               :key="hist.id"
-              :class="hist.player.colorBg"
-              class="bg-opacity-20">
+              :class="hist.player.colorBg20">
             <td>{{ hist.id }}</td>
             <td :class="hist.player.colorText"
                 class="font-bold break-all"
@@ -113,7 +112,7 @@
          class="px-1 py-3 border-t-2 border-black">
       <div class="flex leading-8">
         <div id="tut_timeless_title"
-             class="title text-17 font-bold flex-grow">{{ i18n("timelessLocation") }} ({{ timelessCards.length }})</div>
+             class="title text-17 font-bold grow">{{ i18n("timelessLocation") }} ({{ timelessCards.length }})</div>
       </div>
       <HCardList :cards="timelessCards"
                  location="timeless" />
@@ -123,7 +122,7 @@
     <div class="px-1 py-3 border-t-2 border-black">
       <div class="flex leading-8">
         <div id="tut_offer_title"
-             class="title text-17 font-bold flex-grow"
+             class="title text-17 font-bold grow"
              v-text="i18n('offerLocation')"></div>
 
         <div class="buttongroup grid grid-cols-4">
@@ -176,7 +175,7 @@ import HPlayerPanel from "./HPlayerPanel.vue";
 import { Icon, addIcon } from "@iconify/vue";
 import { firstBy } from "thenby";
 import { nextTick, computed } from "vue";
-import { remove, throttle } from "lodash-es";
+import { groupBy, mapValues, remove, throttle } from "lodash-es";
 
 let lastErrorCode = null;
 
@@ -296,12 +295,12 @@ export default {
     return {
       cardsInLocation: this.cardsInLocation,
       gamestate: this.gamestate,
+      genreCounts: computed(() => this.genreCounts),
       getRect: getRect,
       i18n: this.i18n,
       locationVisible: computed(() => this.locationVisible),
       myself: computed(() => this.myself),
       options: computed(() => this.gamedatas.options),
-      playerGenreCounts: this.playerGenreCounts,
       prefs: computed(() => this.prefs),
       refs: computed(() => this.gamedatas.refs),
     };
@@ -429,6 +428,32 @@ export default {
       return this.cardsInLocation(this.myself.handLocation);
     },
 
+    genreCounts() {
+      const cards = this.populateCards(
+        Object.values(this.gamedatas.cards)
+      ).filter((card) => card.ownerId != null && !card.origin.startsWith('jail'));
+      const groupByOwner = groupBy(cards, (card) => card.ownerId);
+      return mapValues(groupByOwner, (ownerCards) => {
+        const groupByGenre = groupBy(ownerCards, 'genreName');
+        return mapValues(groupByGenre, (genreCards, genreName) => {
+          const triggeringCards = genreCards.filter((card) => card.triggering);
+          const count = genreCards.length;
+          const total = ownerCards.length;
+          const percent = (count / total) * 100;
+          const genre = HConstants.GENRES[genreName];
+          return {
+            class: `${genre.bg} ${genre.textLight}`,
+            count,
+            display: `${count} (${percent.toFixed(0)}%)`,
+            genre: genre.icon,
+            percent,
+            total,
+            triggering: triggeringCards.length,
+          };
+        });
+      });
+    },
+
     myself() {
       return this.players[this.game.player_id];
     },
@@ -549,24 +574,6 @@ export default {
       return cards;
     },
 
-    playerGenreCounts(playerId) {
-      let cards = this.populateCards(
-        Object.values(this.gamedatas.cards).filter((card) => card.origin.endsWith('_' + playerId) && !card.origin.startsWith('jail'))
-      );
-      return [HConstants.ADVENTURE, HConstants.HORROR, HConstants.MYSTERY, HConstants.ROMANCE, HConstants.STARTER].map((id) => {
-        const count = cards.filter((card) => card.genre == id).length;
-        const percent = (count / cards.length) * 100;
-        const genre = HConstants.GENRES[id];
-        return {
-          class: `${genre.bg} ${genre.textLight}`,
-          count: count,
-          display: `${count} (${percent.toFixed(0)}%)`,
-          genre: genre.icon,
-          percent: percent,
-        };
-      });
-    },
-
     sortCards(order, cards) {
       order = order || "order";
       let sorter = firstBy(order);
@@ -597,13 +604,15 @@ export default {
       let newCard = Object.assign({ factor: 1 }, this.gamedatas.refs.cards[card.refId], card);
       newCard.genreName = HConstants.GENRES[newCard.genre].icon;
 
-      // Owning player
-      if (newCard.location.startsWith("jail")) {
-        const playerId = newCard.origin.split("_")[1];
-        newCard.player = this.players[playerId];
-      } else if (newCard.origin.startsWith("timeless")) {
-        const playerId = newCard.origin.split("_")[1];
-        newCard.player = this.players[playerId];
+      // Owner
+      if (newCard.origin.includes("_")) {
+        newCard.ownerId = newCard.origin.split("_")[1];
+        newCard.triggering = !newCard.wild
+          && (newCard.location == "tableau_" + newCard.ownerId
+            || (newCard.location.startsWith("timeless") && newCard.location == newCard.origin));
+        if (newCard.location.startsWith("jail") || newCard.origin.startsWith("timeless")) {
+          newCard.player = this.players[newCard.ownerId];
+        }
       }
 
       return newCard;
@@ -640,7 +649,8 @@ export default {
       switch (player.colorName) {
         case "red":
           player.colorBg = "bg-red-700";
-          player.colorBgTab = player.colorBg;
+          player.colorBg20 = "bg-red-700/20";
+          player.colorBg50 = "bg-red-700/50";
           player.colorBorder = "border-red-700";
           player.colorRing = "ring-red-700";
           player.colorText = "text-red-700";
@@ -649,7 +659,8 @@ export default {
           break;
         case "green":
           player.colorBg = "bg-green-700";
-          player.colorBgTab = player.colorBg;
+          player.colorBg20 = "bg-green-700/20";
+          player.colorBg50 = "bg-green-700/50";
           player.colorBorder = "border-green-700";
           player.colorRing = "ring-green-700";
           player.colorText = "text-green-700";
@@ -658,7 +669,8 @@ export default {
           break;
         case "blue":
           player.colorBg = "bg-blue-700";
-          player.colorBgTab = player.colorBg;
+          player.colorBg20 = "bg-blue-700/20";
+          player.colorBg50 = "bg-blue-700/50";
           player.colorBorder = "border-blue-700";
           player.colorRing = "ring-blue-700";
           player.colorText = "text-blue-700";
@@ -667,7 +679,8 @@ export default {
           break;
         case "yellow":
           player.colorBg = "bg-yellow-500";
-          player.colorBgTab = "bg-yellow-600";
+          player.colorBg20 = "bg-yellow-500/20";
+          player.colorBg50 = "bg-yellow-600/50";
           player.colorBorder = "border-yellow-600";
           player.colorRing = "ring-yellow-500";
           player.colorText = "text-yellow-600";
@@ -676,7 +689,8 @@ export default {
           break;
         case "purple":
           player.colorBg = "bg-purple-700";
-          player.colorBgTab = player.colorBg;
+          player.colorBg20 = "bg-purple-700/20";
+          player.colorBg50 = "bg-purple-700/50";
           player.colorBorder = "border-purple-700";
           player.colorRing = "ring-purple-700";
           player.colorText = "text-purple-700";

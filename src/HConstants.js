@@ -1,6 +1,8 @@
 const starter = {
   icon: "starter",
   bg: "bg-gray-600",
+  bg25: "bg-gray-600/25",
+  bg80: "bg-gray-600/80",
   border: "border-gray-900",
   text: "text-gray-900",
   textLight: "text-gray-100",
@@ -9,7 +11,10 @@ const starter = {
 const adventure = {
   icon: "adventure",
   bg: "bg-yellow-500",
+  bg25: "bg-yellow-500/25",
+  bg80: "bg-yellow-500/80",
   border: "border-yellow-900",
+  hatch: "hatch-yellow-500",
   text: "text-yellow-900",
   textLight: "text-yellow-900",
 };
@@ -17,7 +22,10 @@ const adventure = {
 const horror = {
   icon: "horror",
   bg: "bg-green-700",
+  bg25: "bg-green-700/25",
+  bg80: "bg-green-700/80",
   border: "border-green-700",
+  hatch: "hatch-green-700",
   text: "text-green-700",
   textLight: "text-green-100",
 };
@@ -25,7 +33,10 @@ const horror = {
 const mystery = {
   icon: "mystery",
   bg: "bg-blue-700",
+  bg25: "bg-blue-700/25",
+  bg80: "bg-blue-700/80",
   border: "border-blue-700",
+  hatch: "hatch-blue-700",
   text: "text-blue-700",
   textLight: "text-blue-100",
 };
@@ -33,7 +44,10 @@ const mystery = {
 const romance = {
   icon: "romance",
   bg: "bg-red-700",
+  bg25: "bg-red-700/25",
+  bg80: "bg-red-700/80",
   border: "border-red-700",
+  hatch: "hatch-red-700",
   text: "text-red-700",
   textLight: "text-red-100",
 };
@@ -46,14 +60,19 @@ export default Object.freeze({
   MYSTERY: 3,
   ROMANCE: 4,
   GENRES: {
+    starter,
     STARTER: starter,
     0: starter,
+    adventure,
     ADVENTURE: adventure,
     1: adventure,
+    horror,
     HORROR: horror,
     2: horror,
+    mystery,
     MYSTERY: mystery,
     3: mystery,
+    romance,
     ROMANCE: romance,
     4: romance,
   },
