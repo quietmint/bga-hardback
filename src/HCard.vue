@@ -327,126 +327,76 @@ export default {
     },
 
     footerActions() {
-      const actionBlack = "button mx-1 black shadow";
-      const actionBlue = "button mx-1 blue shadow";
-      const actionRed = "button mx-1 red shadow";
-      const actionRef = {
-        inkText: {
-          text: this.i18n("ink"),
-          class: "uppercase font-bold px-2 rounded-t-lg z-10 bg-black text-white leading-5",
-        },
-        inkButton: {
-          action: "useRemover",
-          text: this.i18n("useRemoverButton"),
-          class: actionBlack,
-        },
-        undoButton: {
-          action: "undoRemover",
-          text: this.i18n("undoRemoverButton"),
-          class: actionBlack,
-        },
-        wild: {
-          action: "wild",
-          text: this.i18n("wildButton"),
-          class: actionBlue,
-        },
-        uncover: {
-          action: "uncover",
-          // dynamic text
-          class: actionBlue,
-        },
-        double: {
-          action: "double",
-          text: this.i18n("doubleButton"),
-          class: actionBlue,
-        },
-        previewDraw: {
-          action: "previewDraw",
-          text: this.i18n("previewButton"),
-          class: actionBlue,
-        },
-        previewReturn: {
-          action: "previewReturn",
-          text: this.i18n("returnButton"),
-          class: actionBlue,
-        },
-        previewDiscard: {
-          action: "previewDiscard",
-          text: this.i18n("discardButton"),
-          class: actionBlue,
-        },
-        trash: {
-          action: "trash",
-          text: this.i18n("trashButton"),
-          class: actionRed,
-        },
-        trashDiscard: {
-          action: "trashDiscard",
-          // dynamic text
-          class: actionRed,
-        },
-        jailJail: {
-          action: "jail",
-          actionArgs: {
-            choice: "jail",
-          },
-          text: this.i18n("jailButton"),
-          class: actionBlue,
-        },
-        jailTrash: {
-          action: "jail",
-          actionArgs: {
-            choice: "trash",
-          },
-          text: this.i18n("trashButton"),
-          class: actionRed,
-        },
-        eitherInk: {
-          action: "either",
-          actionArgs: {
-            benefitId: HConstants.EITHER_INK,
-            choice: "ink",
-          },
-          text: this.i18n("ink"),
-          class: actionBlue,
-        },
-        eitherRemover: {
-          action: "either",
-          actionArgs: {
-            benefitId: HConstants.EITHER_INK,
-            choice: "remover",
-          },
-          text: this.i18n("remover"),
-          class: actionBlue,
-        },
-        purchase: {
-          action: "purchase",
-          // dynamic text
-          class: actionBlue,
-        },
-      };
-
       if (this.myself != null) { // not spectator
+        const actionBlack = "button mx-1 black shadow";
+        const actionBlue = "button mx-1 blue shadow";
+        const actionRed = "button mx-1 red shadow";
         if (this.gamestate.active) {
           if (this.gamestate.name == "uncover" && this.gamestate.args.cardIds.includes(this.card.id)) {
-            const text = this.i18n("uncoverButton", { x: this.card.letter });
-            const uncover = Object.assign({ text }, actionRef.uncover);
-            return [uncover];
+            return [{
+              action: "uncover",
+              class: actionBlue,
+              text: this.i18n("uncoverButton", { x: this.card.letter })
+            }];
+
           } else if (this.gamestate.name == "double" && this.gamestate.args.cardIds.includes(this.card.id)) {
-            return [actionRef.double];
+            return [{
+              action: "double",
+              class: actionBlue,
+              text: this.i18n("doubleButton"),
+            }];
+
           } else if (this.gamestate.name == "trash" && this.gamestate.args.cardIds.includes(this.card.id)) {
-            return [actionRef.trash];
+            return [{
+              action: "trash",
+              class: actionRed,
+              text: this.i18n("trashButton"),
+            }];
+
           } else if (this.gamestate.name == "trashDiscard" && this.card.location.startsWith("discard")) {
-            const text = this.i18n("trashCoinsButton", { coins: this.gamestate.args.amount });
-            const trashDiscard = Object.assign({ text }, actionRef.trashDiscard);
-            return [trashDiscard];
+            return [{
+              action: "trashDiscard",
+              class: actionRed,
+              text: this.i18n("trashCoinsButton", { coins: this.gamestate.args.amount }),
+            }];
+
           } else if ((this.gamestate.name == "trash" || this.gamestate.name == "trashDiscard" || this.gamestate.name == "specialRomancePrompt") && this.gamestate.args.previewDraw == this.card.id) {
-            return [actionRef.previewDraw];
+            return [{
+              action: "previewDraw",
+              class: actionBlue,
+              text: this.i18n("previewButton"),
+            }];
+
           } else if (this.gamestate.name == "specialRomance" && this.card.location.startsWith("hand")) {
-            return [actionRef.previewReturn, actionRef.previewDiscard];
+            return [{
+              action: "previewReturn",
+              class: actionBlue,
+              text: this.i18n("returnButton"),
+            }, {
+              action: "previewDiscard",
+              class: actionBlue,
+              text: this.i18n("discardButton"),
+            }];
+
           } else if (this.gamestate.name.startsWith("either") && this.gamestate.args.sourceId == this.card.id) {
             if (this.gamestate.args.benefit == HConstants.EITHER_INK) {
-              return [actionRef.eitherInk, actionRef.eitherRemover];
+              return [{
+                action: "either",
+                actionArgs: {
+                  benefitId: HConstants.EITHER_INK,
+                  choice: "ink",
+                },
+                class: actionBlue,
+                text: this.i18n("ink"),
+              }, {
+                action: "either",
+                actionArgs: {
+                  benefitId: HConstants.EITHER_INK,
+                  choice: "remover",
+                },
+                class: actionBlue,
+                text: this.i18n("remover"),
+              }];
             } else {
               const eitherCoins = {
                 action: "either",
@@ -469,40 +419,84 @@ export default {
               };
               return [eitherCoins, eitherPoints];
             }
+
           } else if (this.gamestate.name == "jail" && this.card.location == "offer") {
-            let jailJail = actionRef.jailJail;
+            let jailJail = {
+              action: "jail",
+              actionArgs: {
+                choice: "jail",
+              },
+              class: actionBlue,
+              text: this.i18n("jailButton"),
+            };
             if (this.gamestate.args.jail) {
               const confirmation = this.i18n("jailWarning", this.gamestate.args.jail);
-              jailJail = Object.assign({ confirmation }, actionRef.jailJail);
+              jailJail = Object.assign({ confirmation }, jailJail);
             }
-            return [jailJail, actionRef.jailTrash];
+            return [jailJail, {
+              action: "jail",
+              actionArgs: {
+                choice: "trash",
+              },
+              class: actionRed,
+              text: this.i18n("trashButton"),
+            }];
+
           } else if (this.gamestate.name == "purchase" && this.gamestate.args.cardIds.includes(this.card.id)) {
-            const text = this.i18n("purchaseButton", { coins: this.card.cost });
-            const purchase = Object.assign({ text }, actionRef.purchase);
-            return [purchase];
+            return [{
+              action: "purchase",
+              class: actionBlue,
+              text: this.i18n("purchaseButton", { coins: this.card.cost })
+            }];
           }
         }
 
         if (this.card.ink) {
           if (this.gamestate.safeToMove && this.myself.remover > 0 && (this.card.location == this.myself.handLocation || this.card.location == this.myself.tableauLocation)) {
-            return [actionRef.inkButton];
+            return [{
+              action: "useRemover",
+              class: actionBlack,
+              text: this.i18n("useRemoverButton"),
+            }];
           } else {
-            return [actionRef.inkText];
+            return [{
+              class: "uppercase font-bold px-2 rounded-t-lg z-10 bg-black text-white leading-5",
+              text: this.i18n("ink"),
+            }];
           }
         }
 
         if (this.gamestate.safeToMove && (this.card.location == this.myself.handLocation || this.card.location == this.myself.tableauLocation) && !this.card.origin.startsWith("timeless")) {
-          let reset = {
-            action: "reset",
-            text: this.i18n("uncoverButton", { x: this.card.letter }),
-            class: actionBlue,
-          };
           if (this.card.wild) {
-            return [reset];
+            return [{
+              action: "reset",
+              class: actionBlue,
+              text: this.i18n("uncoverButton", { x: this.card.letter }),
+            }];
           } else {
-            return this.card.remover ? [actionRef.wild, actionRef.undoButton] : [actionRef.wild];
+            let wild = {
+              action: "wild",
+              class: actionBlue,
+              text: this.i18n("wildButton"),
+            };
+            if (this.card.remover) {
+              return [wild, {
+                action: "undoRemover",
+                class: actionBlack,
+                text: this.i18n("undoRemoverButton"),
+              }];
+            } else {
+              return [wild];
+            }
           }
         }
+
+      } else if (this.card.ink) {
+        // Spectators still see ink
+        return [{
+          class: "uppercase font-bold px-2 rounded-t-lg z-10 bg-black text-white leading-5",
+          text: this.i18n("ink"),
+        }];
       }
     },
 

@@ -1,6 +1,6 @@
 :root {
   --hatch-opacity: 0.2;
-  --hatch-size: 10px;
+  --hatch-size: 6px;
 }
 
 #browser-error {
@@ -22,6 +22,15 @@
 
 #browser-error img {
   padding: 10px;
+}
+
+#loader_mask {
+  position: fixed;
+  height: 100vh;
+}
+
+#loader_mask_background {
+  display: none;
 }
 
 #topbar {

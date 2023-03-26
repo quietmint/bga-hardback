@@ -2,17 +2,16 @@
 
 🎲 Hardback implementation for Board Game Arena
 
-© 2021 quietmint
+© 2023 quietmint
 
 This adaptation includes the following licensed material, used with permission. All copyrights remain with the respective owners.
 
-- Hardback board game by Jeff Beck and Tim Fowers with artwork by Ryan Goldsberry and Andrew Collin Beck <https://www.fowers.games>
-- Almendra Display font by Ana Sanfelippo. Licensed under the [SIL Open Font License](http://scripts.sil.org/OFL)
-- Big Shoulders Inline Text font by Patric King <https://xotype.co/>. Licensed under the [SIL Open Font License](http://scripts.sil.org/OFL)
-- Bodoni Moda font by Owen Earl <https://indestructibletype.com>. Licensed under the [SIL Open Font License](http://scripts.sil.org/OFL)
-- Dancing Script by Impallari Type <https://twitter.com/impallaritype>. Licensed under the [SIL Open Font License](http://scripts.sil.org/OFL)
-- Finger Paint font by Carrois Apostrophe <https://carrois.com/>. Licensed under the [SIL Open Font License](http://scripts.sil.org/OFL)
-- Love Light font by Robert Leuschke <https://github.com/googlefonts/love-light>. Licensed under the [SIL Open Font License](http://scripts.sil.org/OFL)
-- New Rocker font by Impallari Type <https://twitter.com/impallaritype>. Licensed under the [SIL Open Font License](http://scripts.sil.org/OFL)
-- Deutsch Gothic font by James Fordyce. Licensed under the James Fordyce Font License:
-  > This font was created using Fontographer for Windows. It is copyright by J. Fordyce but may be freely distributed provided it is not altered, no fee is charged for it, and this text file is included with it. Feel free to send comments to j4dice@aol.com
+- [Hardback board game](https://www.fowers.games) by Jeff Beck and Tim Fowers with artwork by Ryan Goldsberry and Andrew Collin Beck
+- Fonts licensed under the [SIL Open Font License](http://scripts.sil.org/OFL):
+  - [Almendra Display](https://fonts.google.com/specimen/Almendra+Display/about) by Ana Sanfelippo
+  - [Big Shoulders Inline Text](https://fonts.google.com/specimen/Big+Shoulders+Inline+Text/about) by Patric King
+  - [Bodoni Moda](https://fonts.google.com/specimen/Bodoni+Moda/about) by Owen Earl
+  - [Dancing Script](https://fonts.google.com/specimen/Dancing+Script/about) and [New Rocker](https://fonts.google.com/specimen/New+Rocker/about) by Impallari Type
+  - [Finger Paint](https://fonts.google.com/specimen/Finger+Paint/about) by Carrois Apostrophe
+  - [Love Light](https://fonts.google.com/specimen/Love+Light/about) by Robert Leuschke
+  - [Staatliches](https://fonts.google.com/specimen/Staatliches/about) by Brian LaRossa and Erica Carras

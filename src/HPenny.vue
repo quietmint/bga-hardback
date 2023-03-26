@@ -37,7 +37,7 @@
             </div>
             <div id="tut_pennyTitle"
                  v-if="title"
-                 class="panel-novel text-center text-20">{{ title }}</div>
+                 class="panel-novel text-center text-22">{{ title }}</div>
           </div>
         </div>
         <div id="player_panel_content_000000"

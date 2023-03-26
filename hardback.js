@@ -19,6 +19,7 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
   return declare("bgagame.hardback", ebg.core.gamegui, {
     constructor: function () {
       this.vue = null;
+      dojo.place("loader_mask", "overall-content", "before");
     },
 
     setup: function () {
@@ -30,6 +31,11 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
         dojo.style("browser-error", "display", "block");
         $("browser-error").innerHTML = '<img src="https://noto-website-2.storage.googleapis.com/emoji/emoji_u1f627.png" alt="Anguished Face">' + "<div>" + msg + "</div>" + '<div class="ua" title="User-Agent">' + navigator.userAgent + "</div>" + '<div id="errorAbandon" class="bgabutton bgabutton_blue" onclick="$(\'ingame_menu_abandon\').click();return false">' + _("Abandon the game (no penalty)") + "</div>";
         return;
+      }
+
+      // Replay
+      if (typeof g_replayFrom !== "undefined") {
+        dojo.style("leftright_page_wrapper", "display", "none");
       }
 
       // Co-op victory/defeat override
@@ -196,6 +202,33 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
     collapseChatWindow: function () {
       this.inherited(arguments);
       dojo.query('meta[name="viewport"]')[0].content = this.computeViewport();
+    },
+
+    /* @Override */
+    setLoader: function (percent) {
+      if (percent >= 100) {
+        dojo.style("leftright_page_wrapper", "display", "block");
+      }
+      this.inherited(arguments);
+    },
+
+    /* @Override */
+    setModeInstataneous() {
+      if (!this.instantaneousMode) {
+        this.instantaneousMode = true;
+        dojo.style("leftright_page_wrapper", "display", "none");
+        dojo.style("loader_mask", "display", "block");
+        dojo.style("loader_mask", "opacity", 1);
+      }
+    },
+
+    /* @Override */
+    unsetModeInstantaneous() {
+      if (this.instantaneousMode) {
+        this.instantaneousMode = false;
+        dojo.style("leftright_page_wrapper", "display", "block");
+        dojo.style("loader_mask", "display", "none");
+      }
     },
 
     onEnteringState: function (stateName, args) {
