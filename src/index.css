@@ -157,10 +157,6 @@
   text-shadow: -2px 2px theme("colors.blue.400"), 1px -1px theme("colors.blue.700"), 0 0 4px #0008;
 }
 
-.hatch {
-  background: repeating-linear-gradient(45deg, rgba(0 0 0 / var(--hatch-opacity)), rgba(0 0 0 / var(--hatch-opacity)) 1px, transparent 1px, transparent var(--hatch-size)), transparent;
-}
-
 .card .letter {
   width: 100%;
 }
@@ -417,6 +413,7 @@
 /* Player panels */
 
 .tailwind.panelbg {
+  margin: 0 -3px -5px -3px;
   clear: both;
   display: grid;
   grid-template:
@@ -455,19 +452,12 @@
 }
 
 .panel-signature {
-  min-height: 120px;
+  min-height: 115px;
   margin-right: 100px;
 }
 
 .panel-novel {
   font-family: "Staatliches", serif;
-}
-
-.genreCounts {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
 }
 
 .genreCounts div {

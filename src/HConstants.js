@@ -14,7 +14,7 @@ const adventure = {
   bg25: "bg-yellow-500/25",
   bg80: "bg-yellow-500/80",
   border: "border-yellow-900",
-  hatch: "hatch-yellow-500",
+  hatch: "hatch-yellow-500/25",
   text: "text-yellow-900",
   textLight: "text-yellow-900",
 };
@@ -25,7 +25,7 @@ const horror = {
   bg25: "bg-green-700/25",
   bg80: "bg-green-700/80",
   border: "border-green-700",
-  hatch: "hatch-green-700",
+  hatch: "hatch-green-700/25",
   text: "text-green-700",
   textLight: "text-green-100",
 };
@@ -36,7 +36,7 @@ const mystery = {
   bg25: "bg-blue-700/25",
   bg80: "bg-blue-700/80",
   border: "border-blue-700",
-  hatch: "hatch-blue-700",
+  hatch: "hatch-blue-700/25",
   text: "text-blue-700",
   textLight: "text-blue-100",
 };
@@ -47,7 +47,7 @@ const romance = {
   bg25: "bg-red-700/25",
   bg80: "bg-red-700/80",
   border: "border-red-700",
-  hatch: "hatch-red-700",
+  hatch: "hatch-red-700/25",
   text: "text-red-700",
   textLight: "text-red-100",
 };

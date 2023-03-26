@@ -30,14 +30,15 @@
             </span>
           </div>
           <div class="tailwind">
-            <div class="panel-signature flex flex-col items-center justify-center">
+            <div class="panel-signature flex flex-col justify-center ml-1">
+              <div id="tut_pennyTitle"
+                   v-if="title"
+                   v-text="title"
+                   class="panel-novel text-18 leading-none my-1 pb-1 border-b border-white"></div>
               <div id="tut_pennySignature"
-                   class="text-14 ml-1"
+                   class="text-14"
                    v-html="description"></div>
             </div>
-            <div id="tut_pennyTitle"
-                 v-if="title"
-                 class="panel-novel text-center text-22">{{ title }}</div>
           </div>
         </div>
         <div id="player_panel_content_000000"

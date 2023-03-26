@@ -165,6 +165,15 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
     },
 
     /* @Override */
+    adaptPlayersPanels: function () {
+      if (dojo.hasClass("ebd-body", "mobile_version")) {
+        dojo.style("left-side", "marginTop", dojo.position("right-side").h + "px");
+      } else {
+        dojo.style("left-side", "marginTop", "0px");
+      }
+    },
+
+    /* @Override */
     showMessage: function (msg, type) {
       if (type == "error") {
         var lastErrorCode = msg.startsWith("!!!") ? msg.substring(3) : null;

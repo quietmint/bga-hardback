@@ -6,7 +6,7 @@
              v-if="player.order == 1"
              class="text-14 text-left pl-1 pt-1"
              v-text="i18n('first')"></div>
-        <div class="panel-ink flex items-center text-20 font-bold text-noshadow">
+        <div class="panel-ink flex items-center text-18 font-bold text-noshadow">
           <div :id="'tut_ink_p' + player.id"
                class="flex-1"
                :title="i18n('ink') + ': ' + player.ink">{{ player.ink }}</div>
@@ -16,138 +16,60 @@
         </div>
       </div>
 
-      <div class="panel-right flex items-center justify-around text-noshadow">
-        <!-- Literary Award -->
-        <HTooltip v-if="options.awards"
-                  position="left">
-          <template v-slot:tip>
-            <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-center whitespace-nowrap">
-              <div class="p-2 bg-gray-200 font-bold">{{ i18n("award") }}</div>
-              <div v-for="(value, key) in refs.awards"
-                   :key="key"
-                   class="px-2 py-1 border-t border-black/25">
-                {{ i18n("awardLetters", { length: key }) }}
-                <span class="pl-4">{{ value }}-NO-BREAK-
-                  <Icon icon="star"
-                        class="inline text-18" />
-                </span>
-              </div>
-            </div>
-          </template>
-          <template v-slot:default>
-            <div :id="'tut_award_p' + player.id"
-                 class="panel-opt">{{ player.award || "" }}-NO-BREAK-
-              <Icon v-if="player.award"
-                    class="inline text-20"
-                    icon="star" />
-            </div>
-          </template>
-        </HTooltip>
-
-        <!-- Adverts -->
-        <HTooltip v-if="options.adverts"
-                  position="left">
-          <template v-slot:tip>
-            <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-center whitespace-nowrap">
-              <div class="p-2 bg-gray-200 font-bold">{{ i18n("adverts") }}</div>
-              <div v-for="(value, key) in refs.adverts"
-                   :key="key"
-                   class="px-2 py-1 border-t border-black/25">
-                {{ key }}¢
-                <span class="pl-4">{{ value }}-NO-BREAK-
-                  <Icon icon="star"
-                        class="inline text-18" />
-                </span>
-              </div>
-            </div>
-          </template>
-          <template v-slot:default>
-            <div :id="'tut_advert_p' + player.id"
-                 class="panel-opt">{{ player.advert || "" }}-NO-BREAK-
-              <Icon v-if="player.advert"
-                    class="inline text-20"
-                    icon="star" />
-            </div>
-          </template>
-        </HTooltip>
-      </div>
-
-      <div class="panel-bottom my-1 text-white text-17 font-bold flex justify-between text-noshadow">
+      <div class="panel-right flex flex-wrap gap-1 content-end justify-center text-18 font-bold text-center text-noshadow">
+        <!-- Location Counts -->
         <div :id="'count_' + player.drawLocation"
              :class="{ 'cursor-pointer': player.myself && options.deck }"
-             class="rounded-lg bg-black/75 px-2 ml-1"
+             class="rounded-lg flex-2 whitespace-nowrap overflow-hidden bg-black/70 p-0.5"
              @click="player.myself && options.deck && clickTab('draw')"
              :title="i18n('drawLocation') + ': ' + drawCards.length">
           <Icon icon="drawLocation"
-                class="inline" /> {{ drawCards.length }}
+                class="inline text-20" /> {{ drawCards.length }}
         </div>
         <div :id="'count_' + player.handLocation"
-             class="rounded-lg bg-black/75 px-2 ml-1"
+             class="rounded-lg flex-2 whitespace-nowrap overflow-hidden bg-black/70 p-0.5"
              :class="{ 'cursor-pointer': player.myself }"
              @click="player.myself && clickTab('hand')"
              :title="i18n('handLocation') + ': ' + handCards.length">
           <Icon icon="handLocation"
-                class="inline" /> {{ handCards.length }}
+                class="inline text-20" /> {{ handCards.length }}
         </div>
         <div :id="'count_' + player.tableauLocation"
-             class="rounded-lg bg-black/75 px-2 ml-1"
+             class="rounded-lg flex-2 whitespace-nowrap overflow-hidden bg-black/70 p-0.5"
              :title="i18n('tableauLocation') + ': ' + tableauCards.length">
           <Icon icon="tableauLocation"
-                class="inline" /> {{ tableauCards.length }}
+                class="inline text-20" /> {{ tableauCards.length }}
         </div>
         <div :id="'count_' + player.discardLocation"
              :class="{ 'cursor-pointer': player.myself }"
-             class="rounded-lg bg-black/75 px-2 ml-1"
+             class="rounded-lg flex-2 whitespace-nowrap overflow-hidden bg-black/70 p-0.5"
              @click="player.myself && clickTab('discard')"
              :title="i18n('discardLocation') + ': ' + discardCards.length">
           <Icon icon="discardLocation"
-                class="inline" /> {{ discardCards.length }}
+                class="inline text-20" /> {{ discardCards.length }}
         </div>
       </div>
 
-      <HTooltip :id="'tut_genreCounts_p' + player.id"
-                class="genreCounts text-noshadow"
-                position="left">
-        <template v-slot:tip>
-          <div class="shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden text-16 text-left whitespace-nowrap">
-            <div class="p-2 bg-gray-200 font-bold text-center"
-                 v-html="i18n('genreCountsTip', { player_name: `<span class='${player.colorText}'>${player.name}</span>`, count: myGenreCounts.starter.total })"></div>
-            <div v-for="gc in myGenreCounts"
-                 :key="gc.genre"
-                 class="px-2 py-1 flex"
-                 :class="gc.class">
-              <Icon class="text-19 mr-1"
-                    :icon="gc.genre" /> {{ i18n(gc.genre) }}
-              <div class="grow text-right">{{ gc.display }}</div>
-            </div>
-          </div>
-        </template>
-        <template v-slot:default>
-          <div class="rounded-bl-lg flex grow overflow-hidden whitespace-nowrap text-center h-6 leading-6 text-14">
-            <div v-for="gc in myGenreCounts"
-                 :key="gc.genre"
-                 :style="{ width: gc.percent + '%' }"
-                 :class="gc.class">
-              <Icon class="inline text-16"
-                    :icon="gc.genre" />{{ gc.count }}
-            </div>
-          </div>
-        </template>
-      </HTooltip>
+      <div class="panel-bottom">
+        <HAwardAdvert :id="player.id"
+                      :award="player.award"
+                      :advert="player.advert" />
+        <HGenreCounts :id="player.id" />
+      </div>
     </div>
   </teleport>
 </template>
 
 <script lang="js">
-import HConstants from "./HConstants.js";
-import HTooltip from "./HTooltip.vue";
+import HAwardAdvert from "./HAwardAdvert.vue";
+import HGenreCounts from "./HGenreCounts.vue";
 import { Icon } from "@iconify/vue";
 
 export default {
   name: "HPlayerPanel",
   emits: ["clickTab"],
-  inject: ["cardsInLocation", "genreCounts", "i18n", "options", "refs"],
-  components: { Icon, HTooltip },
+  inject: ["cardsInLocation", "i18n", "options"],
+  components: { Icon, HAwardAdvert, HGenreCounts },
 
   props: {
     player: {
@@ -175,10 +97,6 @@ export default {
 
     handCards() {
       return this.cardsInLocation(this.player.handLocation);
-    },
-
-    myGenreCounts() {
-      return this.genreCounts[this.player.id];
     },
 
     tableauCards() {

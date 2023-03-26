@@ -37,6 +37,10 @@
   z-index: unset;
 }
 
+#page-title {
+  min-height: 34px;
+}
+
 #game_play_area {
   margin: 0;
 }
@@ -165,14 +169,25 @@ a:visited.playername {
 }
 
 /* Player boards */
+.mobile_version #player_boards {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.mobile_version .player-board {
+  float: none;
+  flex: 1 0 220px;
+  max-width: 50%;
+}
 
 .player-board {
   user-select: none;
+  overflow: hidden;
   background-repeat: no-repeat;
   background-position: top -15px right -5px, top center;
   background-size: auto, cover;
   background-color: #888;
-  padding-bottom: 26px;
   color: white;
   text-shadow: -0.5px 0 rgba(0, 0, 0, 0.5), 0.5px 0 rgba(0, 0, 0, 0.5);
 }
@@ -199,14 +214,6 @@ a:visited.playername {
 .player-board.red .player-name a,
 .player-board.yellow .player-name a {
   text-shadow: 0 0 2px black, 1px 1px rgb(0 0 0 / 50%);
-}
-
-.player_board_inner {
-  position: static;
-}
-
-.mobile_version .player-board .genreCounts {
-  border-bottom-right-radius: 8px;
 }
 
 .player-board.red {

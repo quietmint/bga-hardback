@@ -257,7 +257,7 @@ export default {
     basicSectionClass() {
       let c = this.card.timeless ? "flex-col " : "flex ";
       if (this.basicInactive) {
-        c += "hatch text-gray-500";
+        c += "hatch-transparent text-gray-500";
       }
       return c;
     },

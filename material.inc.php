@@ -24,6 +24,7 @@ require_once('modules/constants.inc.php');
 
 $this->genres = [H_STARTER, H_ADVENTURE, H_HORROR, H_ROMANCE, H_MYSTERY];
 
+// length => points
 $this->awards = [
     7 => 5,
     8 => 6,
@@ -33,6 +34,7 @@ $this->awards = [
     12 => 15,
 ];
 
+// coins => points
 $this->adverts = [
     6 => 3,
     9 => 6,
@@ -67,9 +69,9 @@ $this->i18n = [
     'mystery' => clienttranslate('Mystery'),
     'romance' => clienttranslate('Romance'),
 
-    'adverts' => clienttranslate('Adverts'),
-    'award' => clienttranslate('Literary Awards'),
-    'awardLetters' => clienttranslate('${length} letters'),
+    'advert' => clienttranslate('Advert'),
+    'award' => clienttranslate('Award'),
+    'awardTable' => clienttranslate('${length} letters'),
     'browserWarnDesc' => clienttranslate('Some game features are unavailable'),
     'browserWarnTitle' => clienttranslate('Update your browser for a better experience'),
     'confirmButton' => clienttranslate('Confirm Word'),
@@ -85,7 +87,6 @@ $this->i18n = [
     'finalRound' => clienttranslate('This is the final round!'),
     'first' => clienttranslate('First Player'),
     'flushButton' => clienttranslate('Flush Offer Row'),
-    'genreCountsTip' => clienttranslate('${player_name}\'s cards (${count})'),
     'genreTip' => clienttranslate('With multiple ${x} cards'),
     'handLocation' => clienttranslate('Hand'),
     'ink' => clienttranslate('Ink'),

@@ -444,9 +444,9 @@ export default {
           return {
             class: `${genre.bg} ${genre.textLight}`,
             count,
-            display: `${count} (${percent.toFixed(0)}%)`,
             genre: genre.icon,
             percent,
+            percentDisplay: percent.toFixed(0),
             total,
             triggering: triggeringCards.length,
           };
@@ -1089,6 +1089,9 @@ export default {
       }
       if (this.gamestate.active && this.gamestate.name == "trashDiscard" && this.gamestate.args && !this.gamestate.args.skip) {
         this.emitter.emit("clickTab", "discard");
+      }
+      if (this.gamestate.active && this.gamestate.name == "specialRomance") {
+        this.emitter.emit("clickTab", "hand");
       }
     },
 

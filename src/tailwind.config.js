@@ -25,6 +25,10 @@ module.exports = {
       borderWidth: {
         3: "3px",
       },
+      flex: {
+        2: "0 1 calc(50% - 0.25rem)",
+        3: "0 1 calc(33% - 0.25rem)",
+      },
       fontSize: {
         13: "13px",
         14: "14px",
@@ -49,6 +53,10 @@ module.exports = {
       margin: {
         18: "4.5rem",
       },
+      opacity: {
+        33: ".33",
+        66: ".66",
+      },
       ringWidth: {
         DEFAULT: "6px",
       },
@@ -62,9 +70,9 @@ module.exports = {
       matchUtilities(
         {
           hatch: (value) => {
-            const { color } = parseColor(value);
+            const { color, alpha } = parseColor(value);
             return {
-              background: `repeating-linear-gradient(45deg, rgba(0 0 0 / var(--hatch-opacity)), rgba(0 0 0 / var(--hatch-opacity)) 1px, transparent 1px, transparent var(--hatch-size)), rgba(${color[0]} ${color[1]} ${color[2]} / 0.25)`,
+              background: `repeating-linear-gradient(45deg, rgba(0 0 0 / var(--hatch-opacity)), rgba(0 0 0 / var(--hatch-opacity)) 1px, transparent 1px, transparent var(--hatch-size)), rgba(${color[0]} ${color[1]} ${color[2]} / ${alpha})`,
             };
           },
         },
