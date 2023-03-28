@@ -1,6 +1,6 @@
 <template>
   <div :id="'tut_genreCounts_p' + id"
-       class="mt-1 text-noshadow text-14 cursor-pointer"
+       class="mt-1 text-15 cursor-pointer"
        @click="click">
 
     <!-- Collapsed -->

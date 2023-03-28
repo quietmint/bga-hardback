@@ -222,7 +222,7 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
     },
 
     /* @Override */
-    setModeInstataneous() {
+    setModeInstataneous: function () {
       if (!this.instantaneousMode) {
         this.instantaneousMode = true;
         dojo.style("leftright_page_wrapper", "display", "none");
@@ -232,12 +232,24 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
     },
 
     /* @Override */
-    unsetModeInstantaneous() {
+    unsetModeInstantaneous: function () {
       if (this.instantaneousMode) {
         this.instantaneousMode = false;
         dojo.style("leftright_page_wrapper", "display", "block");
         dojo.style("loader_mask", "display", "none");
       }
+    },
+
+    /* @Override */
+    onLockInterface: function (lock) {
+      if (lock.status == "outgoing") {
+        this.page_title_height = dojo.style("page-title", "height") + "px";
+        dojo.style("page-title", "height", this.page_title_height);
+      } else if (lock.status == "updated" && lock.uuid == this.interface_locked_by_id && this.page_title_height) {
+        this.page_title_height = null;
+        dojo.style("page-title", "height", this.page_title_height);
+      }
+      this.inherited(arguments);
     },
 
     onEnteringState: function (stateName, args) {

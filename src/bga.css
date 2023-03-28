@@ -37,8 +37,8 @@
   z-index: unset;
 }
 
-#page-title {
-  min-height: 34px;
+#maintitlebar_content {
+  min-height: 35px;
 }
 
 #game_play_area {
@@ -72,6 +72,12 @@
   user-select: none;
 }
 
+#hword {
+  border-top: 1px dotted #999;
+  margin-top: 5px;
+  padding-top: 5px;
+}
+
 .hdefine {
   font-style: italic;
   margin: 5px -5px -5px;
@@ -84,7 +90,7 @@
 }
 
 .hicon {
-  font-size: 1.4em;
+  font-size: 1.3em;
   vertical-align: -0.25em;
   padding-right: 1px;
 }
@@ -96,8 +102,8 @@
   padding: 2px 4px 2px 2px;
   border-radius: 4px;
   background: #e8e8e8;
-  height: 1.4em;
-  line-height: 1.4em;
+  height: 1.3em;
+  line-height: 1.3em;
 }
 
 .hgenre.starter {
@@ -189,6 +195,13 @@ a:visited.playername {
   background-size: auto, cover;
   background-color: #888;
   color: white;
+}
+
+.player-board .text-shadow,
+.player_score,
+.player_showcursor,
+.player_table_status,
+.panel-signature {
   text-shadow: -0.5px 0 rgba(0, 0, 0, 0.5), 0.5px 0 rgba(0, 0, 0, 0.5);
 }
 
@@ -248,8 +261,15 @@ a:visited.playername {
   padding-left: 5px;
 }
 
-#hword {
-  border-top: 1px dotted #999;
-  margin-top: 5px;
-  padding-top: 5px;
+.player_elo_wrap {
+  display: block;
+}
+
+.arena_mode .player_elo_wrap,
+.training_mode .player_elo_wrap {
+  display: none;
+}
+
+.player_elo_wrap .gamerank {
+  top: 0;
 }

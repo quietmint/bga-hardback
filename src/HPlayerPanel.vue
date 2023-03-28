@@ -4,9 +4,9 @@
       <div class="panel-left text-center">
         <div id="tut_firstPlayer"
              v-if="player.order == 1"
-             class="text-14 text-left pl-1 pt-1"
+             class="text-14 text-left text-shadow pl-1 pt-1"
              v-text="i18n('first')"></div>
-        <div class="panel-ink flex items-center text-18 font-bold text-noshadow">
+        <div class="panel-ink flex items-center text-18 font-bold">
           <div :id="'tut_ink_p' + player.id"
                class="flex-1"
                :title="i18n('ink') + ': ' + player.ink">{{ player.ink }}</div>
@@ -16,7 +16,7 @@
         </div>
       </div>
 
-      <div class="panel-right flex flex-wrap gap-1 content-end justify-center text-18 font-bold text-center text-noshadow">
+      <div class="panel-right flex flex-wrap gap-1 content-end justify-center text-18 font-bold text-center">
         <!-- Location Counts -->
         <div :id="'count_' + player.drawLocation"
              :class="{ 'cursor-pointer': player.myself && options.deck }"

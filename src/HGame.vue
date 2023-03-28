@@ -1180,11 +1180,20 @@ export default {
       if (threedEl != null) {
         threedEl.style.display = 'none';
       }
+
+      // Final score in player panels
       Object.keys(this.gamedatas.players).forEach((id) => {
         const totalEl = document.createElement('span');
         totalEl.textContent = ' / ' + this.gamedatas.gameLength;
         const scoreEl = document.getElementById('player_score_' + id);
         scoreEl.insertAdjacentElement('afterend', totalEl);
+      });
+
+      // ELO in player panels
+      document.querySelectorAll(".player_elo_wrap").forEach((node) => {
+        if (node.firstChild.nodeType == 3) {
+          node.firstChild.remove();
+        }
       });
     },
 

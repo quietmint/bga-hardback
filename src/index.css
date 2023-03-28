@@ -422,10 +422,6 @@
     / 110px auto 115px;
 }
 
-.text-noshadow {
-  text-shadow: none;
-}
-
 .panel-left {
   grid-area: left;
 }
@@ -452,6 +448,7 @@
 }
 
 .panel-signature {
+  clear: both;
   min-height: 115px;
   margin-right: 100px;
 }

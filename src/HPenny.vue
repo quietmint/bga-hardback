@@ -24,19 +24,15 @@
             <span id="player_score_0"
                   class="player_score_value">{{ penny.score }} / {{ penny.gameLength }}</span> <i id="icon_point_0"
                class="fa fa-star"></i>
-            <span class="player_elo_wrap">
-              •
-              <div class="gamerank gamerank_expert"><span class="icon20 icon20_rankw"></span> <span class="gamerank_value">666</span></div>
-            </span>
           </div>
           <div class="tailwind">
             <div class="panel-signature flex flex-col justify-center ml-1">
               <div id="tut_pennyTitle"
                    v-if="title"
                    v-text="title"
-                   class="panel-novel text-18 leading-none my-1 pb-1 border-b border-white"></div>
+                   class="panel-novel text-20 leading-none my-1 pb-1 border-b border-white"></div>
               <div id="tut_pennySignature"
-                   class="text-14"
+                   class="text-15"
                    v-html="description"></div>
             </div>
           </div>
