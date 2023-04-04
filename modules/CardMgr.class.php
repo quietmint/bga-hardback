@@ -589,8 +589,9 @@ class CardMgr extends APP_GameClass
         hardback::$instance->enqueueCards([$card->getId()]);
     }
 
-    public static function reset(int $playerId, bool $skipWord = false): void
+    public static function reset(HPlayer $player, bool $skipWord = false): void
     {
+        $playerId = $player->getId();
         $cards = self::getCardsInLocation([self::getHandLocation($playerId), self::getTableauLocation($playerId)]);
 
         // Clear used benefits
@@ -615,6 +616,13 @@ class CardMgr extends APP_GameClass
                 } else {
                     // Discard to owner
                     self::discard($card, self::getDiscardLocation($owner), false);
+                    $ownerPlayer = PlayerMgr::getPlayer($owner);
+                    hardback::$instance->notifyAllPlayers('message', hardback::$instance->msg['timelessDiscard'], [
+                        'player_name' => $player->getName(),
+                        'player_name2' => $ownerPlayer->getName(),
+                        'genre' => $card->getGenreName(),
+                        'letter' => $card->getLetter(),
+                    ]);
                 }
             } else {
                 // Discard normally

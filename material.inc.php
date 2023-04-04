@@ -168,6 +168,7 @@ $this->msg = [
     'summary2' => clienttranslate('${player_name} earns ${amount1}${icon1} and ${amount2}${icon2} this round'),
     'summary3' => clienttranslate('${player_name} earns ${amount1}${icon1}, ${amount2}${icon2}, and ${amount3}${icon3} this round'),
     'summary4' => clienttranslate('${player_name} earns ${amount1}${icon1}, ${amount2}${icon2}, ${amount3}${icon3}, and ${amount4}${icon4} this round'),
+    'timelessDiscard' => clienttranslate('${player_name} discards ${player_name2}\'s Timeless Classic ${genre}${letter}'),
     'trash' => clienttranslate('${player_name} trashes ${genre}${letter} and earns ${amount}${icon}'),
     'trashOffer' => clienttranslate('${player_name} trashes ${genre}${letter} from the offer row'),
     'uncover' => clienttranslate('${player_name} uncovers ${genre}${letter}'),

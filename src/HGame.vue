@@ -431,8 +431,8 @@ export default {
     genreCounts() {
       const cards = this.populateCards(
         Object.values(this.gamedatas.cards)
-      ).filter((card) => card.ownerId != null && !card.origin.startsWith('jail'));
-      const groupByOwner = groupBy(cards, (card) => card.ownerId);
+      ).filter((card) => card.playerId != null && !card.origin.startsWith('jail'));
+      const groupByOwner = groupBy(cards, (card) => card.playerId);
       return mapValues(groupByOwner, (ownerCards) => {
         const groupByGenre = groupBy(ownerCards, 'genreName');
         return mapValues(groupByGenre, (genreCards, genreName) => {
@@ -606,12 +606,12 @@ export default {
 
       // Owner
       if (newCard.origin.includes("_")) {
-        newCard.ownerId = newCard.origin.split("_")[1];
+        newCard.playerId = newCard.origin.split("_")[1];
         newCard.triggering = !newCard.wild
-          && (newCard.location == "tableau_" + newCard.ownerId
+          && (newCard.location == "tableau_" + newCard.playerId
             || (newCard.location.startsWith("timeless") && newCard.location == newCard.origin));
         if (newCard.location.startsWith("jail") || newCard.origin.startsWith("timeless")) {
-          newCard.player = this.players[newCard.ownerId];
+          newCard.player = this.players[newCard.playerId];
         }
       }
 

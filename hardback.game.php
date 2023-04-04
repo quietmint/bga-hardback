@@ -1450,7 +1450,7 @@ class hardback extends Table
     {
         // Reset hand and tableau
         $player = PlayerMgr::getPlayer();
-        CardMgr::reset($player->getId(), $skipWord);
+        CardMgr::reset($player, $skipWord);
         $player->setWord(null);
 
         if ($this->gamestate->table_globals[H_OPTION_COOP] == H_NO) {
@@ -1547,6 +1547,10 @@ class hardback extends Table
     {
         $draw = CardMgr::drawCards(1, 'deck', 'offer');
         $draw = reset($draw);
+        self::notifyAllPlayers('message', $this->msg['draw'], [
+            'genre' => $draw->getGenreName(),
+            'letter' => $draw->getLetter(),
+        ]);
 
         if ($this->gamestate->table_globals[H_OPTION_COOP] != H_NO) {
             // Discard the oldest matching timeless card
@@ -1555,24 +1559,18 @@ class hardback extends Table
             $timeless = $player->getTimeless(true);
             foreach ($timeless as $discard) {
                 if ($draw->getGenre() == $discard->getGenre()) {
-                    self::notifyAllPlayers('message', $this->msg['drawDiscard'], [
+                    self::notifyAllPlayers('message', $this->msg['timelessDiscard'], [
                         'player_name' => $penny->getName(),
                         'player_name2' => $player->getName(),
-                        'genre' => $draw->getGenreName(),
-                        'letter' => $draw->getLetter(),
-                        'genre2' => $discard->getGenreName(),
-                        'letter2' => $discard->getLetter(),
+                        'genre' => $discard->getGenreName(),
+                        'letter' => $discard->getLetter(),
                     ]);
                     CardMgr::discard($discard, $player->getDiscardLocation());
-                    return $draw;
+                    break;
                 }
             }
         }
 
-        self::notifyAllPlayers('message', $this->msg['draw'], [
-            'genre' => $draw->getGenreName(),
-            'letter' => $draw->getLetter(),
-        ]);
         return $draw;
     }
 

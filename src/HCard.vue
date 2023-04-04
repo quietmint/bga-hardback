@@ -6,18 +6,6 @@
        class="cardholder relative"
        :class="holderClass"
        ref="cardholder">
-    <!-- Header -->
-    <div v-if="header"
-         class="flex items-start justify-evenly text-center text-14 whitespace-nowrap leading-5">
-      <div class="px-2 rounded-t-lg z-10"
-           :class="header.class"
-           :title="header.title">
-        <Icon v-if="header.icon"
-              :icon="header.icon"
-              class="inline text-15" /> {{ header.text }}
-      </div>
-    </div>
-
     <!-- Card -->
     <div @click="clickCard"
          :class="cardClass"
@@ -114,15 +102,11 @@
 
     <!-- Footer -->
     <div class="h-8 leading-8 flex items-start justify-evenly text-center text-14 whitespace-nowrap">
-      <span v-if="!footerActions && card.oldest"
-            :title="i18n('oldestTip')">
-        <Icon icon="clock"
-              class="inline text-17 h-8" />
-      </span>
       <div :id="'tut_a' + index + '_c' + this.card.id"
            v-for="(action, index) in footerActions"
            :key="action"
            @click="clickFooter(action)"
+           :title="action.title"
            :class="action.class"
            class="rounded-b-lg z-10">{{ action.text }}
         <Icon v-if="action.icon"
@@ -266,8 +250,8 @@ export default {
       if (this.basicInactive) {
         return true;
       }
-      if (this.genreCounts && this.card.ownerId) {
-        const ownerGenreCounts = this.genreCounts[this.card.ownerId];
+      if (this.genreCounts && this.card.playerId) {
+        const ownerGenreCounts = this.genreCounts[this.card.playerId];
         const ownerTriggering = ownerGenreCounts != null && ownerGenreCounts[this.card.genreName] && ownerGenreCounts[this.card.genreName].triggering >= 2;
         return this.card.triggering && !ownerTriggering;
       }
@@ -285,31 +269,6 @@ export default {
 
     genreTooltipClass() {
       return `${HConstants.GENRES[this.card.genre].text} ${HConstants.GENRES[this.card.genre].bg25}`;
-    },
-
-    header() {
-      if (this.card.origin.startsWith("timeless")) {
-        return {
-          text: this.card.player.name,
-          icon: "timeless",
-          title: this.i18n("timelessTip", { player_name: this.card.player.name }),
-          class: `${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
-        };
-      } else if (this.card.location.startsWith("jail")) {
-        return {
-          text: this.card.player.name,
-          icon: "jail",
-          title: this.i18n("jailTip", { player_name: this.card.player.name }),
-          class: `${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
-        };
-      } else if (this.card.player && this.card.player.id === 0) {
-        return {
-          text: this.card.player.name,
-          icon: "jail",
-          title: this.i18n("jailTip", { player_name: this.card.player.name }),
-          class: `${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
-        };
-      }
     },
 
     clickAction() {
@@ -383,7 +342,7 @@ export default {
               return [{
                 action: "either",
                 actionArgs: {
-                  benefitId: HConstants.EITHER_INK,
+                  benefitId: this.gamestate.args.benefit,
                   choice: "ink",
                 },
                 class: actionBlue,
@@ -391,14 +350,14 @@ export default {
               }, {
                 action: "either",
                 actionArgs: {
-                  benefitId: HConstants.EITHER_INK,
+                  benefitId: this.gamestate.args.benefit,
                   choice: "remover",
                 },
                 class: actionBlue,
                 text: this.i18n("remover"),
               }];
             } else {
-              const eitherCoins = {
+              return [{
                 action: "either",
                 actionArgs: {
                   benefitId: this.gamestate.args.benefit,
@@ -406,8 +365,7 @@ export default {
                 },
                 text: `${this.gamestate.args.amount}¢`,
                 class: actionBlue,
-              };
-              const eitherPoints = {
+              }, {
                 action: "either",
                 actionArgs: {
                   benefitId: this.gamestate.args.benefit,
@@ -416,8 +374,7 @@ export default {
                 text: this.gamestate.args.amount,
                 icon: "star",
                 class: actionBlue,
-              };
-              return [eitherCoins, eitherPoints];
+              }];
             }
 
           } else if (this.gamestate.name == "jail" && this.card.location == "offer") {
@@ -451,51 +408,72 @@ export default {
           }
         }
 
-        if (this.card.ink) {
-          if (this.gamestate.safeToMove && this.myself.remover > 0 && (this.card.location == this.myself.handLocation || this.card.location == this.myself.tableauLocation)) {
-            return [{
-              action: "useRemover",
-              class: actionBlack,
-              text: this.i18n("useRemoverButton"),
-            }];
-          } else {
-            return [{
-              class: "uppercase font-bold px-2 rounded-t-lg z-10 bg-black text-white leading-5",
-              text: this.i18n("ink"),
-            }];
-          }
-        }
-
-        if (this.gamestate.safeToMove && (this.card.location == this.myself.handLocation || this.card.location == this.myself.tableauLocation) && !this.card.origin.startsWith("timeless")) {
-          if (this.card.wild) {
-            return [{
-              action: "reset",
-              class: actionBlue,
-              text: this.i18n("uncoverButton", { x: this.card.letter }),
-            }];
-          } else {
-            let wild = {
-              action: "wild",
-              class: actionBlue,
-              text: this.i18n("wildButton"),
-            };
-            if (this.card.remover) {
-              return [wild, {
-                action: "undoRemover",
+        if (this.gamestate.safeToMove && (this.card.location == this.myself.handLocation || this.card.location == this.myself.tableauLocation)) {
+          if (this.card.ink) {
+            if (this.myself.remover > 0) {
+              return [{
+                action: "useRemover",
                 class: actionBlack,
-                text: this.i18n("undoRemoverButton"),
+                text: this.i18n("useRemoverButton"),
               }];
+            }
+
+          } else if (!this.card.origin.startsWith("timeless")) {
+            if (this.card.wild) {
+              return [{
+                action: "reset",
+                class: actionBlue,
+                text: this.i18n("uncoverButton", { x: this.card.letter }),
+              }];
+
             } else {
-              return [wild];
+              let wild = {
+                action: "wild",
+                class: actionBlue,
+                text: this.i18n("wildButton"),
+              };
+              if (this.card.remover) {
+                return [wild, {
+                  action: "undoRemover",
+                  class: actionBlack,
+                  text: this.i18n("undoRemoverButton"),
+                }];
+              } else {
+                return [wild];
+              }
             }
           }
         }
+      }
 
-      } else if (this.card.ink) {
-        // Spectators still see ink
+      // Even spectators see these
+      if (this.card.ink) {
         return [{
-          class: "uppercase font-bold px-2 rounded-t-lg z-10 bg-black text-white leading-5",
+          class: "px-2 leading-6 uppercase font-bold bg-black text-white",
           text: this.i18n("ink"),
+        }];
+
+      } else if (this.card.origin.startsWith("timeless")) {
+        return [{
+          class: `px-2 leading-6 ${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
+          text: this.card.player.name,
+          icon: "timeless",
+          title: this.i18n("timelessTip", { player_name: this.card.player.name }),
+        }];
+
+      } else if (this.card.location.startsWith("jail")) {
+        return [{
+          class: `px-2 leading-6 ${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
+          text: this.card.player.name,
+          icon: "jail",
+          title: this.i18n("jailTip", { player_name: this.card.player.name }),
+        }];
+
+      } else if (this.card.oldest) {
+        return [{
+          class: "mt-2 h-6",
+          icon: "clock",
+          title: this.i18n("oldestTip"),
         }];
       }
     },
