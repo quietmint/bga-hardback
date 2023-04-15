@@ -10,8 +10,12 @@
 
     <!-- Current word -->
     <teleport to="#pagemaintitle_wrap">
-      <div id="hword"
-           :class="{ hidden: !currentWord || gamestate.name == 'gameEnd' }">{{ currentWord }}</div>
+      <div v-if="gamestate.name != 'gameEnd'"
+           id="hword">{{ current.word }}
+        <span v-if="gamestate.name != 'vote' && gamestate.name != 'uncover' && gamestate.name != 'double'"> &mdash; </span>
+        <span v-if="current.word && gamestate.name != 'vote' && gamestate.name != 'uncover' && gamestate.name != 'double'"
+              v-html="i18n(current.complete ? 'current' : 'currentSoFar', { coins: current.coins, points: current.points, icon: 'star' })"></span>
+      </div>
     </teleport>
 
     <!-- Icons -->
@@ -371,7 +375,7 @@ export default {
       gamestate: {},
 
       drag: null,
-      historySort: "id",
+      historySort: "-score",
       keyboardPopup: null,
       lookupHistory: [],
       lookupPopup: null,
@@ -418,10 +422,12 @@ export default {
   },
 
   computed: {
-    currentWord() {
+    current() {
+      let current = null;
       if (this.gamestate.activeId) {
-        return this.players[this.gamestate.activeId].word;
+        current = this.players[this.gamestate.activeId].current;
       }
+      return current || {};
     },
 
     handCards() {
@@ -968,119 +974,131 @@ export default {
       }
       console.log(`▶️ State ${stateName}`, args);
 
-      const actionRef = {
-        confirmWord: {
-          text: "confirmButton",
-          color: "blue",
-          async function() {
-            if (this.tableauCards.length == 0) {
-              // Did you forget to play any cards?
-              await Promise.allSettled(
-                this.handCards.map((card) => this.clickCard({ card, action: { action: "move", destination: this.myself.tableauLocation } }))
-              );
-            }
-            let tableauIds = this.cardIds(this.tableauCards);
-            let tableauMask = this.wildMask(this.tableauCards);
-            this.takeAction("confirmWord", { tableauIds, tableauMask });
+      if (this.gamestate.active) {
+        const actionRef = {
+          confirmWord: {
+            text: "confirmButton",
+            color: "blue",
+            async function() {
+              if (this.tableauCards.length == 0) {
+                // Did you forget to play any cards?
+                await Promise.allSettled(
+                  this.handCards.map((card) => this.clickCard({ card, action: { action: "move", destination: this.myself.tableauLocation } }))
+                );
+              }
+              let tableauIds = this.cardIds(this.tableauCards);
+              let tableauMask = this.wildMask(this.tableauCards);
+              this.takeAction("confirmWord", { tableauIds, tableauMask });
+            },
           },
-        },
-        voteAccept: {
-          text: "voteAcceptButton",
-          color: "blue",
-          function() {
-            this.takeAction("voteWord", { vote: true });
+          voteAccept: {
+            text: "voteAcceptButton",
+            color: "blue",
+            function() {
+              this.takeAction("voteWord", { vote: true });
+            },
           },
-        },
-        voteReject: {
-          text: "voteRejectButton",
-          color: "red",
-          function() {
-            this.takeAction("voteWord", { vote: false });
+          voteReject: {
+            text: "voteRejectButton",
+            color: "red",
+            function() {
+              this.takeAction("voteWord", { vote: false });
+            },
           },
-        },
-        skipWord: {
-          text: "skipWordButton",
-          color: "red",
-          function() {
-            this.game.confirmationDialog(this.i18n("skipWordWarning"), () => {
-              this.takeAction("skipWord");
-            });
+          skipWord: {
+            text: "skipWordButton",
+            color: "red",
+            function() {
+              this.game.confirmationDialog(this.i18n("skipWordWarning"), () => {
+                this.takeAction("skipWord");
+              });
+            },
           },
-        },
-        skipPurchase: {
-          text: "skipPurchaseButton",
-          color: "blue",
-          function() {
-            this.takeAction("skipPurchase");
+          skipPurchase: {
+            text: "skipPurchaseButton",
+            color: "blue",
+            function() {
+              this.takeAction("skipPurchase");
+            },
           },
-        },
-        skip: {
-          text: "skipButton",
-          color: "gray",
-          function() {
-            this.takeAction("skip");
+          skip: {
+            text: "skipButton",
+            color: "gray",
+            function() {
+              this.takeAction("skip");
+            },
           },
-        },
-        flush: {
-          text: "flushButton",
-          color: "blue",
-          function() {
-            this.takeAction("flush");
+          flush: {
+            text: "flushButton",
+            color: "blue",
+            function() {
+              this.takeAction("flush");
+            },
           },
-        },
-        doctor: {
-          text() {
-            return this.i18n("doctorButton", this.gamestate.args.advert);
+          doctor: {
+            text() {
+              return this.i18n("doctorButton", this.gamestate.args.advert);
+            },
+            color: "blue",
+            function() {
+              this.takeAction("doctor");
+            },
+            condition() {
+              return this.gamestate.args && this.gamestate.args.advert;
+            },
           },
-          color: "blue",
-          function() {
-            this.takeAction("doctor");
+          convert: {
+            text() {
+              return this.i18n("convertButton", this.gamestate.args.convert);
+            },
+            color: "gray",
+            function() {
+              this.takeAction("convert");
+            },
+            condition() {
+              return this.gamestate.args && this.gamestate.args.convert;
+            },
           },
-          condition() {
-            return this.gamestate.args && this.gamestate.args.advert;
-          },
-        },
-        convert: {
-          text() {
-            return this.i18n("convertButton", this.gamestate.args.convert);
-          },
-          color: "gray",
-          function() {
-            this.takeAction("convert");
-          },
-          condition() {
-            return this.gamestate.args && this.gamestate.args.convert;
-          },
-        },
-      };
+        };
 
-      // No actions for inactive players
-      if (!this.gamestate.active) {
-        return;
+        let possible = this.gamestate.possibleactions;
+        possible.forEach((p, index) => {
+          const action = actionRef[p];
+          const visible = action != null && (action.condition == null || action.condition.apply(this));
+          if (visible) {
+            let text = action.text;
+            if (typeof text == "function") {
+              text = text.apply(this);
+            }
+            text = this.i18n(text, this.gamestate.args);
+            this.game.addActionButton(
+              "action_" + index,
+              text,
+              () => {
+                action.function.apply(this);
+              },
+              null,
+              false,
+              action.color
+            );
+          }
+        });
       }
 
-      let possible = this.gamestate.possibleactions;
-      possible.forEach((p, index) => {
-        const action = actionRef[p];
-        const visible = action != null && (action.condition == null || action.condition.apply(this));
-        if (visible) {
-          let text = action.text;
-          if (typeof text == "function") {
-            text = text.apply(this);
-          }
-          text = this.i18n(text, this.gamestate.args);
-          this.game.addActionButton(
-            "action_" + index,
-            text,
-            () => {
-              action.function.apply(this);
-            },
-            null,
-            false,
-            action.color
-          );
-        }
-      });
+      if (stateName == "playerTurn" && args && args._private && args._private.replayFrom && !window.g_archive_mode && !window.g_replayFrom) {
+        this.game.addActionButton(
+          "action_replayFrom",
+          this.i18n("replayFrom"),
+          () => {
+            location.href = "/" + this.game.gameserver + "/" + this.game.game_name + "?table=" + this.game.table_id
+              + (this.game.forceTestUser ? "&testuser=" + this.game.forceTestUser : "")
+              + "&replayFrom=" + args._private.replayFrom;
+          },
+          null,
+          false,
+          "gray"
+        );
+      }
     },
 
     onEnteringState(stateName, args) {
@@ -1092,6 +1110,13 @@ export default {
       }
       if (this.gamestate.active && this.gamestate.name == "specialRomance") {
         this.emitter.emit("clickTab", "hand");
+      }
+      if (this.gamestate.name == "playerTurn" && !this.gamestate.instant && window.g_replayFrom) {
+        // Scroll to active player during replay
+        const areaEl = document.getElementById("area_" + this.gamestate.activeId);
+        if (areaEl != null) {
+          areaEl.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
       }
     },
 

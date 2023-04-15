@@ -374,6 +374,22 @@ class hardback extends Table
         $this->nextState('next');
     }
 
+    function argPlayerTurn(): array
+    {
+        $args = [];
+        $players = PlayerMgr::getPlayers();
+        if (count($players) > 1) {
+            $args['_private'] = [];
+            foreach ($players as $player) {
+                $replayFrom = $player->getReplayFrom();
+                if ($replayFrom != null && $replayFrom < ($this->gamestate->table_globals[H_NEXT_MOVE_ID] - 1)) {
+                    $args['_private'][$player->getId()] = ['replayFrom' => $player->getReplayFrom()];
+                }
+            }
+        }
+        return $args;
+    }
+
     /*
      * PHASE 1: SPELL A WORD
      * PHASE 2: DISCARD UNUSED CARDS
@@ -794,11 +810,8 @@ class hardback extends Table
         return [
             'amount' => $amount,
             'benefit' => $benefit,
-            'coins' => $player->getCoins(),
             'genre' => $source !== null ?  $source->getGenreName() : '',
-            'icon' => 'star',
             'letter' => $source !== null ? $source->getLetter() : '',
-            'points' => $player->getScore() - $this->getGameStateValue('startScore'),
             'skip' => $source === null,
             'sourceId' => $source !== null ? $source->getId() : null,
         ];
@@ -856,16 +869,6 @@ class hardback extends Table
     /*
      * SPECIAL
      */
-
-    function argSpecial(): array
-    {
-        $player = PlayerMgr::getPlayer();
-        return [
-            'coins' => $player->getCoins(),
-            'points' => $player->getScore() - $this->getGameStateValue('startScore'),
-            'icon' => 'star',
-        ];
-    }
 
     function stSpecial(): void
     {
@@ -1000,9 +1003,6 @@ class hardback extends Table
             'previewDraw' => $this->checkPreviewDraw($player, $tableau),
             'cardIds' => $cardIds,
             'skip' => empty($cardIds),
-            'coins' => $player->getCoins(),
-            'points' => $player->getScore() - $this->getGameStateValue('startScore'),
-            'icon' => 'star',
         ];
     }
 
@@ -1069,9 +1069,6 @@ class hardback extends Table
             'sourceIds' => array_keys($sources),
             'skip' => empty($sources),
             'amount' => reset($sources),
-            'coins' => $player->getCoins(),
-            'points' => $player->getScore() - $this->getGameStateValue('startScore'),
-            'icon' => 'star',
         ];
     }
 
@@ -1123,9 +1120,6 @@ class hardback extends Table
         return [
             'sourceIds' => $sourceIds,
             'skip' => empty($sourceIds),
-            'coins' => $player->getCoins(),
-            'points' => $player->getScore() - $this->getGameStateValue('startScore'),
-            'icon' => 'star',
             'jail' => $jail,
         ];
     }
@@ -1182,7 +1176,8 @@ class hardback extends Table
         // Summary of all earnings
         $player = PlayerMgr::getPlayer();
         $score = $player->getScore() - $this->getGameStateValue('startScore');
-        WordMgr::recordHistory($player->getId(), $player->getWord(), $player->getCoins(), $score);
+        WordMgr::recordHistory($this->gamestate->table_globals[H_NEXT_MOVE_ID], $player->getId(), $player->getWord(), $player->getCoins(), $score);
+        $this->enqueuePlayer($player->getId());
         $earnings = [
             '¢' => $player->getCoins(),
             'star' => $score,
@@ -1580,6 +1575,10 @@ class hardback extends Table
 
     function stNextPlayer(): void
     {
+        // Save move ID for replay
+        $player = PlayerMgr::getPlayer();
+        $player->setReplayFrom($this->gamestate->table_globals[H_NEXT_MOVE_ID]);
+
         // Activate next player
         $this->activeNextPlayer();
         $player = PlayerMgr::getPlayer();
@@ -1816,6 +1815,7 @@ class hardback extends Table
             [2303140155, "DELETE FROM DBPREFIX_global WHERE `global_id` = 108"],
             [2303140155, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (108, 0)"],
             [2303140155, "CREATE TABLE IF NOT EXISTS DBPREFIX_word ( `id` int(3) unsigned NOT NULL AUTO_INCREMENT, `word` VARCHAR(32) NOT NULL, `player_id` int(10) unsigned NOT NULL, `score` INT NOT NULL DEFAULT 0, `coins` INT NOT NULL DEFAULT 0, PRIMARY KEY (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1"],
+            [2304040243, "ALTER TABLE DBPREFIX_player ADD `replayFrom` INT(10) UNSIGNED NULL DEFAULT NULL"]
         ];
 
         foreach ($changes as [$version, $sql]) {

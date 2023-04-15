@@ -89,15 +89,37 @@ class WordMgr extends APP_GameClass
         return $history;
     }
 
+    public static function getHistoryForLastWord(?int $move_id, int $player_id, string $word): ?array
+    {
+        $history = null;
+        try {
+            if ($move_id == null) {
+                $move_id = 1;
+            }
+            $sql = "SELECT `id`, `coins`, `score` FROM (SELECT * FROM word WHERE `player_id` = $player_id AND `id` > $move_id ORDER BY `id` DESC LIMIT 1) X WHERE `word` = '$word'";
+            $history = self::getObjectFromDB($sql);
+            if ($history != null) {
+                $history = [
+                    'id' => intval($history['id']),
+                    'coins' => intval($history['coins']),
+                    'score' => intval($history['score']),
+                ];
+            }
+        } catch (Exception $e) {
+            self::warn("Cannot get word history for move $move_id, player $player_id, word $word");
+        }
+        return $history;
+    }
+
     public static function isHistory(string $word): bool
     {
         return self::getUniqueValueFromDB("SELECT 1 FROM word WHERE `word` = '$word' LIMIT 1") != null;
     }
 
-    public static function recordHistory(int $player_id, string $word, int $coins, int $score): void
+    public static function recordHistory(int $move_id, int $player_id, string $word, int $coins, int $score): void
     {
         try {
-            self::DbQuery("INSERT INTO word (`player_id`, `word`, `coins`, `score`) VALUES ($player_id, '$word', $coins, $score)");
+            self::DbQuery("INSERT INTO word (`id`, `player_id`, `word`, `coins`, `score`) VALUES ($move_id, $player_id, '$word', $coins, $score)");
         } catch (Exception $e) {
             self::warn("Cannot record word history: $word");
         }

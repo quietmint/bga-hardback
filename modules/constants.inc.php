@@ -127,6 +127,7 @@ define('H_LANG_DE', 2);
 define('H_LANG_FR', 3);
 
 define('H_OPTION_VERSION', 300);
+define('H_NEXT_MOVE_ID', 3);
 
 // Game preferences
 define('H_PREF_DRAG', 100);

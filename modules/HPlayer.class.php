@@ -12,6 +12,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     protected $name;
     protected $order;
     protected $remover;
+    protected $replayFrom;
     protected $score;
     protected $vote;
     protected $word;
@@ -29,6 +30,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $this->name = $dbplayer['player_name'];
         $this->order = intval($dbplayer['player_no']);
         $this->remover = intval($dbplayer['remover']);
+        $this->replayFrom = $dbplayer['replayFrom'] == null ? null : intval($dbplayer['replayFrom']);
         $this->score = intval($dbplayer['player_score']);
         $this->vote = $dbplayer['vote'] == null ? null : boolval($dbplayer['vote']);
         $this->word = $dbplayer['word'];
@@ -57,6 +59,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         $json = [
             'id' => $this->id,
             'coins' => $this->coins,
+            'current' => $this->getCurrent(),
             'discardLocation' => $this->getDiscardLocation(),
             'drawLocation' => $this->getDrawLocation(),
             'handLocation' => $this->getHandLocation(),
@@ -65,7 +68,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
             'remover' => $this->remover,
             'score' => $this->score,
             'tableauLocation' => $this->getTableauLocation(),
-            'word' => $this->word,
         ];
         if (hardback::$instance->gamestate->table_globals[H_OPTION_AWARDS]) {
             $json['award'] = $this->award;
@@ -119,6 +121,27 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         }
     }
 
+    public function getCurrent(): ?array
+    {
+        if (!$this->word) {
+            return null;
+        }
+        $history = WordMgr::getHistoryForLastWord($this->replayFrom, $this->id, $this->word);
+        if ($history != null) {
+            $coins = $history['coins'];
+            $points = $history['score'];
+        } else {
+            $coins = $this->coins;
+            $points = $this->score - hardback::$instance->getGameStateValue('startScore');
+        }
+        return [
+            'word' => $this->word,
+            'coins' => $coins,
+            'points' => $points,
+            'complete' => $history != null,
+        ];
+    }
+
     public function isEliminated(): bool
     {
         return $this->eliminated == 1;
@@ -142,6 +165,11 @@ class HPlayer extends APP_GameClass implements JsonSerializable
     public function getRemover(): int
     {
         return $this->remover;
+    }
+
+    public function getReplayFrom(): ?int
+    {
+        return $this->replayFrom;
     }
 
     public function getScore(): int
@@ -354,6 +382,13 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         self::DbQuery("UPDATE player SET award = $points WHERE player_id = {$this->id}");
         $this->award = $points;
         hardback::$instance->enqueuePlayer($this->id);
+    }
+
+    public function setReplayFrom(int $replayFrom): void
+    {
+        $this->DbLock();
+        self::DbQuery("UPDATE player SET replayFrom = $replayFrom WHERE player_id = {$this->id}");
+        $this->replayFrom = $replayFrom;
     }
 
     public function setVote(bool $vote): void

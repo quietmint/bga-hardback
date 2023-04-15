@@ -242,12 +242,12 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
 
     /* @Override */
     onLockInterface: function (lock) {
-      if (lock.status == "outgoing") {
+      if (lock.status == "outgoing" || lock.status == "queued") {
         this.page_title_height = dojo.style("page-title", "height") + "px";
-        dojo.style("page-title", "height", this.page_title_height);
+        dojo.style("page-title", "min-height", this.page_title_height);
       } else if (lock.status == "updated" && lock.uuid == this.interface_locked_by_id && this.page_title_height) {
         this.page_title_height = null;
-        dojo.style("page-title", "height", this.page_title_height);
+        dojo.style("page-title", "min-height", this.page_title_height);
       }
       this.inherited(arguments);
     },
