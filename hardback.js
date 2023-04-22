@@ -112,6 +112,11 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
       // Call onPrefChange() when any value changes
       dojo.query(".preference_control").connect("onchange", onchange);
 
+      // Call onPrefChange() when dark mode changes
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (event) {
+        onchange({ target: document.getElementById("preference_control_" + HConstants.PREF_DARK_MODE) });
+      });
+
       // Call onPrefChange() now
       dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) {
         onchange({ target: el });
@@ -134,6 +139,13 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
           cancelable: false,
         });
       });
+    },
+
+    /* @Override */
+    getRanking: function () {
+      this.inherited(arguments);
+      this.pageheaderfooter.showSectionFromButton("pageheader_howtoplay");
+      this.onShowGameHelp();
     },
 
     /* @Override */
@@ -270,7 +282,13 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
 
     onPrefChange: function (id, value) {
       console.log("Preference changed", id, value);
-      if (id == HConstants.PREF_CARD_SIZE) {
+      if (id == HConstants.PREF_DARK_MODE) {
+        var dark = value == HConstants.DARK;
+        if (value == HConstants.AUTOMATIC) {
+          dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        }
+        dojo.toggleClass(document.documentElement, "dark", dark);
+      } else if (id == HConstants.PREF_CARD_SIZE) {
         dojo.removeClass("HGame", "cardsize-1 cardsize-2 cardsize-3 cardsize-4 cardsize-5 cardsize-6 cardsize-7");
         dojo.addClass("HGame", "cardsize-" + value);
       }

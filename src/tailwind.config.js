@@ -5,6 +5,7 @@ const { parseColor } = require("tailwindcss/lib/util/color");
 
 module.exports = {
   content: ["*.js", "*.vue"],
+  darkMode: "class",
   theme: {
     colors: {
       transparent: "transparent",

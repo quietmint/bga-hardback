@@ -130,6 +130,7 @@ define('H_OPTION_VERSION', 300);
 define('H_NEXT_MOVE_ID', 3);
 
 // Game preferences
+define('H_DARK_MODE', 101);
 define('H_PREF_DRAG', 100);
 define('H_PREF_ANIMATION', 150);
 define('H_PREF_CARD_SIZE', 151);

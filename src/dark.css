@@ -1,0 +1,121 @@
+@media (prefers-color-scheme: dark) {
+  #loader_mask {
+    background-color: #121212;
+  }
+}
+
+html.dark {
+  color: #ddd;
+  background-color: #121212;
+  background-image: url(img/bg-dark.jpg);
+
+  .bgabutton_gray,
+  .chatwindowavatar,
+  .chatwindowcollapsed,
+  .chatwindowcollapsedtitle,
+  .chatwindowpreviewmsg,
+  .dijitTooltipContainer,
+  .head_info,
+  .log,
+  #ingame_menu_content,
+  a.bgabutton_gray,
+  a.ingame_menu_item,
+  input,
+  select,
+  textarea {
+    color: #ddd !important;
+  }
+
+  .head_error {
+    color: black;
+  }
+
+  #ingame_menu_content,
+  #topbar,
+  .standard_popin {
+    background: linear-gradient(180deg, #121212, #1e1e1e);
+  }
+
+  .whiteblock {
+    background: rgb(0 0 0 / 50%);
+  }
+
+  .standard_popin_underlay {
+    background-color: black;
+  }
+
+  .chatwindowavatar,
+  .chatwindowcollapsed,
+  .chatwindowexpanded,
+  .chatwindowlogs,
+  .chatwindowpreviewmsg,
+  .current_player_is_active #page-title,
+  .gamestate_gameEnd #page-title,
+  .head_info,
+  .pagesection,
+  .roundedbox,
+  .tips,
+  .tundra .dijitTooltipContainer,
+  #loader_mask,
+  #page-title,
+  #soundControls {
+    background: #121212;
+  }
+
+  .chatwindowlogs_zone .roundedbox.chatlog {
+    background: none;
+  }
+
+  .bgabutton_gray,
+  .chatwindowlogs_zone .roundedbox,
+  .chatwindowlogs_zone .roundedbox.chatlog.ownchatlog .roundedboxinner,
+  .log_replayable:hover .roundedbox,
+  .log_replayable:hover,
+  .notouch-device .chatwindowcollapsed:hover,
+  .notouch-device .ingame_menu_item:hover,
+  .notouch-device .predefined_message:hover,
+  .notouch-device .predefined_textmessage:hover,
+  .pageheader,
+  .statstable,
+  a.bgabutton_gray,
+  input,
+  select,
+  textarea {
+    background: #222;
+  }
+
+  .notouch-device .bgabutton_gray:hover {
+    background: #272727;
+  }
+
+  .chatwindowlogs_zone .roundedbox.chatlog .roundedboxinner,
+  .chatwindowlogstitlebar {
+    background: #333;
+  }
+
+  .icon64,
+  .imgtext,
+  .playername,
+  .pagesection h2,
+  .pagesection h3,
+  .wikicontent {
+    filter: invert(1) hue-rotate(180deg);
+  }
+
+  .wikicontent {
+    color: #212121;
+  }
+
+  .pagesection .wikicontent h2,
+  .pagesection .wikicontent h3 {
+    filter: none;
+  }
+
+  .tailwind .title {
+    text-shadow: 0 0 3px rgb(0 0 0 / 50%), 0.5px 0.5px rgb(0 0 0 / 50%);
+  }
+
+  .statstable th {
+    background: #9a520e;
+  }
+}

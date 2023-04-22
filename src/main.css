@@ -15,7 +15,7 @@
   }
 }
 
-.tailwind svg.inline {
+svg.inline {
   vertical-align: -3px;
 }
 
@@ -39,7 +39,7 @@
 }
 
 .title {
-  text-shadow: 0 0 2px white, 1px 1px rgb(255 255 255 / 50%);
+  text-shadow: 0 0 3px rgb(255 255 255 / 50%), 0.5px 0.5px rgb(255 255 255 / 50%);
 }
 
 .buttongroup {
@@ -92,6 +92,7 @@
   height: 11em;
   margin-left: auto;
   margin-right: auto;
+  color: black;
 }
 
 .tailwind.cardsize-1 .card {
@@ -134,7 +135,7 @@
 
 .cardface.back {
   @apply bg-gray-700;
-  background-image: url(wild.jpg);
+  background-image: url(img/wild.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -185,7 +186,7 @@
 
 .card-starter .cardface.front {
   @apply bg-gray-500;
-  background-image: url(starter.jpg);
+  background-image: url(img/starter.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -200,13 +201,13 @@
 
 .card-adventure .cardface.front {
   @apply bg-yellow-700;
-  background-image: url(adventure.jpg);
+  background-image: url(img/adventure.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 .card-adventure.timeless .cardface.front {
-  background-image: url(adventure-timeless.jpg);
+  background-image: url(img/adventure-timeless.jpg);
 }
 
 .card-adventure .letter {
@@ -231,13 +232,13 @@
 
 .card-horror .cardface.front {
   @apply bg-green-900;
-  background-image: url(horror.jpg);
+  background-image: url(img/horror.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 .card-horror.timeless .cardface.front {
-  background-image: url(horror-timeless.jpg);
+  background-image: url(img/horror-timeless.jpg);
 }
 
 .card-horror .letter {
@@ -281,13 +282,13 @@
 
 .card-romance .cardface.front {
   @apply bg-red-800;
-  background-image: url(romance.jpg);
+  background-image: url(img/romance.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 .card-romance.timeless .cardface.front {
-  background-image: url(romance-timeless.jpg);
+  background-image: url(img/romance-timeless.jpg);
 }
 
 .card-romance .letter {
@@ -327,13 +328,13 @@
 
 .card-mystery .cardface.front {
   @apply bg-blue-500;
-  background-image: url(mystery.jpg);
+  background-image: url(img/mystery.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 .card-mystery.timeless .cardface.front {
-  background-image: url(mystery-timeless.jpg);
+  background-image: url(img/mystery-timeless.jpg);
 }
 
 .card-mystery .letter {
@@ -435,7 +436,7 @@
 }
 
 .panel-ink {
-  background: no-repeat url(panel-ink.png);
+  background: no-repeat url(img/panel-ink.png);
   height: 62px;
   padding: 0 3px 6px;
 }

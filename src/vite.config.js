@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [vue()],
   build: {
     assetsDir: "",
-    brotliSize: false,
+    reportCompressedSize: false,
     sourcemap: true,
     rollupOptions: {
       output: {

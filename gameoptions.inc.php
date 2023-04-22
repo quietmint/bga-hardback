@@ -431,6 +431,16 @@ $game_options = [
 ];
 
 $game_preferences = [
+    H_DARK_MODE => [
+        'name' => totranslate('Dark mode'),
+        'needReload' => false,
+        'values' => [
+            0 => ['name' => totranslate('Automatic (system default)')],
+            1 => ['name' => totranslate('Light')],
+            2 => ['name' => totranslate('Dark'), 'cssPref' => 'dark'],
+        ],
+    ],
+
     H_PREF_DRAG => [
         'name' => totranslate('Drag and drop'),
         'needReload' => false,
