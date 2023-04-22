@@ -431,10 +431,17 @@ class CardMgr extends APP_GameClass
         ];
     }
 
-    public static function deletePreviewNotifications(): void
+    public static function deletePreviewNotifications(bool $all = false): void
     {
         // Delete transient preview notifications
-        self::DbQuery("DELETE FROM `gamelog` WHERE gamelog_move_id IS NULL AND gamelog_notification LIKE '%cardsPreview%'");
+        $sql = "DELETE FROM `gamelog` WHERE gamelog_move_id IS NULL AND gamelog_notification LIKE '%cardsPreview%'";
+        if (!$all) {
+            $ids = self::getObjectListFromDB("SELECT MAX(gamelog_packet_id) FROM `gamelog` WHERE gamelog_move_id IS NULL AND gamelog_notification LIKE '%cardsPreview%' GROUP BY gamelog_current_player", true);
+            if (!empty($ids)) {
+                $sql .= " AND gamelog_packet_id NOT IN (" . implode(',', $ids) . ")";
+            }
+        }
+        self::DbQuery($sql);
     }
 
     /* Change (specific) */

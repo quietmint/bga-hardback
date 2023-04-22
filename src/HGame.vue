@@ -1090,9 +1090,12 @@ export default {
           "action_replayFrom",
           this.i18n("replayFrom"),
           () => {
-            location.href = "/" + this.game.gameserver + "/" + this.game.game_name + "?table=" + this.game.table_id
-              + (this.game.forceTestUser ? "&testuser=" + this.game.forceTestUser : "")
-              + "&replayFrom=" + args._private.replayFrom;
+            this.takeAction("deletePreviewNotifications").then(() => {
+              location.href = "/" + this.game.gameserver + "/" + this.game.game_name
+                + "?table=" + this.game.table_id
+                + (this.game.forceTestUser ? "&testuser=" + this.game.forceTestUser : "")
+                + "&replayFrom=" + args._private.replayFrom;
+            });
           },
           null,
           false,
@@ -1129,7 +1132,7 @@ export default {
     onNotify(notif) {
       console.log(`💬 Notify ${notif.type}`, notif.args);
       if (notif.type == "cards" || notif.type == "cardsPreview") {
-        if (notif.args.ignorePlayerId && notif.args.ignorePlayerId == this.game.player_id) {
+        if (notif.args.ignorePlayerId && notif.args.ignorePlayerId == this.game.player_id && !window.g_replayFrom) {
           this.game.notifqueue.setSynchronousDuration(1);
           return;
         }

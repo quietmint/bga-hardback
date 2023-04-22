@@ -62,6 +62,14 @@ class action_hardback extends APP_GameAction
    * PHASE 1: SPELL A WORD
    * PHASE 2: DISCARD UNUSED CARDS
    */
+  public function deletePreviewNotifications()
+  {
+    self::setAjaxMode();
+    self::checkVersion();
+    CardMgr::deletePreviewNotifications();
+    self::ajaxResponse();
+  }
+
   public function previewWord()
   {
     self::setAjaxMode();
