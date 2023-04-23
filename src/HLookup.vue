@@ -2,7 +2,7 @@
   <div class="fixed z-top inset-0 bg-white/75 dark:bg-black/75"
        @click="hide()">
     <div class="flex items-start justify-center min-h-screen">
-      <div class="hpopup bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow text-20 p-6 mt-18"
+      <div class="select-text hpopup bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow text-20 p-6 mt-18"
            @click.stop>
         <div v-text="i18n(options.dictionary.dict) + ' (' + options.dictionary.lang + ')'"
              class="text-center"></div>
