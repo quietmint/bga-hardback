@@ -4,8 +4,8 @@
     <div class="flex leading-8">
       <div class="title grow leading-none">
         <!-- Player name -->
-        <span :class="player.colorText"
-              class="text-17 font-bold"
+        <span :class="player.colorName"
+              class="text-17 font-bold playername"
               v-text="player.name"></span>
 
         <!-- Ink, remover counts -->

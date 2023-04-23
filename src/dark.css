@@ -1,14 +1,15 @@
 @media (prefers-color-scheme: dark) {
   #loader_mask {
-    background-color: #121212;
+    background-color: theme(colors.gray.900);
   }
 }
 
 html.dark {
   color: #ddd;
-  background-color: #121212;
+  background-color: theme(colors.gray.900);
   background-image: url(img/bg-dark.jpg);
 
+  .audiovideo_inactive,
   .bgabutton_gray,
   .chatwindowavatar,
   .chatwindowcollapsed,
@@ -17,6 +18,8 @@ html.dark {
   .dijitTooltipContainer,
   .head_info,
   .log,
+  .standard_popin_closeicon,
+  .standard_popin_helpicon,
   #ingame_menu_content,
   a.bgabutton_gray,
   a.ingame_menu_item,
@@ -33,7 +36,7 @@ html.dark {
   #ingame_menu_content,
   #topbar,
   .standard_popin {
-    background: linear-gradient(180deg, #121212, #1e1e1e);
+    background: linear-gradient(180deg, theme(colors.gray.950), theme(colors.gray.900));
   }
 
   .whiteblock {
@@ -59,16 +62,15 @@ html.dark {
   #loader_mask,
   #page-title,
   #soundControls {
-    background: #121212;
+    background: theme(colors.gray.900);
   }
 
   .chatwindowlogs_zone .roundedbox.chatlog {
     background: none;
   }
 
-  .bgabutton_gray,
   .chatwindowlogs_zone .roundedbox,
-  .chatwindowlogs_zone .roundedbox.chatlog.ownchatlog .roundedboxinner,
+  .chatwindowlogs_zone .roundedbox.chatlog .roundedboxinner,
   .log_replayable:hover .roundedbox,
   .log_replayable:hover,
   .notouch-device .chatwindowcollapsed:hover,
@@ -77,25 +79,25 @@ html.dark {
   .notouch-device .predefined_textmessage:hover,
   .pageheader,
   .statstable,
-  a.bgabutton_gray,
   input,
   select,
   textarea {
-    background: #222;
+    background: theme(colors.gray.800);
   }
 
-  .notouch-device .bgabutton_gray:hover {
-    background: #272727;
+  .bgabutton_gray,
+  a.bgabutton_gray,
+  .notouch-device .bgabutton_gray:hover,
+  .chatwindowlogs_zone .roundedbox.chatlog.ownchatlog .roundedboxinner {
+    background: theme(colors.gray.700);
   }
 
-  .chatwindowlogs_zone .roundedbox.chatlog .roundedboxinner,
   .chatwindowlogstitlebar {
-    background: #333;
+    background: theme(colors.gray.600);
   }
 
   .icon64,
   .imgtext,
-  .playername,
   .pagesection h2,
   .pagesection h3,
   .wikicontent {
@@ -117,5 +119,25 @@ html.dark {
 
   .statstable th {
     background: #9a520e;
+  }
+
+  .playername.red {
+    color: theme(colors.red.500);
+  }
+
+  .playername.green {
+    color: theme(colors.green.500);
+  }
+
+  .playername.blue {
+    color: theme(colors.blue.500);
+  }
+
+  .playername.yellow {
+    color: theme(colors.yellow.500);
+  }
+
+  .playername.purple {
+    color: theme(colors.purple.500);
   }
 }

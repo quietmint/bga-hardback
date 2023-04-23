@@ -67,217 +67,23 @@
   width: 250px;
 }
 
+input,
+select,
+textarea {
+  font-size: 15px;
+  border-radius: 2px;
+}
+
 .preference_range {
   width: 97%;
   display: block;
 }
 
-#HGame {
-  user-select: none;
-}
-
-#hword {
-  border-top: 1px dotted #999;
-  margin-top: 5px;
-  padding-top: 5px;
-  font-size: 16px;
-  line-height: 28px;
-}
-
-.hdefine {
-  font-style: italic;
-  margin: 5px -5px -5px;
-  padding: 5px;
-  background: rgba(0, 0, 0, 0.1);
-}
-
-.hdefine table {
-  width: 100%;
-}
-
-.hicon {
-  font-size: 1.3em;
-  vertical-align: -0.25em;
-  padding-right: 1px;
-}
-
-.hgenre {
-  display: inline-block;
-  white-space: nowrap;
-  font-weight: bold;
-  padding: 2px 4px 2px 2px;
-  border-radius: 4px;
-  background: #e8e8e8;
-  height: 1.3em;
-  line-height: 1.3em;
-}
-
-.hgenre.starter {
-  background-color: #525252;
-  color: #f5f5f5;
-}
-
-.hgenre.adventure {
-  background-color: #eab308;
-  color: #713f12;
-}
-
-.hgenre.horror {
-  background-color: #4d7c0f;
-  color: #ecfccb;
-}
-
-.hgenre.mystery {
-  background-color: #1d4ed8;
-  color: #dbeafe;
-}
-
-.hgenre.romance {
-  background-color: #b91c1c;
-  color: #fee2e2;
-}
-
-.haward {
-  width: 230px;
-  height: 169px;
-  margin-top: 5px;
-  border-radius: 8px;
-  background-color: #e8e8e8;
-  background-repeat: no-repeat;
-  background-size: cover;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.haward.length7 {
-  background-image: url(img/award7.jpg);
-}
-
-.haward.length8 {
-  background-image: url(img/award8.jpg);
-}
-
-.haward.length9 {
-  background-image: url(img/award9.jpg);
-}
-
-.haward.length10 {
-  background-image: url(img/award10.jpg);
-}
-
-.haward.length11 {
-  background-image: url(img/award11.jpg);
-}
-
-.haward.length12 {
-  background-image: url(img/award12.jpg);
-}
-
-/* Penny Dreadful name in log messages */
-
-.playername,
-a:link.playername,
-a:visited.playername {
-  color: black;
-}
-
-/* Player boards */
-.mobile_version #player_boards {
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-}
-
-.mobile_version .player-board {
-  float: none;
-  flex: 1 0 220px;
-  max-width: 50%;
-}
-
-.player-board {
-  user-select: none;
-  overflow: hidden;
-  background-repeat: no-repeat;
-  background-position: top -15px right -5px, top center;
-  background-size: auto, cover;
-  background-color: #888;
-  color: white;
-}
-
-.player-board .text-shadow,
-.player_score,
-.player_showcursor,
-.player_table_status,
-.panel-signature {
-  text-shadow: -0.5px 0 rgba(0, 0, 0, 0.5), 0.5px 0 rgba(0, 0, 0, 0.5);
-}
-
-.roundedbox .roundedbox_top,
-.roundedbox .roundedbox_bottom {
-  display: none;
-}
-
-.roundedbox .roundedbox_main {
-  background: none;
-}
-
-.boardblock,
-.timeToThink {
-  background-color: #8889;
-}
-
-.player-name a {
-  background-color: #8889;
-  text-shadow: 0 0 2px white, 1px 1px rgb(255 255 255 / 50%);
-}
-
-.player-board.red .player-name a,
-.player-board.yellow .player-name a {
-  text-shadow: 0 0 2px black, 1px 1px rgb(0 0 0 / 50%);
-}
-
-.player-board.red {
-  background-image: url(img/book-red.png), url(img/wood.jpg);
-}
-
-.player-board.green {
-  background-image: url(img/book-green.png), url(img/wood.jpg);
-}
-
-.player-board.blue {
-  background-image: url(img/book-blue.png), url(img/wood.jpg);
-}
-
-.player-board.yellow {
-  background-image: url(img/book-yellow.png), url(img/wood.jpg);
-}
-
-.player-board.purple {
-  background-image: url(img/book-purple.png), url(img/wood.jpg);
-}
-
-.player-board.black {
-  background-image: url(img/penny.png), url(img/wood.jpg);
-  background-position: top right, top center;
-  background-size: 100px, cover;
-  padding-bottom: 5px;
-}
-
-#player_board_inner_000000 .player-name,
-#player_board_inner_000000 .player_score {
-  padding-left: 5px;
-}
-
-.player_elo_wrap {
-  display: block;
-}
-
-.arena_mode .player_elo_wrap,
-.training_mode .player_elo_wrap {
-  display: none;
-}
-
-.player_elo_wrap .gamerank {
-  top: 0;
+.msgtime {
+  position: static;
+  right: auto;
+  bottom: auto;
+  font-size: 75%;
 }
 
 .pagesection .wikicontent h2,

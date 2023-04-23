@@ -258,6 +258,7 @@ const getIcon = (key, cssClass) => {
     return el.outerHTML.replace(/ id=.*? /, ` class="icon-${key} ${cssClass}" `);
   }
 };
+const playerRegExp = new RegExp('">(.*)</span>');
 
 // Genre icons
 import bookmarkIcon from "@iconify-icons/mdi/bookmark";
@@ -951,6 +952,24 @@ export default {
             v = `<span class="hgenre ${v}">${html ? html : v}`;
           } else if (k.startsWith("letter")) {
             v = `${v}</span>`;
+          } else if (k == "you") {
+            const matches = playerRegExp.exec(v);
+            if (matches) {
+              v = matches[1];
+              v = `<!--PNS--><span class="playername ${this.myself.colorName}">${v}</span><!--PNE-->`;
+            }
+          } else if (k == "actplayer" || k == "otherplayer" || k.startsWith("player_name")) {
+            const matches = playerRegExp.exec(v);
+            if (matches) {
+              v = matches[1];
+            }
+            for (const id in this.players) {
+              const player = this.players[id];
+              if (v == player.name) {
+                v = `<!--PNS--><span class="playername ${player.colorName}">${v}</span><!--PNE-->`;
+                break;
+              }
+            }
           }
           args[k] = v;
         }
