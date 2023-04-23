@@ -1698,6 +1698,51 @@ class hardback extends Table
      * END OF GAME
      */
 
+    function getGameRankInfos(): array
+    {
+        $infos = parent::getGameRankInfos();
+        if ($this->gamestate->table_globals[H_OPTION_COOP]) {
+            $penny = PlayerMgr::getPenny();
+            $pennyResult = [
+                "color_back" => null,
+                "color" => "000000",
+                "concede" => $infos['table']['concede'] ? 1 : 0,
+                "name" => $penny->getName(),
+                "player" => $penny->getId(),
+                "score_aux" => 0,
+                "score" => $penny->getScore(),
+                "stats" => [
+                    "1" => "0", // reflexion_time
+                    "2" => "0", // time_bonus_nbr
+                    "3" => "0", // reflexion_time_sd
+                ],
+                "tie" => false,
+                "zombie" => 0,
+            ];
+            if ($penny->getScore() >= PlayerMgr::getMaxScore()) {
+                // Coop lose
+                $pennyResult['rank'] = 1;
+                $playerRank = 2;
+            } else {
+                // Coop win
+                $playerRank = 1;
+                $pennyResult['rank'] = 2;
+            }
+            foreach ($infos['result'] as $player_id => &$row) {
+                $row['rank'] = $playerRank;
+                $row['tie'] = false;
+            }
+            unset($row);
+            // Append or prepend fake result for Penny
+            if ($playerRank == 1) {
+                $infos['result'][] = $pennyResult;
+            } else {
+                array_unshift($infos['result'], $pennyResult);
+            }
+        }
+        return $infos;
+    }
+
     function stEnd(): void
     {
         // Literary awards
@@ -1721,7 +1766,6 @@ class hardback extends Table
             $penny = PlayerMgr::getPenny();
             if ($penny->getScore() >= PlayerMgr::getMaxScore()) {
                 // Coop lose
-                self::DbQuery("UPDATE player SET player_score = LEAST(-1, player_score - {$this->getGameLength()})");
                 self::notifyAllPlayers('message', $this->msg['coopLose'], [
                     'player_name' => $penny->getName(),
                 ]);
@@ -1743,7 +1787,7 @@ class hardback extends Table
 
         // Move all cards to tableau
         CardMgr::endGameCleanup();
-        CardMgr::deletePreviewNotifications();
+        CardMgr::deletePreviewNotifications(true);
         $this->nextState('gameEnd');
     }
 

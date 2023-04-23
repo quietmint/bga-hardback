@@ -38,11 +38,6 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
         dojo.style("leftright_page_wrapper", "display", "none");
       }
 
-      // Co-op victory/defeat override
-      if (this.gamedatas.penny) {
-        this.is_coop = true;
-      }
-
       // Intiailize Vue
       var app = Vue.createApp(HGame);
       app.config.unwrapInjectedRef = true;
