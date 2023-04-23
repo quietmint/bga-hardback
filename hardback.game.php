@@ -1702,13 +1702,16 @@ class hardback extends Table
     {
         $infos = parent::getGameRankInfos();
         if ($this->gamestate->table_globals[H_OPTION_COOP]) {
+            // In studio, use player _guest01 = 2332442
+            // In prod, use player _hotseat01 = 84634030
+            $hotseatId = $this->getBgaEnvironment() == 'studio' ? 2332442 : 84634030;
             $penny = PlayerMgr::getPenny();
             $pennyResult = [
                 "color_back" => null,
                 "color" => "000000",
                 "concede" => $infos['table']['concede'] ? 1 : 0,
                 "name" => $penny->getName(),
-                "player" => $penny->getId(),
+                "player" => $hotseatId,
                 "score_aux" => 0,
                 "score" => $penny->getScore(),
                 "stats" => [

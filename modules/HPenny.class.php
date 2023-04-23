@@ -5,7 +5,6 @@ class HPenny extends APP_GameClass implements JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'id' => $this->getId(),
             'gameLength' => hardback::$instance->getGameLength(),
             'genre' => $this->getGenre(),
             'score' => $this->getScore(),
@@ -13,14 +12,6 @@ class HPenny extends APP_GameClass implements JsonSerializable
     }
 
     /***** Coop Functions *****/
-
-    public function getId(): int
-    {
-        // In studio, it should be player _guest01 = 2332442
-        // In prod, it should be player _hotseat01 = 84634030
-        global $g_config;
-        return $g_config['hotseat_acccounts'][0];
-    }
 
     public function getGenre(): int
     {
