@@ -78,7 +78,6 @@ $this->i18n = [
     'convertButton' => clienttranslate('Convert ${ink} Ink to ${coins}¢'),
     'current' => '${coins}¢ and ${points}${icon} earned',
     'currentSoFar' => '${coins}¢ and ${points}${icon} earned so far',
-    'dictionary' => clienttranslate('Dictionary definitions:'),
     'discardButton' => clienttranslate('Discard'),
     'discardLocation' => clienttranslate('Discard Pile'),
     'doctorButton' => clienttranslate('${points}${icon} Advert (${coins}¢)'),

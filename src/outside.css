@@ -1,3 +1,7 @@
+svg.inline {
+  vertical-align: -3px;
+}
+
 #HGame {
   user-select: none;
 }
@@ -11,14 +15,11 @@
 }
 
 .hdefine {
-  font-style: italic;
-  margin: 5px -5px -5px;
-  padding: 5px;
-  background: rgb(0 0 0 / 10%);
+  @apply flex flex-wrap;
 }
 
-.hdefine table {
-  width: 100%;
+a.hdictionarylink {
+  @apply rounded-lg px-2 m-1 whitespace-nowrap !text-blue-500 bg-black/10 dark:bg-white/10;
 }
 
 .hicon {
@@ -39,28 +40,28 @@
 }
 
 .hgenre.starter {
-  background-color: theme(colors.gray.600);
-  color: theme(colors.gray.100);
+  background-color: theme("colors.gray.600");
+  color: theme("colors.gray.100");
 }
 
 .hgenre.adventure {
-  background-color: theme(colors.yellow.500);
-  color: theme(colors.yellow.900);
+  background-color: theme("colors.yellow.500");
+  color: theme("colors.yellow.900");
 }
 
 .hgenre.horror {
-  background-color: theme(colors.green.700);
-  color: theme(colors.green.100);
+  background-color: theme("colors.green.700");
+  color: theme("colors.green.100");
 }
 
 .hgenre.mystery {
-  background-color: theme(colors.blue.700);
-  color: theme(colors.blue.100);
+  background-color: theme("colors.blue.700");
+  color: theme("colors.blue.100");
 }
 
 .hgenre.romance {
-  background-color: theme(colors.red.700);
-  color: theme(colors.red.100);
+  background-color: theme("colors.red.700");
+  color: theme("colors.red.100");
 }
 
 .haward {
@@ -156,23 +157,23 @@ a:visited.playername {
 }
 
 .playername.red {
-  color: theme(colors.red.700);
+  color: theme("colors.red.700");
 }
 
 .playername.green {
-  color: theme(colors.green.700);
+  color: theme("colors.green.700");
 }
 
 .playername.blue {
-  color: theme(colors.blue.700);
+  color: theme("colors.blue.700");
 }
 
 .playername.yellow {
-  color: theme(colors.yellow.600);
+  color: theme("colors.yellow.600");
 }
 
 .playername.purple {
-  color: theme(colors.purple.700);
+  color: theme("colors.purple.700");
 }
 
 .player-board.red .player-name a,

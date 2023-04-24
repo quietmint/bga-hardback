@@ -90,3 +90,7 @@ textarea {
 .pagesection .wikicontent h3 {
   margin: 12px -12px;
 }
+
+a.chatwindowtitlelink {
+  color: white !important;
+}

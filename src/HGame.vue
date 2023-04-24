@@ -281,6 +281,7 @@ import clockOutline from "@iconify-icons/mdi/clock-outline";
 import flipHorizontal from "@iconify-icons/mdi/flip-horizontal";
 import handRight from "@iconify-icons/mdi/hand-right";
 import leadPencil from "@iconify-icons/mdi/lead-pencil";
+import openInNew from '@iconify-icons/mdi/open-in-new';
 import plusBox from "@iconify-icons/mdi/plus-box";
 import shuffleVariant from "@iconify-icons/mdi/shuffle-variant";
 import swapVerticalBold from "@iconify-icons/mdi/swap-vertical-bold";
@@ -408,6 +409,7 @@ export default {
         move: swapVerticalBold,
         mystery: magnifyingGlass,
         no: closeBox,
+        openInNew: openInNew,
         removerCount: backspaceIcon,
         romance: mdiHeart,
         shuffle: shuffleVariant,
@@ -541,6 +543,56 @@ export default {
       const argsWithIcons = args ? { ...this.icons105, ...args } : { ...this.icons105 };
       msg = this.game.format_string_recursive(window._(msg), argsWithIcons);
       return msg;
+    },
+
+    dictionaryLinks(word) {
+      const q = word.toLowerCase();
+      if (this.gamedatas.options.dictionary.langId == HConstants.LANG_EN) {
+        return [
+          {
+            name: 'Collins',
+            url: `https://www.collinsdictionary.com/dictionary/english/${q}`,
+          },
+          {
+            name: 'Google (Oxford)',
+            url: `https://www.google.com/search?q=define+${q}`,
+          },
+          {
+            name: 'Merriam-Webster',
+            url: `https://www.merriam-webster.com/dictionary/${q}`,
+          },
+        ];
+      } else if (this.gamedatas.options.dictionary.langId == HConstants.LANG_DE) {
+        return [
+          {
+            name: 'Duden',
+            url: `https://www.duden.de/suchen/dudenonline/${q}`,
+          },
+          {
+            name: 'Google (Oxford)',
+            url: `https://www.google.de/search?q=definiere+${q}`,
+          },
+        ];
+      } else if (this.gamedatas.options.dictionary.langId == HConstants.LANG_FR) {
+        return [
+          {
+            name: 'Larousse',
+            url: `https://www.larousse.fr/dictionnaires/francais/${q}`,
+          },
+          {
+            name: 'Le Littré',
+            url: `http://littre.reverso.net/dictionnaire-francais/definition/${q}`,
+          },
+          {
+            name: 'Le Robert',
+            url: `https://dictionnaire.lerobert.com/definition/${q}`,
+          },
+          {
+            name: 'Trésor',
+            url: `https://www.cnrtl.fr/definition/${q}`,
+          },
+        ];
+      }
     },
 
     getLocationEl(location) {
@@ -899,40 +951,10 @@ export default {
           args.dict = `<a target="hdefine" href="${args.link}">${args.dict}</a>`;
         }
         if (args.word) {
-          const q = args.word.toLowerCase();
-          let links = [];
-          if (this.gamedatas.options.dictionary.langId == HConstants.LANG_EN) {
-            links = [
-              [
-                `<a target="hdefine" href="https://www.collinsdictionary.com/dictionary/english/${q}">Collins</a>`,
-                `<a target="hdefine" href="https://www.google.com/search?q=define+${q}">Google</a>`,
-              ],
-              [
-                `<a target="hdefine" href="https://www.dictionary.com/browse/${q}">Dictionary.com</a>`,
-                `<a target="hdefine" href="https://www.merriam-webster.com/dictionary/${q}">Merriam-Webster</a>`,
-              ],
-            ];
-          } else if (this.gamedatas.options.dictionary.langId == HConstants.LANG_DE) {
-            links = [
-              [
-                `<a target="hdefine" href="https://www.duden.de/suchen/dudenonline/${q}">Duden</a>`,
-              ],
-            ];
-          } else if (this.gamedatas.options.dictionary.langId == HConstants.LANG_FR) {
-            links = [
-              [
-                `<a target="hdefine" href="https://www.cnrtl.fr/definition/academie9/${q}">Académie Française</a>`,
-                `<a target="hdefine" href="https://dictionnaire.lerobert.com/definition/${q}">Le Robert</a>`,
-              ],
-              [
-                `<a target="hdefine" href="https://www.larousse.fr/dictionnaires/francais/${q}">Larousse</a>`,
-                `<a target="hdefine" href="https://www.cnrtl.fr/definition/${q}">Trésor</a>`,
-              ],
-            ];
-          }
-          if (links.length > 0) {
-            const table = "<table><tr>" + links.map((o) => `<td>• ${o.join("</td><td>• ")}</td>`).join("</tr><tr>") + "</tr></table>";
-            args.definitions = `<div class="hdefine">${this.i18n("dictionary")}${table}</div>`;
+          const links = this.dictionaryLinks(args.word);
+          if (links != null && links.length > 0) {
+            const openInNew = getIcon("openInNew", "inline");
+            args.definitions = '<div class="hdefine">' + links.map((link) => `<a class="hdictionarylink" href="${link.url}" target="hdefine">${link.name} ${openInNew}</a>`).join(' ') + '</div>';
           } else {
             args.definitions = "";
           }
@@ -1180,6 +1202,9 @@ export default {
           // onFormatString may add bold tag
           if (notif.args.word == hist.word || notif.args.word == `<b>${hist.word}</b>`) {
             hist.icon = notif.args.valid ? "yes" : notif.args.history ? "equal" : "no";
+            if (notif.args.valid) {
+              hist.links = this.dictionaryLinks(hist.word);
+            }
             break;
           }
         }

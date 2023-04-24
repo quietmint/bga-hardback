@@ -20,7 +20,7 @@ module.exports = {
       purple: colors.fuchsia,
     },
     boxShadow: {
-      DEFAULT: "2px 2px 4px rgba(0, 0, 0, 0.5)",
+      DEFAULT: "2px 2px 4px rgb(0 0 0 / 50%)",
     },
     extend: {
       borderWidth: {
@@ -65,6 +65,9 @@ module.exports = {
       ringWidth: {
         DEFAULT: "6px",
       },
+      width: {
+        120: "30rem",
+      },
       zIndex: {
         top: "2000",
       },
@@ -77,7 +80,7 @@ module.exports = {
           hatch: (value) => {
             const { color, alpha } = parseColor(value);
             return {
-              background: `repeating-linear-gradient(45deg, rgba(0 0 0 / var(--hatch-opacity)), rgba(0 0 0 / var(--hatch-opacity)) 1px, transparent 1px, transparent var(--hatch-size)), rgba(${color[0]} ${color[1]} ${color[2]} / ${alpha})`,
+              background: `repeating-linear-gradient(45deg, rgb(0 0 0 / var(--hatch-opacity)), rgb(0 0 0 / var(--hatch-opacity)) 1px, transparent 1px, transparent var(--hatch-size)), rgb(${color[0]} ${color[1]} ${color[2]} / ${alpha})`,
             };
           },
         },

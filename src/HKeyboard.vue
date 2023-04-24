@@ -13,7 +13,7 @@
                v-for="letter in row"
                :key="letter"
                @click.stop="click(letter)"
-               class="flex-none cursor-pointer text-center m-1 w-14 h-14 leading-14 shadow text-24 font-bold rounded-full bg-gradient-to-b from-gray-100 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-700 dark:to-gray-800 hover:from-blue-600 hover:to-blue-700 hover:text-white">{{ letter }}</div>
+               class="flex-none cursor-pointer text-center m-1 w-14 h-14 leading-14 shadow text-24 font-bold rounded-full bg-gradient-to-b from-gray-100 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-700 dark:to-gray-800">{{ letter }}</div>
         </div>
       </div>
     </div>

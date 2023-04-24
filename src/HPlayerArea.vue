@@ -44,23 +44,23 @@
           <div v-if="!(buttonEnabled['returnAll'] && !buttonEnabled['playAll'])"
                id="button_playAll"
                @click="buttonEnabled['playAll'] && playAll()"
-               class="button"
-               :class="buttonEnabled['playAll'] ? 'blue' : 'disabled'">
+               class="button blue"
+               :class="{ 'disabled': !buttonEnabled['playAll'] }">
             <Icon icon="move"
                   class="inline text-17" /> <span v-text="i18n('playAll')"></span>
           </div>
           <div v-if="buttonEnabled['returnAll'] && !buttonEnabled['playAll']"
                id="button_returnAll"
                @click="buttonEnabled['returnAll'] && returnAll()"
-               class="button"
-               :class="buttonEnabled['returnAll'] ? 'blue' : 'disabled'">
+               class="button blue"
+               :class="{ 'disabled': !buttonEnabled['returnAll'] }">
             <Icon icon="move"
                   class="inline text-17" /> <span v-text="i18n('returnAll')"></span>
           </div>
           <div id="button_uncoverAll"
                @click="buttonEnabled['uncoverAll'] && uncoverAll()"
-               class="button"
-               :class="buttonEnabled['uncoverAll'] ? 'blue' : 'disabled'">
+               class="button blue"
+               :class="{ 'disabled': !buttonEnabled['uncoverAll'] }">
             <Icon icon="uncover"
                   class="inline text-17" /> <span v-text="i18n('uncoverAll')"></span>
           </div>
@@ -69,8 +69,8 @@
         <div class="buttongroup flex">
           <div id="button_useInk"
                @click="buttonEnabled['useInk'] && useInk()"
-               class="button"
-               :class="buttonEnabled['useInk'] ? 'black' : 'disabled'">
+               class="button black"
+               :class="{ 'disabled': !buttonEnabled['useInk'] }">
             <Icon icon="inkCount"
                   class="inline text-17" /> <span v-text="i18n('useInk', { count: player.ink })"></span>
           </div>
@@ -86,7 +86,7 @@
         <div :id="'tab_' + player.drawLocation"
              @click="options.deck && clickTab('draw')"
              class="tab"
-             :class="[tab == 'draw' ? player.colorBg50 + ' text-black dark:text-white' : player.colorBg20, options.deck ? 'cursor-pointer hover:text-black dark:hover:text-white' : 'cursor-not-allowed']">
+             :class="[tab == 'draw' ? player.colorBg50 + ' text-black dark:text-white' : player.colorBg20, options.deck ? 'cursor-pointer' : 'cursor-not-allowed']">
           <span class="float-left flex items-center mr-2">
             <Icon icon="drawLocation"
                   class="text-20 mr-1" />
@@ -96,7 +96,7 @@
         </div>
         <div :id="'tab_' + player.handLocation"
              @click="clickTab('hand')"
-             class="tab cursor-pointer hover:text-black dark:hover:text-white"
+             class="tab cursor-pointer"
              :class="[tab == 'hand' ? player.colorBg50 + ' text-black dark:text-white' : player.colorBg20]">
           <span class="float-left flex items-center mr-2">
             <Icon icon="handLocation"
@@ -107,7 +107,7 @@
         </div>
         <div :id="'tab_' + player.discardLocation"
              @click="clickTab('discard')"
-             class="tab cursor-pointer hover:text-black dark:hover:text-white"
+             class="tab cursor-pointer"
              :class="[tab == 'discard' ? player.colorBg50 + ' text-black dark:text-white' : player.colorBg20]">
           <span class="float-left flex items-center mr-2">
             <Icon icon="discardLocation"
@@ -217,21 +217,21 @@
            class="buttongroup grid grid-cols-3 leading-8">
         <div id="sort_tableau_letter"
              @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'letter')"
-             class="button"
-             :class="buttonEnabled['sortTableau'] ? 'blue' : 'disabled'"
+             class="button blue"
+             :class="{ 'disabled': !buttonEnabled['sortTableau'] }"
              :title="i18n('sortLetterTip')">A-Z</div>
         <div id="sort_tableau_genre"
              @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'genre')"
-             class="button"
-             :class="buttonEnabled['sortTableau'] ? 'blue' : 'disabled'"
+             class="button blue"
+             :class="{ 'disabled': !buttonEnabled['sortTableau'] }"
              :title="i18n('sortGenreTip')">
           <Icon icon="starter"
                 class="inline text-17 h-8" />
         </div>
         <div id="sort_tableau_shuffle"
              @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'shuffle')"
-             class="button"
-             :class="buttonEnabled['sortTableau'] ? 'blue' : 'disabled'"
+             class="button blue"
+             :class="{ 'disabled': !buttonEnabled['sortTableau'] }"
              :title="i18n('shuffleTip')">
           <Icon icon="shuffle"
                 class="inline text-17 h-8" />
