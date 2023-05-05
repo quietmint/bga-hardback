@@ -19,7 +19,7 @@ svg.inline {
 }
 
 a.hdictionarylink {
-  @apply rounded-lg px-2 m-1 whitespace-nowrap !text-blue-500 bg-black/10 dark:bg-white/10;
+  @apply rounded-lg px-2 m-1 whitespace-nowrap text-blue-600 bg-black/10 dark:bg-white/10;
 }
 
 .hicon {
@@ -99,13 +99,6 @@ a.hdictionarylink {
   background-image: url(img/award12.jpg);
 }
 
-/* Penny Dreadful name in log messages */
-.playername,
-a:link.playername,
-a:visited.playername {
-  color: black;
-}
-
 /* Player boards */
 .mobile_version #player_boards {
   display: flex;
@@ -174,6 +167,10 @@ a:visited.playername {
 
 .playername.purple {
   color: theme("colors.purple.700");
+}
+
+.playername.black {
+  color: black;
 }
 
 .player-board.red .player-name a,

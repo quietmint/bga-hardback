@@ -1743,6 +1743,7 @@ class hardback extends Table
                 array_unshift($infos['result'], $pennyResult);
             }
         }
+        self::debug("getGameRankInfos JSON: " . json_encode($infos));
         return $infos;
     }
 

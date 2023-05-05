@@ -9,7 +9,7 @@
 
 #browser-error {
   display: none;
-  background: #d50000;
+  background: theme("colors.red.700");
   color: #fff;
   text-align: center;
   font-weight: bold;
@@ -18,7 +18,7 @@
 }
 
 #browser-error .ua {
-  color: #ef9a9a;
+  color: theme("colors.red.300");
   font-weight: normal;
   font-size: 75%;
   margin: 6px;
@@ -89,6 +89,20 @@ textarea {
 .pagesection .wikicontent h2,
 .pagesection .wikicontent h3 {
   margin: 12px -12px;
+}
+
+.notouch-device a:hover,
+a:link,
+a:visited {
+  color: theme("colors.blue.600");
+}
+
+a.bgabutton {
+  color: white;
+}
+
+a.bgabutton_gray {
+  color: black;
 }
 
 a.chatwindowtitlelink {

@@ -9,8 +9,22 @@ html.dark {
   background-color: theme("colors.gray.900");
   background-image: url(img/bg-dark.jpg);
 
-  .audiovideo_inactive,
+  .notouch-device a:hover,
+  a:link,
+  a:visited,
+  a.hdictionarylink {
+    color: theme("colors.blue.400");
+  }
+
   .bgabutton_gray,
+  .notouch-device a.bgabutton:hover,
+  .playername.black,
+  a.bgabutton_gray,
+  a.bgabutton {
+    color: white;
+  }
+
+  .audiovideo_inactive,
   .chatwindowavatar,
   .chatwindowcollapsed,
   .chatwindowcollapsedtitle,
@@ -20,10 +34,12 @@ html.dark {
   .log,
   .newbgatable td,
   .newbgatable th,
+  .pageheader_menuitem,
   .standard_popin_closeicon,
   .standard_popin_helpicon,
+  #archivecontrol a,
   #ingame_menu_content,
-  a.bgabutton_gray,
+  #tableinfos,
   a.ingame_menu_item,
   input,
   select,
@@ -58,6 +74,7 @@ html.dark {
   .current_player_is_active #page-title,
   .gamestate_gameEnd #page-title,
   .head_info,
+  .pageheader,
   .pagesection,
   .roundedbox,
   .tips,
@@ -84,7 +101,6 @@ html.dark {
   .notouch-device .ingame_menu_item:hover,
   .notouch-device .predefined_message:hover,
   .notouch-device .predefined_textmessage:hover,
-  .pageheader,
   .statstable,
   input,
   select,
@@ -93,9 +109,9 @@ html.dark {
   }
 
   .bgabutton_gray,
-  a.bgabutton_gray,
+  .chatwindowlogs_zone .roundedbox.chatlog.ownchatlog .roundedboxinner,
   .notouch-device .bgabutton_gray:hover,
-  .chatwindowlogs_zone .roundedbox.chatlog.ownchatlog .roundedboxinner {
+  a.bgabutton_gray {
     background: theme("colors.gray.700");
   }
 
@@ -113,6 +129,12 @@ html.dark {
 
   .wikicontent {
     color: #212121;
+
+    .notouch-device a:hover,
+    a:link,
+    a:visited {
+      color: theme("colors.blue.600");
+    }
   }
 
   .pagesection .wikicontent h2,
@@ -126,12 +148,6 @@ html.dark {
 
   .statstable th {
     background: #9a520e;
-  }
-
-  .playername,
-  a:link.playername,
-  a:visited.playername {
-    color: #ddd;
   }
 
   .playername.red {

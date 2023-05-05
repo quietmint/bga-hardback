@@ -985,11 +985,15 @@ export default {
             if (matches) {
               v = matches[1];
             }
-            for (const id in this.players) {
-              const player = this.players[id];
-              if (v == player.name) {
-                v = `<!--PNS--><span class="playername ${player.colorName}">${v}</span><!--PNE-->`;
-                break;
+            if (this.gamedatas.penny && v == window._('Penny Dreadful')) {
+              v = `<!--PNS--><span class="playername black">${v}</span><!--PNE-->`;
+            } else {
+              for (const id in this.players) {
+                const player = this.players[id];
+                if (v == player.name) {
+                  v = `<!--PNS--><span class="playername ${player.colorName}">${v}</span><!--PNE-->`;
+                  break;
+                }
               }
             }
           }

@@ -9,7 +9,7 @@
         <input id="lookupInput"
                @input="input"
                :placeholder="i18n('lookupPlaceholder')"
-               class="w-full text-24 text-center bg-blue-100 text-blue-600 dark:bg-blue-900/75 dark:text-blue-300 rounded-lg p-3 my-4"
+               class="w-full text-24 text-center bg-blue-100 text-blue-600 dark:bg-gray-800 dark:text-gray-300 rounded-lg p-3 my-4"
                autocomplete="off"
                autofocus />
         <div v-for="hist in lookupHistory"
@@ -19,7 +19,7 @@
                 :class="{ 'text-red-600': hist.icon == 'no', 'text-green-600': hist.icon == 'yes', 'animate-spin': hist.icon == 'loading' }"
                 class="inline text-24 mr-1" />
           <div class="grow">
-            {{ hist.word }}
+            {{ hist.word }} &mdash; {{ hist.word.length }}
             <div v-if="hist.links"
                  class="hdefine text-15">
               <a v-for="link in hist.links"
@@ -32,7 +32,6 @@
               </a>
             </div>
           </div>
-          <div class="text-15">{{ hist.word.length }}</div>
         </div>
       </div>
     </div>
