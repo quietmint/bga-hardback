@@ -99,8 +99,10 @@ define('H_LETTERPRESS', 4);
 define('H_BEOLINGUS', 20);
 define('H_FREE_DE', 21);
 define('H_MORPHALOU', 30);
-define('H_VOTE_50', 90);
-define('H_VOTE_100', 91);
+
+define('H_OPTION_VOTE', 111);
+define('H_VOTE_50', 50);
+define('H_VOTE_100', 100);
 
 define('H_OPTION_LENGTH', 105);
 define('H_OPTION_AWARDS', 101);
@@ -118,7 +120,6 @@ define('H_COOP_MYSTERY', 13);
 define('H_COOP_ROMANCE', 14);
 
 define('H_OPTION_DECK', 170);
-define('H_OPTION_LOOKUP', 171);
 define('H_OPTION_RULESET', 199);
 
 define('H_OPTION_LANG', 207);

@@ -26,26 +26,51 @@
 
 require_once('modules/constants.inc.php');
 
-$dictionaryStartCond = [
-    H_VOTE_50 => [
+$dictionaryStartCondition = [
+    H_NO => [
         [
             'type' => 'minplayers',
             'value' => 2,
-            'message' => totranslate('Cannot use a voting dictionary to play solo'),
-        ],
+            'message' => totranslate('Dictionary = No Dictionary is not available for solo play'),
+            'gamestartonly' => true,
+        ]
+    ]
+];
+
+$voteStartCondition = [
+    [
+        'type' => 'minplayers',
+        'value' => 2,
+        'message' => totranslate('Vote on Invalid Words is not available for solo play'),
+        'gamestartonly' => true,
     ],
-    H_VOTE_100 => [
-        [
-            'type' => 'minplayers',
-            'value' => 2,
-            'message' => totranslate('Cannot use a voting dictionary to play solo'),
-        ],
+    [
+        'type' => 'otheroption',
+        'id' => H_OPTION_GAME_MODE,
+        'value' => H_TRAINING_MODE,
+        'message' => totranslate('Vote on Invalid Words must be played in training mode (no ELO)'),
+        'gamestartonly' => true,
+    ]
+];
+
+$coopStartCondition = [
+    [
+        'type' => 'otheroption',
+        'id' => H_OPTION_GAME_MODE,
+        'value' => H_TRAINING_MODE,
+        'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
     ],
+    [
+        'type' => 'maxplayers',
+        'value' => 4,
+        'message' => totranslate('Cooperative game supports 1 - 4 players'),
+    ]
 ];
 
 $game_options = [
     H_OPTION_RULESET => [
         'name' => totranslate('Game Rules'),
+        'level' => 'additional',
         'default' => 2,
         'values' => [
             1 => [
@@ -63,6 +88,7 @@ $game_options = [
 
     H_OPTION_DICTIONARY => [
         'name' => totranslate('Dictionary'),
+        'level' => 'base',
         'default' => H_US,
         'values' => [
             H_TWELVEDICTS => [
@@ -85,16 +111,10 @@ $game_options = [
                 'tmdisplay' => totranslate('Letterpress'),
                 'description' => totranslate('270,000 words (2015 edition)'),
             ],
-            H_VOTE_50 => [
-                'name' => totranslate('Majority Vote'),
-                'tmdisplay' => totranslate('Majority Vote'),
-                'description' => totranslate('Instead of a dictionary, words must be accepted by half of the other players. Recommended with friends only.'),
-                'nobeginner' => true,
-            ],
-            H_VOTE_100 => [
-                'name' => totranslate('Unanimous Vote'),
-                'tmdisplay' => totranslate('Unanimous Vote'),
-                'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
+            H_NO => [
+                'name' => totranslate('No Dictionary'),
+                'tmdisplay' => totranslate('No Dictionary'),
+                'description' => totranslate('Must use with Vote on Invalid Words. Recommended with friends only.'),
                 'nobeginner' => true,
             ],
         ],
@@ -105,12 +125,13 @@ $game_options = [
                 'value' => H_LANG_EN,
             ],
         ],
-        'startcondition' => $dictionaryStartCond,
+        'startcondition' => $dictionaryStartCondition,
         'notdisplayedmessage' => totranslate('IMPORTANT: Currently, the language option changes only the dictionary and does NOT affect the cards (letter frequency, cost, benefits)'),
     ],
 
     H_OPTION_DICTIONARY_DE => [
         'name' => totranslate('Dictionary'),
+        'level' => 'base',
         'default' => H_FREE_DE,
         'values' => [
             H_BEOLINGUS => [
@@ -125,17 +146,10 @@ $game_options = [
                 'description' => totranslate('1,500,000 words (2021 edition)'),
                 'beta' => true,
             ],
-            H_VOTE_50 => [
-                'name' => totranslate('Majority Vote'),
-                'tmdisplay' => totranslate('Majority Vote'),
-                'description' => totranslate('Instead of a dictionary, words must be accepted by half of the other players. Recommended with friends only.'),
-                'beta' => true,
-                'nobeginner' => true,
-            ],
-            H_VOTE_100 => [
-                'name' => totranslate('Unanimous Vote'),
-                'tmdisplay' => totranslate('Unanimous Vote'),
-                'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
+            H_NO => [
+                'name' => totranslate('No Dictionary'),
+                'tmdisplay' => totranslate('No Dictionary'),
+                'description' => totranslate('Must use with Vote on Invalid Words. Recommended with friends only.'),
                 'beta' => true,
                 'nobeginner' => true,
             ],
@@ -147,11 +161,12 @@ $game_options = [
                 'value' => H_LANG_DE,
             ],
         ],
-        'startcondition' => $dictionaryStartCond,
+        'startcondition' => $dictionaryStartCondition,
     ],
 
     H_OPTION_DICTIONARY_FR => [
         'name' => totranslate('Dictionary'),
+        'level' => 'base',
         'default' => H_MORPHALOU,
         'values' => [
             H_MORPHALOU => [
@@ -160,17 +175,10 @@ $game_options = [
                 'description' => totranslate('680,000 words (2019 edition)'),
                 'beta' => true,
             ],
-            H_VOTE_50 => [
-                'name' => totranslate('Majority Vote'),
-                'tmdisplay' => totranslate('Majority Vote'),
-                'description' => totranslate('Instead of a dictionary, words must be accepted by half of the other players. Recommended with friends only.'),
-                'beta' => true,
-                'nobeginner' => true,
-            ],
-            H_VOTE_100 => [
-                'name' => totranslate('Unanimous Vote'),
-                'tmdisplay' => totranslate('Unanimous Vote'),
-                'description' => totranslate('Instead of a dictionary, words must be accepted by all other players. Recommended with friends only.'),
+            H_NO => [
+                'name' => totranslate('No Dictionary'),
+                'tmdisplay' => totranslate('No Dictionary'),
+                'description' => totranslate('Must use with Vote on Invalid Words. Recommended with friends only.'),
                 'beta' => true,
                 'nobeginner' => true,
             ],
@@ -182,11 +190,69 @@ $game_options = [
                 'value' => H_LANG_FR,
             ],
         ],
-        'startcondition' => $dictionaryStartCond,
+        'startcondition' => $dictionaryStartCondition,
+    ],
+
+    H_OPTION_VOTE => [
+        'name' => totranslate('Vote on Invalid Words'),
+        'level' => 'additional',
+        'default' => H_NO,
+        'values' => [
+            H_NO => [
+                'name' => totranslate('No'),
+                'description' => totranslate('Reject non-dictionary words'),
+            ],
+            H_VOTE_50 => [
+                'name' => totranslate('Majority Vote'),
+                'tmdisplay' => totranslate('Majority Vote'),
+                'description' => totranslate('Accept non-dictionary words if half the players agree. Recommended with friends only.'),
+                'nobeginner' => true,
+            ],
+            H_VOTE_100 => [
+                'name' => totranslate('Unanimous Vote'),
+                'tmdisplay' => totranslate('Unanimous Vote'),
+                'description' => totranslate('Accept non-dictionary words if all players agree. Recommended with friends only.'),
+                'nobeginner' => true,
+            ],
+        ],
+        'displaycondition' => [
+            [
+                'type' => 'minplayers',
+                'value' => [2, 3, 4, 5],
+            ],
+        ],
+        'startcondition' => [
+            H_NO => [
+                [
+                    'type' => 'otheroptionisnot',
+                    'id' => H_OPTION_DICTIONARY,
+                    'value' => H_NO,
+                    'message' => totranslate('Vote on Invalid Words is required when Dictionary = No Dictionary'),
+                    'gamestartonly' => true,
+                ],
+                [
+                    'type' => 'otheroptionisnot',
+                    'id' => H_OPTION_DICTIONARY_DE,
+                    'value' => H_NO,
+                    'message' => totranslate('Vote on Invalid Words is required when Dictionary = No Dictionary'),
+                    'gamestartonly' => true,
+                ],
+                [
+                    'type' => 'otheroptionisnot',
+                    'id' => H_OPTION_DICTIONARY_FR,
+                    'value' => H_NO,
+                    'message' => totranslate('Vote on Invalid Words is required when Dictionary = No Dictionary'),
+                    'gamestartonly' => true,
+                ]
+            ],
+            H_VOTE_50 => $voteStartCondition,
+            H_VOTE_100 => $voteStartCondition,
+        ],
     ],
 
     H_OPTION_COOP => [
         'name' => totranslate('Game Type'),
+        'level' => 'base',
         'default' => H_NO,
         'values' => [
             H_NO => [
@@ -241,92 +307,22 @@ $game_options = [
                 [
                     'type' => 'minplayers',
                     'value' => 2,
-                    'message' => totranslate('Cooprative game is required for solo play'),
+                    'message' => totranslate('Game Type = Competetive is not available for solo play'),
+                    'gamestartonly' => true,
                 ],
             ],
-            H_COOP_BASIC => [
-                [
-                    'type' => 'otheroption',
-                    'id' => H_OPTION_GAME_MODE,
-                    'value' => H_TRAINING_MODE,
-                    'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
-                ],
-                [
-                    'type' => 'maxplayers',
-                    'value' => 4,
-                    'message' => totranslate('Cooprative game supports 1 - 4 players'),
-                ],
-            ],
-            H_COOP_RANDOM => [
-                [
-                    'type' => 'otheroption',
-                    'id' => H_OPTION_GAME_MODE,
-                    'value' => H_TRAINING_MODE,
-                    'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
-                ],
-                [
-                    'type' => 'maxplayers',
-                    'value' => 4,
-                    'message' => totranslate('Cooprative game supports 1 - 4 players'),
-                ],
-            ],
-            H_COOP_ADVENTURE => [
-                [
-                    'type' => 'otheroption',
-                    'id' => H_OPTION_GAME_MODE,
-                    'value' => H_TRAINING_MODE,
-                    'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
-                ],
-                [
-                    'type' => 'maxplayers',
-                    'value' => 4,
-                    'message' => totranslate('Cooprative game supports 1 - 4 players'),
-                ],
-            ],
-            H_COOP_HORROR => [
-                [
-                    'type' => 'otheroption',
-                    'id' => H_OPTION_GAME_MODE,
-                    'value' => H_TRAINING_MODE,
-                    'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
-                ],
-                [
-                    'type' => 'maxplayers',
-                    'value' => 4,
-                    'message' => totranslate('Cooprative game supports 1 - 4 players'),
-                ],
-            ],
-            H_COOP_MYSTERY => [
-                [
-                    'type' => 'otheroption',
-                    'id' => H_OPTION_GAME_MODE,
-                    'value' => H_TRAINING_MODE,
-                    'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
-                ],
-                [
-                    'type' => 'maxplayers',
-                    'value' => 4,
-                    'message' => totranslate('Cooprative game supports 1 - 4 players'),
-                ],
-            ],
-            H_COOP_ROMANCE => [
-                [
-                    'type' => 'otheroption',
-                    'id' => H_OPTION_GAME_MODE,
-                    'value' => H_TRAINING_MODE,
-                    'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
-                ],
-                [
-                    'type' => 'maxplayers',
-                    'value' => 4,
-                    'message' => totranslate('Cooprative game supports 1 - 4 players'),
-                ],
-            ],
+            H_COOP_BASIC => $coopStartCondition,
+            H_COOP_RANDOM => $coopStartCondition,
+            H_COOP_ADVENTURE => $coopStartCondition,
+            H_COOP_HORROR => $coopStartCondition,
+            H_COOP_MYSTERY => $coopStartCondition,
+            H_COOP_ROMANCE => $coopStartCondition,
         ],
     ],
 
     H_OPTION_LENGTH => [
         'name' => totranslate('Game Length'),
+        'level' => 'base',
         'default' => 60,
         'values' => [
             60 => [
@@ -351,25 +347,10 @@ $game_options = [
         'notdisplayedmessage' => totranslate('Standard (60 Points)'),
     ],
 
-    H_OPTION_LOOKUP => [
-        'name' => totranslate('Word Lookups'),
-        'default' => H_YES,
-        'values' => [
-            H_NO => [
-                'name' => totranslate('No'),
-                'tmdisplay' => totranslate('Word Lookups Disabled'),
-            ],
-            H_YES => [
-                'name' => totranslate('Yes'),
-                'tmdisplay' => totranslate('Word Lookups Enabled'),
-                'description' => totranslate('Query the dictionary anytime (helpful in turn-based games)'),
-            ]
-        ],
-    ],
-
     H_OPTION_DECK => [
         'name' => totranslate('Draw Pile Visible'),
         'default' => H_YES,
+        'level' => 'additional',
         'values' => [
             H_NO => [
                 'name' => totranslate('No'),
@@ -386,6 +367,7 @@ $game_options = [
     H_OPTION_AWARDS => [
         'name' => totranslate('Literary Awards'),
         'default' => H_YES,
+        'level' => 'base',
         'values' => [
             H_NO => [
                 'name' => totranslate('No'),
@@ -401,6 +383,7 @@ $game_options = [
     H_OPTION_ADVERTS => [
         'name' => totranslate('Adverts'),
         'default' => H_YES,
+        'level' => 'base',
         'values' => [
             H_NO => [
                 'name' => totranslate('No'),
@@ -416,6 +399,7 @@ $game_options = [
     H_OPTION_UNIQUE => [
         'name' => totranslate('Unique Words'),
         'default' => H_NO,
+        'level' => 'additional',
         'values' => [
             H_NO => [
                 'name' => totranslate('No'),

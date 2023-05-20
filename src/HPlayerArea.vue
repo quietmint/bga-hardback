@@ -290,7 +290,7 @@ export default {
   computed: {
     buttonEnabled() {
       return {
-        lookup: this.options.lookup && this.options.dictionary && !this.options.dictionary.voting,
+        lookup: this.options.dictionary.dictId,
         playAll: this.gamestate.safeToMove && this.handCards.length > 0,
         returnAll: this.gamestate.safeToMove && this.tableauCards.length > 0,
         sortTableau: this.gamestate.safeToMove,

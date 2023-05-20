@@ -19,9 +19,10 @@ class WordMgr extends APP_GameClass
             'dictId' => $dict,
             'langId' => $lang,
             'lang' => $langs[$lang],
-            'voting' => $dict == H_VOTE_50 || $dict == H_VOTE_100,
         ];
         if ($dict == H_TWELVEDICTS) {
+            $info['dict'] = clienttranslate('No Dictionary');
+        } else if ($dict == H_TWELVEDICTS) {
             $info['dict'] = clienttranslate('12dicts');
             $info['link'] = 'http://wordlist.aspell.net/12dicts-readme/';
         } else if ($dict == H_US) {
@@ -40,10 +41,6 @@ class WordMgr extends APP_GameClass
         } else if ($dict == H_MORPHALOU) {
             $info['dict'] = clienttranslate('Morphalou');
             $info['link'] = 'https://www.ortolang.fr/market/lexicons/morphalou/v3.1';
-        } else if ($dict == H_VOTE_50) {
-            $info['dict'] = clienttranslate('Majority Vote');
-        } else if ($dict == H_VOTE_100) {
-            $info['dict'] = clienttranslate('Unanimous Vote');
         }
         return $info;
     }
@@ -56,6 +53,10 @@ class WordMgr extends APP_GameClass
         }
 
         $info = self::getDictionaryInfo();
+        if (!$info['dictId']) {
+            return false;
+        }
+
         try {
             $letter = substr($word, 0, 1);
             $path = __DIR__ . "/wordlist/{$info['dictId']}/$letter.inc.php";

@@ -162,7 +162,7 @@ $this->msg = [
     'purchase2' => clienttranslate('${player_name} purchases ${genre}${letter} for ${coins}${iconCoins} and earns ${points}${iconPoints}'),
     'purchaseAdvert' => clienttranslate('${player_name} purchases the ${points}${iconPoints} advertisement for ${coins}${iconCoins}'),
     'purchaseCoop' => clienttranslate('${player_name} purchases ${genre}${letter} and earns ${points}${iconPoints}'),
-    'rejectedWord' => clienttranslate('${word} is rejected by ${dict} (${lang})'),
+    'rejectedWord' => clienttranslate('${word} is rejected by ${dict}'),
     'skipWord' => clienttranslate('${player_name} is stymied by writer\'s block and skips their turn.'),
     'starterCards' => clienttranslate('Your ${amount}${icon} cards are ${genre}${letter} and ${genre2}${letter2}'),
     'summary0' => clienttranslate('${player_name} earns nothing this round'),
@@ -178,6 +178,7 @@ $this->msg = [
     'upgradeTableDb' => clienttranslate('${player_name}: An updated version of this game has just been deployed! Please refresh your browser window (F5)'),
     'useInk' => clienttranslate('${player_name} spends ink to draw ${genre}${letter}'),
     'useRemover' => clienttranslate('${player_name} spends remover to avoid ${genre}${letter}'),
+    'votesAccept' => clienttranslate('${player_name} accepts ${word}'),
     'votesReject' => clienttranslate('${player_name} rejects ${word}'),
 ];
 

@@ -68,9 +68,8 @@ class PlayerMgr extends APP_GameClass
         $accept = intval(self::getUniqueValueFromDB("SELECT COUNT(*) FROM player WHERE vote = 1"));
         $reject = intval(self::getUniqueValueFromDB("SELECT COUNT(*) FROM player WHERE vote = 0"));
         $max = self::getPlayerCount() - 1;
-        $majority = $max / 2;
-        $info = WordMgr::getDictionaryInfo();
-        if ($info['dictId'] == H_VOTE_50) {
+        if (hardback::$instance->gamestate->table_globals[H_OPTION_VOTE] == H_VOTE_50) {
+            $majority = $max / 2;
             if ($accept >= $majority) {
                 // 50% accepts (includes ties)
                 return 'accept';
@@ -78,7 +77,7 @@ class PlayerMgr extends APP_GameClass
                 // >50% rejects or voting is complete
                 return 'reject';
             }
-        } else if ($info['dictId'] == H_VOTE_100) {
+        } else {
             if ($reject > 0) {
                 // Any voter rejects
                 return 'reject';

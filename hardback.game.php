@@ -148,8 +148,7 @@ class hardback extends Table
         if ($this->gamestate->table_globals[H_OPTION_AWARDS]) {
             self::initStat('player', 'pointsAward', 0);
         }
-        $info = WordMgr::getDictionaryInfo();
-        if ($info['voting']) {
+        if ($this->gamestate->table_globals[H_OPTION_VOTE]) {
             self::initStat('player', 'votesAccept', 0);
             self::initStat('player', 'votesReject', 0);
         }
@@ -302,7 +301,6 @@ class hardback extends Table
                 'coop' => $this->gamestate->table_globals[H_OPTION_COOP] > 0,
                 'deck' => $this->gamestate->table_globals[H_OPTION_DECK] > 0,
                 'dictionary' => WordMgr::getDictionaryInfo(),
-                'lookup' => $this->gamestate->table_globals[H_OPTION_LOOKUP] > 0,
             ],
             'players' => $playersAsArray,
             'refs' => [
@@ -461,29 +459,37 @@ class hardback extends Table
         ]);
 
         if ($this->gamestate->table_globals[H_OPTION_UNIQUE] && WordMgr::isHistory($word)) {
-            // Word must be unique
-            $this->rejectWord($player, $word, true);
+            // Reject the word (non-unique)
+            $this->rejectWord($player, $word, clienttranslate('Unique Words'));
             $this->sendNotify();
             return;
         }
 
-        $info = WordMgr::getDictionaryInfo();
-        if ($info['voting']) {
+        if (WordMgr::isWord($word)) {
+            // Accept the word (via dictionary)
+            $player->setWord($word);
+            $this->acceptWord($player);
+            $this->nextState('next');
+        } else if ($this->gamestate->table_globals[H_OPTION_VOTE]) {
             // Start the vote
+            $info = WordMgr::getDictionaryInfo();
+            if ($info['dictId']) {
+                self::notifyAllPlayers('message', $this->msg['rejectedWord'], [
+                    'i18n' => ['dict'],
+                    'player_id' => $player->getId(),
+                    'player_name' => $player->getName(),
+                    'word' => $word,
+                    'dict' => $info['dict'],
+                ]);
+            }
             $player->setWord($word);
             PlayerMgr::resetVoteResult();
             $this->nextState('vote');
         } else {
-            // Word must be valid
-            $valid = WordMgr::isWord($word);
-            if (!$valid) {
-                $this->rejectWord($player, $word);
-                $this->sendNotify();
-                return;
-            }
-            $player->setWord($word);
-            $this->acceptWord($player);
-            $this->nextState('next');
+            // Reject the word (by dictionary)
+            $this->rejectWord($player, $word);
+            $this->sendNotify();
+            return;
         }
     }
 
@@ -544,21 +550,20 @@ class hardback extends Table
         $this->giveExtraTime($player->getId());
     }
 
-    function rejectWord(HPlayer $player, string $word, bool $history = false): void
+    function rejectWord(HPlayer $player, string $word, string $rejectBy = null): void
     {
         $this->incStat(1, 'invalidWords');
         $this->incStat(1, 'invalidWords', $player->getId());
-        $info = WordMgr::getDictionaryInfo();
-        if ($history) {
-            $info['dict'] = clienttranslate('Unique Words');
+        if ($rejectBy == null) {
+            $info = WordMgr::getDictionaryInfo();
+            $rejectBy = $info['dict'];
         }
         self::notifyAllPlayers('invalid', $this->msg['rejectedWord'], [
             'i18n' => ['dict'],
             'player_id' => $player->getId(),
             'player_name' => $player->getName(),
             'word' => $word,
-            'dict' => $info['dict'],
-            'lang' => $info['lang'],
+            'dict' => $rejectBy,
         ]);
     }
 
@@ -585,30 +590,32 @@ class hardback extends Table
     {
         $current = PlayerMgr::getPlayer($currentId ?? self::getCurrentPlayerId());
         $current->setVote($vote);
-        if (!$vote) {
-            $this->notifyAllPlayers('message', $this->msg['votesReject'], [
-                'player_name' => $current->getName(),
-                'word' => $this->gamestate->state()['args']['word'],
-            ]);
-        }
+        $msg = $vote ? $this->msg['votesAccept'] : $this->msg['votesReject'];
+        $this->notifyAllPlayers('message', $msg, [
+            'player_name' => $current->getName(),
+            'word' => $this->gamestate->state()['args']['word'],
+        ]);
 
         $result = PlayerMgr::getVoteResult();
+        $voteName = $this->gamestate->table_globals[H_OPTION_VOTE] == H_VOTE_50 ? clienttranslate('Majority Vote') : clienttranslate('Unanimous Vote');
         if ($result == 'accept') {
+            // Accept the word (by vote)
             $player = PlayerMgr::getPlayer();
-            $info = WordMgr::getDictionaryInfo();
             self::notifyAllPlayers('word', $this->msg['acceptedWord'], [
                 'i18n' => ['dict'],
                 'word' => $player->getWord(),
-                'dict' => $info['dict'],
+                'dict' => $voteName,
             ]);
             $this->acceptWord($player);
             $this->nextState('accept', true);
         } else if ($result == 'reject') {
+            // Reject the word (by vote)
             $player = PlayerMgr::getPlayer();
-            $this->rejectWord($player, $player->getWord());
+            $this->rejectWord($player, $player->getWord(), $voteName);
             $player->setWord(null);
             $this->nextState('reject', true);
         } else {
+            // Continue voting
             $this->gamestate->setPlayerNonMultiactive($current->getId(), '');
         }
     }
@@ -616,10 +623,6 @@ class hardback extends Table
     function lookup(string $word): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-        if ($this->gamestate->table_globals[H_OPTION_LOOKUP] == 0) {
-            throw new BgaVisibleSystemException("lookup: Not possible for $player to lookup in this game");
-        }
-
         $history = false;
         if ($this->gamestate->table_globals[H_OPTION_UNIQUE]) {
             $history = WordMgr::isHistory($word);
@@ -1863,7 +1866,9 @@ class hardback extends Table
             [2303140155, "DELETE FROM DBPREFIX_global WHERE `global_id` = 108"],
             [2303140155, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (108, 0)"],
             [2303140155, "CREATE TABLE IF NOT EXISTS DBPREFIX_word ( `id` int(3) unsigned NOT NULL AUTO_INCREMENT, `word` VARCHAR(32) NOT NULL, `player_id` int(10) unsigned NOT NULL, `score` INT NOT NULL DEFAULT 0, `coins` INT NOT NULL DEFAULT 0, PRIMARY KEY (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1"],
-            [2304040243, "ALTER TABLE DBPREFIX_player ADD `replayFrom` INT(10) UNSIGNED NULL DEFAULT NULL"]
+            [2304040243, "ALTER TABLE DBPREFIX_player ADD `replayFrom` INT(10) UNSIGNED NULL DEFAULT NULL"],
+            [2305052151, "INSERT INTO DBPREFIX_global SELECT 111 AS `global_id`, CASE `global_value` WHEN 90 THEN 1 WHEN 91 THEN 1 ELSE 0 END AS `global_value` FROM DBPREFIX_global WHERE `global_id` IN (100, 122, 123)"],
+            [2305052151, "UPDATE DBPREFIX_global SET `global_value` = 0 WHERE `global_id` IN (100, 122, 123) AND `global_value` IN (90, 91)"],
         ];
 
         foreach ($changes as [$version, $sql]) {
