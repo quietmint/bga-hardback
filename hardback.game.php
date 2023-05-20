@@ -1867,7 +1867,7 @@ class hardback extends Table
             [2303140155, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (108, 0)"],
             [2303140155, "CREATE TABLE IF NOT EXISTS DBPREFIX_word ( `id` int(3) unsigned NOT NULL AUTO_INCREMENT, `word` VARCHAR(32) NOT NULL, `player_id` int(10) unsigned NOT NULL, `score` INT NOT NULL DEFAULT 0, `coins` INT NOT NULL DEFAULT 0, PRIMARY KEY (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1"],
             [2304040243, "ALTER TABLE DBPREFIX_player ADD `replayFrom` INT(10) UNSIGNED NULL DEFAULT NULL"],
-            [2305052151, "INSERT INTO DBPREFIX_global SELECT 111 AS `global_id`, CASE `global_value` WHEN 90 THEN 1 WHEN 91 THEN 1 ELSE 0 END AS `global_value` FROM DBPREFIX_global WHERE `global_id` IN (100, 122, 123)"],
+            [2305052151, "INSERT INTO DBPREFIX_global SELECT 111 AS `global_id`, CASE `global_value` WHEN 90 THEN 50 WHEN 91 THEN 100 ELSE 0 END AS `global_value` FROM DBPREFIX_global WHERE `global_id` IN (100, 122, 123)"],
             [2305052151, "UPDATE DBPREFIX_global SET `global_value` = 0 WHERE `global_id` IN (100, 122, 123) AND `global_value` IN (90, 91)"],
         ];
 
