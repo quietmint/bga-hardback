@@ -409,6 +409,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     private function DbLock()
     {
-        self::DbQuery("SELECT * FROM global WHERE global_id < 10 FOR UPDATE");
+        // self::DbQuery("SELECT * FROM global WHERE global_id < 10 FOR UPDATE");
     }
 }

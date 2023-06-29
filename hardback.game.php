@@ -37,6 +37,7 @@ class hardback extends Table
     function __construct()
     {
         parent::__construct();
+        $this->bSelectGlobalsForUpdate = true;
         self::$instance = $this;
 
         // Your global variables labels:

@@ -91,7 +91,7 @@ class PlayerMgr extends APP_GameClass
 
     public static function resetVoteResult(): void
     {
-        self::DbQuery("SELECT * FROM global WHERE global_id < 10 FOR UPDATE");
+        // self::DbQuery("SELECT * FROM global WHERE global_id < 10 FOR UPDATE");
         self::DbQuery("UPDATE player SET vote = NULL");
     }
 }
