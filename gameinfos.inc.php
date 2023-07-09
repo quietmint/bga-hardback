@@ -13,7 +13,7 @@
 $gameinfos = [
 
     'custom_buy_button' => [
-        'url' => 'https://www.fowers.games/collections/homepage-products/products/hardback',
+        'url' => 'https://www.fowers.games/products/hardback',
         'label' => 'Fowers Games',
     ],
 

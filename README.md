@@ -1,12 +1,15 @@
 # bga-hardback
 
-🎲 Hardback implementation for Board Game Arena
+🎲 Hardback implementation for [Board Game Arena](https://boardgamearena.com/)
 
 © 2023 quietmint
 
 This adaptation includes the following licensed material, used with permission. All copyrights remain with the respective owners.
 
-- [Hardback board game](https://www.fowers.games) by Jeff Beck and Tim Fowers with artwork by Ryan Goldsberry and Andrew Collin Beck
+- [Hardback board game](https://www.fowers.games/products/hardback) by Jeff Beck and Tim Fowers with artwork by Ryan Goldsberry and Andrew Collin Beck
+
+- [Material Design Icons](https://pictogrammers.com/library/mdi/), licensed under [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
 - Fonts licensed under the [SIL Open Font License](http://scripts.sil.org/OFL):
   - [Almendra Display](https://fonts.google.com/specimen/Almendra+Display/about) by Ana Sanfelippo
   - [Big Shoulders Inline Text](https://fonts.google.com/specimen/Big+Shoulders+Inline+Text/about) by Patric King
