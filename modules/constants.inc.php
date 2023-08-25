@@ -87,7 +87,7 @@ define('H_STAT_COOP_GENRE', 89);
 
 // Game options
 define('H_OPTION_GAME_MODE', 201);
-define('H_TRAINING_MODE', 1);
+define('H_FRIENDLY_MODE', 1);
 
 define('H_OPTION_DICTIONARY', 100);
 define('H_OPTION_DICTIONARY_DE', 122);

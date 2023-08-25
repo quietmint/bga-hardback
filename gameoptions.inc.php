@@ -47,9 +47,8 @@ $voteStartCondition = [
     [
         'type' => 'otheroption',
         'id' => H_OPTION_GAME_MODE,
-        'value' => H_TRAINING_MODE,
-        'message' => totranslate('Vote on Invalid Words must be played in training mode (no ELO)'),
-        'gamestartonly' => true,
+        'value' => H_FRIENDLY_MODE,
+        'message' => totranslate('Vote on Invalid Words must be played in friendly mode (no ELO)'),
     ]
 ];
 
@@ -57,8 +56,8 @@ $coopStartCondition = [
     [
         'type' => 'otheroption',
         'id' => H_OPTION_GAME_MODE,
-        'value' => H_TRAINING_MODE,
-        'message' => totranslate('Cooperative game must be played in training mode (no ELO)'),
+        'value' => H_FRIENDLY_MODE,
+        'message' => totranslate('Cooperative game must be played in friendly mode (no ELO)'),
     ],
     [
         'type' => 'maxplayers',
@@ -114,7 +113,7 @@ $game_options = [
             H_NO => [
                 'name' => totranslate('No Dictionary'),
                 'tmdisplay' => totranslate('No Dictionary'),
-                'description' => totranslate('Must use with Vote on Invalid Words. Recommended with friends only.'),
+                'description' => totranslate('Must use with Vote on Invalid Words and play in friendly mode (no ELO). Recommended with friends only.'),
                 'nobeginner' => true,
             ],
         ],
@@ -149,7 +148,7 @@ $game_options = [
             H_NO => [
                 'name' => totranslate('No Dictionary'),
                 'tmdisplay' => totranslate('No Dictionary'),
-                'description' => totranslate('Must use with Vote on Invalid Words. Recommended with friends only.'),
+                'description' => totranslate('Must use with Vote on Invalid Words and play in friendly mode (no ELO). Recommended with friends only.'),
                 'beta' => true,
                 'nobeginner' => true,
             ],
@@ -178,7 +177,7 @@ $game_options = [
             H_NO => [
                 'name' => totranslate('No Dictionary'),
                 'tmdisplay' => totranslate('No Dictionary'),
-                'description' => totranslate('Must use with Vote on Invalid Words. Recommended with friends only.'),
+                'description' => totranslate('Must use with Vote on Invalid Words and play in friendly mode (no ELO). Recommended with friends only.'),
                 'beta' => true,
                 'nobeginner' => true,
             ],
@@ -205,13 +204,13 @@ $game_options = [
             H_VOTE_50 => [
                 'name' => totranslate('Majority Vote'),
                 'tmdisplay' => totranslate('Majority Vote'),
-                'description' => totranslate('Accept non-dictionary words if half the players agree. Recommended with friends only.'),
+                'description' => totranslate('Accept non-dictionary words if half the players agree. Must play in friendly mode (no ELO). Recommended with friends only.'),
                 'nobeginner' => true,
             ],
             H_VOTE_100 => [
                 'name' => totranslate('Unanimous Vote'),
                 'tmdisplay' => totranslate('Unanimous Vote'),
-                'description' => totranslate('Accept non-dictionary words if all players agree. Recommended with friends only.'),
+                'description' => totranslate('Accept non-dictionary words if all players agree. Must play in friendly mode (no ELO). Recommended with friends only.'),
                 'nobeginner' => true,
             ],
         ],
@@ -227,22 +226,19 @@ $game_options = [
                     'type' => 'otheroptionisnot',
                     'id' => H_OPTION_DICTIONARY,
                     'value' => H_NO,
-                    'message' => totranslate('Vote on Invalid Words is required when Dictionary = No Dictionary'),
-                    'gamestartonly' => true,
+                    'message' => totranslate('Vote on Invalid Words is required when Dictionary = No Dictionary. You must also play in friendly mode (no ELO).'),
                 ],
                 [
                     'type' => 'otheroptionisnot',
                     'id' => H_OPTION_DICTIONARY_DE,
                     'value' => H_NO,
-                    'message' => totranslate('Vote on Invalid Words is required when Dictionary = No Dictionary'),
-                    'gamestartonly' => true,
+                    'message' => totranslate('Vote on Invalid Words is required when Dictionary = No Dictionary. You must also play in friendly mode (no ELO).'),
                 ],
                 [
                     'type' => 'otheroptionisnot',
                     'id' => H_OPTION_DICTIONARY_FR,
                     'value' => H_NO,
-                    'message' => totranslate('Vote on Invalid Words is required when Dictionary = No Dictionary'),
-                    'gamestartonly' => true,
+                    'message' => totranslate('Vote on Invalid Words is required when Dictionary = No Dictionary. You must also play in friendly mode (no ELO).'),
                 ]
             ],
             H_VOTE_50 => $voteStartCondition,
