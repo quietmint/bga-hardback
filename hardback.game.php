@@ -1708,6 +1708,7 @@ class hardback extends Table
      * END OF GAME
      */
 
+    /*
     function getGameRankInfos(): array
     {
         $infos = parent::getGameRankInfos();
@@ -1757,6 +1758,7 @@ class hardback extends Table
         self::debug("getGameRankInfos JSON: " . json_encode($infos) . " // ");
         return $infos;
     }
+    */
 
     function stEnd(): void
     {
