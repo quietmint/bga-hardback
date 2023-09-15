@@ -10,7 +10,7 @@ class PlayerMgr extends APP_GameClass
     public static function getMaxScore(): int
     {
         $max = intval(self::getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_eliminated = 0 AND player_zombie = 0"));
-        if (hardback::$instance->gamestate->table_globals[H_OPTION_COOP] != H_NO) {
+        if (hardback::$instance->getGlobal(H_OPTION_COOP) != H_NO) {
             $max = max($max, self::getPenny()->getScore());
         }
         return $max;
@@ -68,7 +68,7 @@ class PlayerMgr extends APP_GameClass
         $accept = intval(self::getUniqueValueFromDB("SELECT COUNT(*) FROM player WHERE vote = 1"));
         $reject = intval(self::getUniqueValueFromDB("SELECT COUNT(*) FROM player WHERE vote = 0"));
         $max = self::getPlayerCount() - 1;
-        if (hardback::$instance->gamestate->table_globals[H_OPTION_VOTE] == H_VOTE_50) {
+        if (hardback::$instance->getGlobal(H_OPTION_VOTE) == H_VOTE_50) {
             $majority = $max / 2;
             if ($accept >= $majority) {
                 // 50% accepts (includes ties)

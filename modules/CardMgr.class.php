@@ -612,7 +612,7 @@ class CardMgr extends APP_GameClass
                 $keep = false;
                 if ($skipWord) {
                     $keep = $card->isOrigin('timeless'); // keep already-played
-                } else if (hardback::$instance->gamestate->table_globals[H_OPTION_COOP] != H_NO) {
+                } else if (hardback::$instance->getGlobal(H_OPTION_COOP) != H_NO) {
                     $keep = $owner == $playerId || $card->isOrigin('timeless'); // keep mine and already-played
                 } else {
                     $keep = $owner == $playerId; // keep mine
@@ -646,7 +646,7 @@ class CardMgr extends APP_GameClass
 
     public static function canFlushOffer(): bool
     {
-        if (hardback::$instance->gamestate->table_globals[H_OPTION_COOP] != H_NO) {
+        if (hardback::$instance->getGlobal(H_OPTION_COOP) != H_NO) {
             return false;
         }
 

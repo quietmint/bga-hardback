@@ -9,9 +9,9 @@ class WordMgr extends APP_GameClass
             H_LANG_DE => 'Deutsch',
             H_LANG_FR => 'Français',
         ];
-        $lang = intval(hardback::$instance->gamestate->table_globals[H_OPTION_LANG]);
+        $lang = hardback::$instance->getGlobal(H_OPTION_LANG);
         $opt = $lang == H_LANG_EN ? H_OPTION_DICTIONARY : 120 + $lang;
-        $dict = intval(hardback::$instance->gamestate->table_globals[$opt]);
+        $dict = hardback::$instance->getGlobal($opt);
 
         $info = [
             'i18n' => ['dict'],

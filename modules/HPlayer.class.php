@@ -69,10 +69,10 @@ class HPlayer extends APP_GameClass implements JsonSerializable
             'score' => $this->score,
             'tableauLocation' => $this->getTableauLocation(),
         ];
-        if (hardback::$instance->gamestate->table_globals[H_OPTION_AWARDS]) {
+        if (hardback::$instance->getGlobal(H_OPTION_AWARDS)) {
             $json['award'] = $this->award;
         }
-        if (hardback::$instance->gamestate->table_globals[H_OPTION_ADVERTS]) {
+        if (hardback::$instance->getGlobal(H_OPTION_ADVERTS)) {
             $json['advert'] = $this->advert;
         }
         return $json;
@@ -295,7 +295,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         hardback::$instance->incStat($amount, $stat, $this->id);
         $this->DbLock();
         $sql = "UPDATE player SET player_score = player_score + $amount";
-        if (hardback::$instance->gamestate->table_globals[H_OPTION_COOP] == H_NO) {
+        if (hardback::$instance->getGlobal(H_OPTION_COOP) == H_NO) {
             $sql .= " WHERE player_id = {$this->id}";
         }
         self::DbQuery($sql);
