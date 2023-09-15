@@ -181,8 +181,6 @@ import { firstBy } from "thenby";
 import { nextTick, computed } from "vue";
 import { groupBy, mapValues, remove, throttle } from "lodash-es";
 
-let lastErrorCode = null;
-
 const queue = (callable) => {
   let busy = false;
   const q = [];
@@ -904,7 +902,16 @@ export default {
         this.previewWord.cancel();
       }
       return this.takeActionAjax(action, data).catch((errorMsg) => {
-        if (errorMsg == "endGameWarning") {
+        if (errorMsg == "!!!checkVersion") {
+          this.game.infoDialog(
+            this.i18n('checkVersion'),
+            this.i18n('checkVersionTitle'),
+            () => {
+              window.location.reload();
+            },
+            true
+          );
+        } else if (errorMsg == "!!!endGameWarning") {
           this.game.confirmationDialog(this.i18n("endGameWarning"), () => {
             data.lock = true;
             data.endGameConfirm = true;
@@ -925,11 +932,11 @@ export default {
           data,
           this,
           () => { },
-          (error) => {
+          (error, errorMsg) => {
             const duration = Date.now() - start;
             if (error) {
-              console.error(`Take action ${action} error in ${duration}ms`, lastErrorCode);
-              reject(lastErrorCode);
+              console.error(`Take action ${action} error in ${duration}ms`, errorMsg);
+              reject(errorMsg);
             } else {
               console.log(`Take action ${action} done in ${duration}ms`);
               resolve();
@@ -1228,10 +1235,6 @@ export default {
           this.game.scoreCtrl[notif.args.player.id].setValue(notif.args.player.score);
         }
       }
-    },
-
-    onErrorCode(code) {
-      lastErrorCode = code;
     },
 
     onChatKeyDown(ev) {

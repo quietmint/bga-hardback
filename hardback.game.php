@@ -8,15 +8,7 @@
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
  * -----
- * 
- * hardback.game.php
- *
- * This is the main file for your game logic.
- *
- * In this PHP file, you are going to defines the rules of the game.
- *
  */
-
 
 require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
 require_once('modules/constants.inc.php');
@@ -29,6 +21,10 @@ require_once('modules/WordMgr.class.php');
 
 class hardback extends Table
 {
+    public function test()
+    {
+    }
+
     public static $instance = null;
 
     // Hold notifications until state transition or end of action
@@ -178,9 +174,8 @@ class hardback extends Table
 
     public function checkVersion(int $clientVersion): void
     {
-        $gameVersion = $this->getGlobal(H_OPTION_VERSION);
-        if ($clientVersion != $gameVersion) {
-            throw new BgaVisibleSystemException(self::_("A new version of this game is now available. Please reload the page (F5)."));
+        if ($clientVersion != $this->getGlobal(H_OPTION_VERSION)) {
+            throw new BgaUserException('!!!checkVersion');
         }
     }
 
@@ -1708,14 +1703,13 @@ class hardback extends Table
      * END OF GAME
      */
 
-    /*
     function getGameRankInfos(): array
     {
         $infos = parent::getGameRankInfos();
         if ($this->getGlobal(H_OPTION_COOP)) {
-            // In studio, use player _guest01 = 2332442
-            // In prod, use player _hotseat01 = 84634030
-            $hotseatId = $this->getBgaEnvironment() == 'studio' ? 2332442 : 84634030;
+            // In studio, use player _guest09 = 2332450
+            // In prod, use player _hotseat09 = 84634038
+            $hotseatId = $this->getBgaEnvironment() == 'studio' ? 2332450 : 84634038;
             $penny = PlayerMgr::getPenny();
             $pennyResult = [
                 "color_back" => null,
@@ -1750,15 +1744,14 @@ class hardback extends Table
             unset($row);
             // Append or prepend fake result for Penny
             if ($playerRank == 1) {
-                $infos['result'][] = $pennyResult;
+                $infos['result'] = $infos['result'] + [$hotseatId => $pennyResult];
             } else {
-                array_unshift($infos['result'], $pennyResult);
+                $infos['result'] = [$hotseatId => $pennyResult] + $infos['result'];
             }
         }
         self::debug("getGameRankInfos JSON: " . json_encode($infos) . " // ");
         return $infos;
     }
-    */
 
     function stEnd(): void
     {

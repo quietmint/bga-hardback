@@ -186,12 +186,8 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
 
     /* @Override */
     showMessage: function (msg, type) {
-      if (type == "error") {
-        var lastErrorCode = msg.startsWith("!!!") ? msg.substring(3) : null;
-        this.vue.onErrorCode(lastErrorCode);
-        if (lastErrorCode) {
-          return;
-        }
+      if (type == "error" && msg && msg.startsWith("!!!")) {
+        return; // suppress red banner and gamelog message
       }
       this.inherited(arguments);
     },
