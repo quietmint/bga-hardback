@@ -25,11 +25,12 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
     setup: function () {
       console.log("Game setup", this.gamedatas);
 
-      // Old browser check
+      // Unsupported browser check
       if (typeof Vue === "undefined") {
+        console.error("Unsupported browser", navigator.userAgent);
         var msg = _("Your outdated browser is not supported");
         dojo.style("browser-error", "display", "block");
-        $("browser-error").innerHTML = '<img src="https://noto-website-2.storage.googleapis.com/emoji/emoji_u1f627.png" alt="Anguished Face">' + "<div>" + msg + "</div>" + '<div class="ua" title="User-Agent">' + navigator.userAgent + "</div>" + '<div id="errorAbandon" class="bgabutton bgabutton_blue" onclick="$(\'ingame_menu_abandon\').click();return false">' + _("Abandon the game (no penalty)") + "</div>";
+        $("browser-error").innerHTML = "<div>" + msg + "</div>" + '<div class="ua" title="User-Agent">' + navigator.userAgent + "</div>" + '<div id="errorAbandon" class="bgabutton bgabutton_blue" onclick="$(\'ingame_menu_abandon\').click();return false">' + _("Abandon the game (no penalty)") + "</div>";
         return;
       }
 

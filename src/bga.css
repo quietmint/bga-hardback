@@ -8,24 +8,20 @@
 }
 
 #browser-error {
-  display: none;
-  background: theme("colors.red.700");
+  background: theme("colors.red.700") url(img/headstone.png) no-repeat 50% 30px;
   color: #fff;
-  text-align: center;
-  font-weight: bold;
+  display: none;
   font-size: 22px;
-  padding: 30px;
+  font-weight: bold;
+  padding: 316px 30px 30px 30px;
+  text-align: center;
 }
 
 #browser-error .ua {
   color: theme("colors.red.300");
-  font-weight: normal;
   font-size: 75%;
+  font-weight: normal;
   margin: 6px;
-}
-
-#browser-error img {
-  padding: 10px;
 }
 
 #loader_mask {
