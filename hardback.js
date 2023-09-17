@@ -6,13 +6,6 @@
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
  * -----
- *
- * hardback.js
- *
- * hardback user interface script
- *
- * In this file, you are describing the logic of your user interface, in Javascript language.
- *
  */
 
 define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counter"], function (dojo, declare, on) {

@@ -8,20 +8,6 @@
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
  * -----
- *
- * gameoptions.inc.php
- *
- * hardback game options description
- * 
- * In this file, you can define your game options (= game variants).
- *   
- * Note: If your game has no variant, you don't have to modify this file.
- *
- * Note²: All options defined in this file should have a corresponding "game state labels"
- *        with the same ID (see "initGameStateLabels" in hardback.game.php)
- *
- * !! It is not a good idea to modify this file when a game is running !!
- *
  */
 
 require_once('modules/constants.inc.php');
