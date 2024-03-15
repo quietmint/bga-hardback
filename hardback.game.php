@@ -522,9 +522,26 @@ class hardback extends Table
             $points = $this->awards[$length];
             if ($points > $player->getAward()) {
                 $maxAward = PlayerMgr::getMaxAward();
-                $win = $maxAward == null || $points > $maxAward['award'];
-                $winShared = $this->getGlobal(H_OPTION_COOP) == H_NO && $length == 12 && $maxAward != null && $points == $maxAward['award'];
-                if ($win || $winShared) {
+                $win = false;
+                if ($this->getGlobal(H_OPTION_COOP) == H_NO) {
+                    $win = $maxAward == null || $points >= $maxAward['award'];
+                } else {
+                    // No multiple awards in co-op
+                    $win = $maxAward == null || $points > $maxAward['award'];
+                }
+                if ($win) {
+                    $loserIds = PlayerMgr::getAwardLosers($points);
+                    if (!empty($loserIds)) {
+                        foreach ($loserIds as $loserId) {
+                            $loser = PlayerMgr::getPlayer($loserId);
+                            $loserLength = array_flip($this->awards)[$loser->getAward()];
+                            self::notifyAllPlayers('award', $this->msg['awardLose'], [
+                                'player_name' => $loser->getName(),
+                                'length' => $loserLength,
+                            ]);
+                            $loser->setAward(0);
+                        }
+                    }
                     self::notifyAllPlayers('award', $this->msg['awardWin'], [
                         'player_name' => $player->getName(),
                         'amount' => $points,
@@ -533,15 +550,6 @@ class hardback extends Table
                         'award' => $length,
                     ]);
                     $player->setAward($points);
-                    if (!$winShared && $maxAward != null && $maxAward['player_id'] != $player->getId()) {
-                        $loser = PlayerMgr::getPlayer($maxAward['player_id']);
-                        $length = array_flip($this->awards)[$loser->getAward()];
-                        self::notifyAllPlayers('award', $this->msg['awardLose'], [
-                            'player_name' => $loser->getName(),
-                            'length' => $length,
-                        ]);
-                        $loser->setAward(0);
-                    }
                 }
             }
         }

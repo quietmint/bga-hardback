@@ -7,6 +7,11 @@ class PlayerMgr extends APP_GameClass
         return self::getObjectFromDB("SELECT player_id, award FROM player WHERE award > 0 ORDER BY award DESC LIMIT 1");
     }
 
+    public static function getAwardLosers(int $points): ?array
+    {
+        return self::getObjectListFromDB("SELECT player_id FROM player WHERE award > 0 AND award < $points ORDER BY award", true);
+    }
+
     public static function getMaxScore(): int
     {
         $max = intval(self::getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_eliminated = 0 AND player_zombie = 0"));
