@@ -53,24 +53,6 @@ $coopStartCondition = [
 ];
 
 $game_options = [
-    H_OPTION_RULESET => [
-        'name' => totranslate('Game Rules'),
-        'level' => 'additional',
-        'default' => 2,
-        'values' => [
-            1 => [
-                'name' => totranslate('First edition'),
-                'tmdisplay' => totranslate('First edition'),
-                'description' => totranslate('Offer row doesn\'t refresh automatically. Only one player can win the top literary award.'),
-            ],
-            2 => [
-                'name' => totranslate('Second edition'),
-                'tmdisplay' => totranslate('Second edition'),
-                'description' => totranslate('Discard the oldest offer row card when you do not purchase any cards. All players can win the top literary award.'),
-            ],
-        ]
-    ],
-
     H_OPTION_DICTIONARY => [
         'name' => totranslate('Dictionary'),
         'level' => 'base',

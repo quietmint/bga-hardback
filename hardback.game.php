@@ -114,9 +114,7 @@ class hardback extends Table
             self::initStat('table', 'coopTurns', 0);
         } else {
             self::initStat('table', 'flush', 0);
-            if ($this->getGlobal(H_OPTION_RULESET) == 2) {
-                self::initStat('table', 'cycled', 0);
-            }
+            self::initStat('table', 'cycled', 0);
         }
 
         // Init player statistics
@@ -525,7 +523,7 @@ class hardback extends Table
             if ($points > $player->getAward()) {
                 $maxAward = PlayerMgr::getMaxAward();
                 $win = $maxAward == null || $points > $maxAward['award'];
-                $winShared = $this->getGlobal(H_OPTION_RULESET) == 2 && $this->getGlobal(H_OPTION_COOP) == H_NO && $length == 12 && $maxAward != null && $points == $maxAward['award'];
+                $winShared = $this->getGlobal(H_OPTION_COOP) == H_NO && $length == 12 && $maxAward != null && $points == $maxAward['award'];
                 if ($win || $winShared) {
                     self::notifyAllPlayers('award', $this->msg['awardWin'], [
                         'player_name' => $player->getName(),
@@ -1454,23 +1452,22 @@ class hardback extends Table
         $player->setWord(null);
 
         if ($this->getGlobal(H_OPTION_COOP) == H_NO) {
-            if ($this->getGlobal(H_OPTION_RULESET) == 2) {
-                // New rules: Cycle the offer row
-                $cycled = intval($this->getGameStateValue('cycled'));
-                if ($cycled == 0) {
-                    // Discard the oldest offer row card
-                    $offer = CardMgr::getOffer();
-                    $card = end($offer);
-                    CardMgr::discard($card, 'discard');
-                    $this->incStat(1, 'cycled');
-                    self::notifyAllPlayers('message', $this->msg['cycled'], [
-                        'genre' => $card->getGenreName(),
-                        'letter' => $card->getLetter(),
-                    ]);
-                    // Draw a new card
-                    $this->drawOfferRow();
-                }
+            // Cycle the offer row
+            $cycled = intval($this->getGameStateValue('cycled'));
+            if ($cycled == 0) {
+                // Discard the oldest offer row card
+                $offer = CardMgr::getOffer();
+                $card = end($offer);
+                CardMgr::discard($card, 'discard');
+                $this->incStat(1, 'cycled');
+                self::notifyAllPlayers('message', $this->msg['cycled'], [
+                    'genre' => $card->getGenreName(),
+                    'letter' => $card->getLetter(),
+                ]);
+                // Draw a new card
+                $this->drawOfferRow();
             }
+
             $this->setGameStateValue('cycled', 0);
             $this->nextState('nextPlayer');
         } else {
