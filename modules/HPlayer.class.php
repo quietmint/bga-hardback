@@ -281,7 +281,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($amount <= 0) {
             return;
         }
-        $this->DbLock();
         self::DbQuery("UPDATE player SET coins = coins + $amount WHERE player_id = {$this->id}");
         $this->coins += $amount;
         hardback::$instance->enqueuePlayer($this->id);
@@ -293,7 +292,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
             return;
         }
         hardback::$instance->incStat($amount, $stat, $this->id);
-        $this->DbLock();
         $sql = "UPDATE player SET player_score = player_score + $amount";
         if (hardback::$instance->getGlobal(H_OPTION_COOP) == H_NO) {
             $sql .= " WHERE player_id = {$this->id}";
@@ -308,7 +306,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($amount <= 0) {
             return;
         }
-        $this->DbLock();
         self::DbQuery("UPDATE player SET ink = ink + $amount WHERE player_id = {$this->id}");
         $this->ink += $amount;
         hardback::$instance->enqueuePlayer($this->id);
@@ -319,7 +316,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($amount <= 0) {
             return;
         }
-        $this->DbLock();
         self::DbQuery("UPDATE player SET remover = remover + $amount WHERE player_id = {$this->id}");
         $this->remover += $amount;
         hardback::$instance->enqueuePlayer($this->id);
@@ -330,7 +326,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($amount <= 0) {
             return;
         }
-        $this->DbLock();
         self::DbQuery("UPDATE player SET coins = coins - $amount WHERE player_id = {$this->id} AND coins >= $amount");
         $this->coins -= $amount;
         if (self::DbAffectedRow() == 0) {
@@ -344,7 +339,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($amount <= 0) {
             return;
         }
-        $this->DbLock();
         self::DbQuery("UPDATE player SET ink = ink - $amount WHERE player_id = {$this->id} AND ink >= $amount");
         $this->ink -= $amount;
         if (self::DbAffectedRow() == 0) {
@@ -358,7 +352,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($amount <= 0) {
             return;
         }
-        $this->DbLock();
         self::DbQuery("UPDATE player SET remover = remover - $amount WHERE player_id = {$this->id} AND remover >= $amount");
         $this->remover -= $amount;
         if (self::DbAffectedRow() == 0) {
@@ -369,7 +362,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     public function buyAdvert(int $points, int $coins): void
     {
-        $this->DbLock();
         self::DbQuery("UPDATE player SET advert = $points WHERE player_id = {$this->id}");
         $this->advert = $points;
         $this->spendCoins($coins);
@@ -378,7 +370,6 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     public function setAward(int $points): void
     {
-        $this->DbLock();
         self::DbQuery("UPDATE player SET award = $points WHERE player_id = {$this->id}");
         $this->award = $points;
         hardback::$instance->enqueuePlayer($this->id);
@@ -386,14 +377,12 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     public function setReplayFrom(int $replayFrom): void
     {
-        $this->DbLock();
         self::DbQuery("UPDATE player SET replayFrom = $replayFrom WHERE player_id = {$this->id}");
         $this->replayFrom = $replayFrom;
     }
 
     public function setVote(bool $vote): void
     {
-        $this->DbLock();
         self::DbQuery("UPDATE player SET vote = " . intval($vote) . " WHERE player_id = {$this->id}");
         hardback::$instance->incStat(1, $vote ? 'votesAccept' : 'votesReject', $this->id);
         $this->vote = $vote;
@@ -401,14 +390,8 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     public function setWord(?string $word): void
     {
-        $this->DbLock();
         self::DbQuery("UPDATE player SET word = " . ($word == null ? "NULL" : "'$word'") . " WHERE player_id = {$this->id}");
         $this->word = $word;
         hardback::$instance->enqueuePlayer($this->id);
-    }
-
-    private function DbLock()
-    {
-        // self::DbQuery("SELECT * FROM global WHERE global_id < 10 FOR UPDATE");
     }
 }

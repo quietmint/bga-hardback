@@ -83,7 +83,7 @@ class WordMgr extends APP_GameClass
                     'score' => intval($dbrow['score']),
                     'coins' => intval($dbrow['coins']),
                 ];
-            }, self::getCollectionFromDb($sql)));
+            }, hardback::$instance->getCollectionFromDb($sql)));
         } catch (Exception $e) {
             self::warn("Cannot get word history");
         }
@@ -98,7 +98,7 @@ class WordMgr extends APP_GameClass
                 $move_id = 1;
             }
             $sql = "SELECT `id`, `coins`, `score` FROM (SELECT * FROM word WHERE `player_id` = $player_id AND `id` > $move_id ORDER BY `id` DESC LIMIT 1) X WHERE `word` = '$word'";
-            $history = self::getObjectFromDB($sql);
+            $history = hardback::$instance->getObjectFromDB($sql);
             if ($history != null) {
                 $history = [
                     'id' => intval($history['id']),
@@ -114,7 +114,7 @@ class WordMgr extends APP_GameClass
 
     public static function isHistory(string $word): bool
     {
-        return self::getUniqueValueFromDB("SELECT 1 FROM word WHERE `word` = '$word' LIMIT 1") != null;
+        return hardback::$instance->getUniqueValueFromDB("SELECT 1 FROM word WHERE `word` = '$word' LIMIT 1") != null;
     }
 
     public static function recordHistory(int $move_id, int $player_id, string $word, int $coins, int $score): void

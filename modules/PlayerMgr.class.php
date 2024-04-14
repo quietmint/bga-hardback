@@ -4,17 +4,17 @@ class PlayerMgr extends APP_GameClass
 {
     public static function getMaxAward(): ?array
     {
-        return self::getObjectFromDB("SELECT player_id, award FROM player WHERE award > 0 ORDER BY award DESC LIMIT 1");
+        return hardback::$instance->getObjectFromDB("SELECT player_id, award FROM player WHERE award > 0 ORDER BY award DESC LIMIT 1");
     }
 
     public static function getAwardLosers(int $points): ?array
     {
-        return self::getObjectListFromDB("SELECT player_id FROM player WHERE award > 0 AND award < $points ORDER BY award", true);
+        return hardback::$instance->getObjectListFromDB("SELECT player_id FROM player WHERE award > 0 AND award < $points ORDER BY award", true);
     }
 
     public static function getMaxScore(): int
     {
-        $max = intval(self::getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_eliminated = 0 AND player_zombie = 0"));
+        $max = intval(hardback::$instance->getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_eliminated = 0 AND player_zombie = 0"));
         if (hardback::$instance->getGlobal(H_OPTION_COOP) != H_NO) {
             $max = max($max, self::getPenny()->getScore());
         }
@@ -23,7 +23,7 @@ class PlayerMgr extends APP_GameClass
 
     public static function getPlayerCount(): int
     {
-        return intval(self::getUniqueValueFromDB("SELECT COUNT(*) FROM player"));
+        return intval(hardback::$instance->getUniqueValueFromDB("SELECT COUNT(*) FROM player"));
     }
 
     public static function getPlayerIds(int $exclude = null): array
@@ -33,7 +33,7 @@ class PlayerMgr extends APP_GameClass
             $sql .= " WHERE player_id != $exclude";
         }
         $sql .= " ORDER BY player_no";
-        return self::getObjectListFromDb($sql, true);
+        return hardback::$instance->getObjectListFromDB($sql, true);
     }
 
     public static function getPlayer(int $playerId = null): HPlayer
@@ -53,7 +53,7 @@ class PlayerMgr extends APP_GameClass
         $sql .= " ORDER BY player_no";
         $players = array_map(function ($dbplayer) {
             return new HPlayer($dbplayer);
-        }, self::getCollectionFromDb($sql));
+        }, hardback::$instance->getCollectionFromDb($sql));
         if (!empty($playerIds) && count($players) != count($playerIds)) {
             $expected = array_map('intval', $playerIds);
             $actual = array_map('intval', array_keys($players));
@@ -70,8 +70,8 @@ class PlayerMgr extends APP_GameClass
 
     public static function getVoteResult(): ?string
     {
-        $accept = intval(self::getUniqueValueFromDB("SELECT COUNT(*) FROM player WHERE vote = 1"));
-        $reject = intval(self::getUniqueValueFromDB("SELECT COUNT(*) FROM player WHERE vote = 0"));
+        $accept = intval(hardback::$instance->getUniqueValueFromDB("SELECT COUNT(*) FROM player WHERE vote = 1"));
+        $reject = intval(hardback::$instance->getUniqueValueFromDB("SELECT COUNT(*) FROM player WHERE vote = 0"));
         $max = self::getPlayerCount() - 1;
         if (hardback::$instance->getGlobal(H_OPTION_VOTE) == H_VOTE_50) {
             $majority = $max / 2;
@@ -96,7 +96,6 @@ class PlayerMgr extends APP_GameClass
 
     public static function resetVoteResult(): void
     {
-        // self::DbQuery("SELECT * FROM global WHERE global_id < 10 FOR UPDATE");
         self::DbQuery("UPDATE player SET vote = NULL");
     }
 }

@@ -80,7 +80,7 @@ class CardMgr extends APP_GameClass
     {
         // Draw cards from deck
         $sql = "SELECT `id` FROM card WHERE " . self::getLocationWhereClause($fromLocation) . " ORDER BY `location`, `order` LIMIT $count";
-        $ids = self::getObjectListFromDB($sql, true);
+        $ids = hardback::$instance->getObjectListFromDB($sql, true);
 
         $missing = $count - count($ids);
         if ($missing > 0) {
@@ -91,7 +91,7 @@ class CardMgr extends APP_GameClass
                 $sql .= " AND `id` NOT IN (" . implode(',', $ids) . ")";
             }
             $sql .= " ORDER BY `location`, `order` LIMIT $missing";
-            $ids = array_merge($ids, self::getObjectListFromDB($sql, true));
+            $ids = array_merge($ids, hardback::$instance->getObjectListFromDB($sql, true));
         }
 
         // Populate from database and sort
@@ -115,7 +115,7 @@ class CardMgr extends APP_GameClass
     {
         $shuffleLocation = str_replace(['draw', 'deck'], ['discard', 'discard'], $location);
         $sql = "SELECT `id` FROM card WHERE " . self::getLocationWhereClause($shuffleLocation);
-        $ids = self::getObjectListFromDB($sql, true);
+        $ids = hardback::$instance->getObjectListFromDB($sql, true);
         hardback::$instance->enqueueCards($ids);
         shuffle($ids);
         $order = 0;
@@ -172,7 +172,7 @@ class CardMgr extends APP_GameClass
             return [];
         }
         $sql = "SELECT card.*, JSON_ARRAYAGG(resolve.benefit_id) AS resolve FROM card LEFT OUTER JOIN resolve USING (id) WHERE id IN (" . implode(',', $cardIds) . ") GROUP BY card.id";
-        $dbcards = self::getCollectionFromDB($sql);
+        $dbcards = hardback::$instance->getCollectionFromDB($sql);
 
         // Reorder to match input
         $seqcards = [];
@@ -235,7 +235,7 @@ class CardMgr extends APP_GameClass
         } else {
             $sql .= " ORDER BY `location`, `order`";
         }
-        return self::getObjectListFromDB($sql, true);
+        return hardback::$instance->getObjectListFromDB($sql, true);
     }
 
     public static function getCardsInLocation($locations, int $inkValue = null, string $sort = null): array
@@ -245,7 +245,7 @@ class CardMgr extends APP_GameClass
 
     public static function getCountInLocation(string $location): int
     {
-        $count = self::getUniqueValueFromDB("SELECT COUNT(*) FROM card WHERE `location` = '$location'");
+        $count = hardback::$instance->getUniqueValueFromDB("SELECT COUNT(*) FROM card WHERE `location` = '$location'");
         return intval($count);
     }
 
@@ -256,7 +256,7 @@ class CardMgr extends APP_GameClass
         } else {
             $sql = "SELECT COALESCE(MAX(`order`), 0) + 1 FROM card WHERE `location` = '$location'";
         }
-        return intval(self::getUniqueValueFromDB($sql));
+        return intval(hardback::$instance->getUniqueValueFromDB($sql));
     }
 
     public static function getHandLocation(int $playerId): string
@@ -335,7 +335,7 @@ class CardMgr extends APP_GameClass
         $location = self::getTimelessLocation($playerId);
         if ($origin) {
             $sql = "SELECT `id` FROM card WHERE `origin` = '$location' ORDER BY `age`";
-            $cardIds = self::getObjectListFromDB($sql, true);
+            $cardIds = hardback::$instance->getObjectListFromDB($sql, true);
             return self::getCards($cardIds);
         } else {
             return self::getCardsInLocation($location, null);
@@ -367,7 +367,7 @@ class CardMgr extends APP_GameClass
     private static function getJailId(int $playerId): int
     {
         $location = self::getJailLocation($playerId);
-        return intval(self::getUniqueValueFromDB("SELECT `id` FROM card WHERE `location` = '$location'", true));
+        return intval(hardback::$instance->getUniqueValueFromDB("SELECT `id` FROM card WHERE `location` = '$location'", true));
     }
 
     public static function getOfferDeckCount(): int
@@ -436,7 +436,7 @@ class CardMgr extends APP_GameClass
         // Delete transient preview notifications
         $sql = "DELETE FROM `gamelog` WHERE gamelog_move_id IS NULL AND gamelog_notification LIKE '%cardsPreview%'";
         if (!$all) {
-            $ids = self::getObjectListFromDB("SELECT MAX(gamelog_packet_id) FROM `gamelog` WHERE gamelog_move_id IS NULL AND gamelog_notification LIKE '%cardsPreview%' GROUP BY gamelog_current_player", true);
+            $ids = hardback::$instance->getObjectListFromDB("SELECT MAX(gamelog_packet_id) FROM `gamelog` WHERE gamelog_move_id IS NULL AND gamelog_notification LIKE '%cardsPreview%' GROUP BY gamelog_current_player", true);
             if (!empty($ids)) {
                 $sql .= " AND gamelog_packet_id NOT IN (" . implode(',', $ids) . ")";
             }

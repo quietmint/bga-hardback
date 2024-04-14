@@ -36,12 +36,6 @@ class hardback extends Table
         $this->bSelectGlobalsForUpdate = true;
         self::$instance = $this;
 
-        // Your global variables labels:
-        //  Here, you can assign labels to global variables you are using for this game.
-        //  You can use any number of global variables with IDs between 10 and 99.
-        //  If your game has options (variants), you also have to associate here a label to
-        //  the corresponding ID in gameoptions.inc.php.
-        // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         self::initGameStateLabels([
             'countActive' . H_ADVENTURE => H_COUNT_ACTIVE_ADVENTURE,
             'countActive' . H_HORROR => H_COUNT_ACTIVE_HORROR,
@@ -1904,7 +1898,7 @@ class hardback extends Table
 
     public function loadBug($reportId): void
     {
-        $db = explode('_', self::getUniqueValueFromDB("SELECT SUBSTRING_INDEX(DATABASE(), '_', -2)"));
+        $db = explode('_', $this->getUniqueValueFromDB("SELECT SUBSTRING_INDEX(DATABASE(), '_', -2)"));
         $game = $db[0];
         $tableId = $db[1];
         self::notifyAllPlayers('loadBug', "Trying to load <a href='https://boardgamearena.com/bug?id=$reportId' target='_blank'>bug report $reportId</a>", [
@@ -1920,7 +1914,7 @@ class hardback extends Table
     public function loadBugSQL($reportId): void
     {
         $studioPlayer = self::getCurrentPlayerId();
-        $playerIds = self::getObjectListFromDb("SELECT player_id FROM player", true);
+        $playerIds = $this->getObjectListFromDb("SELECT player_id FROM player", true);
 
         $sql = [
             "UPDATE global SET global_value=2 WHERE global_id=1 AND global_value=99"
