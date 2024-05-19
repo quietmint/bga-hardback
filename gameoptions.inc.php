@@ -368,10 +368,16 @@ $game_options = [
             H_NO => [
                 'name' => totranslate('No'),
             ],
-            H_YES => [
-                'name' => totranslate('Yes'),
-                'tmdisplay' => totranslate('Unique Words'),
-                'description' => totranslate('Reject duplicate words'),
+            H_UNIQUE_PLAYER => [
+                'name' => totranslate('Unique Words Per Player'),
+                'tmdisplay' => totranslate('Unique Words Per Player'),
+                'description' => totranslate("The same player cannot spell the same word twice during the game"),
+                'nobeginner' => true,
+            ],
+            H_UNIQUE_GAME => [
+                'name' => totranslate('Unique Words Per Game'),
+                'tmdisplay' => totranslate('Unique Words Per Game'),
+                'description' => totranslate("The same word cannot be spelled twice during the game"),
                 'nobeginner' => true,
             ]
         ],

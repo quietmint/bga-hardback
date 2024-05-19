@@ -112,9 +112,15 @@ class WordMgr extends APP_GameClass
         return $history;
     }
 
-    public static function isHistory(string $word): bool
+    public static function isHistory(HPlayer $player, string $word): bool
     {
-        return hardback::$instance->getUniqueValueFromDB("SELECT 1 FROM word WHERE `word` = '$word' LIMIT 1") != null;
+        $unique = hardback::$instance->getGlobal(H_OPTION_UNIQUE);
+        if ($unique == H_UNIQUE_PLAYER) {
+            return hardback::$instance->getUniqueValueFromDB("SELECT 1 FROM word WHERE `word` = '$word' AND `player_id` = {$player->getId()} LIMIT 1") != null;
+        } else if ($unique == H_UNIQUE_GAME) {
+            return hardback::$instance->getUniqueValueFromDB("SELECT 1 FROM word WHERE `word` = '$word' LIMIT 1") != null;
+        }
+        return false;
     }
 
     public static function recordHistory(int $move_id, int $player_id, string $word, int $coins, int $score): void

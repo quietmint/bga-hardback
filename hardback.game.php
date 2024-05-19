@@ -452,7 +452,7 @@ class hardback extends Table
             'definitions' => '',
         ]);
 
-        if ($this->getGlobal(H_OPTION_UNIQUE) && WordMgr::isHistory($word)) {
+        if (WordMgr::isHistory($player, $word)) {
             // Reject the word (non-unique)
             $this->rejectWord($player, $word, clienttranslate('Unique Words'));
             $this->sendNotify();
@@ -625,10 +625,7 @@ class hardback extends Table
     function lookup(string $word): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-        $history = false;
-        if ($this->getGlobal(H_OPTION_UNIQUE)) {
-            $history = WordMgr::isHistory($word);
-        }
+        $history = WordMgr::isHistory($player, $word);
         $valid = !$history && WordMgr::isWord($word);
         if (!$valid) {
             $this->incStat(1, 'invalidWords');
