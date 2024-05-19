@@ -110,8 +110,8 @@ define('H_OPTION_ADVERTS', 102);
 define('H_OPTION_UNIQUE', 108);
 define('H_NO', 0);
 define('H_YES', 1);
-define('H_UNIQUE_PLAYER', 1);
-define('H_UNIQUE_GAME', 2);
+define('H_UNIQUE_GAME', 1);
+define('H_UNIQUE_PLAYER', 2);
 
 define('H_OPTION_COOP', 110);
 define('H_COOP_BASIC', 1);
