@@ -36,15 +36,6 @@ class action_hardback extends APP_GameAction
     return ($value === null) ? null : explode(',', $value);
   }
 
-  // Production bug report handler
-  public function loadBugSQL()
-  {
-    self::setAjaxMode();
-    $reportId = (int) self::getArg('report_id', AT_int, true);
-    $this->game->loadBugSQL($reportId);
-    self::ajaxResponse();
-  }
-
   /*
    * PHASE 1: SPELL A WORD
    * PHASE 2: DISCARD UNUSED CARDS
