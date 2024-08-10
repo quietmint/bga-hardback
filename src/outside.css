@@ -116,9 +116,9 @@ a.hdictionarylink {
   user-select: none;
   overflow: hidden;
   background-repeat: no-repeat;
-  background-position: top -15px right -5px, top center;
-  background-size: auto, cover;
-  background-color: #888;
+  background-position: top -15px right -5px;
+  background-size: auto;
+  background-color: #777;
   color: white;
 }
 
@@ -141,11 +141,11 @@ a.hdictionarylink {
 
 .boardblock,
 .timeToThink {
-  background-color: #8889;
+  background-color: #7779;
 }
 
 .player-name a {
-  background-color: #8889;
+  background-color: #7779;
   text-shadow: 0 0 2px white, 1px 1px rgb(255 255 255 / 50%);
 }
 
@@ -179,29 +179,29 @@ a.hdictionarylink {
 }
 
 .player-board.red {
-  background-image: url(img/book-red.png), url(img/wood.jpg);
+  background-image: url(img/book-red.png);
 }
 
 .player-board.green {
-  background-image: url(img/book-green.png), url(img/wood.jpg);
+  background-image: url(img/book-green.png);
 }
 
 .player-board.blue {
-  background-image: url(img/book-blue.png), url(img/wood.jpg);
+  background-image: url(img/book-blue.png);
 }
 
 .player-board.yellow {
-  background-image: url(img/book-yellow.png), url(img/wood.jpg);
+  background-image: url(img/book-yellow.png);
 }
 
 .player-board.purple {
-  background-image: url(img/book-purple.png), url(img/wood.jpg);
+  background-image: url(img/book-purple.png);
 }
 
 .player-board.black {
-  background-image: url(img/penny.png), url(img/wood.jpg);
-  background-position: top right, top center;
-  background-size: 100px, cover;
+  background-image: url(img/penny.png);
+  background-position: top right;
+  background-size: 100px;
   padding-bottom: 5px;
 }
 

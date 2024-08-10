@@ -408,7 +408,7 @@ export default {
           }
         }
 
-        if (this.gamestate.safeToMove && (this.card.location == this.myself.handLocation || this.card.location == this.myself.tableauLocation)) {
+        if (this.gamestate.safeToMove && this.card.location == this.myself.tableauLocation) {
           if (this.card.ink) {
             if (this.myself.remover > 0) {
               return [{
@@ -480,8 +480,7 @@ export default {
 
     dragLocations() {
       if (this.myself != null && this.gamestate.safeToMove && this.prefs.drag) {
-        if (this.card.location == this.myself.handLocation
-          || this.card.location == this.myself.tableauLocation
+        if (this.card.location == this.myself.tableauLocation
           || (this.gamestate.active && this.gamestate.name == "playerTurn" && this.card.location.startsWith("timeless"))) {
           let locations = [this.myself.tableauLocation, this.card.location, this.card.origin];
           let unique = [...new Set(locations)];

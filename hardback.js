@@ -66,39 +66,14 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
     },
 
     setupPrefs: function () {
-      // Extract the ID and value from the UI control
-      var _this = this;
-      function onchange(e) {
-        var match = e.target.id.match(/^preference_[cf]ontrol_(\d+)$/);
-        if (!match) {
-          return;
-        }
-        var id = +match[1];
-        var value = +e.target.value;
-        _this.prefs[id].value = value;
-        _this.onPrefChange(id, value);
-      }
-
-      // Call onPrefChange() when any value changes
-      dojo.query(".preference_control").connect("onchange", onchange);
-
-      // Call onPrefChange() when dark mode changes
-      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (event) {
-        onchange({ target: document.getElementById("preference_control_" + HConstants.PREF_DARK_MODE) });
-      });
-
-      // Call onPrefChange() now
-      dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) {
-        onchange({ target: el });
-      });
-
       // Convert card size preference to slider
+      var cardSizeValue = this.getGameUserPreference(HConstants.PREF_CARD_SIZE);
       var selectTop = document.getElementById("preference_control_" + HConstants.PREF_CARD_SIZE);
       var selectBottom = document.getElementById("preference_fontrol_" + HConstants.PREF_CARD_SIZE);
       selectTop.style.visibility = "hidden";
       selectBottom.style.visibility = "hidden";
-      dojo.place('<input id="preference_range_' + HConstants.PREF_CARD_SIZE + '" class="preference_range" type="range" min="1" max="7" value="' + this.prefs[HConstants.PREF_CARD_SIZE].value + '"><small style="float: left">' + _("Small") + '</small><small style="float: right">' + _("Large") + "</small>", selectTop, "before");
-      dojo.place('<input id="preference_fange_' + HConstants.PREF_CARD_SIZE + '" class="preference_range" type="range" min="1" max="7" value="' + this.prefs[HConstants.PREF_CARD_SIZE].value + '"><small style="float: left">' + _("Small") + '</small><small style="float: right">' + _("Large") + "</small>", selectBottom, "before");
+      dojo.place('<input id="preference_range_' + HConstants.PREF_CARD_SIZE + '" class="preference_range" type="range" min="1" max="7" value="' + cardSizeValue + '"><small style="float: left">' + _("Small") + '</small><small style="float: right">' + _("Large") + "</small>", selectTop, "before");
+      dojo.place('<input id="preference_fange_' + HConstants.PREF_CARD_SIZE + '" class="preference_range" type="range" min="1" max="7" value="' + cardSizeValue + '"><small style="float: left">' + _("Small") + '</small><small style="float: right">' + _("Large") + "</small>", selectBottom, "before");
       dojo.query(".preference_range").connect("onclick", this, function (evt) {
         dojo.stopEvent(evt);
       });
@@ -109,6 +84,17 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
           cancelable: false,
         });
       });
+
+      // Call onPrefChange() when dark mode changes
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (event) {
+        this.onGameUserPreferenceChanged(HConstants.PREF_DARK_MODE, this.getGameUserPreference(HConstants.PREF_DARK_MODE));
+      });
+
+      this.onGameUserPreferenceChanged(HConstants.PREF_ANIMATION, this.getGameUserPreference(HConstants.PREF_ANIMATION));
+      this.onGameUserPreferenceChanged(HConstants.PREF_CARD_SIZE, this.getGameUserPreference(HConstants.PREF_CARD_SIZE));
+      this.onGameUserPreferenceChanged(HConstants.PREF_DARK_MODE, this.getGameUserPreference(HConstants.PREF_DARK_MODE));
+      this.onGameUserPreferenceChanged(HConstants.PREF_DRAG, this.getGameUserPreference(HConstants.PREF_DRAG));
+      this.onGameUserPreferenceChanged(HConstants.PREF_TOOLTIP, this.getGameUserPreference(HConstants.PREF_TOOLTIP));
     },
 
     /* @Override */
@@ -246,7 +232,7 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
       this.vue && this.vue.onNotify(notif);
     },
 
-    onPrefChange: function (id, value) {
+    onGameUserPreferenceChanged(id, value) {
       console.log("Preference changed", id, value);
       if (id == HConstants.PREF_DARK_MODE) {
         var dark = value == HConstants.DARK;

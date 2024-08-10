@@ -90,7 +90,7 @@
         <tbody>
           <tr v-for="hist in wordHistory"
               :key="hist.id"
-              :class="hist.player.colorBg20">
+              :class="hist.player.colorBg25">
             <td>{{ hist.id }}</td>
             <td :class="hist.player.colorText"
                 class="font-bold break-all"
@@ -116,7 +116,7 @@
          class="px-1 py-3 border-t-2 border-black">
       <div class="flex leading-8">
         <div id="tut_timeless_title"
-             class="title text-17 font-bold grow">{{ i18n("timelessLocation") }} ({{ timelessCards.length }})</div>
+             class="title text-18 font-bold grow">{{ i18n("timelessLocation") }} ({{ timelessCards.length }})</div>
       </div>
       <HCardList :cards="timelessCards"
                  location="timeless" />
@@ -126,10 +126,10 @@
     <div class="px-1 py-3 border-t-2 border-black">
       <div class="flex leading-8">
         <div id="tut_offer_title"
-             class="title text-17 font-bold grow"
+             class="title text-18 font-bold grow"
              v-text="i18n('offerLocation')"></div>
 
-        <div class="buttongroup grid grid-cols-4">
+        <div class="buttongroup mb-1 ml-2 grid grid-cols-4">
           <div id="sort_offer_letter"
                @click="sort('offer', 'letter')"
                class="button blue"
@@ -274,8 +274,10 @@ import starOutlined from "@iconify-icons/ant-design/star-outlined";
 import backspaceIcon from "@iconify-icons/mdi/backspace";
 import bookOpenPageVariant from "@iconify-icons/mdi/book-open-page-variant";
 import cardsIcon from "@iconify-icons/mdi/cards";
-import chevronDown from "@iconify-icons/mdi/chevron-down";
 import clockOutline from "@iconify-icons/mdi/clock-outline";
+import downloadIcon from "@iconify-icons/mdi/download-multiple";
+import eyeIcon from "@iconify-icons/mdi/eye-outline";
+import eyeXIcon from "@iconify-icons/mdi/eye-remove-outline";
 import flipHorizontal from "@iconify-icons/mdi/flip-horizontal";
 import handRight from "@iconify-icons/mdi/hand-right";
 import leadPencil from "@iconify-icons/mdi/lead-pencil";
@@ -283,6 +285,7 @@ import openInNew from '@iconify-icons/mdi/open-in-new';
 import plusBox from "@iconify-icons/mdi/plus-box";
 import shuffleVariant from "@iconify-icons/mdi/shuffle-variant";
 import swapVerticalBold from "@iconify-icons/mdi/swap-vertical-bold";
+import uploadIcon from "@iconify-icons/mdi/upload-multiple";
 
 // Lookup word icons
 import approximatelyEqualBox from "@iconify-icons/mdi/approximately-equal-box";
@@ -292,7 +295,7 @@ import loadingIcon from "@iconify-icons/mdi/loading";
 
 export default {
   name: "HGame",
-  emits: ["clickTab"],
+  emits: ["clickView"],
   components: { Icon, HCardList, HKeyboard, HLookup, HPenny, HPlayerArea, HPlayerPanel },
 
   provide() {
@@ -387,18 +390,21 @@ export default {
       locationOrder: {
         discard: "genre",
         draw: "genre",
+        hand: "ink",
         offer: "order",
         timeless: "location",
       },
-      locationVisible: new Set(['offer']),
+      locationVisible: new Set(),
       icons: {
         adventure: mdiCompass,
-        chevron: chevronDown,
         clock: clockOutline,
         dictionary: bookOpenPageVariant,
         discardLocation: shuffleVariant,
+        download: downloadIcon,
         drawLocation: cardsIcon,
         equal: approximatelyEqualBox,
+        eye: eyeIcon,
+        eyeX: eyeXIcon,
         handLocation: handRight,
         horror: mdiSkull,
         inkCount: plusBox,
@@ -416,6 +422,7 @@ export default {
         tableauLocation: leadPencil,
         timeless: cachedIcon,
         uncover: flipHorizontal,
+        upload: uploadIcon,
         yes: checkboxMarked,
       },
       icons105: {},
@@ -633,9 +640,10 @@ export default {
 
     sortCards(order, cards) {
       order = order || "order";
-      let sorter = firstBy(order);
+      let direction = order == "genre" || order == "ink" ? -1 : 0;
+      let sorter = firstBy(order, direction);
       if (order != "genre") {
-        sorter = sorter.thenBy("genre");
+        sorter = sorter.thenBy("genre", -1);
       }
       if (order != "letter") {
         sorter = sorter.thenBy("letter");
@@ -706,7 +714,7 @@ export default {
       switch (player.colorName) {
         case "red":
           player.colorBg = "bg-red-700";
-          player.colorBg20 = "bg-red-700/20";
+          player.colorBg25 = "bg-red-700/25";
           player.colorBg50 = "bg-red-700/50";
           player.colorBorder = "border-red-700";
           player.colorRing = "ring-red-700";
@@ -716,7 +724,7 @@ export default {
           break;
         case "green":
           player.colorBg = "bg-green-700";
-          player.colorBg20 = "bg-green-700/20";
+          player.colorBg25 = "bg-green-700/25";
           player.colorBg50 = "bg-green-700/50";
           player.colorBorder = "border-green-700";
           player.colorRing = "ring-green-700";
@@ -726,7 +734,7 @@ export default {
           break;
         case "blue":
           player.colorBg = "bg-blue-700";
-          player.colorBg20 = "bg-blue-700/20";
+          player.colorBg25 = "bg-blue-700/25";
           player.colorBg50 = "bg-blue-700/50";
           player.colorBorder = "border-blue-700";
           player.colorRing = "ring-blue-700";
@@ -736,7 +744,7 @@ export default {
           break;
         case "yellow":
           player.colorBg = "bg-yellow-500";
-          player.colorBg20 = "bg-yellow-500/20";
+          player.colorBg25 = "bg-yellow-500/25";
           player.colorBg50 = "bg-yellow-600/50";
           player.colorBorder = "border-yellow-600";
           player.colorRing = "ring-yellow-500";
@@ -746,7 +754,7 @@ export default {
           break;
         case "purple":
           player.colorBg = "bg-purple-700";
-          player.colorBg20 = "bg-purple-700/20";
+          player.colorBg25 = "bg-purple-700/25";
           player.colorBg50 = "bg-purple-700/50";
           player.colorBorder = "border-purple-700";
           player.colorRing = "ring-purple-700";
@@ -1032,12 +1040,7 @@ export default {
             text: "confirmButton",
             color: "blue",
             async function() {
-              if (this.tableauCards.length == 0) {
-                // Did you forget to play any cards?
-                await Promise.allSettled(
-                  this.handCards.map((card) => this.clickCard({ card, action: { action: "move", destination: this.myself.tableauLocation } }))
-                );
-              }
+              this.emitter.emit("clickView", "tableau");
               let tableauIds = this.cardIds(this.tableauCards);
               let tableauMask = this.wildMask(this.tableauCards);
               this.takeAction("confirmWord", { tableauIds, tableauMask });
@@ -1161,10 +1164,10 @@ export default {
         this.gamedatas.finalRound = this.gamestate.name != "gameEnd" && args.updateGameProgression >= 100;
       }
       if (this.gamestate.active && this.gamestate.name == "trashDiscard" && this.gamestate.args && !this.gamestate.args.skip) {
-        this.emitter.emit("clickTab", "discard");
+        this.emitter.emit("clickView", "discard");
       }
       if (this.gamestate.active && this.gamestate.name == "specialRomance") {
-        this.emitter.emit("clickTab", "hand");
+        this.emitter.emit("clickView", "hand");
       }
       if (this.gamestate.name == "playerTurn" && !this.gamestate.instant && window.g_replayFrom) {
         // Scroll to active player during replay
@@ -1176,8 +1179,11 @@ export default {
     },
 
     onLeavingState(stateName) {
-      if (this.gamestate.active && this.gamestate.name == "trashDiscard" && this.gamestate.args && !this.gamestate.args.skip) {
-        this.emitter.emit("clickTab", "hand");
+      if (this.gamestate.active &&
+        ((this.gamestate.name == "specialRomance")
+          || (this.gamestate.name == "trashDiscard" && this.gamestate.args && !this.gamestate.args.skip)
+        )) {
+        this.emitter.emit("clickView", "tableau");
       }
     },
 
@@ -1294,7 +1300,7 @@ export default {
     },
 
     sort(location, order) {
-      if (location.startsWith("hand") || location.startsWith("tableau")) {
+      if (location.startsWith("tableau")) {
         this.sortOnce(location, order);
       } else {
         let prefix = location.split("_")[0];
@@ -1425,7 +1431,7 @@ export default {
 
     clickSort(e) {
       let { location, order } = e;
-      if (location.startsWith("hand") || location.startsWith("tableau")) {
+      if (location.startsWith("tableau")) {
         // the sort order is temporary
         this.sortOnce(location, order);
       } else {
@@ -1469,7 +1475,7 @@ export default {
         const locationEl = this.getLocationEl(location);
         const locationRect = getRect(locationEl, true);
         if (!locationRect) {
-          console.warn(`dragStart: No rect for location ${location}`);
+          // console.warn(`dragStart: No rect for location ${location}`);
           continue;
         }
 

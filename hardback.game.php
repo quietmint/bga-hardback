@@ -21,8 +21,44 @@ require_once('modules/WordMgr.class.php');
 
 class hardback extends Table
 {
-    public function test()
+    public function debug_giveAllCards()
     {
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $cardIds = [1, 5, 7, 12, 21, 23, 26, 31, 36, 40, 42, 43, 46, 53, 64, 71, 73, 76, 86, 92, 95, 96, 106, 107, 111, 113, 123, 124, 134];
+        $cardIdsStr = implode(', ', $cardIds);
+        $this->DbQuery("UPDATE card SET `location` = '{$player->getTableauLocation()}', `origin` = '{$player->getHandLocation()}' WHERE `refId` IN ($cardIdsStr)");
+        $offerCount = CardMgr::getCountInLocation('offer');
+        if ($offerCount < 7) {
+            CardMgr::drawCards(7 - $offerCount, 'deck', 'offer');
+        }
+        $this->enqueueCards($cardIds);
+        $this->enqueuePlayer($player->getId());
+        $this->sendNotify();
+    }
+
+    public function debug_giveOfferCards()
+    {
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $this->DbQuery("UPDATE card SET `location` = '{$player->getTableauLocation()}', `origin` = '{$player->getHandLocation()}' WHERE `location` = 'offer'");
+        $cardIds = CardMgr::getIdsInLocation([$player->getTableauLocation(), 'offer']);
+        $this->enqueueCards($cardIds);
+        $this->enqueuePlayer($player->getId());
+        CardMgr::drawCards(7, 'deck', 'offer');
+        $this->sendNotify();
+    }
+
+    public function debug_giveInk()
+    {
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $player->addInk(20);
+        $player->addRemover(20);
+        $this->sendNotify();
+    }
+
+    function debug_endGameCleanup()
+    {
+        CardMgr::endGameCleanup();
+        $this->sendNotify();
     }
 
     public static $instance = null;
@@ -42,7 +78,7 @@ class hardback extends Table
             'countActive' . H_MYSTERY => H_COUNT_ACTIVE_MYSTERY,
             'countActive' . H_ROMANCE => H_COUNT_ACTIVE_ROMANCE,
             'cycled' => H_CYCLED,
-            'deck' => H_OPTION_DECK,
+            'open' => H_OPTION_OPEN,
             'startInk' => H_START_INK,
             'startRemover' => H_START_REMOVER,
             'startScore' => H_START_SCORE,
@@ -103,6 +139,7 @@ class hardback extends Table
         self::initStat('table', 'turns', 1);
         self::initStat('table', 'words', 0);
         if ($this->getGlobal(H_OPTION_COOP)) {
+            $this->setGameStateValue('open', 1);
             self::initStat('table', 'coopAvg', 0);
             self::initStat('table', 'coopScore', 0);
             self::initStat('table', 'coopTurns', 0);
@@ -216,7 +253,7 @@ class hardback extends Table
         Transmit all queued notifications to the UI.
         Should be called before state transition and at the end of action processing.
     */
-    private function sendNotify(): void
+    public function sendNotify(): void
     {
         // Send player panel notifications
         if (array_key_exists('playerIds', $this->notifyQueue)) {
@@ -287,8 +324,8 @@ class hardback extends Table
                 'adverts' => $this->getGlobal(H_OPTION_ADVERTS) > 0,
                 'awards' => $this->getGlobal(H_OPTION_AWARDS) > 0,
                 'coop' => $this->getGlobal(H_OPTION_COOP) > 0,
-                'deck' => $this->getGlobal(H_OPTION_DECK) > 0,
                 'dictionary' => WordMgr::getDictionaryInfo(),
+                'open' => $this->getGlobal(H_OPTION_OPEN) > 0,
             ],
             'players' => $playersAsArray,
             'refs' => [
@@ -1841,33 +1878,7 @@ class hardback extends Table
     function upgradeTableDb($from_version): void
     {
         $changes = [
-            [2103240527, "UPDATE DBPREFIX_card SET `location` = 'discard', `origin` = 'discard' WHERE `location` IN ('discard_0', 'trash') AND `refId` <= 140"],
-            [2103270523, "ALTER TABLE DBPREFIX_player ADD `word` VARCHAR(32)"],
-            [2104280652, "ALTER TABLE DBPREFIX_card ADD `age` timestamp(6) NULL DEFAULT NULL"],
-            [2105150216, "ALTER TABLE DBPREFIX_player ADD `vote` INT(1) NULL DEFAULT NULL"],
-            [2105240722, "UPDATE DBPREFIX_global SET `global_value = 3 WHERE `global_id` = 207 AND `global_value` = 2"],
-            [2105240722, "UPDATE DBPREFIX_global SET `global_id = 123 WHERE `global_id` = 120"],
-            [2106090221, "UPDATE DBPREFIX_global SET `global_value = 80 WHERE `global_id` IN (100, 122, 123, 124, 125) AND `global_value` = 4"],
-            [2112042104, "UPDATE DBPREFIX_global SET `global_value = 20 WHERE `global_id` = 122 AND `global_value` = 80"],
-            [2112042104, "UPDATE DBPREFIX_global SET `global_value = 30 WHERE `global_id` = 123 AND `global_value` = 80"],
-            [2112042104, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (170, 0)"],
-            [2112060213, "UPDATE DBPREFIX_global SET `global_value` = 1 WHERE `global_id` = 207 AND `global_value` IN (4, 5)"],
-            [2112060213, "UPDATE DBPREFIX_global SET `global_id` = 100 WHERE `global_id` IN (124, 125)"],
-            [2112060213, "UPDATE DBPREFIX_global SET `global_value` = 90 WHERE `global_id` = 100 AND `global_value` = 80"],
-            [2209030442, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (171, 1)"],
-            [2209270419, "INSERT INTO DBPREFIX_global SELECT 107 AS `global_id`, CASE `global_value` WHEN 0 THEN 1 ELSE 0 END AS `global_value` FROM DBPREFIX_global WHERE `global_id` = 106"],
-            [2209270419, "ALTER TABLE DBPREFIX_player ADD `award` INT NOT NULL DEFAULT 0"],
-            [2209270419, "UPDATE DBPREFIX_player SET `award` = (SELECT CASE `stats_value` WHEN 7 THEN 5 WHEN 8 THEN 6 WHEN 9 THEN 7 WHEN 10 THEN 9 WHEN 11 THEN 12 WHEN 12 THEN 15 ELSE 0 END AS points FROM DBPREFIX_stats WHERE `stats_type` = 51 AND `stats_player_id` IS NULL) WHERE `player_id` = (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 30)"],
-            [2301081942, "UPDATE DBPREFIX_card SET `location` = CONCAT('tableau_', (SELECT `global_value` FROM DBPREFIX_global WHERE `global_id` = 2)) WHERE `location` = 'tableau'"],
-            [2301081942, "UPDATE DBPREFIX_card SET `location` = CONCAT('jail_', `order`), `origin` = CONCAT('jail_', `order`) WHERE `location` = 'jail'"],
-            [2301081942, "UPDATE DBPREFIX_card SET `location` = REPLACE(`location`, 'deck_', 'draw_') WHERE `location` LIKE 'deck_%'"],
-            [2301081942, "UPDATE DBPREFIX_card SET `origin` = REPLACE(`origin`, 'deck_', 'draw_') WHERE `origin` LIKE 'deck_%'"],
-            [2303140155, "DELETE FROM DBPREFIX_global WHERE `global_id` = 108"],
-            [2303140155, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (108, 0)"],
-            [2303140155, "CREATE TABLE IF NOT EXISTS DBPREFIX_word ( `id` int(3) unsigned NOT NULL AUTO_INCREMENT, `word` VARCHAR(32) NOT NULL, `player_id` int(10) unsigned NOT NULL, `score` INT NOT NULL DEFAULT 0, `coins` INT NOT NULL DEFAULT 0, PRIMARY KEY (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1"],
-            [2304040243, "ALTER TABLE DBPREFIX_player ADD `replayFrom` INT(10) UNSIGNED NULL DEFAULT NULL"],
-            [2305052151, "INSERT INTO DBPREFIX_global SELECT 111 AS `global_id`, CASE `global_value` WHEN 90 THEN 50 WHEN 91 THEN 100 ELSE 0 END AS `global_value` FROM DBPREFIX_global WHERE `global_id` IN (100, 122, 123)"],
-            [2305052151, "UPDATE DBPREFIX_global SET `global_value` = 0 WHERE `global_id` IN (100, 122, 123) AND `global_value` IN (90, 91)"],
+            [2405210004, "INSERT INTO DBPREFIX_global SELECT 171 AS `global_id`, 1 AS `global_value` FROM DBPREFIX_global WHERE `global_id` = 110 AND `global_value` = 0"],
         ];
 
         foreach ($changes as [$version, $sql]) {

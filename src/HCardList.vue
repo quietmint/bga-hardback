@@ -1,11 +1,11 @@
 <template>
   <div :id="'cardlist_' + location"
        class="cardlist flex flex-wrap items-center justify-center">
-    <transition-group :css="false">
-      <HCard v-for="card in cards"
-             :key="card.id"
-             :card="card" />
-    </transition-group>
+    <!--<transition-group :css="false">-->
+    <HCard v-for="card in cards"
+           :key="card.id"
+           :card="card" />
+    <!--</transition-group>-->
     <div v-if="cards.length == 0"
          class="py-4 text-center"
          v-text="emptyMessage"></div>
@@ -17,7 +17,7 @@ import HCard from "./HCard.vue";
 
 export default {
   name: "HCardList",
-  inject: ["i18n"],
+  inject: ["i18n", "locationVisible"],
   components: { HCard },
 
   props: {
@@ -29,6 +29,38 @@ export default {
       type: String,
       required: true,
     },
+  },
+
+  watch: {
+    location: {
+      handler(newLocation, oldLocation) {
+        if (oldLocation) {
+          this.locationVisible.delete(oldLocation);
+        }
+        if (newLocation) {
+          this.locationVisible.add(newLocation);
+        }
+      },
+      immediate: true,
+    },
+  },
+
+  mounted() {
+    const holder = this.$refs.benefits;
+    if (!window.PointerEvent) {
+      // Old Safari?
+      holder.addEventListener("mouseenter", this.tooltipEnter, false);
+      holder.addEventListener("mouseleave", this.tooltipLeave, false);
+    }
+  },
+
+  beforeUnmount() {
+    const holder = this.$refs.benefits;
+    if (!window.PointerEvent) {
+      // Old Safari?
+      holder.removeEventListener("mouseenter", this.tooltipEnter, false);
+      holder.removeEventListener("mouseleave", this.tooltipLeave, false);
+    }
   },
 
   computed: {

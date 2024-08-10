@@ -64,6 +64,10 @@ $this->i18n = [
     'awardTable' => clienttranslate('${length} letters'),
     'browserWarnDesc' => clienttranslate('Some game features are unavailable'),
     'browserWarnTitle' => clienttranslate('Update your browser for a better experience'),
+    'checkVersion' => clienttranslate('A new version of this game is now available'),
+    'checkVersionTitle' => clienttranslate('Reload Required'),
+    'close' => clienttranslate('Close ${location}'),
+    'closedHands' => clienttranslate('This table has closed hands, so you can only watch players during their turn'),
     'confirmButton' => clienttranslate('Confirm Word'),
     'convertButton' => clienttranslate('Convert ${ink} Ink to ${coins}¢'),
     'current' => clienttranslate('${coins}¢ and ${points}${icon} earned'),
@@ -75,8 +79,6 @@ $this->i18n = [
     'drawLocation' => clienttranslate('Draw Pile'),
     'empty' => clienttranslate('No cards in ${location}'),
     'endGameWarning' => clienttranslate('Penny Dreadful will score enough points to end the game immediately'),
-    'checkVersion' => clienttranslate('A new version of this game is now available'),
-    'checkVersionTitle' => clienttranslate('Reload Required'),
     'finalRound' => clienttranslate('This is the final round!'),
     'first' => clienttranslate('First Player'),
     'flushButton' => clienttranslate('Flush Offer Row'),
@@ -95,11 +97,11 @@ $this->i18n = [
     'penny' => clienttranslate('Penny Dreadful'),
     'playAll' => clienttranslate('Play All'),
     'playerHeader' => clienttranslate('Player'),
+    'playNone' => clienttranslate('Play None'),
     'previewButton' => clienttranslate('Preview'),
     'purchaseButton' => clienttranslate('Purchase (${coins}¢)'),
     'remover' => clienttranslate('Remover'),
     'replayFrom' => clienttranslate('Watch Replay'),
-    'returnAll' => clienttranslate('Return All'),
     'returnButton' => clienttranslate('Return'),
     'shuffleTip' => clienttranslate('Shuffle cards'),
     'skipButton' => clienttranslate('Skip'),
@@ -236,8 +238,6 @@ $this->benefits = [
         'long' => clienttranslate('Uncover an adjacent wild card'),
     ],
 ];
-
-// UPDATE card SET `location` = 'hand_2305326', `origin` = 'hand_2305326' WHERE `refId` IN (5, 12, 23, 31, 40, 42, 53, 64, 73, 86, 92, 96, 107, 113, 123, 134) OR `refId` IN (1, 7, 21, 26, 36, 43, 46, 71, 76, 95, 106, 111, 124);
 
 $this->cards = [
     1 => ['genre' => H_ADVENTURE, 'letter' => 'A', 'cost' => 5, 'points' => 1, 'basicBenefits' => [H_POINTS => 2, H_TRASH_COINS => 3], 'genreBenefits' => [H_POINTS => 1]],

@@ -2,262 +2,243 @@
   <div :id="'area_' + player.id"
        class="px-1 py-3 border-t-2 border-black">
     <div class="flex leading-8">
-      <div class="title grow leading-none">
+      <div class="title grow font-bold">
         <!-- Player name -->
         <span :class="player.colorName"
-              class="text-17 font-bold playername"
+              class="text-18 playername"
               v-text="player.name"></span>
-
-        <!-- Ink, remover counts -->
-        <div class="text-15 font-bold">
-          <span class="whitespace-nowrap"
-                :id="'counts_' + player.id">
-            <Icon icon="inkCount"
-                  class="inline text-18 text-black"
-                  :title="i18n('ink')" /> {{ player.ink }}
-            <span class="px-2">&bull;</span>
-            <Icon icon="removerCount"
-                  class="inline text-18 text-white"
-                  :title="i18n('remover')" /> {{ player.remover }}
-          </span>
-          <!-- First player marker -->
-          <span v-if="player.order == 1"
-                class="px-2">&bull;</span>
-          <span v-if="player.order == 1">{{ i18n('first') }}</span>
-        </div>
+        <!-- Ink count -->
+        <span :id="'inkCount_' + player.id">
+          <span class="px-2">&bull;</span>
+          <Icon icon="inkCount"
+                class="inline text-18 text-black"
+                :title="i18n('ink')" /> {{ player.ink }}
+        </span>
+        <!-- Remover count-->
+        <span :id="'removerCount_' + player.id">
+          <span class="px-2">&bull;</span>
+          <Icon icon="removerCount"
+                class="inline text-18 text-white"
+                :title="i18n('remover')" /> {{ player.remover }}
+        </span>
       </div>
 
-      <!-- Myself only: Action buttons (lookup, play all, ink) -->
+      <!-- Myself only: Action buttons -->
       <div v-if="player.myself && gamestate.name != 'gameEnd'"
            class="flex">
+        <!-- Lookup-->
         <div v-if="buttonEnabled['lookup']"
-             class="buttongroup flex">
+             class="buttongroup mb-1 ml-2 flex">
           <div id="button_lookup"
                @click="showLookup()"
                class="button blue">
             <Icon icon="dictionary"
-                  class="inline text-17" /> <span v-text="i18n('lookup')"></span>
+                  class="inline text-17" /> {{ i18n('lookup') }}
           </div>
         </div>
 
-        <div class="buttongroup flex">
-          <div v-if="!(buttonEnabled['returnAll'] && !buttonEnabled['playAll'])"
-               id="button_playAll"
-               @click="buttonEnabled['playAll'] && playAll()"
-               class="button blue"
-               :class="{ 'disabled': !buttonEnabled['playAll'] }">
-            <Icon icon="move"
-                  class="inline text-17" /> <span v-text="i18n('playAll')"></span>
-          </div>
-          <div v-if="buttonEnabled['returnAll'] && !buttonEnabled['playAll']"
-               id="button_returnAll"
-               @click="buttonEnabled['returnAll'] && returnAll()"
-               class="button blue"
-               :class="{ 'disabled': !buttonEnabled['returnAll'] }">
-            <Icon icon="move"
-                  class="inline text-17" /> <span v-text="i18n('returnAll')"></span>
-          </div>
+        <!-- Uncover -->
+        <div class="buttongroup mb-1 ml-2 flex">
           <div id="button_uncoverAll"
                @click="buttonEnabled['uncoverAll'] && uncoverAll()"
                class="button blue"
                :class="{ 'disabled': !buttonEnabled['uncoverAll'] }">
             <Icon icon="uncover"
-                  class="inline text-17" /> <span v-text="i18n('uncoverAll')"></span>
+                  class="inline text-17" /> {{ i18n('uncoverAll') }}
           </div>
         </div>
 
-        <div class="buttongroup flex">
-          <div id="button_useInk"
-               @click="buttonEnabled['useInk'] && useInk()"
-               class="button black"
-               :class="{ 'disabled': !buttonEnabled['useInk'] }">
-            <Icon icon="inkCount"
-                  class="inline text-17" /> <span v-text="i18n('useInk', { count: player.ink })"></span>
+        <!-- Sort -->
+        <div class="buttongroup mb-1 ml-2 grid grid-cols-3 leading-8">
+          <div id="sort_tableau_letter"
+               @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'letter')"
+               class="button blue"
+               :class="{ 'disabled': !buttonEnabled['sortTableau'] }"
+               :title="i18n('sortLetterTip')">A-Z</div>
+          <div id="sort_tableau_genre"
+               @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'genre')"
+               class="button blue"
+               :class="{ 'disabled': !buttonEnabled['sortTableau'] }"
+               :title="i18n('sortGenreTip')">
+            <Icon icon="starter"
+                  class="inline text-17 h-8" />
+          </div>
+          <div id="sort_tableau_shuffle"
+               @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'shuffle')"
+               class="button blue"
+               :class="{ 'disabled': !buttonEnabled['sortTableau'] }"
+               :title="i18n('shuffleTip')">
+            <Icon icon="shuffle"
+                  class="inline text-17 h-8" />
           </div>
         </div>
       </div>
     </div>
 
-    <div v-if="player.myself && gamestate.name != 'gameEnd'"
-         class="flex pt-3">
-      <!-- Myself: Tabs for Draw, Hand, Discard -->
-      <div class="tabgroup dark:text-gray-400"
-           :class="player.colorBorder, player.colorTextDark">
-        <div :id="'tab_' + player.drawLocation"
-             @click="options.deck && clickTab('draw')"
-             class="tab"
-             :class="[tab == 'draw' ? player.colorBg50 + ' text-black dark:text-white' : player.colorBg20, options.deck ? 'cursor-pointer' : 'cursor-not-allowed']">
-          <span class="float-left flex items-center mr-2">
+    <!-- Minis -->
+    <div v-if="gamestate.name != 'gameEnd'"
+         class="grid grid-cols-3 my-1 border-y-2 divide-x-2 font-bold"
+         :class="[player.colorText, player.colorBorder, player.colorBg25]">
+
+      <div :id="'tab_' + player.drawLocation"
+           class="border-inherit">
+        <!-- Draw buttons -->
+        <div v-if="player.myself"
+             class="buttongroup flex my-1 mx-2 leading-8">
+          <div id="button_useInk"
+               @click="buttonEnabled['useInk'] && useInk()"
+               class="button black flex-1"
+               :class="{ 'disabled': !buttonEnabled['useInk'] }">
+            <Icon icon="inkCount"
+                  class="inline text-17" /> {{ i18n('useInk', { count: player.ink }) }}
+          </div>
+          <div id="button_viewDraw"
+               @click="buttonEnabled['viewDraw'] && clickView('draw', true)"
+               class="button blue"
+               :class="{ 'disabled': !buttonEnabled['viewDraw'], 'active': visibleView == 'draw' }">
+            <Icon :icon="visibleView == 'draw' ? 'eyeX' : 'eye'"
+                  class="h-8 inline text-17" />
+          </div>
+        </div>
+
+        <!-- Draw label -->
+        <div class="text-center border-inherit p-1"
+             :class="[player.colorBg50, player.colorTextLight, { 'border-t-2': player.myself, 'border-b-2': options.open || player.myself }]">
+          <span class="mr-2">
             <Icon icon="drawLocation"
-                  class="text-20 mr-1" />
+                  class="inline align-text-top text-20" />
             {{ drawCards.length }}
           </span>
           {{ i18n('drawLocation') }}
         </div>
-        <div :id="'tab_' + player.handLocation"
-             @click="clickTab('hand')"
-             class="tab cursor-pointer"
-             :class="[tab == 'hand' ? player.colorBg50 + ' text-black dark:text-white' : player.colorBg20]">
-          <span class="float-left flex items-center mr-2">
+
+        <!-- Draw minis -->
+        <div v-if="options.open || player.myself"
+             class="flex flex-wrap justify-evenly m-1">
+          <HCardMini v-for="card in drawCards"
+                     :key="card.id"
+                     :card="card" />
+        </div>
+      </div>
+
+      <div :id="'tab_' + player.handLocation"
+           class="border-inherit">
+        <!-- Hand buttons -->
+        <div v-if="player.myself"
+             class="buttongroup flex my-1 mx-2 leading-8">
+          <div v-if="buttonEnabled['playNone']"
+               id="button_playNone"
+               @click="buttonEnabled['playNone'] && playNone()"
+               class="button blue flex-1"
+               :class="{ 'disabled': !buttonEnabled['playNone'] }">
+            <Icon icon="upload"
+                  class="inline text-17" /> {{ i18n('playNone') }}
+          </div>
+          <div v-if="!buttonEnabled['playNone']"
+               id="button_playAll"
+               @click="buttonEnabled['playAll'] && playAll()"
+               class="button blue flex-1"
+               :class="{ 'disabled': !buttonEnabled['playAll'] }">
+            <Icon icon="download"
+                  class="inline text-17" /> {{ i18n('playAll') }}
+          </div>
+          <div id="button_viewHand"
+               @click="buttonEnabled['viewHand'] && clickView('hand', true)"
+               class="button blue"
+               :class="{ 'disabled': !buttonEnabled['viewHand'], 'active': visibleView == 'hand' }">
+            <Icon :icon="visibleView == 'hand' ? 'eyeX' : 'eye'"
+                  class="h-8 inline text-17" />
+          </div>
+        </div>
+
+        <!-- Hand label -->
+        <div class="text-center border-inherit p-1"
+             :class="[player.colorBg50, player.colorTextLight, { 'border-t-2': player.myself, 'border-b-2': options.open || player.myself }]">
+          <span class="mr-2">
             <Icon icon="handLocation"
-                  class="text-20 mr-1" />
+                  class="inline align-text-top text-20" />
             {{ handCards.length }}
           </span>
           {{ i18n('handLocation') }}
         </div>
-        <div :id="'tab_' + player.discardLocation"
-             @click="clickTab('discard')"
-             class="tab cursor-pointer"
-             :class="[tab == 'discard' ? player.colorBg50 + ' text-black dark:text-white' : player.colorBg20]">
-          <span class="float-left flex items-center mr-2">
+
+        <!-- Hand minis -->
+        <div v-if="options.open || player.myself"
+             class="flex flex-wrap justify-evenly m-1">
+          <HCardMini v-for="card in handCards"
+                     :key="card.id"
+                     :card="card" />
+        </div>
+      </div>
+
+      <div :id="'tab_' + player.discardLocation"
+           class="border-inherit">
+        <!-- Discard buttons -->
+        <div v-if="player.myself"
+             class="buttongroup flex my-1 mx-2 leading-8">
+          <div id="button_viewDiscard"
+               @click="buttonEnabled['viewDiscard'] && clickView('discard', true)"
+               class="flex-1 button blue"
+               :class="{ 'disabled': !buttonEnabled['viewDiscard'], 'active': visibleView == 'discard' }">
+            <Icon :icon="visibleView == 'discard' ? 'eyeX' : 'eye'"
+                  class="h-8 inline text-17" />
+          </div>
+        </div>
+
+        <!-- Discard label -->
+        <div class="text-center border-inherit p-1"
+             :class="[player.colorBg50, player.colorTextLight, { 'border-t-2': player.myself, 'border-b-2': options.open || player.myself }]">
+          <span class="mr-2">
             <Icon icon="discardLocation"
-                  class="text-20 mr-1" />
+                  class="inline align-text-top text-20" />
             {{ discardCards.length }}
           </span>
           {{ i18n('discardLocation') }}
         </div>
+
+        <!-- Discard minis -->
+        <div v-if="options.open || player.myself"
+             class="flex flex-wrap justify-evenly m-1">
+          <HCardMini v-for="card in discardCards"
+                     :key="card.id"
+                     :card="card" />
+        </div>
       </div>
 
-      <!-- Myself: Sort for visible location -->
-      <div class="buttongroup grid grid-cols-3 leading-8">
-        <div id="sort_visible_letter"
-             @click="sort(visibleLocation, 'letter')"
-             class="button blue"
-             :title="i18n('sortLetterTip')">A-Z</div>
-        <div id="sort_visible_genre"
-             @click="sort(visibleLocation, 'genre')"
-             class="button blue"
-             :title="i18n('sortGenreTip')">
-          <Icon icon="starter"
-                class="inline text-17 h-8" />
-        </div>
-        <div id="sort_visible_shuffle"
-             @click="sort(visibleLocation, 'shuffle')"
-             class="button blue"
-             :title="i18n('shuffleTip')">
-          <Icon icon="shuffle"
-                class="inline text-17 h-8" />
-        </div>
-      </div>
     </div>
 
-    <!-- Draw/Hand/Discard cards -->
-    <div v-if="player.myself && gamestate.name != 'gameEnd'"
-         class="rounded-lg p-1"
-         :class="player.colorBg50">
+    <!-- Visible cards -->
+    <div v-if="options.open || player.myself || player.id == gamestate.activeId">
+      <div v-if="player.myself && visibleView != 'tableau'"
+           class="buttongroup flex my-1 mx-auto w-3/4 leading-8">
+        <div id="button_viewTableau"
+             @click="clickView('tableau')"
+             class="button blue active flex-1">
+          <Icon icon="eyeX"
+                class="inline text-17" /> {{ i18n('close', { location: visibleName }) }}
+        </div>
+      </div>
       <HCardList :cards="visibleCards"
                  :location="visibleLocation" />
     </div>
-
-    <div v-if="gamestate.name != 'gameEnd'"
-         class="flex pt-3">
-      <!-- Opponents: Collapse -->
-      <Icon v-if="!player.myself"
-            :id="'chevron_' + player.id"
-            icon="chevron"
-            :class="{ collapsed }"
-            class="chevron text-24"
-            @click="clickChevron()" />
-
-      <!-- Tabs -->
-      <div class="tabgroup dark:text-gray-400"
-           :class="player.colorBorder, player.colorTextDark">
-        <!-- Opponents: Tabs for Draw, Hand -->
-        <div v-if="!player.myself"
-             :id="'tab_' + player.drawLocation"
-             class="tab cursor-not-allowed"
-             :class="[player.colorBg20, { 'border-b-2': collapsed }]">
-          <span class="float-left flex items-center mr-2">
-            <Icon icon="drawLocation"
-                  class="text-20 mr-1" />
-            {{ drawCards.length }}
-          </span>
-          {{ i18n('drawLocation') }}
-        </div>
-        <div v-if="!player.myself"
-             :id="'tab_' + player.handLocation"
-             class="tab cursor-not-allowed"
-             :class="[player.colorBg20, { 'border-b-2': collapsed }]">
-          <span class="float-left flex items-center mr-2">
-            <Icon icon="handLocation"
-                  class="text-20 mr-1" />
-            {{ handCards.length }}
-          </span>
-          {{ i18n('handLocation') }}
-        </div>
-
-        <!-- Everyone: Tab for Tableau -->
-        <div :id="'tab_' + player.tableauLocation"
-             class="tab text-black dark:text-white"
-             :class="[player.colorBg50, { 'border-b-2': collapsed }]">
-          <span class="float-left flex items-center mr-2">
-            <Icon icon="tableauLocation"
-                  class="text-20 mr-1" />
-            {{ tableauCards.length }}
-          </span>
-          {{ i18n('tableauLocation') }}
-        </div>
-
-        <!-- Opponents: Tab for Discard -->
-        <div v-if="!player.myself"
-             :id="'tab_' + player.discardLocation"
-             class="tab cursor-not-allowed"
-             :class="[player.colorBg20, { 'border-b-2': collapsed }]">
-          <span class="float-left flex items-center mr-2">
-            <Icon icon="discardLocation"
-                  class="text-20 mr-1" />
-            {{ discardCards.length }}
-          </span>
-          {{ i18n('discardLocation') }}
-        </div>
-      </div>
-
-      <!-- Myself: Sort for Tableau -->
-      <div v-if="player.myself"
-           class="buttongroup grid grid-cols-3 leading-8">
-        <div id="sort_tableau_letter"
-             @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'letter')"
-             class="button blue"
-             :class="{ 'disabled': !buttonEnabled['sortTableau'] }"
-             :title="i18n('sortLetterTip')">A-Z</div>
-        <div id="sort_tableau_genre"
-             @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'genre')"
-             class="button blue"
-             :class="{ 'disabled': !buttonEnabled['sortTableau'] }"
-             :title="i18n('sortGenreTip')">
-          <Icon icon="starter"
-                class="inline text-17 h-8" />
-        </div>
-        <div id="sort_tableau_shuffle"
-             @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'shuffle')"
-             class="button blue"
-             :class="{ 'disabled': !buttonEnabled['sortTableau'] }"
-             :title="i18n('shuffleTip')">
-          <Icon icon="shuffle"
-                class="inline text-17 h-8" />
-        </div>
-      </div>
+    <div v-else
+         v-text="i18n('closedHands')"
+         class="text-center italic m-4">
     </div>
 
-    <!-- Tableau cards -->
-    <div v-if="!collapsed"
-         class="rounded-lg p-1"
-         :class="player.colorBg50">
-      <HCardList :cards="tableauCards"
-                 :location="player.tableauLocation" />
-    </div>
   </div>
 </template>
 
 <script lang="js">
 import HCardList from "./HCardList.vue";
+import HCardMini from "./HCardMini.vue";
 import { Icon } from "@iconify/vue";
 
 export default {
   name: "HPlayerArea",
-  emits: ["clickSort", "clickTab"],
-  inject: ["cardsInLocation", "gamestate", "i18n", "locationVisible", "options"],
-  components: { Icon, HCardList },
+  emits: ["clickSort"],
+  inject: ["cardsInLocation", "gamestate", "i18n", "options"],
+  components: { Icon, HCardList, HCardMini },
 
   props: {
     player: {
@@ -268,22 +249,14 @@ export default {
 
   data() {
     return {
-      collapsed: false,
-      tab: "",
+      visibleView: "",
     };
   },
 
   mounted() {
-    this.locationVisible.add(this.player.tableauLocation);
+    this.clickView("tableau");
     if (this.player.myself) {
-      this.emitter.on("clickTab", this.clickTab);
-      this.clickTab("hand");
-    }
-  },
-
-  beforeUnmount() {
-    if (this.player.myself) {
-      this.emitter.off("clickTab", this.clickTab);
+      this.emitter.on("clickView", this.clickView);
     }
   },
 
@@ -292,10 +265,13 @@ export default {
       return {
         lookup: this.options.dictionary.dictId,
         playAll: this.gamestate.safeToMove && this.handCards.length > 0,
-        returnAll: this.gamestate.safeToMove && this.tableauCards.length > 0,
+        playNone: this.gamestate.safeToMove && this.tableauCards.length > 0,
         sortTableau: this.gamestate.safeToMove,
         uncoverAll: this.gamestate.safeToMove && this.wildCards.length > 0,
         useInk: this.gamestate.safeToMove && this.player.ink && (this.drawCards.length > 0 || this.discardCards.length > 0),
+        viewDiscard: this.visibleView == "discard" || this.discardCards.length > 0,
+        viewDraw: this.visibleView == "draw" || this.drawCards.length > 0,
+        viewHand: this.visibleView == "hand" || this.handCards.length > 0,
       };
     },
 
@@ -320,35 +296,26 @@ export default {
     },
 
     visibleLocation() {
-      return this.tab + "_" + this.player.id;
+      if (this.visibleView) {
+        return this.visibleView + "_" + this.player.id;
+      }
+    },
+
+    visibleName() {
+      return this.i18n(this.visibleView + "Location");
     },
 
     wildCards() {
-      const hand = this.handCards;
-      const tableau = this.tableauCards;
-      const wilds = hand.concat(tableau);
-      return wilds.filter((card) => card.wild);
+      return this.tableauCards.filter((card) => card.wild);
     },
   },
 
   methods: {
-    clickChevron() {
-      this.collapsed = !this.collapsed;
-      if (this.collapsed) {
-        this.locationVisible.delete(this.player.tableauLocation);
-      } else {
-        this.locationVisible.add(this.player.tableauLocation);
+    clickView(view, allowToggle) {
+      if (allowToggle && this.visibleView == view) {
+        view = "tableau";
       }
-      console.log('👀 ' + (this.collapsed ? 'Collapse' : 'Expand'), this.player.id);
-    },
-
-    clickTab(tab) {
-      this.tab = tab;
-      this.locationVisible.delete(this.player.drawLocation);
-      this.locationVisible.delete(this.player.discardLocation);
-      this.locationVisible.delete(this.player.handLocation);
-      this.locationVisible.add(this.visibleLocation);
-      console.log('👀 Tab', this.visibleLocation);
+      this.visibleView = view;
     },
 
     playAll() {
@@ -357,7 +324,7 @@ export default {
       });
     },
 
-    returnAll() {
+    playNone() {
       this.tableauCards.forEach((card) => {
         this.emitter.emit("clickCard", { action: { action: "move", destination: card.origin }, card });
       });

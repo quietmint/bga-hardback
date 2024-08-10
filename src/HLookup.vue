@@ -6,12 +6,14 @@
            @click.stop>
         <div v-text="i18n(options.dictionary.dict) + ' (' + options.dictionary.lang + ')'"
              class="text-center"></div>
-        <input id="lookupInput"
-               @input="input"
-               :placeholder="i18n('lookupPlaceholder')"
-               class="w-full text-24 text-center bg-blue-100 text-blue-600 dark:bg-gray-800 dark:text-gray-300 rounded-lg p-3 my-4"
-               autocomplete="off"
-               autofocus />
+        <form @submit.prevent="lookup">
+          <input id="lookupInput"
+                 v-model="input"
+                 :placeholder="i18n('lookupPlaceholder')"
+                 class="w-full text-24 text-center uppercase bg-blue-100 text-blue-600 dark:bg-gray-800 dark:text-gray-300 rounded-lg p-3 my-4"
+                 autocomplete="off"
+                 autofocus />
+        </form>
         <div v-for="hist in lookupHistory"
              :key="hist"
              class="flex items-start mb-2">
@@ -41,6 +43,7 @@
 <script lang="js">
 const letterPattern = /[^A-Z]/g;
 
+import { nextTick } from "vue";
 import { Icon } from "@iconify/vue";
 
 export default {
@@ -58,24 +61,21 @@ export default {
       type: Object,
       required: true,
     },
-    myself: {
-      type: Object,
-      required: true,
-    },
     options: {
       type: Object,
       required: true,
     },
   },
 
+  data() {
+    return {
+      input: this.lookupPopup.word,
+    };
+  },
+
   mounted() {
     window.addEventListener("keydown", this.keydown, true);
-    let inputEl = document.getElementById("lookupInput");
-    inputEl.value = this.lookupPopup.word;
-    inputEl.focus();
-    inputEl.select();
-    // Automatic submit
-    this.emitter.emit("clickLookup", this.lookupPopup.word);
+    this.lookup();
   },
 
   beforeUnmount() {
@@ -88,31 +88,32 @@ export default {
       if (letter == "ESCAPE") {
         evt.stopPropagation();
         this.hide();
-      } else if (letter == "ENTER") {
-        evt.stopPropagation();
-        this.lookup();
       }
-    },
-
-    input(evt) {
-      evt.target.value = evt.target.value.toUpperCase().replace(letterPattern, "");
     },
 
     hide() {
       this.emitter.emit("clickLookup");
     },
 
-    lookup() {
-      let inputEl = document.getElementById("lookupInput");
-      if (inputEl != null) {
-        let word = inputEl.value.toUpperCase().replace(letterPattern, "");
-        inputEl.value = "";
-        inputEl.focus();
+    async lookup() {
+      const word = this.input.toUpperCase().replace(letterPattern, "");
+      if (this.input != word) {
+        this.input = word;
+        await nextTick();
+      }
+      if (word) {
         this.emitter.emit("clickLookup", word);
+        this.select();
       } else {
         // pressing Enter when the box is gone
         this.hide();
       }
+    },
+
+    select() {
+      const inputEl = document.getElementById("lookupInput");
+      inputEl.focus();
+      inputEl.select();
     },
   },
 };

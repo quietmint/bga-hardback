@@ -452,7 +452,7 @@ class CardMgr extends APP_GameClass
         foreach (PlayerMgr::getPlayers() as $player) {
             $location = $player->getTableauLocation();
             $locations[] = $location;
-            $sql = "UPDATE card SET `ink` = NULL, `wild` = NULL, `factor` = 1, `origin` = '$location', `location` = '$location', `order` = -1 WHERE `origin` LIKE '%_{$player->getId()}'";
+            $sql = "UPDATE card SET `ink` = NULL, `wild` = NULL, `factor` = 1, `origin` = '$location', `location` = '$location', `order` = -1 WHERE `origin` LIKE '%_{$player->getId()}' AND `origin` NOT LIKE 'jail%'";
             self::DbQuery($sql);
         }
         $ids = self::getIdsInLocation($locations);
@@ -639,6 +639,7 @@ class CardMgr extends APP_GameClass
 
         // Discard remaining cards
         self::discard($discardIds, self::getDiscardLocation($playerId));
+        hardback::$instance->sendNotify();
 
         // Draw new hand
         self::drawCards(5, self::getDrawLocation($playerId), self::getTableauLocation($playerId), self::getHandLocation($playerId));

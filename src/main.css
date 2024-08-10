@@ -26,20 +26,12 @@
   }
 }
 
-.chevron {
-  transition: transform 0.3s ease-in;
-}
-
-.chevron.collapsed {
-  transform: rotate(-90deg);
-}
-
 .title {
   text-shadow: 0 0 3px rgb(255 255 255 / 50%), 0.5px 0.5px rgb(255 255 255 / 50%);
 }
 
 .buttongroup {
-  @apply mb-1 ml-2 rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer text-14 text-center divide-x divide-white self-start;
+  @apply rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer text-14 text-center divide-x divide-white self-start;
 }
 
 .button {
@@ -72,6 +64,11 @@
 
 .tab {
   @apply border-t-2 border-l-2 border-r-2 rounded-t-lg px-4 py-2 font-bold;
+  border-color: inherit;
+}
+
+.tabbottom {
+  @apply border-b-2 border-l-2 border-r-2 rounded-b-lg px-4 py-2 font-bold;
   border-color: inherit;
 }
 
@@ -475,7 +472,6 @@
 .no-animation .button,
 .no-animation .card,
 .no-animation .cardholder,
-.no-animation .chevron,
 .no-animation .fade-enter-active,
 .no-animation .fade-leave-active,
 .no-animation .genreCounts div {

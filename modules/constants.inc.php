@@ -121,7 +121,7 @@ define('H_COOP_HORROR', 12);
 define('H_COOP_MYSTERY', 13);
 define('H_COOP_ROMANCE', 14);
 
-define('H_OPTION_DECK', 170);
+define('H_OPTION_OPEN', 171);
 
 define('H_OPTION_LANG', 207);
 define('H_LANG_EN', 1);

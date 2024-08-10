@@ -19,31 +19,33 @@
       <div class="panel-right flex flex-wrap gap-1 content-end justify-center text-18 font-bold text-center">
         <!-- Location Counts -->
         <div :id="'count_' + player.drawLocation"
-             :class="{ 'cursor-pointer': player.myself && options.deck }"
+             :class="{ 'cursor-pointer': player.myself && drawCards.length > 0 }"
              class="rounded-lg flex-2 whitespace-nowrap overflow-hidden bg-black/70 p-0.5"
-             @click="player.myself && options.deck && clickTab('draw')"
+             @click="player.myself && drawCards.length > 0 && clickView('draw')"
              :title="i18n('drawLocation') + ': ' + drawCards.length">
           <Icon icon="drawLocation"
                 class="inline text-20" /> {{ drawCards.length }}
         </div>
         <div :id="'count_' + player.handLocation"
              class="rounded-lg flex-2 whitespace-nowrap overflow-hidden bg-black/70 p-0.5"
-             :class="{ 'cursor-pointer': player.myself }"
-             @click="player.myself && clickTab('hand')"
+             :class="{ 'cursor-pointer': player.myself && handCards.length > 0 }"
+             @click="player.myself && handCards.length > 0 && clickView('hand')"
              :title="i18n('handLocation') + ': ' + handCards.length">
           <Icon icon="handLocation"
                 class="inline text-20" /> {{ handCards.length }}
         </div>
         <div :id="'count_' + player.tableauLocation"
              class="rounded-lg flex-2 whitespace-nowrap overflow-hidden bg-black/70 p-0.5"
+             :class="{ 'cursor-pointer': player.myself }"
+             @click="player.myself && clickView('tableau')"
              :title="i18n('tableauLocation') + ': ' + tableauCards.length">
           <Icon icon="tableauLocation"
                 class="inline text-20" /> {{ tableauCards.length }}
         </div>
         <div :id="'count_' + player.discardLocation"
-             :class="{ 'cursor-pointer': player.myself }"
+             :class="{ 'cursor-pointer': player.myself && discardCards.length > 0 }"
              class="rounded-lg flex-2 whitespace-nowrap overflow-hidden bg-black/70 p-0.5"
-             @click="player.myself && clickTab('discard')"
+             @click="player.myself && discardCards.length > 0 && clickView('discard')"
              :title="i18n('discardLocation') + ': ' + discardCards.length">
           <Icon icon="discardLocation"
                 class="inline text-20" /> {{ discardCards.length }}
@@ -67,7 +69,7 @@ import { Icon } from "@iconify/vue";
 
 export default {
   name: "HPlayerPanel",
-  emits: ["clickTab"],
+  emits: ["clickView"],
   inject: ["cardsInLocation", "i18n", "options"],
   components: { Icon, HAwardAdvert, HGenreCounts },
 
@@ -105,8 +107,8 @@ export default {
   },
 
   methods: {
-    clickTab(tab) {
-      this.emitter.emit("clickTab", tab);
+    clickView(tab) {
+      this.emitter.emit("clickView", tab);
     }
   },
 };

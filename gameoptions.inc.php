@@ -311,21 +311,28 @@ $game_options = [
         'notdisplayedmessage' => totranslate('Standard (60 Points)'),
     ],
 
-    H_OPTION_DECK => [
-        'name' => totranslate('Draw Pile Visible'),
-        'default' => H_YES,
+    H_OPTION_OPEN => [
+        'name' => totranslate('Open Hands'),
+        'default' => H_NO,
         'level' => 'additional',
         'values' => [
             H_NO => [
                 'name' => totranslate('No'),
-                'tmdisplay' => totranslate('Draw Pile Invisible'),
+                'tmdisplay' => totranslate('Closed Hands'),
             ],
             H_YES => [
                 'name' => totranslate('Yes'),
-                'tmdisplay' => totranslate('Draw Pile Visible'),
-                'description' => totranslate('View cards in your draw pile anytime (helpful in turn-based games)'),
+                'tmdisplay' => totranslate('Open Hands'),
             ]
         ],
+        'displaycondition' => [
+            [
+                'type' => 'otheroption',
+                'id' => H_OPTION_COOP,
+                'value' => H_NO,
+            ],
+        ],
+        'notdisplayedmessage' => totranslate('Yes'),
     ],
 
     H_OPTION_AWARDS => [
