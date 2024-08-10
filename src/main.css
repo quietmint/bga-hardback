@@ -42,6 +42,10 @@
   @apply bg-black text-white;
 }
 
+.button.white {
+  @apply bg-white text-black;
+}
+
 .button.blue {
   @apply bg-blue-700 text-white;
 }

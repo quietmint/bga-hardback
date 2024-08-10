@@ -28,7 +28,9 @@ export default {
   computed: {
     bgClass() {
       if (this.card.ink) {
-        return 'bg-black text-gray-100';
+        return 'bg-black text-white';
+      } else if (this.card.remover) {
+        return 'bg-white text-black';
       } else {
         return `${HConstants.GENRES[this.card.genre].bg} ${HConstants.GENRES[this.card.genre].textLight}`;
       }

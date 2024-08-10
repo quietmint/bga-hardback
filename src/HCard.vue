@@ -203,7 +203,7 @@ export default {
 
     holderClass() {
       let c = this.card.dragging ? "invisible " : "";
-      c += this.card.ink || this.card.location.startsWith("jail") || this.card.origin.startsWith("timeless") ? "mx-2 mb-1 mt-2" : "m-1 mt-2";
+      c += this.card.ink || this.card.remover || this.card.location.startsWith("jail") || this.card.origin.startsWith("timeless") ? "mx-2 mb-1 mt-2" : "m-1 mt-2";
       return c;
     },
 
@@ -213,9 +213,12 @@ export default {
       c += this.card.timeless ? "timeless " : "";
       if (this.card.ink) {
         c += "ring ring-black ";
+      } else if (this.card.remover) {
+        c += "ring ring-white ";
       } else if (this.card.location.startsWith("jail") || this.card.origin.startsWith("timeless")) {
         c += `ring ${this.card.player.colorRing} `;
-      } else if (this.card.wild) {
+      }
+      if (this.card.wild) {
         c += "wild ";
       }
       return c;
@@ -290,6 +293,7 @@ export default {
         const actionBlack = "button mx-1 black shadow";
         const actionBlue = "button mx-1 blue shadow";
         const actionRed = "button mx-1 red shadow";
+        const actionWhite = "button mx-1 white shadow";
         if (this.gamestate.active) {
           if (this.gamestate.name == "uncover" && this.gamestate.args.cardIds.includes(this.card.id)) {
             return [{
@@ -413,7 +417,7 @@ export default {
             if (this.myself.remover > 0) {
               return [{
                 action: "useRemover",
-                class: actionBlack,
+                class: actionWhite,
                 text: this.i18n("useRemoverButton"),
               }];
             }
@@ -436,7 +440,7 @@ export default {
                 return [wild, {
                   action: "undoRemover",
                   class: actionBlack,
-                  text: this.i18n("undoRemoverButton"),
+                  text: this.i18n("ink"),
                 }];
               } else {
                 return [wild];
@@ -451,6 +455,12 @@ export default {
         return [{
           class: "px-2 leading-6 uppercase font-bold bg-black text-white",
           text: this.i18n("ink"),
+        }];
+
+      } else if (this.card.remover) {
+        return [{
+          class: "px-2 leading-6 uppercase font-bold bg-white text-black",
+          text: this.i18n("remover"),
         }];
 
       } else if (this.card.origin.startsWith("timeless")) {

@@ -53,11 +53,9 @@ class action_hardback extends APP_GameAction
     self::setAjaxMode();
     self::checkVersion();
     if ($this->game->checkActionCustom('previewWord', false)) {
-      $handIds = $this->getArgIdList('handIds', true);
-      $handMask = self::getArg('handMask', AT_alphanum, true);
       $tableauIds = $this->getArgIdList('tableauIds', true);
       $tableauMask = self::getArg('tableauMask', AT_alphanum, true);
-      $this->game->previewWord($handIds, $handMask, $tableauIds, $tableauMask);
+      $this->game->previewWord($tableauIds, $tableauMask);
     }
     self::ajaxResponse();
   }
@@ -284,8 +282,10 @@ class action_hardback extends APP_GameAction
     self::setAjaxMode();
     self::checkVersion();
     $this->game->checkActionCustom('useInk');
+    $tableauIds = $this->getArgIdList('tableauIds', true);
+    $tableauMask = self::getArg('tableauMask', AT_alphanum, true);
     $cardId = self::getArg('cardId', AT_posint, true);
-    $this->game->useRemover($cardId);
+    $this->game->useRemover($tableauIds, $tableauMask, $cardId);
     self::ajaxResponse();
   }
 
@@ -294,8 +294,10 @@ class action_hardback extends APP_GameAction
     self::setAjaxMode();
     self::checkVersion();
     $this->game->checkActionCustom('useInk');
+    $tableauIds = $this->getArgIdList('tableauIds', true);
+    $tableauMask = self::getArg('tableauMask', AT_alphanum, true);
     $cardId = self::getArg('cardId', AT_posint, true);
-    $this->game->undoRemover($cardId);
+    $this->game->undoRemover($tableauIds, $tableauMask, $cardId);
     self::ajaxResponse();
   }
 }

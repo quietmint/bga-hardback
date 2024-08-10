@@ -424,29 +424,33 @@ class hardback extends Table
      * PHASE 2: DISCARD UNUSED CARDS
      */
 
-    function previewWord(array $handIds, string $handMask, array $tableauIds, string $tableauMask): void
+    function previewWord(array $tableauIds, string $tableauMask): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
 
-        // Validate origin
-        $origins = [$player->getHandLocation(), 'timeless'];
-        $hand = CardMgr::getCards($handIds, $handMask);
-        $invalid = array_filter($hand, function ($card) use ($origins) {
-            return !$card->isOrigin($origins);
-        });
-        if (!empty($invalid)) {
-            throw new BgaVisibleSystemException("previewWord: Not possible for $player to use hand cards " .  CardMgr::getString($invalid));
+        $updatedIds = $this->applyWord($player, $tableauIds, $tableauMask);
+        if (PlayerMgr::getPlayerCount() > 1) {
+            $this->not_a_move_notification = true;
+            $this->notifyAllPlayers('cardsPreview', '', [
+                'cards' => CardMgr::getCards($updatedIds),
+                'ignorePlayerId' => $player->getId()
+            ]);
         }
+
+        $this->sendNotify();
+    }
+
+    function applyWord(HPlayer $player, array $tableauIds, string $tableauMask): array
+    {
+        $origins = [$player->getHandLocation(), 'timeless'];
         $tableau = CardMgr::getCards($tableauIds, $tableauMask);
         $invalid = array_filter($tableau, function ($card) use ($origins) {
             return !$card->isOrigin($origins);
         });
         if (!empty($invalid)) {
-            throw new BgaVisibleSystemException("previewWord: Not possible for $player to use tableau cards " .  CardMgr::getString($invalid));
+            throw new BgaVisibleSystemException("applyWord: Not possible for $player to use tableau cards " .  CardMgr::getString($invalid));
         }
-
-        CardMgr::applyWord($player->getId(), $hand, $tableau);
-        $this->sendNotify();
+        return CardMgr::applyWord($player->getId(), $tableau);
     }
 
     function confirmWord(array $tableauIds, string $tableauMask): void
@@ -478,7 +482,8 @@ class hardback extends Table
         }
 
         CardMgr::deletePreviewNotifications();
-        CardMgr::applyWord($player->getId(), null, $tableau, true);
+        $updatedIds = CardMgr::applyWord($player->getId(), $tableau, true);
+        $this->enqueueCards($updatedIds);
 
         $word = implode('', array_map(function ($card) {
             return $card->getLetter();
@@ -1688,9 +1693,12 @@ class hardback extends Table
         $this->sendNotify();
     }
 
-    function useRemover(int $cardId): void
+    function useRemover(array $tableauIds, string $tableauMask, int $cardId): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $updatedIds = $this->applyWord($player, $tableauIds, $tableauMask);
+        $this->enqueueCards($updatedIds);
+
         $card = CardMgr::getCard($cardId);
         if ($card == null || !$card->isLocation($player->getHandLocation(), $player->getTableauLocation())) {
             throw new BgaVisibleSystemException("useRemover: Card $card is unavailable to $player");
@@ -1710,9 +1718,12 @@ class hardback extends Table
         $this->sendNotify();
     }
 
-    function undoRemover(int $cardId): void
+    function undoRemover(array $tableauIds, string $tableauMask, int $cardId): void
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $updatedIds = $this->applyWord($player, $tableauIds, $tableauMask);
+        $this->enqueueCards($updatedIds);
+
         $card = CardMgr::getCard($cardId);
         if ($card == null || !$card->isLocation($player->getHandLocation(), $player->getTableauLocation())) {
             throw new BgaVisibleSystemException("undoRemover: Card $card is unavailable to $player");

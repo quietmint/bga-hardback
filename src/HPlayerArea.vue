@@ -126,21 +126,19 @@
         <!-- Hand buttons -->
         <div v-if="player.myself"
              class="buttongroup flex my-1 mx-2 leading-8">
-          <div v-if="buttonEnabled['playNone']"
-               id="button_playNone"
-               @click="buttonEnabled['playNone'] && playNone()"
-               class="button blue flex-1"
-               :class="{ 'disabled': !buttonEnabled['playNone'] }">
-            <Icon icon="upload"
-                  class="inline text-17" /> {{ i18n('playNone') }}
-          </div>
-          <div v-if="!buttonEnabled['playNone']"
-               id="button_playAll"
+          <div id="button_playAll"
                @click="buttonEnabled['playAll'] && playAll()"
                class="button blue flex-1"
                :class="{ 'disabled': !buttonEnabled['playAll'] }">
             <Icon icon="download"
                   class="inline text-17" /> {{ i18n('playAll') }}
+          </div>
+          <div id="button_playNone"
+               @click="buttonEnabled['playNone'] && playNone()"
+               class="button blue flex-1"
+               :class="{ 'disabled': !buttonEnabled['playNone'] }">
+            <Icon icon="upload"
+                  class="inline text-17" /> {{ i18n('playNone') }}
           </div>
           <div id="button_viewHand"
                @click="buttonEnabled['viewHand'] && clickView('hand', true)"

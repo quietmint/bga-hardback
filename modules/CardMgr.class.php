@@ -459,23 +459,10 @@ class CardMgr extends APP_GameClass
         hardback::$instance->enqueueCards($ids);
     }
 
-    public static function applyWord(int $playerId, ?array $hand = null, array $tableau, bool $commit = false): void
+    public static function applyWord(int $playerId, array $tableau, bool $commit = false): array
     {
         $updatedIds = [];
-        $oldHand = self::getHand($playerId);
         $oldTableau = self::getTableau($playerId, null, false); // without timeless
-
-        // Update hand
-        if ($hand != null) {
-            $handLocation = self::getHandLocation($playerId);
-            $order = 0;
-            foreach ($hand as $card) {
-                $order++;
-                $sql = "UPDATE card SET `wild` = " . ($card->isWild() ? "'{$card->getLetter()}'" : "NULL") . ", `location` = '$handLocation', `order` = $order WHERE `id` = {$card->getId()}";
-                self::DbQuery($sql);
-                $updatedIds[] = $card->getId();
-            }
-        }
 
         // Update tableau
         $tableauLocation = self::getTableauLocation($playerId);
@@ -491,30 +478,22 @@ class CardMgr extends APP_GameClass
             $updatedIds[] = $card->getId();
         }
 
-        // Return remaining cards to origin
+        // Return remaining cards to origin (but keep wild status)
         $remainder = [];
-        foreach ($oldHand as $card) {
-            if (!in_array($card->getId(), $updatedIds)) {
-                $remainder[] = $card;
-            }
-        }
         foreach ($oldTableau as $card) {
             if (!in_array($card->getId(), $updatedIds)) {
                 $remainder[] = $card;
             }
         }
-        $updatedIds = array_merge($updatedIds, self::discardToOrigin($remainder));
-
-        // Notify
-        if ($commit) {
-            hardback::$instance->enqueueCards($updatedIds);
-        } else if (PlayerMgr::getPlayerCount() > 1) {
-            hardback::$instance->not_a_move_notification = true;
-            hardback::$instance->notifyAllPlayers('cardsPreview', '', [
-                'cards' => self::getCards($updatedIds),
-                'ignorePlayerId' => $playerId
-            ]);
+        foreach ($remainder as $card) {
+            $card->setLocation($card->getOrigin());
+            $card->setOrder(-1);
+            $sql = "UPDATE card SET `location` = `origin`, `order` = -1 WHERE `id` = {$card->getId()}";
+            self::DbQuery($sql);
+            $updatedIds[] = $card->getId();
         }
+
+        return $updatedIds;
     }
 
     public static function commitWord(int $playerId): void
@@ -572,19 +551,6 @@ class CardMgr extends APP_GameClass
             self::DbQuery($sql);
             hardback::$instance->enqueueCards($updatedIds);
         }
-    }
-
-    public static function discardToOrigin($cards): array
-    {
-        $updatedIds = [];
-        foreach ($cards as $card) {
-            $card->setLocation($card->getOrigin());
-            $card->setOrder(self::getAppendOrderForLocation($card->getLocation()));
-            $sql = "UPDATE card SET `wild` = NULL, `location` = `origin`, `order` = {$card->getOrder()} WHERE `id` = {$card->getId()}";
-            self::DbQuery($sql);
-            $updatedIds[] = $card->getId();
-        }
-        return $updatedIds;
     }
 
     public static function previewReturn($card, $location)

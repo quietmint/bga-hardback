@@ -642,6 +642,9 @@ export default {
       order = order || "order";
       let direction = order == "genre" || order == "ink" ? -1 : 0;
       let sorter = firstBy(order, direction);
+      if (order == "ink") {
+        sorter = sorter.thenBy("remover", -1);
+      }
       if (order != "genre") {
         sorter = sorter.thenBy("genre", -1);
       }
@@ -896,7 +899,7 @@ export default {
         delete data.lock;
       } else {
         data.lock = true;
-        if (this.game.isInterfaceLocked()) {
+        if (!this.game.checkLock()) {
           throw `Take action ${action} ignored by interface lock`;
         }
       }
@@ -1041,8 +1044,8 @@ export default {
             color: "blue",
             async function() {
               this.emitter.emit("clickView", "tableau");
-              let tableauIds = this.cardIds(this.tableauCards);
-              let tableauMask = this.wildMask(this.tableauCards);
+              const tableauIds = this.cardIds(this.tableauCards);
+              const tableauMask = this.wildMask(this.tableauCards);
               this.takeAction("confirmWord", { tableauIds, tableauMask });
             },
           },
@@ -1333,15 +1336,11 @@ export default {
         // skip during tutorials
         return;
       }
-      let lock = false;
-      let handIds = this.cardIds(this.handCards);
-      let handMask = this.wildMask(this.handCards);
-      let tableauIds = this.cardIds(this.tableauCards);
-      let tableauMask = this.wildMask(this.tableauCards);
+      const lock = false;
+      const tableauIds = this.cardIds(this.tableauCards);
+      const tableauMask = this.wildMask(this.tableauCards);
       this.takeAction("previewWord", {
         lock,
-        handIds,
-        handMask,
         tableauIds,
         tableauMask,
       });
@@ -1378,6 +1377,10 @@ export default {
         this.previewWord();
       } else {
         let args = { cardId: card.id };
+        if (action.action == "useRemover" || action.action == "undoRemover") {
+          args.tableauIds = this.cardIds(this.tableauCards);
+          args.tableauMask = this.wildMask(this.tableauCards);
+        }
         if (action.actionArgs) {
           Object.assign(args, action.actionArgs);
         }
