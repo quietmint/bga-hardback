@@ -1908,6 +1908,8 @@ class hardback extends Table
     {
         $changes = [
             [2405210004, "INSERT INTO DBPREFIX_global SELECT 171 AS `global_id`, 1 AS `global_value` FROM DBPREFIX_global WHERE `global_id` = 110 AND `global_value` = 0"],
+            [2408130216, "UPDATE DBPREFIX_global SET `global_value` = 0 WHERE `global_id` = 171 AND `global_value` = 1"],
+            [2408130216, "INSERT INTO DBPREFIX_global SELECT 171 AS `global_id`, 1 AS `global_value` FROM DBPREFIX_global WHERE `global_id` = 110 AND `global_value` != 0"],
         ];
 
         foreach ($changes as [$version, $sql]) {
