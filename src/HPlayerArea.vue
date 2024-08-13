@@ -103,7 +103,7 @@
 
         <!-- Draw label -->
         <div class="text-center border-inherit p-1"
-             :class="[player.colorBg50, player.colorTextLight, { 'border-t-2': player.myself, 'border-b-2': options.open || player.myself }]">
+             :class="[player.colorBg50, player.colorTextLight, player.dark_colorText100, { 'border-t-2': player.myself, 'border-b-2': options.open || player.myself }]">
           <span class="mr-2">
             <Icon icon="drawLocation"
                   class="inline align-text-top text-20" />
@@ -151,7 +151,7 @@
 
         <!-- Hand label -->
         <div class="text-center border-inherit p-1"
-             :class="[player.colorBg50, player.colorTextLight, { 'border-t-2': player.myself, 'border-b-2': options.open || player.myself }]">
+             :class="[player.colorBg50, player.colorTextLight, player.dark_colorText100, { 'border-t-2': player.myself, 'border-b-2': options.open || player.myself }]">
           <span class="mr-2">
             <Icon icon="handLocation"
                   class="inline align-text-top text-20" />
@@ -185,7 +185,7 @@
 
         <!-- Discard label -->
         <div class="text-center border-inherit p-1"
-             :class="[player.colorBg50, player.colorTextLight, { 'border-t-2': player.myself, 'border-b-2': options.open || player.myself }]">
+             :class="[player.colorBg50, player.colorTextLight, player.dark_colorText100, { 'border-t-2': player.myself, 'border-b-2': options.open || player.myself }]">
           <span class="mr-2">
             <Icon icon="discardLocation"
                   class="inline align-text-top text-20" />
@@ -206,7 +206,7 @@
     </div>
 
     <!-- Visible cards -->
-    <div v-if="options.open || player.myself || player.id == gamestate.activeId">
+    <div v-if="options.open || player.myself || player.id == gamestate.activeId || gamestate.name == 'gameEnd'">
       <div v-if="player.myself && visibleView != 'tableau'"
            class="buttongroup flex my-1 mx-auto w-3/4 leading-8">
         <div id="button_viewTableau"

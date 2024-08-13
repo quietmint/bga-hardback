@@ -724,6 +724,7 @@ export default {
           player.colorText = "text-red-700";
           player.colorTextDark = "text-red-900";
           player.colorTextLight = "text-red-100";
+          player.dark_colorText100 = "";
           break;
         case "green":
           player.colorBg = "bg-green-700";
@@ -734,6 +735,7 @@ export default {
           player.colorText = "text-green-700";
           player.colorTextDark = "text-green-900";
           player.colorTextLight = "text-green-100";
+          player.dark_colorText100 = "";
           break;
         case "blue":
           player.colorBg = "bg-blue-700";
@@ -744,6 +746,7 @@ export default {
           player.colorText = "text-blue-700";
           player.colorTextDark = "text-blue-900";
           player.colorTextLight = "text-blue-100";
+          player.dark_colorText100 = "";
           break;
         case "yellow":
           player.colorBg = "bg-yellow-500";
@@ -754,6 +757,7 @@ export default {
           player.colorText = "text-yellow-600";
           player.colorTextDark = "text-yellow-900";
           player.colorTextLight = "text-yellow-900";
+          player.dark_colorText100 = "dark:text-yellow-100";
           break;
         case "purple":
           player.colorBg = "bg-purple-700";
@@ -764,6 +768,7 @@ export default {
           player.colorText = "text-purple-700";
           player.colorTextDark = "text-purple-900";
           player.colorTextLight = "text-purple-100";
+          player.dark_colorText100 = "";
           break;
       }
       return player;
@@ -863,7 +868,7 @@ export default {
             p.start = { top: p.end.top, left: -p.end.width }; // from left
           }
         }
-        if (p.mode == 'enter' || p.mode == 'move' || p.mode == 'exit' && (p.start != null && p.end != null && p.cardEl != null)) {
+        if ((p.mode == 'enter' || p.mode == 'move' || p.mode == 'exit') && (p.start != null && p.end != null && p.cardEl != null)) {
           // FLIP technique: https://aerotwist.com/blog/flip-your-animations/
           // Element is already at the end position
           // Immediately translate it back to the start position
@@ -877,7 +882,7 @@ export default {
       for (const p of prep) {
         if (p.mode == 'delay') {
           p.promise = sleep(500);
-        } else if (p.mode == 'enter' || p.mode == 'move' || p.mode == 'exit') {
+        } else if ((p.mode == 'enter' || p.mode == 'move' || p.mode == 'exit') && p.cardEl != null) {
           // Run CSS transition in "reverse"
           p.cardEl.style.transition = "";
           p.cardEl.style.transform = "";
