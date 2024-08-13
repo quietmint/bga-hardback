@@ -6,7 +6,7 @@
 <script type="text/javascript">
 const fontEl = document.createElement("link");
 fontEl.rel = "stylesheet";
-fontEl.href = "https://fonts.googleapis.com/css2?family=Big+Shoulders+Inline+Text:wght@900&family=Bodoni+Moda:wght@700&family=Dancing+Script&family=Finger+Paint&family=Love+Light&family=New+Rocker&family=Playpen+Sans:wght@300&family=Playwrite+HU&family=Staatliches&display=swap";
+fontEl.href = "https://fonts.googleapis.com/css2?family=Big+Shoulders+Inline+Text:wght@900&family=Bodoni+Moda:wght@700&family=Finger+Paint&family=Love+Light&family=New+Rocker&family=Playpen+Sans:wght@300&family=Playwrite+HU&family=Staatliches&display=swap";
 document.head.appendChild(fontEl);
 
 const baseUrl = dojoConfig.packages.reduce((r, p) => p.name == "bgagame" ? p.location : r, null);
