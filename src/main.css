@@ -303,7 +303,9 @@
 .card-romance .letter.letter-J,
 .card-romance .letter.letter-T,
 .card-romance .letter.letter-V {
-  font-family: "Playwrite DE Grund", serif;
+  font-family: "Playpen Sans", serif;
+  font-size: 5.25em;
+  margin-top: 13%;
 }
 
 .card-romance .letter.letter-W {
