@@ -21,6 +21,35 @@ require_once('modules/WordMgr.class.php');
 
 class hardback extends Table
 {
+
+    public function debug_giveOfferCards()
+    {
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $this->DbQuery("UPDATE card SET `location` = '{$player->getTableauLocation()}', `origin` = '{$player->getHandLocation()}' WHERE `location` = 'offer'");
+        $cardIds = CardMgr::getIdsInLocation([$player->getTableauLocation(), 'offer']);
+        $this->enqueueCards($cardIds);
+        $this->enqueuePlayer($player->getId());
+        CardMgr::drawCards(7, 'deck', 'offer');
+        $this->sendNotify();
+    }
+
+    public function debug_giveLetters(string $letter)
+    {
+        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
+        $cardIds = array_keys(array_filter($this->cards, function ($card) use ($letter) {
+            return $card['letter'] == $letter;
+        }));
+        $cardIdsStr = implode(', ', $cardIds);
+        $this->DbQuery("UPDATE card SET `location` = '{$player->getTableauLocation()}', `origin` = '{$player->getHandLocation()}' WHERE `refId` IN ($cardIdsStr)");
+        $offerCount = CardMgr::getCountInLocation('offer');
+        if ($offerCount < 7) {
+            CardMgr::drawCards(7 - $offerCount, 'deck', 'offer');
+        }
+        $this->enqueueCards($cardIds);
+        $this->enqueuePlayer($player->getId());
+        $this->sendNotify();
+    }
+
     public function debug_giveAllCards()
     {
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
@@ -33,17 +62,6 @@ class hardback extends Table
         }
         $this->enqueueCards($cardIds);
         $this->enqueuePlayer($player->getId());
-        $this->sendNotify();
-    }
-
-    public function debug_giveOfferCards()
-    {
-        $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
-        $this->DbQuery("UPDATE card SET `location` = '{$player->getTableauLocation()}', `origin` = '{$player->getHandLocation()}' WHERE `location` = 'offer'");
-        $cardIds = CardMgr::getIdsInLocation([$player->getTableauLocation(), 'offer']);
-        $this->enqueueCards($cardIds);
-        $this->enqueuePlayer($player->getId());
-        CardMgr::drawCards(7, 'deck', 'offer');
         $this->sendNotify();
     }
 
