@@ -724,7 +724,7 @@ export default {
           player.colorText = "text-red-700";
           player.colorTextDark = "text-red-900";
           player.colorTextLight = "text-red-100";
-          player.dark_colorText100 = "";
+          player.dark_colorText100 = "dark:text-red-100";
           break;
         case "green":
           player.colorBg = "bg-green-700";
@@ -735,7 +735,7 @@ export default {
           player.colorText = "text-green-700";
           player.colorTextDark = "text-green-900";
           player.colorTextLight = "text-green-100";
-          player.dark_colorText100 = "";
+          player.dark_colorText100 = "dark:text-green-100";
           break;
         case "blue":
           player.colorBg = "bg-blue-700";
@@ -746,7 +746,7 @@ export default {
           player.colorText = "text-blue-700";
           player.colorTextDark = "text-blue-900";
           player.colorTextLight = "text-blue-100";
-          player.dark_colorText100 = "";
+          player.dark_colorText100 = "dark:text-blue-100";
           break;
         case "yellow":
           player.colorBg = "bg-yellow-500";
@@ -768,7 +768,7 @@ export default {
           player.colorText = "text-purple-700";
           player.colorTextDark = "text-purple-900";
           player.colorTextLight = "text-purple-100";
-          player.dark_colorText100 = "";
+          player.dark_colorText100 = "dark:text-purple-100";
           break;
       }
       return player;

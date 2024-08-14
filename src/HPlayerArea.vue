@@ -207,7 +207,7 @@
 
     <!-- Visible cards -->
     <div v-if="options.open || player.myself || player.id == gamestate.activeId || gamestate.name == 'gameEnd'">
-      <div v-if="player.myself && visibleView != 'tableau'"
+      <div v-if="visibleView != 'tableau' && player.myself"
            class="buttongroup flex my-1 mx-auto w-3/4 leading-8">
         <div id="button_viewTableau"
              @click="clickView('tableau')"
@@ -215,6 +215,16 @@
           <Icon icon="eyeX"
                 class="inline text-17" /> {{ i18n('close', { location: visibleName }) }}
         </div>
+      </div>
+      <div v-else-if="visibleView == 'tableau'"
+           class="text-center font-bold my-1 leading-8"
+           :class="player.colorTextDark, player.dark_colorText100">
+        <span class="mr-2">
+          <Icon icon="tableauLocation"
+                class="inline align-text-top text-20" />
+          {{ tableauCards.length }}
+        </span>
+        {{ i18n('tableauLocation') }}
       </div>
       <HCardList :cards="visibleCards"
                  :location="visibleLocation" />

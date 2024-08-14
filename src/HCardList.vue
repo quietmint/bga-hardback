@@ -1,11 +1,11 @@
 <template>
   <div :id="'cardlist_' + location"
        class="cardlist flex flex-wrap items-center justify-center">
-    <!--<transition-group :css="false">-->
-    <HCard v-for="card in cards"
-           :key="card.id"
-           :card="card" />
-    <!--</transition-group>-->
+    <transition-group :css="false">
+      <HCard v-for="card in cards"
+             :key="card.id"
+             :card="card" />
+    </transition-group>
     <div v-if="cards.length == 0"
          class="py-4 text-center"
          v-text="emptyMessage"></div>
