@@ -290,33 +290,41 @@
 
 .card-romance .letter {
   @apply text-red-200;
-  margin-top: 19%;
-  margin-left: -2%;
-  font-size: 4.5em;
-  font-family: "Playwrite HU", serif;
+  margin-top: 17%;
+  margin-left: -5%;
+  font-size: 4.75em;
+  font-family: "Pacifico", cursive;
   text-shadow: 1px 1px theme("colors.red.500");
 }
 
-.card-romance .letter.letter-F,
 .card-romance .letter.letter-G,
-.card-romance .letter.letter-I,
-.card-romance .letter.letter-J,
-.card-romance .letter.letter-T,
+.card-romance .letter.letter-Q,
+.card-romance .letter.letter-Y {
+  margin-top: 14%;
+  font-size: 4.25em;
+}
+
+.card-romance .letter.letter-M {
+  margin-top: 22%;
+  margin-left: -2%;
+  font-size: 4em;
+}
+
+.card-romance .letter.letter-P {
+  margin-top: 14%;
+}
+
 .card-romance .letter.letter-V {
-  font-family: "Playpen Sans", serif;
-  font-size: 5.25em;
-  margin-top: 13%;
+  margin-top: 18%;
+  margin-left: 0;
+  font-size: 5em;
+  font-family: "Merienda", cursive;
 }
 
 .card-romance .letter.letter-W {
-  font-size: 3.75em;
-  margin-left: 0%;
-  margin-top: 25%;
-}
-
-.card-romance .letter.letter-Y {
-  font-size: 3.75em;
-  margin-top: 15%;
+  margin-top: 18%;
+  margin-left: -3%;
+  font-size: 4.5em;
 }
 
 .card-romance.timeless .letter {

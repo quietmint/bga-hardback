@@ -15,7 +15,7 @@ This adaptation includes the following licensed material, used with permission. 
   - [Bodoni Moda](https://fonts.google.com/specimen/Bodoni+Moda/about) by Owen Earl
   - [Finger Paint](https://fonts.google.com/specimen/Finger+Paint/about) by Carrois Apostrophe
   - [Love Light](https://fonts.google.com/specimen/Love+Light/about) by Robert Leuschke
+  - [Merienda](https://fonts.google.com/specimen/Merienda/about) by Eduardo Tunni
   - [New Rocker](https://fonts.google.com/specimen/New+Rocker/about) by Impallari Type
-  - [Playpen Sans](https://fonts.google.com/specimen/Playpen+Sans/about) by TypeTogether, Laura Meseguer, Veronika Burian, José Scaglione
-  - [Playwrite Magyarország](https://fonts.google.com/specimen/Playwrite+HU/about) by TypeTogether, Veronika Burian, José Scaglione
+  - [Pacifico](https://fonts.google.com/specimen/Pacifico/about) by Vernon Adams, Jacques Le Bailly, Botjo Nikoltchev, Ani Petrova
   - [Staatliches](https://fonts.google.com/specimen/Staatliches/about) by Brian LaRossa and Erica Carras
