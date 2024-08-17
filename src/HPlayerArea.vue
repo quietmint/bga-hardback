@@ -75,9 +75,9 @@
       </div>
     </div>
 
-    <!-- Minis -->
+    <!-- Draw/Hand/Deck minis -->
     <div v-if="gamestate.name != 'gameEnd'"
-         class="grid grid-cols-3 my-1 border-y-2 divide-x-2 font-bold"
+         class="grid grid-cols-3 mt-1 border-y-2 divide-x-2 font-bold"
          :class="[player.colorText, player.colorBorder, player.colorBg25]">
 
       <div :id="'tab_' + player.drawLocation"
@@ -205,19 +205,27 @@
 
     </div>
 
-    <!-- Visible cards -->
-    <div v-if="options.open || player.myself || player.id == gamestate.activeId || gamestate.name == 'gameEnd'">
-      <div v-if="visibleView != 'tableau' && player.myself"
-           class="buttongroup flex my-1 mx-auto w-3/4 leading-8">
-        <div id="button_viewTableau"
-             @click="clickView('tableau')"
-             class="button blue active flex-1">
-          <Icon icon="eyeX"
-                class="inline text-17" /> {{ i18n('close', { location: visibleName }) }}
+    <!-- Draw/Hand/Deck cards -->
+    <div v-if="gamestate.name != 'gameEnd' && player.myself && visibleLocation != null"
+         class="w-4/5 mx-auto border-x-2 border-b-2"
+         :class="player.colorBorder, player.colorBg25">
+      <div class="py-1 px-2">
+        <div class="buttongroup flex leading-8">
+          <div id="button_viewTableau"
+               @click="clickView(null)"
+               class="button blue active flex-1">
+            <Icon icon="eyeX"
+                  class="inline text-17" /> {{ i18n('close', { location: visibleName }) }}
+          </div>
         </div>
       </div>
-      <div v-else-if="visibleView == 'tableau'"
-           class="text-center font-bold my-1 leading-8"
+      <HCardList :cards="visibleCards"
+                 :location="visibleLocation" />
+    </div>
+
+    <!-- Tableau cards -->
+    <div v-if="options.open || player.myself || player.id == gamestate.activeId || gamestate.name == 'gameEnd'">
+      <div class="text-center font-bold my-1 leading-8"
            :class="player.colorTextDark, player.dark_colorText100">
         <span class="mr-2">
           <Icon icon="tableauLocation"
@@ -226,8 +234,8 @@
         </span>
         {{ i18n('tableauLocation') }}
       </div>
-      <HCardList :cards="visibleCards"
-                 :location="visibleLocation" />
+      <HCardList :cards="tableauCards"
+                 :location="player.tableauLocation" />
     </div>
     <div v-else
          v-text="i18n('closedHands')"
@@ -257,12 +265,11 @@ export default {
 
   data() {
     return {
-      visibleView: "",
+      visibleView: null,
     };
   },
 
   mounted() {
-    this.clickView("tableau");
     if (this.player.myself) {
       this.emitter.on("clickView", this.clickView);
     }
@@ -321,7 +328,7 @@ export default {
   methods: {
     clickView(view, allowToggle) {
       if (allowToggle && this.visibleView == view) {
-        view = "tableau";
+        view = null;
       }
       this.visibleView = view;
     },

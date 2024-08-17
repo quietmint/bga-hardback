@@ -46,18 +46,19 @@ export default {
   },
 
   mounted() {
-    const holder = this.$refs.benefits;
     if (!window.PointerEvent) {
       // Old Safari?
+      const holder = this.$refs.benefits;
       holder.addEventListener("mouseenter", this.tooltipEnter, false);
       holder.addEventListener("mouseleave", this.tooltipLeave, false);
     }
   },
 
   beforeUnmount() {
-    const holder = this.$refs.benefits;
+    this.locationVisible.delete(this.location);
     if (!window.PointerEvent) {
       // Old Safari?
+      const holder = this.$refs.benefits;
       holder.removeEventListener("mouseenter", this.tooltipEnter, false);
       holder.removeEventListener("mouseleave", this.tooltipLeave, false);
     }

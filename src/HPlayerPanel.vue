@@ -36,8 +36,6 @@
         </div>
         <div :id="'count_' + player.tableauLocation"
              class="rounded-lg flex-2 whitespace-nowrap overflow-hidden bg-black/70 p-0.5"
-             :class="{ 'cursor-pointer': player.myself }"
-             @click="player.myself && clickView('tableau')"
              :title="i18n('tableauLocation') + ': ' + tableauCards.length">
           <Icon icon="tableauLocation"
                 class="inline text-20" /> {{ tableauCards.length }}

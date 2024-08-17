@@ -1048,7 +1048,7 @@ export default {
             text: "confirmButton",
             color: "blue",
             async function() {
-              this.emitter.emit("clickView", "tableau");
+              this.emitter.emit("clickView", null);
               const tableauIds = this.cardIds(this.tableauCards);
               const tableauMask = this.wildMask(this.tableauCards);
               this.takeAction("confirmWord", { tableauIds, tableauMask });
@@ -1191,7 +1191,7 @@ export default {
         ((this.gamestate.name == "specialRomance")
           || (this.gamestate.name == "trashDiscard" && this.gamestate.args && !this.gamestate.args.skip)
         )) {
-        this.emitter.emit("clickView", "tableau");
+        this.emitter.emit("clickView", null);
       }
     },
 
