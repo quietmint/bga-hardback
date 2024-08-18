@@ -265,6 +265,7 @@ export default {
 
   data() {
     return {
+      previousView: null,
       visibleView: null,
     };
   },
@@ -327,10 +328,14 @@ export default {
 
   methods: {
     clickView(view, allowToggle) {
-      if (allowToggle && this.visibleView == view) {
+      if (view == "previous") {
+        view = this.previousView;
+      } else if (allowToggle && this.visibleView == view) {
         view = null;
       }
+      this.previousView = this.visibleView;
       this.visibleView = view;
+      console.log(`👀 View ${view}`);
     },
 
     playAll() {
