@@ -104,3 +104,7 @@ a.bgabutton_gray {
 a.chatwindowtitlelink {
   color: white !important;
 }
+
+body.mobile_version.chatbar_ontop {
+  overflow: hidden;
+}

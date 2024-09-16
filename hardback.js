@@ -9,10 +9,14 @@
  */
 
 define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counter"], function (dojo, declare, on) {
+  // Viewport
+  var viewportEl = document.querySelector('meta[name="viewport"]');
+
   return declare("bgagame.hardback", ebg.core.gamegui, {
     constructor: function () {
       this.vue = null;
       dojo.place("loader_mask", "overall-content", "before");
+      this.updateViewport();
     },
 
     setup: function () {
@@ -106,30 +110,26 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
 
     /* @Override */
     onScreenWidthChange: function () {
-      // Remove broken "zoom" property added by BGA framework
-      this.gameinterface_zoomFactor = 1;
-      dojo.style("page-content", "zoom", "");
-      dojo.style("page-title", "zoom", "");
-      dojo.style("right-side-first-part", "zoom", "");
-      this.computeViewport();
+      this.updateViewport();
     },
 
-    computeViewport: function () {
-      // Force device-width during chat
-      var chatVisible = false;
-      for (var w in this.chatbarWindows) {
-        if (this.chatbarWindows[w].status == "expanded") {
-          chatVisible = true;
-          break;
+    updateViewport: function (chatVisible) {
+      if (chatVisible === undefined) {
+        chatVisible = false;
+        for (var w in this.chatbarWindows) {
+          if (this.chatbarWindows[w].status == "expanded") {
+            chatVisible = true;
+            break;
+          }
         }
       }
 
       // Force mobile view in landscape orientation
-      var landscape = window.orientation === -90 || window.orientation === 90;
+      var landscape = window.screen.orientation && window.screen.orientation.type && window.screen.orientation.type.startsWith("landscape");
       var width = chatVisible ? "device-width" : landscape ? 980 : 685;
       this.interface_min_width = width;
-      this.default_viewport = "width=" + width;
-      return this.default_viewport;
+      this.default_viewport = "width=" + width + ",interactive-widget=resizes-content";
+      viewportEl.content = this.default_viewport;
     },
 
     /* @Override */
@@ -168,19 +168,19 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
     /* @Override */
     expandChatWindow: function () {
       this.inherited(arguments);
-      dojo.query('meta[name="viewport"]')[0].content = this.computeViewport();
+      this.updateViewport(true);
     },
 
     /* @Override */
     collapseChatWindow: function () {
       this.inherited(arguments);
-      dojo.query('meta[name="viewport"]')[0].content = this.computeViewport();
+      this.updateViewport(false);
     },
 
     /* @Override */
     setLoader: function (percent) {
       if (percent >= 100) {
-        dojo.style("leftright_page_wrapper", "display", "block");
+        document.getElementById("leftright_page_wrapper").style.removeProperty("display");
       }
       this.inherited(arguments);
     },
@@ -199,7 +199,7 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
     unsetModeInstantaneous: function () {
       if (this.instantaneousMode) {
         this.instantaneousMode = false;
-        dojo.style("leftright_page_wrapper", "display", "block");
+        document.getElementById("leftright_page_wrapper").style.removeProperty("display");
         dojo.style("loader_mask", "display", "none");
       }
     },

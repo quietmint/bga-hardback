@@ -86,6 +86,7 @@ $gameinfos = [
 
     // Game interface width range (pixels)
     'game_interface_width' => [
+        'autoscale' => 'viewport',
         'min' => 685,
         'max' => null
     ],
