@@ -39,27 +39,32 @@ a.hdictionarylink {
   line-height: 1.3em;
 }
 
-.hgenre.starter {
+.hgenre.starter,
+.hgenre.⚫ {
   background-color: theme("colors.gray.600");
   color: theme("colors.gray.100");
 }
 
-.hgenre.adventure {
+.hgenre.adventure,
+.hgenre.🧭 {
   background-color: theme("colors.yellow.500");
   color: theme("colors.yellow.900");
 }
 
-.hgenre.horror {
+.hgenre.horror,
+.hgenre.💀 {
   background-color: theme("colors.green.700");
   color: theme("colors.green.100");
 }
 
-.hgenre.mystery {
+.hgenre.mystery,
+.hgenre.🔎 {
   background-color: theme("colors.blue.700");
   color: theme("colors.blue.100");
 }
 
-.hgenre.romance {
+.hgenre.romance,
+.hgenre.❤️ {
   background-color: theme("colors.red.700");
   color: theme("colors.red.100");
 }

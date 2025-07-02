@@ -408,10 +408,10 @@ class hardback extends Table
             $letter2 = chr($this->getStat('starterCard2', $player->getId()));
             $this->notifyPlayer($player->getId(), 'message', $this->msg['starterCards'], [
                 'amount' => 1,
-                'icon' => 'star',
-                'genre' => 'starter',
+                'icon' => H_ICON_STAR,
+                'genre' => H_ICON_STARTER,
                 'letter' => $letter1,
-                'genre2' => 'starter',
+                'genre2' => H_ICON_STARTER,
                 'letter2' => $letter2,
             ]);
         }
@@ -599,7 +599,7 @@ class hardback extends Table
                     self::notifyAllPlayers('award', $this->msg['awardWin'], [
                         'player_name' => $player->getName(),
                         'amount' => $points,
-                        'icon' => 'star',
+                        'icon' => H_ICON_STAR,
                         'length' => $length,
                         'award' => $length,
                     ]);
@@ -1094,7 +1094,7 @@ class hardback extends Table
         if ($benefits[0]['id'] == H_TRASH_POINTS) {
             $stat = $benefits[0]['activation'] == H_FROM_GENRE ? 'pointsGenre' : 'pointsBasic';
             $player->addPoints($amount, $stat);
-            $icon = 'star';
+            $icon = H_ICON_STAR;
         } else {
             $player->addCoins($amount);
             $icon = '¢';
@@ -1242,7 +1242,7 @@ class hardback extends Table
         $this->enqueuePlayer($player->getId());
         $earnings = [
             '¢' => $player->getCoins(),
-            'star' => $score,
+            H_ICON_STAR => $score,
             'ink' => $player->getInk() - $this->getGameStateValue('startInk'),
             'remover' => $player->getRemover() - $this->getGameStateValue('startRemover'),
         ];
@@ -1305,7 +1305,7 @@ class hardback extends Table
         if ($this->getGlobal(H_OPTION_ADVERTS)) {
             foreach ($this->adverts as $coins => $points) {
                 if ($points > $player->getAdvert()) {
-                    $advert = ['coins' => $coins, 'points' => $points, 'icon' => 'star'];
+                    $advert = ['coins' => $coins, 'points' => $points, 'icon' => H_ICON_STAR];
                     break;
                 }
             }
@@ -1358,7 +1358,7 @@ class hardback extends Table
         if ($card->getPoints() > 0) {
             $msg = 'purchase2';
             $args['points'] = $card->getPoints();
-            $args['iconPoints'] = 'star';
+            $args['iconPoints'] = H_ICON_STAR;
             $player->addPoints($card->getPoints(), 'pointsPurchase');
         }
         $player->spendCoins($card->getCost());
@@ -1371,7 +1371,7 @@ class hardback extends Table
             self::notifyAllPlayers('message', $this->msg['earn'], [
                 'player_name' => $penny->getName(),
                 'amount' => 1,
-                'icon' => 'star',
+                'icon' => H_ICON_STAR,
             ]);
 
             // Immediately end the game if Penny just won
@@ -1417,7 +1417,7 @@ class hardback extends Table
             self::notifyAllPlayers('message', $this->msg['earn'], [
                 'player_name' => $penny->getName(),
                 'amount' => $convert['ink'],
-                'icon' => 'star',
+                'icon' => H_ICON_STAR,
             ]);
 
             // Immediately end the game if Penny just won
@@ -1445,7 +1445,7 @@ class hardback extends Table
         $this->notifyAllPlayers('message', $this->msg['purchaseAdvert'], [
             'player_name' => $player->getName(),
             'points' => $advert['points'],
-            'iconPoints' => 'star',
+            'iconPoints' => H_ICON_STAR,
             'coins' => $advert['coins'],
             'iconCoins' => '¢',
         ]);
@@ -1568,7 +1568,7 @@ class hardback extends Table
             'genre' => $card->getGenreName(),
             'letter' => $card->getLetter(),
             'points' => $points,
-            'iconPoints' => 'star',
+            'iconPoints' => H_ICON_STAR,
         ]);
 
         // Draw a new card
@@ -1692,7 +1692,7 @@ class hardback extends Table
             self::notifyAllPlayers('message', $this->msg['earn'], [
                 'player_name' => $penny->getName(),
                 'amount' => 1,
-                'icon' => 'star',
+                'icon' => H_ICON_STAR,
             ]);
 
             // Immediately end the game if Penny just won
@@ -1826,7 +1826,7 @@ class hardback extends Table
                     self::notifyAllPlayers('message', $this->msg['awardEnd'], [
                         'player_name' => $player->getName(),
                         'amount' => $points,
-                        'icon' => 'star',
+                        'icon' => H_ICON_STAR,
                         'length' => $length,
                     ]);
                     $player->addPoints($points, 'pointsAward');

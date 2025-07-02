@@ -239,15 +239,15 @@ class HCard extends APP_GameClass implements JsonSerializable
     {
         switch ($this->getGenre()) {
             case H_STARTER:
-                return 'starter';
+                return H_ICON_STARTER;
             case H_ADVENTURE:
-                return 'adventure';
+                return H_ICON_ADVENTURE;
             case H_HORROR:
-                return 'horror';
+                return H_ICON_HORROR;
             case H_MYSTERY:
-                return 'mystery';
+                return H_ICON_MYSTERY;
             case H_ROMANCE:
-                return 'romance';
+                return H_ICON_ROMANCE;
         }
     }
 

@@ -1,5 +1,13 @@
 <?php
 
+// Emoji
+define('H_ICON_STARTER', '⚫');
+define('H_ICON_ADVENTURE', '🧭');
+define('H_ICON_HORROR', '💀');
+define('H_ICON_MYSTERY', '🔎');
+define('H_ICON_ROMANCE', '❤️');
+define('H_ICON_STAR', '⭐');
+
 // Genres
 define('H_STARTER', 0);
 define('H_ADVENTURE', 1);
