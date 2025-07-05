@@ -90,14 +90,4 @@ $gameinfos = [
         'min' => 685,
         'max' => null
     ],
-
-    //////// BGA SANDBOX ONLY PARAMETERS (DO NOT MODIFY)
-
-    // simple : A plays, B plays, C plays, A plays, B plays, ...
-    // circuit : A plays and choose the next player C, C plays and choose the next player D, ...
-    // complex : A+B+C plays and says that the next player is A+B
-    'is_sandbox' => false,
-    'turnControl' => 'simple'
-
-    ////////
 ];
