@@ -20,7 +20,7 @@ class WordMgr extends APP_GameClass
             'langId' => $lang,
             'lang' => $langs[$lang],
         ];
-        if ($dict == H_TWELVEDICTS) {
+        if ($dict == H_NO) {
             $info['dict'] = clienttranslate('No Dictionary');
         } else if ($dict == H_TWELVEDICTS) {
             $info['dict'] = clienttranslate('12dicts');
@@ -59,7 +59,7 @@ class WordMgr extends APP_GameClass
 
         try {
             $letter = substr($word, 0, 1);
-            $path = __DIR__ . "/wordlist/{$info['dictId']}/$letter.inc.php";
+            $path = __DIR__ . "/wordlist/{$info['dictId']}/$letter.txt";
             if (!is_readable($path)) {
                 throw new Exception("Missing file $path");
             }
