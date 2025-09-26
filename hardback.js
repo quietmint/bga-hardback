@@ -36,9 +36,6 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
         dojo.style("leftright_page_wrapper", "display", "none");
       }
 
-      // #87626: This helps with win/lose message
-      this.is_solo = false;
-
       // Intiailize Vue
       var app = Vue.createApp(HGame);
       app.config.unwrapInjectedRef = true;

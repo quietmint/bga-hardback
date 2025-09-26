@@ -14,11 +14,16 @@ class PlayerMgr extends APP_GameClass
 
     public static function getMaxScore(): int
     {
-        $max = intval(hardback::$instance->getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_eliminated = 0 AND player_zombie = 0"));
+        $max = PlayerMgr::getPlayerMaxScore();
         if (hardback::$instance->getGlobal(H_OPTION_COOP) != H_NO) {
             $max = max($max, self::getPenny()->getScore());
         }
         return $max;
+    }
+
+    public static function getPlayerMaxScore(): int
+    {
+        return intval(hardback::$instance->getUniqueValueFromDB("SELECT MAX(player_score) FROM player WHERE player_eliminated = 0 AND player_zombie = 0"));
     }
 
     public static function getPlayerCount(): int

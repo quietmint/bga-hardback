@@ -21,6 +21,13 @@ require_once('modules/WordMgr.class.php');
 
 class hardback extends Table
 {
+    public function debug_pennyWin()
+    {
+        $goal = $this->getGameLength() - 1;
+        $this->DbQuery("UPDATE `stats` SET `stats_value` = $goal WHERE `stats_type` = 80");
+        $this->enqueuePenny();
+        $this->sendNotify();
+    }
 
     public function debug_giveOfferCards()
     {
@@ -1765,56 +1772,6 @@ class hardback extends Table
      * END OF GAME
      */
 
-    function getGameRankInfos(): array
-    {
-        $infos = parent::getGameRankInfos();
-        if ($this->getGlobal(H_OPTION_COOP)) {
-            // In studio, use player _guest09 = 2332450
-            // In prod, use player _hotseat09 = 84634038
-            $hotseatId = $this->getBgaEnvironment() == 'studio' ? 2332450 : 84634038;
-            $penny = PlayerMgr::getPenny();
-            $pennyResult = [
-                "color_back" => null,
-                "color" => "000000",
-                "concede" => $infos['table']['concede'] ? 1 : 0,
-                "id" => $hotseatId,
-                "name" => $penny->getName(),
-                "player" => $hotseatId,
-                "score_aux" => 0,
-                "score" => $penny->getScore(),
-                "stats" => [
-                    "1" => "0", // reflexion_time
-                    "2" => "0", // time_bonus_nbr
-                    "3" => "0", // reflexion_time_sd
-                ],
-                "tie" => false,
-                "zombie" => 0,
-            ];
-            if ($penny->getScore() >= PlayerMgr::getMaxScore()) {
-                // Coop lose
-                $pennyResult['rank'] = 1;
-                $playerRank = 2;
-            } else {
-                // Coop win
-                $playerRank = 1;
-                $pennyResult['rank'] = 2;
-            }
-            foreach ($infos['result'] as $player_id => &$row) {
-                $row['rank'] = $playerRank;
-                $row['tie'] = false;
-            }
-            unset($row);
-            // Append or prepend fake result for Penny
-            if ($playerRank == 1) {
-                $infos['result'] = $infos['result'] + [$hotseatId => $pennyResult];
-            } else {
-                $infos['result'] = [$hotseatId => $pennyResult] + $infos['result'];
-            }
-        }
-        self::debug("getGameRankInfos JSON: " . json_encode($infos) . " // ");
-        return $infos;
-    }
-
     function stEnd(): void
     {
         // Literary awards
@@ -1836,8 +1793,11 @@ class hardback extends Table
 
         if ($this->getGlobal(H_OPTION_COOP)) {
             $penny = PlayerMgr::getPenny();
-            if ($penny->getScore() >= PlayerMgr::getMaxScore()) {
+            $pennyScore = $penny->getScore();
+            if ($pennyScore >= PlayerMgr::getMaxScore()) {
                 // Coop lose
+                $diff = PlayerMgr::getPlayerMaxScore() - $pennyScore;
+                self::DbQuery("UPDATE player SET player_score = $diff");
                 self::notifyAllPlayers('message', $this->msg['coopLose'], [
                     'player_name' => $penny->getName(),
                 ]);
