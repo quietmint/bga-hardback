@@ -10,7 +10,8 @@
  * -----
  */
 
-require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
+use \Bga\GameFramework\Table;
+
 require_once('modules/constants.inc.php');
 require_once('modules/HCard.class.php');
 require_once('modules/HPlayer.class.php');
