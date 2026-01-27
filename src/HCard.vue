@@ -149,6 +149,7 @@ export default {
   },
 
   mounted() {
+    this.emitter.on("dragTooltipHide", this.dragTooltipHide);
     const holder = this.$refs.benefits;
     if (!window.PointerEvent) {
       // Old Safari?
@@ -158,6 +159,7 @@ export default {
   },
 
   beforeUnmount() {
+    this.emitter.off("dragTooltipHide", this.dragTooltipHide);
     const holder = this.$refs.benefits;
     if (!window.PointerEvent) {
       // Old Safari?
@@ -552,6 +554,12 @@ export default {
       }
     },
 
+    dragTooltipHide(e) {
+      if (e.card.id == this.card.id) {
+        this.tooltipLeave(e.ev);
+      }
+    },
+
     /*
      * Tooltip
      */
@@ -562,12 +570,14 @@ export default {
     },
 
     tooltipLeave(ev) {
+      console.log(`Tooltip card ${this.card.id} hide`);
       clearTimeout(this.tooltip.timeout);
       this.tooltip.timeout = null;
       this.tooltip.visible = false;
     },
 
     async tooltipShow() {
+      console.log(`Tooltip card ${this.card.id} show`);
       this.tooltip.visible = true;
       this.tooltip.top = "0px";
       this.tooltip.left = "-999px";

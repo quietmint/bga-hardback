@@ -1670,6 +1670,9 @@ export default {
       // Reindex the location to fix special values -999, 0.5, 999
       this.sortOnce(card.location);
 
+      // Notify card to hide tooltip
+      this.emitter.emit("dragTooltipHide", { ev, card });
+
       // Clear drag state
       this.drag = null;
     },
