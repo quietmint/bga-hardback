@@ -111,12 +111,6 @@ class hardback extends Table
         ]);
     }
 
-    protected function getGameName(): string
-    {
-        // Used for translations and stuff. Please do not modify.
-        return 'hardback';
-    }
-
     /*
         setupNewGame:
         
@@ -404,8 +398,7 @@ class hardback extends Table
 
     function getGlobal(int $id): ?int
     {
-        $value = @$this->gamestate->table_globals[$id];
-        return $value == null ? null : intval($value);
+        return $this->bga->tableOptions->get($id);
     }
 
     function stStart(): void
