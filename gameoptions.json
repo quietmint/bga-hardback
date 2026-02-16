@@ -1,0 +1,459 @@
+{
+    "100": {
+        "name": "Dictionary",
+        "level": "base",
+        "default": 2,
+        "values": {
+            "1": {
+                "name": "12dicts",
+                "tmdisplay": "12dicts",
+                "description": "85,000 words (2016 edition)"
+            },
+            "2": {
+                "name": "American Scrabble",
+                "tmdisplay": "American Scrabble",
+                "description": "190,000 words (2020 edition)"
+            },
+            "3": {
+                "name": "British Scrabble",
+                "tmdisplay": "British Scrabble",
+                "description": "280,000 words (2019 edition)"
+            },
+            "4": {
+                "name": "Letterpress",
+                "tmdisplay": "Letterpress",
+                "description": "270,000 words (2015 edition)"
+            },
+            "0": {
+                "name": "No Dictionary",
+                "tmdisplay": "No Dictionary",
+                "description": "Must use with Vote on Invalid Words and play in friendly mode (no ELO). Recommended with friends only.",
+                "nobeginner": true
+            }
+        },
+        "displaycondition": [
+            {
+                "type": "otheroption",
+                "id": 207,
+                "value": 1
+            }
+        ],
+        "startcondition": [
+            [
+                {
+                    "type": "minplayers",
+                    "value": 2,
+                    "message": "Dictionary = No Dictionary is not available for solo play",
+                    "gamestartonly": true
+                }
+            ]
+        ],
+        "notdisplayedmessage": "IMPORTANT: Currently, the language option changes only the dictionary and does NOT affect the cards (letter frequency, cost, benefits)"
+    },
+    "122": {
+        "name": "Dictionary",
+        "level": "base",
+        "default": 21,
+        "values": {
+            "20": {
+                "name": "BEOLINGUS (TU Chemnitz)",
+                "tmdisplay": "BEOLINGUS (TU Chemnitz)",
+                "description": "185,000 words (2020 edition)",
+                "beta": true
+            },
+            "21": {
+                "name": "Free German Dictionary",
+                "tmdisplay": "Free German Dictionary",
+                "description": "1,500,000 words (2021 edition)",
+                "beta": true
+            },
+            "0": {
+                "name": "No Dictionary",
+                "tmdisplay": "No Dictionary",
+                "description": "Must use with Vote on Invalid Words and play in friendly mode (no ELO). Recommended with friends only.",
+                "beta": true,
+                "nobeginner": true
+            }
+        },
+        "displaycondition": [
+            {
+                "type": "otheroption",
+                "id": 207,
+                "value": 2
+            }
+        ],
+        "startcondition": [
+            [
+                {
+                    "type": "minplayers",
+                    "value": 2,
+                    "message": "Dictionary = No Dictionary is not available for solo play",
+                    "gamestartonly": true
+                }
+            ]
+        ]
+    },
+    "123": {
+        "name": "Dictionary",
+        "level": "base",
+        "default": 30,
+        "values": {
+            "30": {
+                "name": "Morphalou",
+                "tmdisplay": "Morphalou",
+                "description": "680,000 words (2019 edition)",
+                "beta": true
+            },
+            "0": {
+                "name": "No Dictionary",
+                "tmdisplay": "No Dictionary",
+                "description": "Must use with Vote on Invalid Words and play in friendly mode (no ELO). Recommended with friends only.",
+                "beta": true,
+                "nobeginner": true
+            }
+        },
+        "displaycondition": [
+            {
+                "type": "otheroption",
+                "id": 207,
+                "value": 3
+            }
+        ],
+        "startcondition": [
+            [
+                {
+                    "type": "minplayers",
+                    "value": 2,
+                    "message": "Dictionary = No Dictionary is not available for solo play",
+                    "gamestartonly": true
+                }
+            ]
+        ]
+    },
+    "111": {
+        "name": "Vote on Invalid Words",
+        "level": "additional",
+        "default": 0,
+        "values": {
+            "0": {
+                "name": "No",
+                "description": "Reject non-dictionary words"
+            },
+            "50": {
+                "name": "Majority Vote",
+                "tmdisplay": "Majority Vote",
+                "description": "Accept non-dictionary words if half the players agree. Must play in friendly mode (no ELO). Recommended with friends only.",
+                "nobeginner": true
+            },
+            "100": {
+                "name": "Unanimous Vote",
+                "tmdisplay": "Unanimous Vote",
+                "description": "Accept non-dictionary words if all players agree. Must play in friendly mode (no ELO). Recommended with friends only.",
+                "nobeginner": true
+            }
+        },
+        "displaycondition": [
+            {
+                "type": "minplayers",
+                "value": [
+                    2,
+                    3,
+                    4,
+                    5
+                ]
+            }
+        ],
+        "startcondition": {
+            "0": [
+                {
+                    "type": "otheroptionisnot",
+                    "id": 100,
+                    "value": 0,
+                    "message": "Vote on Invalid Words is required when Dictionary = No Dictionary. You must also play in friendly mode (no ELO)."
+                },
+                {
+                    "type": "otheroptionisnot",
+                    "id": 122,
+                    "value": 0,
+                    "message": "Vote on Invalid Words is required when Dictionary = No Dictionary. You must also play in friendly mode (no ELO)."
+                },
+                {
+                    "type": "otheroptionisnot",
+                    "id": 123,
+                    "value": 0,
+                    "message": "Vote on Invalid Words is required when Dictionary = No Dictionary. You must also play in friendly mode (no ELO)."
+                }
+            ],
+            "50": [
+                {
+                    "type": "minplayers",
+                    "value": 2,
+                    "message": "Vote on Invalid Words is not available for solo play",
+                    "gamestartonly": true
+                },
+                {
+                    "type": "otheroption",
+                    "id": 201,
+                    "value": 1,
+                    "message": "Vote on Invalid Words must be played in friendly mode (no ELO)"
+                }
+            ],
+            "100": [
+                {
+                    "type": "minplayers",
+                    "value": 2,
+                    "message": "Vote on Invalid Words is not available for solo play",
+                    "gamestartonly": true
+                },
+                {
+                    "type": "otheroption",
+                    "id": 201,
+                    "value": 1,
+                    "message": "Vote on Invalid Words must be played in friendly mode (no ELO)"
+                }
+            ]
+        }
+    },
+    "110": {
+        "name": "Game Type",
+        "level": "base",
+        "default": 0,
+        "values": {
+            "0": {
+                "name": "Competetive",
+                "description": "Compete to be the finest novelist of the age"
+            },
+            "1": {
+                "name": "Cooperative (No Signature Genre)",
+                "tmdisplay": "Cooperative (No Signature Genre)",
+                "description": "Win or lose as a team against archrival Penny Dreadful (challenging)",
+                "nobeginner": true,
+                "is_coop": true
+            },
+            "2": {
+                "name": "Cooperative (Random)",
+                "tmdisplay": "Cooperative (Random)",
+                "description": "Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging). Penny's genre is randomly selected.",
+                "nobeginner": true,
+                "is_coop": true
+            },
+            "11": {
+                "name": "Cooperative (Adventure)",
+                "tmdisplay": "Cooperative (Adventure)",
+                "description": "Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging). If there is an Adventure card in the offer row, Penny gains 1 point for each card purchased by any player.",
+                "nobeginner": true,
+                "is_coop": true
+            },
+            "12": {
+                "name": "Cooperative (Horror)",
+                "tmdisplay": "Cooperative (Horror)",
+                "description": "Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging). If there is a Horror card in the offer row, Penny gains 1 point for each ink used by any player.",
+                "nobeginner": true,
+                "is_coop": true
+            },
+            "13": {
+                "name": "Cooperative (Mystery)",
+                "tmdisplay": "Cooperative (Mystery)",
+                "description": "Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging). Each time Penny claims a Mystery card, she also jails the cheapest card in the offer row.",
+                "nobeginner": true,
+                "is_coop": true
+            },
+            "14": {
+                "name": "Cooperative (Romance)",
+                "tmdisplay": "Cooperative (Romance)",
+                "description": "Win or lose as a team against archrival Penny Dreadful, who receives an advantage in her signature genre (more challenging). Double the value of each Romance card Penny claims from the offer row.",
+                "nobeginner": true,
+                "is_coop": true
+            }
+        },
+        "startcondition": {
+            "0": [
+                {
+                    "type": "minplayers",
+                    "value": 2,
+                    "message": "Game Type = Competetive is not available for solo play",
+                    "gamestartonly": true
+                }
+            ],
+            "1": [
+                {
+                    "type": "otheroption",
+                    "id": 201,
+                    "value": 1,
+                    "message": "Cooperative game must be played in friendly mode (no ELO)"
+                },
+                {
+                    "type": "maxplayers",
+                    "value": 4,
+                    "message": "Cooperative game supports 1 - 4 players"
+                }
+            ],
+            "2": [
+                {
+                    "type": "otheroption",
+                    "id": 201,
+                    "value": 1,
+                    "message": "Cooperative game must be played in friendly mode (no ELO)"
+                },
+                {
+                    "type": "maxplayers",
+                    "value": 4,
+                    "message": "Cooperative game supports 1 - 4 players"
+                }
+            ],
+            "11": [
+                {
+                    "type": "otheroption",
+                    "id": 201,
+                    "value": 1,
+                    "message": "Cooperative game must be played in friendly mode (no ELO)"
+                },
+                {
+                    "type": "maxplayers",
+                    "value": 4,
+                    "message": "Cooperative game supports 1 - 4 players"
+                }
+            ],
+            "12": [
+                {
+                    "type": "otheroption",
+                    "id": 201,
+                    "value": 1,
+                    "message": "Cooperative game must be played in friendly mode (no ELO)"
+                },
+                {
+                    "type": "maxplayers",
+                    "value": 4,
+                    "message": "Cooperative game supports 1 - 4 players"
+                }
+            ],
+            "13": [
+                {
+                    "type": "otheroption",
+                    "id": 201,
+                    "value": 1,
+                    "message": "Cooperative game must be played in friendly mode (no ELO)"
+                },
+                {
+                    "type": "maxplayers",
+                    "value": 4,
+                    "message": "Cooperative game supports 1 - 4 players"
+                }
+            ],
+            "14": [
+                {
+                    "type": "otheroption",
+                    "id": 201,
+                    "value": 1,
+                    "message": "Cooperative game must be played in friendly mode (no ELO)"
+                },
+                {
+                    "type": "maxplayers",
+                    "value": 4,
+                    "message": "Cooperative game supports 1 - 4 players"
+                }
+            ]
+        }
+    },
+    "105": {
+        "name": "Game Length",
+        "level": "base",
+        "default": 60,
+        "values": {
+            "60": {
+                "name": "Standard (60 Points)"
+            },
+            "90": {
+                "name": "Longer (90 Points)",
+                "tmdisplay": "Longer (90 Points)"
+            },
+            "180": {
+                "name": "Marathon (180 Points)",
+                "tmdisplay": "Marathon (180 Points)"
+            }
+        },
+        "displaycondition": [
+            {
+                "type": "otheroption",
+                "id": 110,
+                "value": 0
+            }
+        ],
+        "notdisplayedmessage": "Standard (60 Points)"
+    },
+    "171": {
+        "name": "Open Hands",
+        "default": 0,
+        "level": "base",
+        "values": [
+            {
+                "name": "No",
+                "tmdisplay": "Closed Hands"
+            },
+            {
+                "name": "Yes",
+                "tmdisplay": "Open Hands"
+            }
+        ],
+        "displaycondition": [
+            {
+                "type": "otheroption",
+                "id": 110,
+                "value": 0
+            }
+        ],
+        "notdisplayedmessage": "Yes"
+    },
+    "101": {
+        "name": "Literary Awards",
+        "default": 1,
+        "level": "base",
+        "values": [
+            {
+                "name": "No"
+            },
+            {
+                "name": "Yes",
+                "tmdisplay": "Literary Awards",
+                "description": "Bonus points for the longest word"
+            }
+        ]
+    },
+    "102": {
+        "name": "Adverts",
+        "default": 1,
+        "level": "base",
+        "values": [
+            {
+                "name": "No"
+            },
+            {
+                "name": "Yes",
+                "tmdisplay": "Adverts",
+                "description": "Purchase points with coins"
+            }
+        ]
+    },
+    "108": {
+        "name": "Unique Words",
+        "default": 0,
+        "level": "additional",
+        "values": {
+            "0": {
+                "name": "No"
+            },
+            "2": {
+                "name": "Unique Words Per Player",
+                "tmdisplay": "Unique Words Per Player",
+                "description": "The same player cannot spell the same word twice during the game",
+                "nobeginner": true
+            },
+            "1": {
+                "name": "Unique Words Per Game",
+                "tmdisplay": "Unique Words Per Game",
+                "description": "The same word cannot be spelled twice during the game",
+                "nobeginner": true
+            }
+        }
+    }
+}

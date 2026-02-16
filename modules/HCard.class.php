@@ -1,6 +1,6 @@
 <?php
 
-class HCard extends APP_GameClass implements JsonSerializable
+class HCard implements JsonSerializable
 {
     private $id;
     private $factor;
@@ -238,8 +238,6 @@ class HCard extends APP_GameClass implements JsonSerializable
     public function getGenreName(): string
     {
         switch ($this->getGenre()) {
-            case H_STARTER:
-                return H_ICON_STARTER;
             case H_ADVENTURE:
                 return H_ICON_ADVENTURE;
             case H_HORROR:
@@ -248,6 +246,8 @@ class HCard extends APP_GameClass implements JsonSerializable
                 return H_ICON_MYSTERY;
             case H_ROMANCE:
                 return H_ICON_ROMANCE;
+            default:
+                return H_ICON_STARTER;
         }
     }
 

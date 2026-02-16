@@ -1,6 +1,8 @@
 <?php
 
-class WordMgr extends APP_GameClass
+use \Bga\GameFramework\Table;
+
+class WordMgr
 {
     public static function getDictionaryInfo(): array
     {
@@ -85,7 +87,7 @@ class WordMgr extends APP_GameClass
                 ];
             }, hardback::$instance->getCollectionFromDb($sql)));
         } catch (Exception $e) {
-            self::warn("Cannot get word history");
+            hardback::$instance->warn("Cannot get word history");
         }
         return $history;
     }
@@ -107,7 +109,7 @@ class WordMgr extends APP_GameClass
                 ];
             }
         } catch (Exception $e) {
-            self::warn("Cannot get word history for move $move_id, player $player_id, word $word");
+            hardback::$instance->warn("Cannot get word history for move $move_id, player $player_id, word $word");
         }
         return $history;
     }
@@ -126,9 +128,9 @@ class WordMgr extends APP_GameClass
     public static function recordHistory(int $move_id, int $player_id, string $word, int $coins, int $score): void
     {
         try {
-            self::DbQuery("INSERT INTO word (`id`, `player_id`, `word`, `coins`, `score`) VALUES ($move_id, $player_id, '$word', $coins, $score)");
+            Table::DbQuery("INSERT INTO word (`id`, `player_id`, `word`, `coins`, `score`) VALUES ($move_id, $player_id, '$word', $coins, $score)");
         } catch (Exception $e) {
-            self::warn("Cannot record word history: $word");
+            hardback::$instance->warn("Cannot record word history: $word");
         }
     }
 }

@@ -1,6 +1,8 @@
 <?php
 
-class CardMgr extends APP_GameClass
+use \Bga\GameFramework\Table;
+
+class CardMgr
 {
     private static function populateCards(array $dbcards): array
     {
@@ -40,7 +42,7 @@ class CardMgr extends APP_GameClass
             }
         }
         $sql = "INSERT INTO card (`refId`, `location`, `origin`) VALUES " . implode(', ', $create);
-        self::DbQuery($sql);
+        Table::DbQuery($sql);
         self::drawCards(7, 'deck', 'offer');
 
         // Create starter cards
@@ -71,7 +73,7 @@ class CardMgr extends APP_GameClass
                 $create[] = "($refId, '$location', '$location')";
             }
             $sql = "INSERT INTO card (`refId`, `location`, `origin`) VALUES " . implode(', ', $create);
-            self::DbQuery($sql);
+            Table::DbQuery($sql);
             self::drawCards(5, self::getDrawLocation($playerId), self::getTableauLocation($playerId), self::getHandLocation($playerId));
         }
     }
@@ -106,7 +108,7 @@ class CardMgr extends APP_GameClass
             $card->setOrigin($origin);
             $card->setLocation($toLocation);
             $card->setOrder(self::getAppendOrderForLocation($toLocation));
-            self::DbQuery("UPDATE card SET `origin` = '$origin', `location` = '$toLocation', `order` = {$card->getOrder()} WHERE `id` = {$card->getId()}");
+            Table::DbQuery("UPDATE card SET `origin` = '$origin', `location` = '$toLocation', `order` = {$card->getOrder()} WHERE `id` = {$card->getId()}");
         }
         return $cards;
     }
@@ -121,7 +123,7 @@ class CardMgr extends APP_GameClass
         $order = 0;
         foreach ($ids as $id) {
             $order++;
-            self::DbQuery("UPDATE card SET `origin` = '$location', `location` = '$location', `order` = $order WHERE `id` = $id");
+            Table::DbQuery("UPDATE card SET `origin` = '$location', `location` = '$location', `order` = $order WHERE `id` = $id");
         }
     }
 
@@ -441,7 +443,7 @@ class CardMgr extends APP_GameClass
                 $sql .= " AND gamelog_packet_id NOT IN (" . implode(',', $ids) . ")";
             }
         }
-        self::DbQuery($sql);
+        Table::DbQuery($sql);
     }
 
     /* Change (specific) */
@@ -453,7 +455,7 @@ class CardMgr extends APP_GameClass
             $location = $player->getTableauLocation();
             $locations[] = $location;
             $sql = "UPDATE card SET `ink` = NULL, `wild` = NULL, `factor` = 1, `origin` = '$location', `location` = '$location', `order` = -1 WHERE `origin` LIKE '%_{$player->getId()}' AND `origin` NOT LIKE 'jail%'";
-            self::DbQuery($sql);
+            Table::DbQuery($sql);
         }
         $ids = self::getIdsInLocation($locations);
         hardback::$instance->enqueueCards($ids);
@@ -474,7 +476,7 @@ class CardMgr extends APP_GameClass
                 $sql .= ", `age` = COALESCE(`age`, SYSDATE(6))";
             }
             $sql .= " WHERE `id` = {$card->getId()}";
-            self::DbQuery($sql);
+            Table::DbQuery($sql);
             $updatedIds[] = $card->getId();
         }
 
@@ -489,7 +491,7 @@ class CardMgr extends APP_GameClass
             $card->setLocation($card->getOrigin());
             $card->setOrder(-1);
             $sql = "UPDATE card SET `location` = `origin`, `order` = -1 WHERE `id` = {$card->getId()}";
-            self::DbQuery($sql);
+            Table::DbQuery($sql);
             $updatedIds[] = $card->getId();
         }
 
@@ -548,15 +550,15 @@ class CardMgr extends APP_GameClass
                 $sql .= ", `age` = NULL";
             }
             $sql .= " WHERE `id` IN (" . implode(',', $updatedIds) . ")";
-            self::DbQuery($sql);
+            Table::DbQuery($sql);
             hardback::$instance->enqueueCards($updatedIds);
         }
     }
 
     public static function previewReturn($card, $location)
     {
-        self::DbQuery("UPDATE card SET `order` = `order` + 1 WHERE `location` = '$location' AND `order` >= {$card->getOrder()}");
-        self::DbQuery("UPDATE card SET `ink` = NULL, `wild` = NULL, `factor` = 1, `origin` = '$location', `location` = '$location' WHERE id = {$card->getId()}");
+        Table::DbQuery("UPDATE card SET `order` = `order` + 1 WHERE `location` = '$location' AND `order` >= {$card->getOrder()}");
+        Table::DbQuery("UPDATE card SET `ink` = NULL, `wild` = NULL, `factor` = 1, `origin` = '$location', `location` = '$location' WHERE id = {$card->getId()}");
         $card->setLocation($location);
         $card->setOrigin($location);
         hardback::$instance->enqueueCards([$card->getId()]);
@@ -568,7 +570,7 @@ class CardMgr extends APP_GameClass
         $cards = self::getCardsInLocation([self::getHandLocation($playerId), self::getTableauLocation($playerId)]);
 
         // Clear used benefits
-        self::DbQuery('DELETE FROM resolve');
+        Table::DbQuery('DELETE FROM resolve');
 
         // Disposition cards
         $discardIds = [];
@@ -645,7 +647,7 @@ class CardMgr extends APP_GameClass
     public static function inkCard(HCard $card, int $inkValue = H_HAS_INK): void
     {
         $sql = "UPDATE card SET `ink` = $inkValue, `wild` = NULL WHERE `id` = {$card->getId()}";
-        self::DbQuery($sql);
+        Table::DbQuery($sql);
         $card->setInk($inkValue);
         hardback::$instance->enqueueCards([$card->getId()]);
     }
@@ -653,7 +655,7 @@ class CardMgr extends APP_GameClass
     public static function uncover(HCard &$card, HCard $source): void
     {
         self::useBenefit($source, H_UNCOVER_ADJ);
-        self::DbQuery("UPDATE card SET `wild` = '_' WHERE `id` = {$card->getId()}");
+        Table::DbQuery("UPDATE card SET `wild` = '_' WHERE `id` = {$card->getId()}");
         $card->setWild('_');
         if ($card->getGenre() != H_STARTER) {
             hardback::$instance->incGameStateValue("countActive{$card->getGenre()}", 1);
@@ -664,7 +666,7 @@ class CardMgr extends APP_GameClass
     public static function double(HCard &$card, HCard $source): void
     {
         self::useBenefit($source, H_DOUBLE_ADJ);
-        self::DbQuery("UPDATE card SET `factor` = `factor` + 1 WHERE `id` = {$card->getId()}");
+        Table::DbQuery("UPDATE card SET `factor` = `factor` + 1 WHERE `id` = {$card->getId()}");
         $card->setFactor($card->getFactor() + 1);
         hardback::$instance->enqueueCards([$card->getId()]);
     }
@@ -686,7 +688,7 @@ class CardMgr extends APP_GameClass
     {
         $cardIds = self::getIds($cards);
         foreach ($cardIds as $cardId) {
-            self::DbQuery("INSERT INTO resolve VALUES ($cardId, $benefit)");
+            Table::DbQuery("INSERT INTO resolve VALUES ($cardId, $benefit)");
         }
     }
 }

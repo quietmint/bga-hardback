@@ -10,7 +10,9 @@
  * -----
  */
 
+use \Bga\GameFramework\NotificationMessage;
 use \Bga\GameFramework\Table;
+use \Bga\GameFramework\UserException;
 
 require_once('modules/constants.inc.php');
 require_once('modules/HCard.class.php');
@@ -224,7 +226,7 @@ class hardback extends Table
     public function checkVersion(int $clientVersion): void
     {
         if ($clientVersion != $this->getGlobal(H_OPTION_VERSION)) {
-            throw new BgaUserException('!!!checkVersion');
+            throw new UserException('!!!checkVersion');
         }
     }
 
@@ -478,7 +480,7 @@ class hardback extends Table
 
         // Minimum 2 letters
         if (count($tableauIds) < 2) {
-            throw new BgaUserException($this->msg['errorLength']);
+            throw new UserException($this->msg['errorLength']);
         }
 
         // Inked cards must be used
@@ -487,7 +489,9 @@ class hardback extends Table
             return !in_array($card->getId(), $tableauIds);
         });
         if (!empty($unusedInk)) {
-            throw new BgaUserException(sprintf($this->msg['errorInk'], CardMgr::getString($unusedInk)));
+            throw new UserException(new NotificationMessage($this->msg['errorInk'], [
+                'cards' => CardMgr::getString($unusedInk)
+            ]));
         }
 
         // Validate origin
@@ -1379,7 +1383,7 @@ class hardback extends Table
             $isEnding = $penny->getScore() >= $this->getGameLength();
             if ($isEnding) {
                 if (!$endGameConfirm) {
-                    throw new BgaUserException('!!!endGameWarning');
+                    throw new UserException('!!!endGameWarning');
                 }
                 $this->nextState('end');
             }
@@ -1425,7 +1429,7 @@ class hardback extends Table
             $isEnding = $penny->getScore() >= $this->getGameLength();
             if ($isEnding) {
                 if (!$endGameConfirm) {
-                    throw new BgaUserException('!!!endGameWarning');
+                    throw new UserException('!!!endGameWarning');
                 }
                 $this->nextState('end');
             }
@@ -1673,7 +1677,7 @@ class hardback extends Table
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
         $cards = CardMgr::drawCards(1, $player->getDrawLocation(), $player->getTableauLocation(), $player->getHandLocation());
         if (empty($cards)) {
-            throw new BgaUserException($this->msg['errorEmpty']);
+            throw new UserException($this->msg['errorEmpty']);
         }
         $card = reset($cards);
         CardMgr::inkCard($card);
@@ -1701,10 +1705,10 @@ class hardback extends Table
             if ($isEnding) {
                 $stateName = $this->gamestate->state()['name'];
                 if ($stateName != 'playerTurn' && $stateName != 'purchase' && !$this->isCurrentPlayerActive()) {
-                    throw new BgaUserException('Ink cannot be used out-of-turn right now. Try again later.');
+                    throw new UserException('Ink cannot be used out-of-turn right now. Try again later.');
                 }
                 if (!$endGameConfirm) {
-                    throw new BgaUserException('!!!endGameWarning');
+                    throw new UserException('!!!endGameWarning');
                 }
                 $this->nextState('end');
             }
@@ -1883,38 +1887,5 @@ class hardback extends Table
             }
         }
         self::warn("upgradeTableDb complete: from_version=$from_version");
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////:
-    ////////// Production bug report handler
-    //////////
-
-    public function loadBugReportSQL(int $reportId, array $studioPlayers): void
-    {
-        $prodPlayers = $this->getObjectListFromDb("SELECT `player_id` FROM `player`", true);
-        $prodCount = count($prodPlayers);
-        $studioCount = count($studioPlayers);
-        if ($prodCount != $studioCount) {
-            throw new BgaVisibleSystemException("Incorrect player count (bug report has $prodCount players, studio table has $studioCount players)");
-        }
-        $sql = [
-            "UPDATE `global` SET `global_value` = 2 WHERE `global_id` = 1 AND `global_value` = 99"
-        ];
-        foreach ($prodPlayers as $index => $prodId) {
-            $studioId = $studioPlayers[$index];
-            $sql[] = "UPDATE `player` SET `player_id` = $studioId WHERE `player_id` = $prodId";
-            $sql[] = "UPDATE `global` SET `global_value` = $studioId WHERE `global_value` = $prodId";
-            $sql[] = "UPDATE `stats` SET `stats_player_id` = $studioId WHERE `stats_player_id` = $prodId";
-            $sql[] = "UPDATE `card` SET `location` = REPLACE(`location`, $prodId, $studioId)";
-            $sql[] = "UPDATE `card` SET `origin` = REPLACE(`origin`, $prodId, $studioId)";
-        }
-        $msg = "<b>Loaded <a href='https://boardgamearena.com/bug?id=$reportId' target='_blank'>bug report $reportId</a></b><hr><ul><li>" . implode(';</li><li>', $sql) . ';</li></ul>';
-        $this->warn($msg);
-        $this->notifyAllPlayers('message', $msg, []);
-
-        foreach ($sql as $q) {
-            $this->DbQuery($q);
-        }
-        $this->reloadPlayersBasicInfos();
     }
 }

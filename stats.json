@@ -1,0 +1,240 @@
+{
+    "table": {
+        "turns": {
+            "id": 10,
+            "name": "Rounds",
+            "type": "int"
+        },
+        "words": {
+            "id": 50,
+            "name": "Words",
+            "type": "int"
+        },
+        "longestWord": {
+            "id": 51,
+            "name": "Longest word",
+            "type": "int"
+        },
+        "bestWord": {
+            "id": 56,
+            "name": "Highest-scoring word",
+            "type": "int"
+        },
+        "invalidWords": {
+            "id": 52,
+            "name": "Invalid words",
+            "type": "int"
+        },
+        "flush": {
+            "id": 53,
+            "name": "Flush Offer Row",
+            "type": "int"
+        },
+        "cycled": {
+            "id": 57,
+            "name": "Cycle Offer Row",
+            "type": "int"
+        },
+        "coopScore": {
+            "id": 80,
+            "name": "Penny Dreadful: Score",
+            "type": "int"
+        },
+        "coopTurns": {
+            "id": 81,
+            "name": "Penny Dreadful: Turns",
+            "type": "int"
+        },
+        "coopAvg": {
+            "id": 82,
+            "name": "Penny Dreadful: Points per turn",
+            "type": "float"
+        },
+        "coopGenre": {
+            "id": 89,
+            "name": "Penny Dreadful: Signature Genre",
+            "type": "int"
+        }
+    },
+    "player": {
+        "pointsBasic": {
+            "id": 10,
+            "name": "Points from basic benefits",
+            "type": "int"
+        },
+        "pointsGenre": {
+            "id": 11,
+            "name": "Points from genre benefits",
+            "type": "int"
+        },
+        "pointsPurchase": {
+            "id": 12,
+            "name": "Points from card purchases",
+            "type": "int"
+        },
+        "pointsAward": {
+            "id": 13,
+            "name": "Points from literary awards",
+            "type": "int"
+        },
+        "pointsAdvert": {
+            "id": 14,
+            "name": "Points from adverts",
+            "type": "int"
+        },
+        "coins": {
+            "id": 20,
+            "name": "Coins earned",
+            "type": "int"
+        },
+        "cardsPurchase": {
+            "id": 30,
+            "name": "Cards purchased",
+            "type": "int"
+        },
+        "cardsTrash": {
+            "id": 31,
+            "name": "Cards trashed",
+            "type": "int"
+        },
+        "words": {
+            "id": 50,
+            "name": "Words",
+            "type": "int"
+        },
+        "longestWord": {
+            "id": 51,
+            "name": "Longest word",
+            "type": "int"
+        },
+        "bestWord": {
+            "id": 56,
+            "name": "Highest-scoring word",
+            "type": "int"
+        },
+        "invalidWords": {
+            "id": 52,
+            "name": "Invalid words",
+            "type": "int"
+        },
+        "votesAccept": {
+            "id": 54,
+            "name": "Votes to accept",
+            "type": "int"
+        },
+        "votesReject": {
+            "id": 55,
+            "name": "Votes to reject",
+            "type": "int"
+        },
+        "useInk": {
+            "id": 60,
+            "name": "Ink used",
+            "type": "int"
+        },
+        "useRemover": {
+            "id": 61,
+            "name": "Remover used",
+            "type": "int"
+        },
+        "starterCard1": {
+            "id": 70,
+            "name": "Starter card",
+            "type": "int"
+        },
+        "starterCard2": {
+            "id": 71,
+            "name": "Starter card",
+            "type": "int"
+        },
+        "deck0": {
+            "id": 75,
+            "name": "Starter cards in deck",
+            "type": "int"
+        },
+        "deck1": {
+            "id": 76,
+            "name": "Adventure cards in deck",
+            "type": "int"
+        },
+        "deck2": {
+            "id": 77,
+            "name": "Horror cards in deck",
+            "type": "int"
+        },
+        "deck3": {
+            "id": 78,
+            "name": "Mystery cards in deck",
+            "type": "int"
+        },
+        "deck4": {
+            "id": 79,
+            "name": "Romance cards in deck",
+            "type": "int"
+        }
+    },
+    "value_labels": {
+        "70": {
+            "65": "A",
+            "66": "B",
+            "67": "C",
+            "68": "D",
+            "69": "E",
+            "70": "F",
+            "71": "G",
+            "72": "H",
+            "73": "I",
+            "74": "J",
+            "75": "K",
+            "76": "L",
+            "77": "M",
+            "78": "N",
+            "79": "O",
+            "80": "P",
+            "81": "Q",
+            "82": "R",
+            "83": "S",
+            "84": "T",
+            "85": "U",
+            "86": "V",
+            "87": "W",
+            "88": "X",
+            "89": "Y",
+            "90": "Z"
+        },
+        "71": {
+            "65": "A",
+            "66": "B",
+            "67": "C",
+            "68": "D",
+            "69": "E",
+            "70": "F",
+            "71": "G",
+            "72": "H",
+            "73": "I",
+            "74": "J",
+            "75": "K",
+            "76": "L",
+            "77": "M",
+            "78": "N",
+            "79": "O",
+            "80": "P",
+            "81": "Q",
+            "82": "R",
+            "83": "S",
+            "84": "T",
+            "85": "U",
+            "86": "V",
+            "87": "W",
+            "88": "X",
+            "89": "Y",
+            "90": "Z"
+        },
+        "89": {
+            "1": "Adventure",
+            "2": "Horror",
+            "3": "Mystery",
+            "4": "Romance"
+        }
+    }
+}

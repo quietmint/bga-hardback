@@ -1,6 +1,8 @@
 <?php
 
-class PlayerMgr extends APP_GameClass
+use \Bga\GameFramework\Table;
+
+class PlayerMgr
 {
     public static function getMaxAward(): ?array
     {
@@ -101,6 +103,6 @@ class PlayerMgr extends APP_GameClass
 
     public static function resetVoteResult(): void
     {
-        self::DbQuery("UPDATE player SET vote = NULL");
+        Table::DbQuery("UPDATE player SET vote = NULL");
     }
 }

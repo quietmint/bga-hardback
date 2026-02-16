@@ -1,0 +1,70 @@
+{
+    "101": {
+        "name": "Dark mode",
+        "needReload": false,
+        "values": [
+            {
+                "name": "Automatic (system default)"
+            },
+            {
+                "name": "Light"
+            },
+            {
+                "name": "Dark",
+                "cssPref": "dark"
+            }
+        ]
+    },
+    "100": {
+        "name": "Drag and drop",
+        "needReload": false,
+        "values": [
+            {
+                "name": "Enabled"
+            },
+            {
+                "name": "Disabled"
+            }
+        ]
+    },
+    "150": {
+        "name": "Animation",
+        "needReload": false,
+        "values": [
+            {
+                "name": "Enabled"
+            },
+            {
+                "name": "Disabled"
+            }
+        ]
+    },
+    "151": {
+        "name": "Card size",
+        "needReload": false,
+        "default": 4,
+        "values": {
+            "1": {
+                "name": ""
+            },
+            "2": {
+                "name": ""
+            },
+            "3": {
+                "name": ""
+            },
+            "4": {
+                "name": ""
+            },
+            "5": {
+                "name": ""
+            },
+            "6": {
+                "name": ""
+            },
+            "7": {
+                "name": ""
+            }
+        }
+    }
+}

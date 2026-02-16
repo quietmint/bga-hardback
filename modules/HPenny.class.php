@@ -1,6 +1,6 @@
 <?php
 
-class HPenny extends APP_GameClass implements JsonSerializable
+class HPenny implements JsonSerializable
 {
     public function jsonSerialize(): array
     {

@@ -1,6 +1,8 @@
 <?php
 
-class HPlayer extends APP_GameClass implements JsonSerializable
+use \Bga\GameFramework\Table;
+
+class HPlayer implements JsonSerializable
 {
     protected $id;
     protected $advert;
@@ -116,7 +118,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
                 return 'yellow';
             case H_PURPLE:
                 return 'purple';
-            case H_BLACK:
+            default:
                 return 'black';
         }
     }
@@ -281,7 +283,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($amount <= 0) {
             return;
         }
-        self::DbQuery("UPDATE player SET coins = coins + $amount WHERE player_id = {$this->id}");
+        Table::DbQuery("UPDATE player SET coins = coins + $amount WHERE player_id = {$this->id}");
         $this->coins += $amount;
         hardback::$instance->enqueuePlayer($this->id);
     }
@@ -296,7 +298,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if (hardback::$instance->getGlobal(H_OPTION_COOP) == H_NO) {
             $sql .= " WHERE player_id = {$this->id}";
         }
-        self::DbQuery($sql);
+        Table::DbQuery($sql);
         $this->score += $amount;
         hardback::$instance->enqueuePlayer($this->id);
     }
@@ -306,7 +308,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($amount <= 0) {
             return;
         }
-        self::DbQuery("UPDATE player SET ink = ink + $amount WHERE player_id = {$this->id}");
+        Table::DbQuery("UPDATE player SET ink = ink + $amount WHERE player_id = {$this->id}");
         $this->ink += $amount;
         hardback::$instance->enqueuePlayer($this->id);
     }
@@ -316,7 +318,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($amount <= 0) {
             return;
         }
-        self::DbQuery("UPDATE player SET remover = remover + $amount WHERE player_id = {$this->id}");
+        Table::DbQuery("UPDATE player SET remover = remover + $amount WHERE player_id = {$this->id}");
         $this->remover += $amount;
         hardback::$instance->enqueuePlayer($this->id);
     }
@@ -326,9 +328,9 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($amount <= 0) {
             return;
         }
-        self::DbQuery("UPDATE player SET coins = coins - $amount WHERE player_id = {$this->id} AND coins >= $amount");
+        Table::DbQuery("UPDATE player SET coins = coins - $amount WHERE player_id = {$this->id} AND coins >= $amount");
         $this->coins -= $amount;
-        if (self::DbAffectedRow() == 0) {
+        if (Table::DbAffectedRow() == 0) {
             throw new BgaVisibleSystemException("spendCoins: $this does not have {$amount}¢");
         }
         hardback::$instance->enqueuePlayer($this->id);
@@ -339,9 +341,9 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($amount <= 0) {
             return;
         }
-        self::DbQuery("UPDATE player SET ink = ink - $amount WHERE player_id = {$this->id} AND ink >= $amount");
+        Table::DbQuery("UPDATE player SET ink = ink - $amount WHERE player_id = {$this->id} AND ink >= $amount");
         $this->ink -= $amount;
-        if (self::DbAffectedRow() == 0) {
+        if (Table::DbAffectedRow() == 0) {
             throw new BgaVisibleSystemException("spendInk: $this does not have $amount ink");
         }
         hardback::$instance->enqueuePlayer($this->id);
@@ -352,9 +354,9 @@ class HPlayer extends APP_GameClass implements JsonSerializable
         if ($amount <= 0) {
             return;
         }
-        self::DbQuery("UPDATE player SET remover = remover - $amount WHERE player_id = {$this->id} AND remover >= $amount");
+        Table::DbQuery("UPDATE player SET remover = remover - $amount WHERE player_id = {$this->id} AND remover >= $amount");
         $this->remover -= $amount;
-        if (self::DbAffectedRow() == 0) {
+        if (Table::DbAffectedRow() == 0) {
             throw new BgaVisibleSystemException("spendRemover: $this does not have $amount remover");
         }
         hardback::$instance->enqueuePlayer($this->id);
@@ -362,7 +364,7 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     public function buyAdvert(int $points, int $coins): void
     {
-        self::DbQuery("UPDATE player SET advert = $points WHERE player_id = {$this->id}");
+        Table::DbQuery("UPDATE player SET advert = $points WHERE player_id = {$this->id}");
         $this->advert = $points;
         $this->spendCoins($coins);
         $this->addPoints($points, 'pointsAdvert');
@@ -370,27 +372,27 @@ class HPlayer extends APP_GameClass implements JsonSerializable
 
     public function setAward(int $points): void
     {
-        self::DbQuery("UPDATE player SET award = $points WHERE player_id = {$this->id}");
+        Table::DbQuery("UPDATE player SET award = $points WHERE player_id = {$this->id}");
         $this->award = $points;
         hardback::$instance->enqueuePlayer($this->id);
     }
 
     public function setReplayFrom(int $replayFrom): void
     {
-        self::DbQuery("UPDATE player SET replayFrom = $replayFrom WHERE player_id = {$this->id}");
+        Table::DbQuery("UPDATE player SET replayFrom = $replayFrom WHERE player_id = {$this->id}");
         $this->replayFrom = $replayFrom;
     }
 
     public function setVote(bool $vote): void
     {
-        self::DbQuery("UPDATE player SET vote = " . intval($vote) . " WHERE player_id = {$this->id}");
+        Table::DbQuery("UPDATE player SET vote = " . intval($vote) . " WHERE player_id = {$this->id}");
         hardback::$instance->incStat(1, $vote ? 'votesAccept' : 'votesReject', $this->id);
         $this->vote = $vote;
     }
 
     public function setWord(?string $word): void
     {
-        self::DbQuery("UPDATE player SET word = " . ($word == null ? "NULL" : "'$word'") . " WHERE player_id = {$this->id}");
+        Table::DbQuery("UPDATE player SET word = " . ($word == null ? "NULL" : "'$word'") . " WHERE player_id = {$this->id}");
         $this->word = $word;
         hardback::$instance->enqueuePlayer($this->id);
     }
