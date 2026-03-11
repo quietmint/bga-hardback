@@ -1800,20 +1800,27 @@ class hardback extends Table
 
         if ($this->getGlobal(H_OPTION_COOP)) {
             $penny = PlayerMgr::getPenny();
-            $pennyScore = $penny->getScore();
-            if ($pennyScore >= PlayerMgr::getMaxScore()) {
+            $pointsPenny = $penny->getScore();
+            $pointsPlayers = PlayerMgr::getPlayerMaxScore();
+            if ($pointsPenny >= PlayerMgr::getMaxScore()) {
                 // Coop lose
-                $diff = PlayerMgr::getPlayerMaxScore() - $pennyScore;
+                $msg = $this->msg['coopLose'];
+                $diff = min(-1, $pointsPlayers - $pointsPenny);
                 self::DbQuery("UPDATE player SET player_score = $diff");
-                self::notifyAllPlayers('message', $this->msg['coopLose'], [
-                    'player_name' => $penny->getName(),
-                ]);
+                $firstPlayerId = PlayerMgr::getPlayerIds()[0];
+                $this->enqueuePlayer($firstPlayerId);
             } else {
                 // Coop win
-                self::notifyAllPlayers('message', $this->msg['coopWin'], [
-                    'player_name' => $penny->getName(),
-                ]);
+                $msg = $this->msg['coopWin'];
+                $diff = $pointsPlayers - $pointsPenny;
             }
+            self::notifyAllPlayers('message', $msg, [
+                'icon' => H_ICON_STAR,
+                'player_name' => $penny->getName(),
+                'points' => abs($diff),
+                'pointsPenny' => $pointsPenny,
+                'pointsPlayers' => $pointsPlayers,
+            ]);
         } else {
             // Ink is the tiebreaker
             self::DbQuery('UPDATE player SET player_score_aux = ink');
@@ -1827,6 +1834,7 @@ class hardback extends Table
         // Move all cards to tableau
         CardMgr::endGameCleanup();
         CardMgr::deletePreviewNotifications(true);
+        $this->sendNotify();
         $this->nextState('gameEnd');
     }
 
