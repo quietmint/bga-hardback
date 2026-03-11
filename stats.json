@@ -92,9 +92,19 @@
             "name": "Cards purchased",
             "type": "int"
         },
+        "cardsJail": {
+            "id": 32,
+            "name": "Cards jailed",
+            "type": "int"
+        },
         "cardsTrash": {
             "id": 31,
             "name": "Cards trashed",
+            "type": "int"
+        },
+        "coopJail": {
+            "id": 33,
+            "name": "Cost of cards jailed/trashed",
             "type": "int"
         },
         "words": {

@@ -45,6 +45,7 @@ class hardback extends Table
 
     public function debug_giveLetters(string $letter)
     {
+        $letter = strtoupper($letter);
         $player = PlayerMgr::getPlayer(self::getCurrentPlayerId());
         $cardIds = array_keys(array_filter($this->cards, function ($card) use ($letter) {
             return $card['letter'] == $letter;
@@ -173,7 +174,11 @@ class hardback extends Table
         // Init player statistics
         self::initStat('player', 'bestWord', 0);
         self::initStat('player', 'cardsPurchase', 0);
+        self::initStat('player', 'cardsJail', 0);
         self::initStat('player', 'cardsTrash', 0);
+        if ($this->getGlobal(H_OPTION_COOP)) {
+            self::initStat('player', 'coopJail', 0);
+        }
         self::initStat('player', 'coins', 0);
         self::initStat('player', 'deck' . H_ADVENTURE, 0);
         self::initStat('player', 'deck' . H_HORROR, 0);
@@ -1222,6 +1227,10 @@ class hardback extends Table
         }
         $this->drawOfferRow();
         $this->setGameStateValue('cycled', 1);
+        $this->incStat(1, 'cardsJail', $player->getId());
+        if ($this->getGlobal(H_OPTION_COOP)) {
+            $this->incStat($card->getCost(), 'coopJail', $player->getId());
+        }
         $this->nextState('again');
     }
 
