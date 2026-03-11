@@ -87,10 +87,9 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
       });
 
       // Call onPrefChange() when dark mode changes
-      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (event) {
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
         this.onGameUserPreferenceChanged(HConstants.PREF_DARK_MODE, this.getGameUserPreference(HConstants.PREF_DARK_MODE));
       });
-
       this.onGameUserPreferenceChanged(HConstants.PREF_ANIMATION, this.getGameUserPreference(HConstants.PREF_ANIMATION));
       this.onGameUserPreferenceChanged(HConstants.PREF_CARD_SIZE, this.getGameUserPreference(HConstants.PREF_CARD_SIZE));
       this.onGameUserPreferenceChanged(HConstants.PREF_DARK_MODE, this.getGameUserPreference(HConstants.PREF_DARK_MODE));
