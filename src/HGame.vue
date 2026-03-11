@@ -1223,7 +1223,7 @@ export default {
 
       } else if (notif.type == "invalid") {
         if (!this.gamestate.instant && this.game.player_id == notif.args.player_id) {
-          this.game.showMessage(this.i18n(notif.log, notif.args), "error no_log");
+          this.game.showMessage(this.i18n(notif.log, notif.args), "error");
         }
 
       } else if (notif.type == "lookup") {
