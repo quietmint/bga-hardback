@@ -4,6 +4,7 @@
   }
 }
 
+html[data-theme="dark"],
 html.dark {
   color: #ddd;
   background-color: theme("colors.gray.900");
@@ -18,7 +19,7 @@ html.dark {
 
   .bgabutton_gray,
   .notouch-device a.bgabutton:hover,
-  .playername.black,
+  .playername.hb-black,
   a.bgabutton_gray,
   a.bgabutton {
     color: white;

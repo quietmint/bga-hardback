@@ -133,7 +133,9 @@ a.hb-dictionarylink {
 .player_showcursor,
 .player_table_status,
 .panel-signature {
-  text-shadow: -0.5px 0 rgb(0 0 0 / 50%), 0.5px 0 rgb(0 0 0 / 50%);
+  text-shadow:
+    -0.5px 0 rgb(0 0 0 / 50%),
+    0.5px 0 rgb(0 0 0 / 50%);
 }
 
 .roundedbox .roundedbox_top,
@@ -152,7 +154,10 @@ a.hb-dictionarylink {
 
 .player-name a {
   background-color: #7779;
-  text-shadow: 0 0 2px white, 1px 1px rgb(255 255 255 / 50%);
+  text-shadow:
+    0 0 white,
+    0 0 2px white,
+    1px 1px rgb(255 255 255 / 50%) !important;
 }
 
 .playername.hb-red {
@@ -181,7 +186,10 @@ a.hb-dictionarylink {
 
 .player-board.hb-red .player-name a,
 .player-board.hb-yellow .player-name a {
-  text-shadow: 0 0 2px black, 1px 1px rgb(0 0 0 / 50%);
+  text-shadow:
+    0 0 black,
+    0 0 2px black,
+    1px 1px rgb(0 0 0 / 50%) !important;
 }
 
 .player-board.hb-red {

@@ -5,7 +5,7 @@ const { parseColor } = require("tailwindcss/lib/util/color");
 
 module.exports = {
   content: ["*.js", "*.vue"],
-  darkMode: "class",
+  darkMode: ["selector", '[data-theme="dark"]'],
   theme: {
     colors: {
       transparent: "transparent",
@@ -89,5 +89,5 @@ module.exports = {
       );
     }),
   ],
-  prefix: "hb-"
+  prefix: "hb-",
 };
