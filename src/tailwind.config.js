@@ -85,8 +85,9 @@ module.exports = {
             };
           },
         },
-        { values: flattenColorPalette(theme("colors")), type: "color" }
+        { values: flattenColorPalette(theme("colors")), type: "color" },
       );
     }),
   ],
+  prefix: "hb-"
 };

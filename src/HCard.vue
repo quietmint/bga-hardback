@@ -3,54 +3,54 @@
        @pointerdown="pointStart"
        @pointerup="pointStop"
        @pointercancel="pointStop"
-       class="cardholder relative"
+       class="hb-cardholder hb-relative"
        :class="holderClass"
        ref="cardholder">
     <!-- Card -->
     <div @click="clickCard"
          :class="cardClass"
-         class="card shadow relative rounded-lg">
-      <div class="cardface front rounded-lg">
+         class="hb-card hb-shadow hb-relative hb-rounded-lg">
+      <div class="hb-cardface hb-front hb-rounded-lg">
         <!-- Bookmark -->
         <div :class="bookmarkClass"
-             class="bookmark absolute flex items-center text-center font-bold leading-none whitespace-nowrap">
+             class="hb-bookmark hb-absolute hb-flex hb-items-center hb-text-center hb-font-bold hb-leading-none hb-whitespace-nowrap">
           <Icon v-if="card.genreName != 'starter'"
                 :icon="card.genreName"
-                class="icon" />
+                class="hb-icon" />
           <div v-if="card.cost">{{ card.cost }}¢</div>
           <div v-if="card.points">{{ card.points }}-NO-BREAK-
             <Icon icon="star"
-                  class="inline star" />
+                  class="hb-inline hb-star" />
           </div>
         </div>
 
         <!-- Letter -->
         <div :class="letterClass"
-             class="absolute letter text-center leading-none">
+             class="hb-absolute hb-letter hb-text-center hb-leading-none">
           {{ card.letter }}
         </div>
 
         <!-- Benefits -->
         <div @pointerenter="tooltipEnter"
              @pointerleave="tooltipLeave"
-             class="benefits absolute text-115 leading-120 tracking-tight font-bold text-center flex flex-col grow whitespace-nowrap"
+             class="hb-benefits hb-absolute hb-text-115 hb-leading-120 hb-tracking-tight hb-font-bold hb-text-center hb-flex hb-flex-col hb-grow hb-whitespace-nowrap"
              ref="benefits">
           <!-- Basic Benefits -->
           <div :class="basicSectionClass"
-               class="grow flex items-center justify-evenly">
+               class="hb-grow hb-flex hb-items-center hb-justify-evenly">
             <div v-for="benefit in basicBenefitsList"
                  :key="benefit.id"
-                 class="rounded-lg px-1 border border-black/25 bg-white/50 border-black"
+                 class="hb-rounded-lg hb-px-1 hb-border hb-border-black/25 hb-bg-white/50 hb-border-black"
                  v-html="benefit.html"></div>
           </div>
 
           <!-- Genre Benefits -->
           <div v-if="genreBenefitsList.length"
                :class="genreSectionClass"
-               class="grow flex items-center justify-evenly border-t-2">
+               class="hb-grow hb-flex hb-items-center hb-justify-evenly hb-border-t-2">
             <div v-for="benefit in genreBenefitsList"
                  :key="benefit.id"
-                 class="rounded-lg px-1 bg-white/50"
+                 class="hb-rounded-lg hb-px-1 hb-bg-white/50"
                  v-html="benefit.html"></div>
           </div>
         </div>
@@ -58,60 +58,60 @@
         <!-- Tooltip -->
         <teleport to="#HGame"
                   v-if="tooltip.visible">
-          <div class="absolute z-top shadow bg-white text-black ring-2 ring-black rounded-lg overflow-hidden"
+          <div class="hb-absolute hb-z-top hb-shadow hb-bg-white hb-text-black hb-ring-2 hb-ring-black hb-rounded-lg hb-overflow-hidden"
                :style="{ top: tooltip.top, left: tooltip.left, maxWidth: '240px' }"
                ref="tooltip">
             <div :class="titleClass"
-                 class="px-2 py-1 text-110 font-bold border-b-2 border-black">
+                 class="hb-px-2 hb-py-1 hb-text-110 hb-font-bold hb-border-b-2 hb-border-black">
               <Icon :icon="card.genreName"
-                    class="inline text-125" /> {{ i18n(card.genreName) }} {{ card.letter }}
+                    class="hb-inline hb-text-125" /> {{ i18n(card.genreName) }} {{ card.letter }}
             </div>
             <div v-for="benefit in basicBenefitsList"
                  :key="benefit.id"
-                 class="px-2 py-1"
+                 class="hb-px-2 hb-py-1"
                  v-html="benefit.htmlLong"></div>
             <div v-if="genreBenefitsList.length > 0"
                  :class="genreTooltipClass"
-                 class="px-1 pt-1 text-90 italic border-t-2 border-black"
+                 class="hb-px-1 hb-pt-1 hb-text-90 hb-italic hb-border-t-2 hb-border-black"
                  v-text="i18n('genreTip', { x: i18n(card.genreName) })"></div>
             <div v-for="benefit in genreBenefitsList"
                  :key="benefit.id"
                  :class="genreTooltipClass"
-                 class="px-2 py-1"
+                 class="hb-px-2 hb-py-1"
                  v-html="benefit.htmlLong"></div>
           </div>
         </teleport>
       </div>
 
       <!-- Wild -->
-      <div class="cardface back rounded-lg">
+      <div class="hb-cardface hb-back hb-rounded-lg">
         <div v-if="card.wild"
-             class="absolute wildletter text-center leading-none w-full">
+             class="hb-absolute hb-wildletter hb-text-center hb-leading-none hb-w-full">
           {{ card.wild }}
         </div>
         <div v-if="card.wild"
-             class="absolute bottom-1 w-full flex grow justify-evenly text-16 bold">
+             class="hb-absolute hb-bottom-1 hb-w-full hb-flex hb-grow hb-justify-evenly hb-text-16 hb-bold">
           <div :class="titleClass"
-               class="rounded-lg px-2">
+               class="hb-rounded-lg hb-px-2">
             <Icon :icon="card.genreName"
-                  class="icon inline text-105" />{{ card.letter }}
+                  class="hb-icon hb-inline hb-text-105" />{{ card.letter }}
           </div>
         </div>
       </div>
     </div>
 
     <!-- Footer -->
-    <div class="h-8 leading-8 flex items-start justify-evenly text-center text-14 whitespace-nowrap">
+    <div class="hb-h-8 hb-leading-8 hb-flex hb-items-start hb-justify-evenly hb-text-center hb-text-14 hb-whitespace-nowrap">
       <div :id="'tut_a' + index + '_c' + this.card.id"
            v-for="(action, index) in footerActions"
            :key="action"
            @click="clickFooter(action)"
            :title="action.title"
            :class="action.class"
-           class="rounded-b-lg z-10">{{ action.text }}
+           class="hb-rounded-b-lg hb-z-10">{{ action.text }}
         <Icon v-if="action.icon"
               :icon="action.icon"
-              class="inline text-15" />
+              class="hb-inline hb-text-15" />
       </div>
     </div>
   </div>
@@ -174,7 +174,7 @@ export default {
       for (const id in this.card.basicBenefits) {
         let value = this.card.basicBenefits[id];
         if (this.card.factor > 1) {
-          value = `<span class="font-bold px-1 bg-yellow-400">${value * this.card.factor}</span>`;
+          value = `<span class="hb-font-bold hb-px-1 hb-bg-yellow-400">${value * this.card.factor}</span>`;
         }
         list.push({
           id: parseInt(id),
@@ -191,7 +191,7 @@ export default {
       for (const id in this.card.genreBenefits) {
         let value = this.card.genreBenefits[id];
         if (this.card.factor > 1) {
-          value = `<span class="font-bold px-1 bg-yellow-400">${value * this.card.factor}</span>`;
+          value = `<span class="hb-font-bold hb-px-1 hb-bg-yellow-400">${value * this.card.factor}</span>`;
         }
         list.push({
           id: parseInt(id),
@@ -204,24 +204,24 @@ export default {
     },
 
     holderClass() {
-      let c = this.card.dragging ? "invisible " : "";
-      c += this.card.ink || this.card.remover || this.card.location.startsWith("jail") || this.card.origin.startsWith("timeless") ? "mx-2 mb-1 mt-2" : "m-1 mt-2";
+      let c = this.card.dragging ? "hb-invisible " : "";
+      c += this.card.ink || this.card.remover || this.card.location.startsWith("jail") || this.card.origin.startsWith("timeless") ? "hb-mx-2 hb-mb-1 hb-mt-2" : "hb-m-1 hb-mt-2";
       return c;
     },
 
     cardClass() {
-      let c = "card-" + this.card.genreName + " ";
-      c += this.dragLocations ? "touch-none cursor-move " : this.clickAction ? "cursor-pointer " : "cursor-not-allowed ";
-      c += this.card.timeless ? "timeless " : "";
+      let c = "hb-card-" + this.card.genreName + " ";
+      c += this.dragLocations ? "hb-touch-none hb-cursor-move " : this.clickAction ? "hb-cursor-pointer " : "hb-cursor-not-allowed ";
+      c += this.card.timeless ? "hb-timeless " : "";
       if (this.card.ink) {
-        c += "ring ring-black ";
+        c += "hb-ring hb-ring-black ";
       } else if (this.card.remover) {
-        c += "ring ring-white ";
+        c += "hb-ring hb-ring-white ";
       } else if (this.card.location.startsWith("jail") || this.card.origin.startsWith("timeless")) {
-        c += `ring ${this.card.player.colorRing} `;
+        c += `hb-ring hb-${this.card.player.colorRing} `;
       }
       if (this.card.wild) {
-        c += "wild ";
+        c += "hb-wild ";
       }
       return c;
     },
@@ -231,12 +231,12 @@ export default {
     },
 
     bookmarkClass() {
-      let c = this.card.timeless ? "flex-row " : "flex-col ";
+      let c = this.card.timeless ? "hb-flex-row " : "hb-flex-col ";
       return c + HConstants.GENRES[this.card.genre].textLight;
     },
 
     letterClass() {
-      return "letter-" + this.card.letter;
+      return "hb-letter-" + this.card.letter;
     },
 
     basicInactive() {
@@ -244,9 +244,9 @@ export default {
     },
 
     basicSectionClass() {
-      let c = this.card.timeless ? "flex-col " : "flex ";
+      let c = this.card.timeless ? "hb-flex-col " : "hb-flex ";
       if (this.basicInactive) {
-        c += "hatch-transparent text-gray-500";
+        c += "hb-hatch-transparent hb-text-gray-500";
       }
       return c;
     },
@@ -263,9 +263,9 @@ export default {
     },
 
     genreSectionClass() {
-      let c = this.card.timeless ? "flex-col " : "flex ";
+      let c = this.card.timeless ? "hb-flex-col " : "hb-flex ";
       if (this.genreInactive) {
-        c += HConstants.GENRES[this.card.genre].hatch + " border-gray-500 text-gray-500";
+        c += HConstants.GENRES[this.card.genre].hatch + " hb-border-gray-500 hb-text-gray-500";
       } else {
         c += HConstants.GENRES[this.card.genre].border + " " + HConstants.GENRES[this.card.genre].bg25 + " " + HConstants.GENRES[this.card.genre].text;
       }
@@ -292,10 +292,10 @@ export default {
 
     footerActions() {
       if (this.myself != null) { // not spectator
-        const actionBlack = "button mx-1 black shadow";
-        const actionBlue = "button mx-1 blue shadow";
-        const actionRed = "button mx-1 red shadow";
-        const actionWhite = "button mx-1 white shadow";
+        const actionBlack = "hb-button mx-1 hb-black hb-shadow";
+        const actionBlue = "hb-button mx-1 hb-blue hb-shadow";
+        const actionRed = "hb-button mx-1 hb-red hb-shadow";
+        const actionWhite = "hb-button mx-1 hb-white hb-shadow";
         if (this.gamestate.active) {
           if (this.gamestate.name == "uncover" && this.gamestate.args.cardIds.includes(this.card.id)) {
             return [{
@@ -455,19 +455,19 @@ export default {
       // Even spectators see these
       if (this.card.ink) {
         return [{
-          class: "px-2 leading-6 uppercase font-bold bg-black text-white",
+          class: "hb-px-2 hb-leading-6 hb-uppercase hb-font-bold hb-bg-black hb-text-white",
           text: this.i18n("ink"),
         }];
 
       } else if (this.card.remover) {
         return [{
-          class: "px-2 leading-6 uppercase font-bold bg-white text-black",
+          class: "hb-px-2 hb-leading-6 hb-uppercase hb-font-bold hb-bg-white hb-text-black",
           text: this.i18n("remover"),
         }];
 
       } else if (this.card.origin.startsWith("timeless")) {
         return [{
-          class: `px-2 leading-6 ${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
+          class: `hb-px-2 hb-leading-6 ${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
           text: this.card.player.name,
           icon: "timeless",
           title: this.i18n("timelessTip", { player_name: this.card.player.name }),
@@ -475,7 +475,7 @@ export default {
 
       } else if (this.card.location.startsWith("jail")) {
         return [{
-          class: `px-2 leading-6 ${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
+          class: `hb-px-2 hb-leading-6 ${this.card.player.colorBg} ${this.card.player.colorTextLight}`,
           text: this.card.player.name,
           icon: "jail",
           title: this.i18n("jailTip", { player_name: this.card.player.name }),
@@ -483,7 +483,7 @@ export default {
 
       } else if (this.card.oldest) {
         return [{
-          class: "mt-2 h-6",
+          class: "hb-mt-2 hb-h-6",
           icon: "clock",
           title: this.i18n("oldestTip"),
         }];

@@ -12,7 +12,7 @@ html.dark {
   .notouch-device a:hover,
   a:link,
   a:visited,
-  a.hdictionarylink {
+  a.hb-dictionarylink {
     color: theme("colors.blue.400");
   }
 
@@ -142,7 +142,7 @@ html.dark {
     filter: none;
   }
 
-  .tailwind .title {
+  .hb-tailwind .hb-title {
     text-shadow: 0 0 3px rgb(0 0 0 / 50%), 0.5px 0.5px rgb(0 0 0 / 50%);
   }
 
@@ -150,23 +150,23 @@ html.dark {
     background: #9a520e;
   }
 
-  .playername.red {
+  .playername.hb-red {
     color: theme("colors.red.500");
   }
 
-  .playername.green {
+  .playername.hb-green {
     color: theme("colors.green.500");
   }
 
-  .playername.blue {
+  .playername.hb-blue {
     color: theme("colors.blue.500");
   }
 
-  .playername.yellow {
+  .playername.hb-yellow {
     color: theme("colors.yellow.500");
   }
 
-  .playername.purple {
+  .playername.hb-purple {
     color: theme("colors.purple.500");
   }
 }

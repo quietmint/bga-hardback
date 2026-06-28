@@ -1,19 +1,19 @@
 <template>
-  <div class="fixed z-top inset-0 bg-white/75 dark:bg-black/75"
+  <div class="hb-fixed hb-z-top hb-inset-0 hb-bg-white/75 dark:hb-bg-black/75"
        @click="click(null)">
-    <div class="flex items-start justify-center min-h-screen">
-      <div class="hpopup flex flex-col items-center justify-center bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow text-20 p-6 mt-18"
+    <div class="hb-flex hb-items-start hb-justify-center hb-min-h-screen">
+      <div class="hb-popup hb-flex hb-flex-col hb-items-center hb-justify-center hb-bg-white hb-text-gray-800 dark:hb-bg-gray-900 dark:hb-text-gray-300 hb-rounded-lg hb-shadow hb-text-20 hb-p-6 hb-mt-18"
            @click.stop>
-        <div class="mb-4"
+        <div class="hb-mb-4"
              v-html="i18n('keyboard', keyboardPopup)"></div>
         <div v-for="row in rows"
              :key="row"
-             class="flex justify-center">
+             class="hb-flex hb-justify-center">
           <div :id="'tut_keyboard_' + letter"
                v-for="letter in row"
                :key="letter"
                @click.stop="click(letter)"
-               class="flex-none cursor-pointer text-center m-1 w-14 h-14 leading-14 shadow text-24 font-bold rounded-full bg-gradient-to-b from-gray-100 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-700 dark:to-gray-800">{{ letter }}</div>
+               class="hb-flex-none hb-cursor-pointer hb-text-center hb-m-1 hb-w-14 hb-h-14 hb-leading-14 hb-shadow hb-text-24 hb-font-bold hb-rounded-full hb-bg-gradient-to-b hb-from-gray-100 hb-via-gray-100 hb-to-gray-200 dark:hb-from-gray-700 dark:hb-via-gray-700 dark:hb-to-gray-800">{{ letter }}</div>
         </div>
       </div>
     </div>

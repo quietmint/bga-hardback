@@ -1,7 +1,7 @@
 {OVERALL_GAME_HEADER}
 
 <a id="browser-error" href="https://browsehappy.com/" target="_blank"></a>
-<div id="HGame" class="tailwind"></div>
+<div id="HGame" class="hb-tailwind"></div>
 
 <script type="text/javascript">
 const fontEl = document.createElement("link");

@@ -17,7 +17,7 @@
   text-align: center;
 }
 
-#browser-error .ua {
+#browser-error .hb-ua {
   color: theme("colors.red.300");
   font-size: 75%;
   font-weight: normal;

@@ -1,36 +1,36 @@
 <template>
-  <div class="fixed z-top inset-0 bg-white/75 dark:bg-black/75"
+  <div class="hb-fixed hb-z-top hb-inset-0 hb-bg-white/75 dark:hb-bg-black/75"
        @click="hide()">
-    <div class="flex items-start justify-center min-h-screen">
-      <div class="select-text hpopup bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow text-20 p-6 mt-18 w-120"
+    <div class="hb-flex hb-items-start hb-justify-center hb-min-h-screen">
+      <div class="hb-select-text hb-popup hb-bg-white hb-text-gray-800 dark:hb-bg-gray-900 dark:hb-text-gray-300 hb-rounded-lg hb-shadow hb-text-20 hb-p-6 hb-mt-18 hb-w-120"
            @click.stop>
         <div v-text="i18n(options.dictionary.dict) + ' (' + options.dictionary.lang + ')'"
-             class="text-center"></div>
+             class="hb-text-center"></div>
         <form @submit.prevent="lookup">
           <input id="lookupInput"
                  v-model="input"
                  :placeholder="i18n('lookupPlaceholder')"
-                 class="w-full text-24 text-center uppercase bg-blue-100 text-blue-600 dark:bg-gray-800 dark:text-gray-300 rounded-lg p-3 my-4"
+                 class="hb-w-full hb-text-24 hb-text-center hb-uppercase hb-bg-blue-100 hb-text-blue-600 dark:hb-bg-gray-800 dark:hb-text-gray-300 hb-rounded-lg hb-p-3 hb-my-4"
                  autocomplete="off"
                  autofocus />
         </form>
         <div v-for="hist in lookupHistory"
              :key="hist"
-             class="flex items-start mb-2">
+             class="hb-flex hb-items-start hb-mb-2">
           <Icon :icon="hist.icon"
-                :class="{ 'text-red-600': hist.icon == 'no', 'text-green-600': hist.icon == 'yes', 'animate-spin': hist.icon == 'loading' }"
-                class="inline text-24 mr-1" />
-          <div class="grow">
+                :class="{ 'hb-text-red-600': hist.icon == 'no', 'hb-text-green-600': hist.icon == 'yes', 'hb-animate-spin': hist.icon == 'loading' }"
+                class="hb-inline hb-text-24 hb-mr-1" />
+          <div class="hb-grow">
             {{ hist.word }} &mdash; {{ hist.word.length }}
             <div v-if="hist.links"
-                 class="hdefine text-15">
+                 class="hb-define hb-text-15">
               <a v-for="link in hist.links"
                  :key="link.url"
                  :href="link.url"
-                 target="hdefine"
-                 class="hdictionarylink">{{ link.name }}
+                 target="hb-define"
+                 class="hb-dictionarylink">{{ link.name }}
                 <Icon icon="openInNew"
-                      class="inline" />
+                      class="hb-inline" />
               </a>
             </div>
           </div>

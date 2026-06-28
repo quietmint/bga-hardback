@@ -5,9 +5,9 @@ module.exports = {
     autoprefixer: {},
     "postcss-prefix-selector": {
       includeFiles: "main.css",
-      prefix: ".tailwind ",
+      prefix: ".hb-tailwind ",
       transform: function (prefix, selector, prefixedSelector, filePath, rule) {
-        if (selector.startsWith(".tailwind")) {
+        if (selector.startsWith(".hb-tailwind")) {
           return selector;
         } else {
           return prefixedSelector;

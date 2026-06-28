@@ -1,13 +1,13 @@
 <template>
   <teleport to="#player_boards">
     <div id="overall_player_board_0"
-         class="player-board black"
+         class="player-board hb-black"
          style="border-color: black; width: 234px; height: auto">
       <div id="player_board_inner_000000"
            class="player_board_inner">
         <div id="avatarwrap_0"
              v-if="icon"
-             class="emblemwrap tailwind">
+             class="emblemwrap hb-tailwind">
           <Icon id="avatar_0"
                 :icon="icon.icon"
                 :class="icon.color"
@@ -25,14 +25,14 @@
                   class="player_score_value">{{ penny.score }} / {{ penny.gameLength }}</span> <i id="icon_point_0"
                class="fa fa-star"></i>
           </div>
-          <div class="tailwind">
-            <div class="panel-signature flex flex-col justify-center ml-1">
+          <div class="hb-tailwind">
+            <div class="hb-panel-signature hb-flex hb-flex-col hb-justify-center hb-ml-1">
               <div id="tut_pennyTitle"
                    v-if="title"
                    v-text="title"
-                   class="panel-novel text-20 leading-none my-1 pb-1 border-b border-white"></div>
+                   class="hb-panel-novel hb-text-20 hb-leading-none hb-my-1 hb-pb-1 hb-border-b hb-border-white"></div>
               <div id="tut_pennySignature"
-                   class="text-15"
+                   class="hb-text-15"
                    v-html="description"></div>
             </div>
           </div>

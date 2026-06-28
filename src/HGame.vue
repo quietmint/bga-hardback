@@ -1,6 +1,6 @@
 <template>
-  <div class="select-none adjust-none"
-       :class="{ 'no-animation': !this.prefs.animation }">
+  <div class="hb-select-none hb-adjust-none"
+       :class="{ 'hb-no-animation': !this.prefs.animation }">
     <!-- Player panels (moved using teleport) -->
     <HPlayerPanel v-for="(player, id) in players"
                   :key="id"
@@ -19,7 +19,7 @@
     </teleport>
 
     <!-- Icons -->
-    <div class="hidden">
+    <div class="hb-hidden">
       <Icon :id="'icon_' + key"
             v-for="(icon, key) in icons"
             :key="key"
@@ -43,47 +43,47 @@
 
     <!-- Browser warning (Safari 12, etc.) -->
     <div v-if="warningVisible"
-         class="m-4 p-3 text-17 font-bold text-center border-2 border-red-700 bg-white/50">
+         class="hb-m-4 hb-p-3 hb-text-17 hb-font-bold hb-text-center hb-border-2 hb-border-red-700 hb-bg-white/50">
       <a href="https://browsehappy.com/"
          target="_blank"
-         class="block text-blue-700"
+         class="hb-block hb-text-blue-700"
          v-text="i18n('browserWarnTitle')"></a>
-      <div class="text-15"
+      <div class="hb-text-15"
            v-text="i18n('browserWarnDesc')"></div>
     </div>
 
     <!-- Final round reminder -->
     <div v-if="gamedatas.finalRound && !gamedatas.options.coop"
-         class="m-4 p-3 text-17 text-center font-bold border-2 border-red-700 bg-white/50"
+         class="hb-m-4 hb-p-3 hb-text-17 hb-text-center hb-font-bold hb-border-2 hb-border-red-700 hb-bg-white/50"
          v-text="i18n('finalRound')"></div>
 
     <!-- Final word history -->
     <div v-if="wordHistory"
-         class="select-text pagesection">
+         class="hb-select-text pagesection">
       <table class="statstable">
         <thead>
           <tr>
             <th @click="historySort = 'id'"
-                class="cursor-pointer"
+                class="hb-cursor-pointer"
                 width="5%">#</th>
             <th v-text="i18n('playerHeader')"
                 @click="historySort = 'player.order'"
-                class="cursor-pointer"></th>
+                class="hb-cursor-pointer"></th>
             <th v-text="i18n('wordHeader')"
                 @click="historySort = 'word'"
-                class="cursor-pointer"></th>
+                class="hb-cursor-pointer"></th>
             <th v-text="i18n('lengthHeader')"
                 @click="historySort = '-length'"
-                class="cursor-pointer"
+                class="hb-cursor-pointer"
                 width="10%"></th>
             <th @click="historySort = '-coins'"
-                class="cursor-pointer"
+                class="hb-cursor-pointer"
                 width="10%">¢</th>
             <th @click="historySort = '-score'"
-                class="cursor-pointer"
+                class="hb-cursor-pointer"
                 width="10%">
               <Icon icon="star"
-                    class="inline text-18" />
+                    class="hb-inline hb-text-18" />
             </th>
           </tr>
         </thead>
@@ -93,14 +93,14 @@
               :class="hist.player.colorBg25">
             <td>{{ hist.id }}</td>
             <td :class="hist.player.colorText"
-                class="font-bold break-all"
+                class="hb-font-bold hb-break-all"
                 v-text="hist.player.name"></td>
             <td>{{ hist.word }}</td>
             <td>{{ hist.word.length }}</td>
             <td>{{ hist.coins }}¢</td>
-            <td class="whitespace-nowrap">{{ hist.score }}-NO-BREAK-
+            <td class="hb-whitespace-nowrap">{{ hist.score }}-NO-BREAK-
               <Icon icon="star"
-                    class="inline text-18" />
+                    class="hb-inline hb-text-18" />
             </td>
           </tr>
         </tbody>
@@ -113,48 +113,48 @@
 
     <!-- Timeless Classics -->
     <div v-if="timelessVisible"
-         class="px-1 py-3 border-t-2 border-black">
-      <div class="flex leading-8">
+         class="hb-px-1 hb-py-3 hb-border-t-2 hb-border-black">
+      <div class="hb-flex hb-leading-8">
         <div id="tut_timeless_title"
-             class="title text-18 font-bold grow">{{ i18n("timelessLocation") }} ({{ timelessCards.length }})</div>
+             class="hb-title hb-text-18 hb-font-bold hb-grow">{{ i18n("timelessLocation") }} ({{ timelessCards.length }})</div>
       </div>
       <HCardList :cards="timelessCards"
                  location="timeless" />
     </div>
 
     <!-- Offer -->
-    <div class="px-1 py-3 border-t-2 border-black">
-      <div class="flex leading-8">
+    <div class="hb-px-1 hb-py-3 hb-border-t-2 hb-border-black">
+      <div class="hb-flex hb-leading-8">
         <div id="tut_offer_title"
-             class="title text-18 font-bold grow"
+             class="hb-title hb-text-18 hb-font-bold hb-grow"
              v-text="i18n('offerLocation')"></div>
 
-        <div class="buttongroup mb-1 ml-2 grid grid-cols-4">
+        <div class="hb-buttongroup hb-mb-1 hb-ml-2 hb-grid hb-grid-cols-4">
           <div id="sort_offer_letter"
                @click="sort('offer', 'letter')"
-               class="button blue"
-               :class="{ active: locationOrder.offer == 'letter' }"
+               class="hb-button hb-blue"
+               :class="{ 'hb-active': locationOrder.offer == 'letter' }"
                :title="i18n('sortLetterTip')">A-Z</div>
           <div id="sort_offer_cost"
                @click="sort('offer', 'cost')"
-               class="button blue text-15"
-               :class="{ active: locationOrder.offer == 'cost' }"
+               class="hb-button hb-blue hb-text-15"
+               :class="{ 'hb-active': locationOrder.offer == 'cost' }"
                :title="i18n('sortCostTip')">¢</div>
           <div id="sort_offer_genre"
                @click="sort('offer', 'genre')"
-               class="button blue"
-               :class="{ active: locationOrder.offer == 'genre' }"
+               class="hb-button hb-blue"
+               :class="{ 'hb-active': locationOrder.offer == 'genre' }"
                :title="i18n('sortGenreTip')">
             <Icon icon="starter"
-                  class="inline text-17 h-8" />
+                  class="hb-inline hb-text-17 hb-h-8" />
           </div>
           <div id="sort_offer_time"
                @click="sort('offer', 'order')"
-               class="button blue"
-               :class="{ active: locationOrder.offer == 'order' }"
+               class="hb-button hb-blue"
+               :class="{ 'hb-active': locationOrder.offer == 'order' }"
                :title="i18n('sortTimeTip')">
             <Icon icon="clock"
-                  class="inline text-17 h-8" />
+                  class="hb-inline hb-text-17 hb-h-8" />
           </div>
         </div>
       </div>
@@ -340,7 +340,7 @@ export default {
     });
 
     for (const key in this.icons) {
-      this.icons105[key] = getIcon(key, "inline text-105");
+      this.icons105[key] = getIcon(key, "hb-inline hb-text-105");
     }
   },
 
@@ -722,59 +722,59 @@ export default {
       }
       switch (player.colorName) {
         case "red":
-          player.colorBg = "bg-red-700";
-          player.colorBg25 = "bg-red-700/25";
-          player.colorBg50 = "bg-red-700/50";
-          player.colorBorder = "border-red-700";
-          player.colorRing = "ring-red-700";
-          player.colorText = "text-red-700";
-          player.colorTextDark = "text-red-900";
-          player.colorTextLight = "text-red-100";
-          player.dark_colorText100 = "dark:text-red-100";
+          player.colorBg = "hb-bg-red-700";
+          player.colorBg25 = "hb-bg-red-700/25";
+          player.colorBg50 = "hb-bg-red-700/50";
+          player.colorBorder = "hb-border-red-700";
+          player.colorRing = "hb-ring-red-700";
+          player.colorText = "hb-text-red-700";
+          player.colorTextDark = "hb-text-red-900";
+          player.colorTextLight = "hb-text-red-100";
+          player.dark_colorText100 = "dark:hb-text-red-100";
           break;
         case "green":
-          player.colorBg = "bg-green-700";
-          player.colorBg25 = "bg-green-700/25";
-          player.colorBg50 = "bg-green-700/50";
-          player.colorBorder = "border-green-700";
-          player.colorRing = "ring-green-700";
-          player.colorText = "text-green-700";
-          player.colorTextDark = "text-green-900";
-          player.colorTextLight = "text-green-100";
-          player.dark_colorText100 = "dark:text-green-100";
+          player.colorBg = "hb-bg-green-700";
+          player.colorBg25 = "hb-bg-green-700/25";
+          player.colorBg50 = "hb-bg-green-700/50";
+          player.colorBorder = "hb-border-green-700";
+          player.colorRing = "hb-ring-green-700";
+          player.colorText = "hb-text-green-700";
+          player.colorTextDark = "hb-text-green-900";
+          player.colorTextLight = "hb-text-green-100";
+          player.dark_colorText100 = "dark:hb-text-green-100";
           break;
         case "blue":
-          player.colorBg = "bg-blue-700";
-          player.colorBg25 = "bg-blue-700/25";
-          player.colorBg50 = "bg-blue-700/50";
-          player.colorBorder = "border-blue-700";
-          player.colorRing = "ring-blue-700";
-          player.colorText = "text-blue-700";
-          player.colorTextDark = "text-blue-900";
-          player.colorTextLight = "text-blue-100";
-          player.dark_colorText100 = "dark:text-blue-100";
+          player.colorBg = "hb-bg-blue-700";
+          player.colorBg25 = "hb-bg-blue-700/25";
+          player.colorBg50 = "hb-bg-blue-700/50";
+          player.colorBorder = "hb-border-blue-700";
+          player.colorRing = "hb-ring-blue-700";
+          player.colorText = "hb-text-blue-700";
+          player.colorTextDark = "hb-text-blue-900";
+          player.colorTextLight = "hb-text-blue-100";
+          player.dark_colorText100 = "dark:hb-text-blue-100";
           break;
         case "yellow":
-          player.colorBg = "bg-yellow-500";
-          player.colorBg25 = "bg-yellow-500/25";
-          player.colorBg50 = "bg-yellow-600/50";
-          player.colorBorder = "border-yellow-600";
-          player.colorRing = "ring-yellow-500";
-          player.colorText = "text-yellow-600";
-          player.colorTextDark = "text-yellow-900";
-          player.colorTextLight = "text-yellow-900";
-          player.dark_colorText100 = "dark:text-yellow-100";
+          player.colorBg = "hb-bg-yellow-500";
+          player.colorBg25 = "hb-bg-yellow-500/25";
+          player.colorBg50 = "hb-bg-yellow-600/50";
+          player.colorBorder = "hb-border-yellow-600";
+          player.colorRing = "hb-ring-yellow-500";
+          player.colorText = "hb-text-yellow-600";
+          player.colorTextDark = "hb-text-yellow-900";
+          player.colorTextLight = "hb-text-yellow-900";
+          player.dark_colorText100 = "dark:hb-text-yellow-100";
           break;
         case "purple":
-          player.colorBg = "bg-purple-700";
-          player.colorBg25 = "bg-purple-700/25";
-          player.colorBg50 = "bg-purple-700/50";
-          player.colorBorder = "border-purple-700";
-          player.colorRing = "ring-purple-700";
-          player.colorText = "text-purple-700";
-          player.colorTextDark = "text-purple-900";
-          player.colorTextLight = "text-purple-100";
-          player.dark_colorText100 = "dark:text-purple-100";
+          player.colorBg = "hb-bg-purple-700";
+          player.colorBg25 = "hb-bg-purple-700/25";
+          player.colorBg50 = "hb-bg-purple-700/50";
+          player.colorBorder = "hb-border-purple-700";
+          player.colorRing = "hb-ring-purple-700";
+          player.colorText = "hb-text-purple-700";
+          player.colorTextDark = "hb-text-purple-900";
+          player.colorTextLight = "hb-text-purple-100";
+          player.dark_colorText100 = "dark:hb-text-purple-100";
           break;
       }
       return player;
@@ -974,16 +974,16 @@ export default {
     onFormatString(log, args) {
       if (args) {
         if (args.award) {
-          args.award = `<div class="haward length${args.award}"></div>`;
+          args.award = `<div class="hb-award hb-length${args.award}"></div>`;
         }
         if (args.dict && args.link) {
-          args.dict = `<a target="hdefine" href="${args.link}">${args.dict}</a>`;
+          args.dict = `<a target="hb-define" href="${args.link}">${args.dict}</a>`;
         }
         if (args.word) {
           const links = this.dictionaryLinks(args.word);
           if (links != null && links.length > 0) {
             const openInNew = getIcon("openInNew", "inline");
-            args.definitions = '<div class="hdefine">' + links.map((link) => `<a class="hdictionarylink" href="${link.url}" target="hdefine">${link.name} ${openInNew}</a>`).join(' ') + '</div>';
+            args.definitions = '<div class="hb-define">' + links.map((link) => `<a class="hb-dictionarylink" href="${link.url}" target="hb-define">${link.name} ${openInNew}</a>`).join(' ') + '</div>';
           } else {
             args.definitions = "";
           }
@@ -1000,14 +1000,14 @@ export default {
             }
           } else if (k.startsWith("genre")) {
             const html = getIcon(v.toLowerCase().trim(), "hicon");
-            v = `<span class="hgenre ${v}">${html ? html : v}`;
+            v = `<span class="hb-genre ${v}">${html ? html : v}`;
           } else if (k.startsWith("letter")) {
             v = `${v}</span>`;
           } else if (k == "you") {
             const matches = playerRegExp.exec(v);
             if (matches) {
               v = matches[1];
-              v = `<!--PNS--><span class="playername ${this.myself.colorName}">${v}</span><!--PNE-->`;
+              v = `<!--PNS--><span class="playername hb-${this.myself.colorName}">${v}</span><!--PNE-->`;
             }
           } else if (k == "actplayer" || k == "otherplayer" || k.startsWith("player_name")) {
             const matches = playerRegExp.exec(v);
@@ -1015,12 +1015,12 @@ export default {
               v = matches[1];
             }
             if (this.gamedatas.penny && v == window._('Penny Dreadful')) {
-              v = `<!--PNS--><span class="playername black">${v}</span><!--PNE-->`;
+              v = `<!--PNS--><span class="playername hb-black">${v}</span><!--PNE-->`;
             } else {
               for (const id in this.players) {
                 const player = this.players[id];
                 if (v == player.name) {
-                  v = `<!--PNS--><span class="playername ${player.colorName}">${v}</span><!--PNE-->`;
+                  v = `<!--PNS--><span class="playername hb-${player.colorName}">${v}</span><!--PNE-->`;
                   break;
                 }
               }
@@ -1566,7 +1566,7 @@ export default {
 
       // Hide the original card
       card.dragging = true;
-      el.classList.add("invisible");
+      el.classList.add("hb-invisible");
 
       // Start listening
       this.drag = { cardId, cloneEl, drops, locations, offset, start };

@@ -1,10 +1,10 @@
 <template>
   <div :id="'cardmini_' + this.card.id"
        @click="clickCard"
-       :class="[bgClass, { 'cursor-pointer': this.clickAction }]"
-       class="rounded-lg w-11 p-1 m-1 bold flex items-center justify-evenly whitespace-nowrap">
+       :class="[bgClass, { 'hb-cursor-pointer': this.clickAction }]"
+       class="hb-rounded-lg hb-w-11 hb-p-1 hb-m-1 hb-bold hb-flex hb-items-center hb-justify-evenly hb-whitespace-nowrap">
     <Icon :icon="card.genreName"
-          class="icon text-105" />{{ card.letter }}
+          class="hb-icon hb-text-105" />{{ card.letter }}
   </div>
 </template>
 
@@ -28,9 +28,9 @@ export default {
   computed: {
     bgClass() {
       if (this.card.ink) {
-        return 'bg-black text-white';
+        return 'hb-bg-black hb-text-white';
       } else if (this.card.remover) {
-        return 'bg-white text-black';
+        return 'hb-bg-white hb-text-black';
       } else {
         return `${HConstants.GENRES[this.card.genre].bg} ${HConstants.GENRES[this.card.genre].textLight}`;
       }

@@ -1,75 +1,75 @@
 <template>
   <div :id="'area_' + player.id"
-       class="px-1 py-3 border-t-2 border-black">
-    <div class="flex leading-8">
-      <div class="title grow font-bold">
+       class="hb-px-1 hb-py-3 hb-border-t-2 hb-border-black">
+    <div class="hb-flex hb-leading-8">
+      <div class="hb-title hb-grow hb-font-bold">
         <!-- Player name -->
-        <span :class="player.colorName"
-              class="text-18 playername"
+        <span :class="'hb-' + player.colorName"
+              class="hb-text-18 hb-playername"
               v-text="player.name"></span>
         <!-- Ink count -->
         <span :id="'inkCount_' + player.id">
-          <span class="px-2">&bull;</span>
+          <span class="hb-px-2">&bull;</span>
           <Icon icon="inkCount"
-                class="inline text-18 text-black"
+                class="hb-inline hb-text-18 hb-text-black"
                 :title="i18n('ink')" /> {{ player.ink }}
         </span>
         <!-- Remover count-->
         <span :id="'removerCount_' + player.id">
-          <span class="px-2">&bull;</span>
+          <span class="hb-px-2">&bull;</span>
           <Icon icon="removerCount"
-                class="inline text-18 text-white"
+                class="hb-inline hb-text-18 hb-text-white"
                 :title="i18n('remover')" /> {{ player.remover }}
         </span>
       </div>
 
       <!-- Myself only: Action buttons -->
       <div v-if="player.myself && gamestate.name != 'gameEnd'"
-           class="flex">
+           class="hb-flex">
         <!-- Lookup-->
         <div v-if="buttonEnabled['lookup']"
-             class="buttongroup mb-1 ml-2 flex">
+             class="hb-buttongroup hb-mb-1 hb-ml-2 hb-flex">
           <div id="button_lookup"
                @click="showLookup()"
-               class="button blue">
+               class="hb-button hb-blue">
             <Icon icon="dictionary"
-                  class="inline text-17" /> {{ i18n('lookup') }}
+                  class="hb-inline hb-text-17" /> {{ i18n('lookup') }}
           </div>
         </div>
 
         <!-- Uncover -->
-        <div class="buttongroup mb-1 ml-2 flex">
+        <div class="hb-buttongroup hb-mb-1 hb-ml-2 hb-flex">
           <div id="button_uncoverAll"
                @click="buttonEnabled['uncoverAll'] && uncoverAll()"
-               class="button blue"
-               :class="{ 'disabled': !buttonEnabled['uncoverAll'] }">
+               class="hb-button hb-blue"
+               :class="{ 'hb-disabled': !buttonEnabled['uncoverAll'] }">
             <Icon icon="uncover"
-                  class="inline text-17" /> {{ i18n('uncoverAll') }}
+                  class="hb-inline hb-text-17" /> {{ i18n('uncoverAll') }}
           </div>
         </div>
 
         <!-- Sort -->
-        <div class="buttongroup mb-1 ml-2 grid grid-cols-3 leading-8">
+        <div class="hb-buttongroup hb-mb-1 hb-ml-2 hb-grid hb-grid-cols-3 hb-leading-8">
           <div id="sort_tableau_letter"
                @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'letter')"
-               class="button blue"
-               :class="{ 'disabled': !buttonEnabled['sortTableau'] }"
+               class="hb-button hb-blue"
+               :class="{ 'hb-disabled': !buttonEnabled['sortTableau'] }"
                :title="i18n('sortLetterTip')">A-Z</div>
           <div id="sort_tableau_genre"
                @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'genre')"
-               class="button blue"
-               :class="{ 'disabled': !buttonEnabled['sortTableau'] }"
+               class="hb-button hb-blue"
+               :class="{ 'hb-disabled': !buttonEnabled['sortTableau'] }"
                :title="i18n('sortGenreTip')">
             <Icon icon="starter"
-                  class="inline text-17 h-8" />
+                  class="hb-inline hb-text-17 hb-h-8" />
           </div>
           <div id="sort_tableau_shuffle"
                @click="buttonEnabled['sortTableau'] && sort(player.tableauLocation, 'shuffle')"
-               class="button blue"
-               :class="{ 'disabled': !buttonEnabled['sortTableau'] }"
+               class="hb-button hb-blue"
+               :class="{ 'hb-disabled': !buttonEnabled['sortTableau'] }"
                :title="i18n('shuffleTip')">
             <Icon icon="shuffle"
-                  class="inline text-17 h-8" />
+                  class="hb-inline hb-text-17 hb-h-8" />
           </div>
         </div>
       </div>
@@ -77,36 +77,36 @@
 
     <!-- Draw/Hand/Deck minis -->
     <div v-if="gamestate.name != 'gameEnd'"
-         class="grid grid-cols-3 mt-1 border-y-2 divide-x-2 font-bold"
+         class="hb-grid hb-grid-cols-3 hb-mt-1 hb-border-y-2 hb-divide-x-2 hb-font-bold"
          :class="[player.colorText, player.colorBorder, player.colorBg25]">
 
       <div :id="'tab_' + player.drawLocation"
-           class="border-inherit">
+           class="hb-border-inherit">
         <!-- Draw buttons -->
         <div v-if="player.myself"
-             class="buttongroup flex my-1 mx-2 leading-8">
+             class="hb-buttongroup hb-flex hb-my-1 hb-mx-2 hb-leading-8">
           <div id="button_useInk"
                @click="buttonEnabled['useInk'] && useInk()"
-               class="button black flex-1"
-               :class="{ 'disabled': !buttonEnabled['useInk'] }">
+               class="hb-button hb-black hb-flex-1"
+               :class="{ 'hb-disabled': !buttonEnabled['useInk'] }">
             <Icon icon="inkCount"
-                  class="inline text-17" /> {{ i18n('useInk', { count: player.ink }) }}
+                  class="hb-inline hb-text-17" /> {{ i18n('useInk', { count: player.ink }) }}
           </div>
           <div id="button_viewDraw"
                @click="buttonEnabled['viewDraw'] && clickView('draw', true)"
-               class="button blue"
-               :class="{ 'disabled': !buttonEnabled['viewDraw'], 'active': visibleView == 'draw' }">
+               class="hb-button hb-blue"
+               :class="{ 'hb-disabled': !buttonEnabled['viewDraw'], 'active': visibleView == 'draw' }">
             <Icon :icon="visibleView == 'draw' ? 'eyeX' : 'eye'"
-                  class="h-8 inline text-17" />
+                  class="hb-h-8 hb-inline hb-text-17" />
           </div>
         </div>
 
         <!-- Draw label -->
-        <div class="text-center border-inherit p-1"
+        <div class="hb-text-center hb-border-inherit hb-p-1"
              :class="[player.colorBg50, player.colorTextLight, player.dark_colorText100, { 'border-t-2': player.myself, 'border-b-2': options.open || player.myself }]">
-          <span class="mr-2">
+          <span class="hb-mr-2">
             <Icon icon="drawLocation"
-                  class="inline align-text-top text-20" />
+                  class="hb-inline hb-align-text-top hb-text-20" />
             {{ drawCards.length }}
           </span>
           {{ i18n('drawLocation') }}
@@ -114,7 +114,7 @@
 
         <!-- Draw minis -->
         <div v-if="options.open || player.myself"
-             class="flex flex-wrap justify-evenly m-1">
+             class="hb-flex hb-flex-wrap hb-justify-evenly hb-m-1">
           <HCardMini v-for="card in drawCards"
                      :key="card.id"
                      :card="card" />
@@ -122,39 +122,39 @@
       </div>
 
       <div :id="'tab_' + player.handLocation"
-           class="border-inherit">
+           class="hb-border-inherit">
         <!-- Hand buttons -->
         <div v-if="player.myself"
-             class="buttongroup flex my-1 mx-2 leading-8">
+             class="hb-buttongroup hb-flex hb-my-1 hb-mx-2 hb-leading-8">
           <div id="button_playAll"
                @click="buttonEnabled['playAll'] && playAll()"
-               class="button blue flex-1"
-               :class="{ 'disabled': !buttonEnabled['playAll'] }">
+               class="hb-button hb-blue hb-flex-1"
+               :class="{ 'hb-disabled': !buttonEnabled['playAll'] }">
             <Icon icon="download"
-                  class="inline text-17" /> {{ i18n('playAll') }}
+                  class="hb-inline hb-text-17" /> {{ i18n('playAll') }}
           </div>
           <div id="button_playNone"
                @click="buttonEnabled['playNone'] && playNone()"
-               class="button blue flex-1"
-               :class="{ 'disabled': !buttonEnabled['playNone'] }">
+               class="hb-button hb-blue hb-flex-1"
+               :class="{ 'hb-disabled': !buttonEnabled['playNone'] }">
             <Icon icon="upload"
-                  class="inline text-17" /> {{ i18n('playNone') }}
+                  class="hb-inline hb-text-17" /> {{ i18n('playNone') }}
           </div>
           <div id="button_viewHand"
                @click="buttonEnabled['viewHand'] && clickView('hand', true)"
-               class="button blue"
-               :class="{ 'disabled': !buttonEnabled['viewHand'], 'active': visibleView == 'hand' }">
+               class="hb-button hb-blue"
+               :class="{ 'hb-disabled': !buttonEnabled['viewHand'], 'active': visibleView == 'hand' }">
             <Icon :icon="visibleView == 'hand' ? 'eyeX' : 'eye'"
-                  class="h-8 inline text-17" />
+                  class="hb-h-8 hb-inline hb-text-17" />
           </div>
         </div>
 
         <!-- Hand label -->
-        <div class="text-center border-inherit p-1"
+        <div class="hb-text-center hb-border-inherit hb-p-1"
              :class="[player.colorBg50, player.colorTextLight, player.dark_colorText100, { 'border-t-2': player.myself, 'border-b-2': options.open || player.myself }]">
-          <span class="mr-2">
+          <span class="hb-mr-2">
             <Icon icon="handLocation"
-                  class="inline align-text-top text-20" />
+                  class="hb-inline hb-align-text-top hb-text-20" />
             {{ handCards.length }}
           </span>
           {{ i18n('handLocation') }}
@@ -162,7 +162,7 @@
 
         <!-- Hand minis -->
         <div v-if="options.open || player.myself"
-             class="flex flex-wrap justify-evenly m-1">
+             class="hb-flex hb-flex-wrap hb-justify-evenly hb-m-1">
           <HCardMini v-for="card in handCards"
                      :key="card.id"
                      :card="card" />
@@ -170,25 +170,25 @@
       </div>
 
       <div :id="'tab_' + player.discardLocation"
-           class="border-inherit">
+           class="hb-border-inherit">
         <!-- Discard buttons -->
         <div v-if="player.myself"
-             class="buttongroup flex my-1 mx-2 leading-8">
+             class="hb-buttongroup hb-flex hb-my-1 hb-mx-2 hb-leading-8">
           <div id="button_viewDiscard"
                @click="buttonEnabled['viewDiscard'] && clickView('discard', true)"
-               class="flex-1 button blue"
-               :class="{ 'disabled': !buttonEnabled['viewDiscard'], 'active': visibleView == 'discard' }">
+               class="hb-flex-1 hb-button hb-blue"
+               :class="{ 'hb-disabled': !buttonEnabled['viewDiscard'], 'active': visibleView == 'discard' }">
             <Icon :icon="visibleView == 'discard' ? 'eyeX' : 'eye'"
-                  class="h-8 inline text-17" />
+                  class="hb-h-8 hb-inline hb-text-17" />
           </div>
         </div>
 
         <!-- Discard label -->
-        <div class="text-center border-inherit p-1"
+        <div class="hb-text-center hb-border-inherit hb-p-1"
              :class="[player.colorBg50, player.colorTextLight, player.dark_colorText100, { 'border-t-2': player.myself, 'border-b-2': options.open || player.myself }]">
-          <span class="mr-2">
+          <span class="hb-mr-2">
             <Icon icon="discardLocation"
-                  class="inline align-text-top text-20" />
+                  class="hb-inline hb-align-text-top hb-text-20" />
             {{ discardCards.length }}
           </span>
           {{ i18n('discardLocation') }}
@@ -196,7 +196,7 @@
 
         <!-- Discard minis -->
         <div v-if="options.open || player.myself"
-             class="flex flex-wrap justify-evenly m-1">
+             class="hb-flex hb-flex-wrap hb-justify-evenly hb-m-1">
           <HCardMini v-for="card in discardCards"
                      :key="card.id"
                      :card="card" />
@@ -207,15 +207,15 @@
 
     <!-- Draw/Hand/Deck cards -->
     <div v-if="gamestate.name != 'gameEnd' && player.myself && visibleLocation != null"
-         class="w-4/5 mx-auto border-x-2 border-b-2"
+         class="hb-w-4/5 hb-mx-auto hb-border-x-2 hb-border-b-2"
          :class="player.colorBorder, player.colorBg25">
-      <div class="py-1 px-2">
-        <div class="buttongroup flex leading-8">
+      <div class="hb-py-1 hb-px-2">
+        <div class="hb-buttongroup hb-flex hb-leading-8">
           <div id="button_viewTableau"
                @click="clickView(null)"
-               class="button blue active flex-1">
+               class="hb-button hb-blue hb-active hb-flex-1">
             <Icon icon="eyeX"
-                  class="inline text-17" /> {{ i18n('close', { location: visibleName }) }}
+                  class="hb-inline hb-text-17" /> {{ i18n('close', { location: visibleName }) }}
           </div>
         </div>
       </div>
@@ -225,11 +225,11 @@
 
     <!-- Tableau cards -->
     <div v-if="options.open || player.myself || player.id == gamestate.activeId || gamestate.name == 'gameEnd'">
-      <div class="text-center font-bold my-1 leading-8"
+      <div class="hb-text-center hb-font-bold hb-my-1 hb-leading-8"
            :class="player.colorTextDark, player.dark_colorText100">
-        <span class="mr-2">
+        <span class="hb-mr-2">
           <Icon icon="tableauLocation"
-                class="inline align-text-top text-20" />
+                class="hb-inline hb-align-text-top hb-text-20" />
           {{ tableauCards.length }}
         </span>
         {{ i18n('tableauLocation') }}
@@ -239,7 +239,7 @@
     </div>
     <div v-else
          v-text="i18n('closedHands')"
-         class="text-center italic m-4">
+         class="hb-text-center hb-italic hb-m-4">
     </div>
 
   </div>

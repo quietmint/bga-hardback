@@ -1,13 +1,13 @@
 @tailwind base;
 @layer base {
-  .ring,
-  .ring-2 {
+  .hb-ring,
+  .hb-ring-2 {
     --tw-ring-offset-shadow: 0 0 transparent !important;
   }
-  .ring {
+  .hb-ring {
     --tw-ring-shadow: 0 0 0 6px var(--tw-ring-color) !important;
   }
-  .ring-2 {
+  .hb-ring-2 {
     --tw-ring-shadow: 0 0 0 2px var(--tw-ring-color) !important;
   }
   button:focus {
@@ -18,71 +18,71 @@
 @tailwind components;
 @tailwind utilities;
 @layer utilities {
-  .touch-none {
+  .hb-touch-none {
     touch-action: none;
   }
-  .adjust-none {
+  .hb-adjust-none {
     text-size-adjust: none;
   }
 }
 
-.title {
+.hb-title {
   text-shadow: 0 0 3px rgb(255 255 255 / 50%), 0.5px 0.5px rgb(255 255 255 / 50%);
 }
 
-.buttongroup {
-  @apply rounded-lg shadow overflow-hidden whitespace-nowrap cursor-pointer text-14 text-center divide-x divide-white self-start;
+.hb-buttongroup {
+  @apply hb-rounded-lg hb-shadow hb-overflow-hidden hb-whitespace-nowrap hb-cursor-pointer hb-text-14 hb-text-center hb-divide-x hb-divide-white hb-self-start;
 }
 
-.button {
-  @apply uppercase px-2 transition-all duration-300 cursor-pointer font-bold;
+.hb-button {
+  @apply hb-uppercase hb-px-2 hb-transition-all hb-duration-300 hb-cursor-pointer hb-font-bold;
 }
 
-.button.black {
-  @apply bg-black text-white;
+.hb-button.hb-black {
+  @apply hb-bg-black hb-text-white;
 }
 
-.button.white {
-  @apply bg-white text-black;
+.hb-button.hb-white {
+  @apply hb-bg-white hb-text-black;
 }
 
-.button.blue {
-  @apply bg-blue-700 text-white;
+.hb-button.hb-blue {
+  @apply hb-bg-blue-700 hb-text-white;
 }
 
-.button.blue.active {
-  @apply bg-blue-100 text-blue-700;
+.hb-button.hb-blue.hb-active {
+  @apply hb-bg-blue-100 hb-text-blue-700;
 }
 
-.button.red {
-  @apply bg-red-700 text-white;
+.hb-button.hb-red {
+  @apply hb-bg-red-700 hb-text-white;
 }
 
-.button.disabled {
-  @apply cursor-not-allowed opacity-50;
+.hb-button.hb-disabled {
+  @apply hb-cursor-not-allowed hb-opacity-50;
 }
 
-.tabgroup {
-  @apply flex grow justify-evenly;
+.hb-tabgroup {
+  @apply hb-flex hb-grow hb-justify-evenly;
 }
 
-.tab {
-  @apply border-t-2 border-l-2 border-r-2 rounded-t-lg px-4 py-2 font-bold;
+.hb-tab {
+  @apply hb-border-t-2 hb-border-l-2 hb-border-r-2 hb-rounded-t-lg hb-px-4 hb-py-2 hb-font-bold;
   border-color: inherit;
 }
 
-.tabbottom {
-  @apply border-b-2 border-l-2 border-r-2 rounded-b-lg px-4 py-2 font-bold;
+.hb-tabbottom {
+  @apply hb-border-b-2 hb-border-l-2 hb-border-r-2 hb-rounded-b-lg hb-px-4 hb-py-2 hb-font-bold;
   border-color: inherit;
 }
 
-.cardholder {
+.hb-cardholder {
   transition: transform 0.5s ease-in;
   perspective: 600px;
   z-index: 1;
 }
 
-.card {
+.hb-card {
   transition: transform 0.5s cubic-bezier(0.7, 1.2, 1, 1), all 0.5s ease-in;
   transform-style: preserve-3d;
   width: 8.75em;
@@ -92,46 +92,46 @@
   color: black;
 }
 
-.tailwind.cardsize-1 .card {
+.hb-tailwind.hb-cardsize-1 .hb-card {
   font-size: 10px;
 }
-.tailwind.cardsize-2 .card {
+.hb-tailwind.hb-cardsize-2 .hb-card {
   font-size: 11px;
 }
-.tailwind.cardsize-3 .card {
+.hb-tailwind.hb-cardsize-3 .hb-card {
   font-size: 12.1px;
 }
-.tailwind.cardsize-4 .card {
+.hb-tailwind.hb-cardsize-4 .hb-card {
   font-size: 13.3px;
 }
-.tailwind.cardsize-5 .card {
+.hb-tailwind.hb-cardsize-5 .hb-card {
   font-size: 14.5px;
 }
-.tailwind.cardsize-6 .card {
+.hb-tailwind.hb-cardsize-6 .hb-card {
   font-size: 15.8px;
 }
-.tailwind.cardsize-7 .card {
+.hb-tailwind.hb-cardsize-7 .hb-card {
   font-size: 17.1px;
 }
 
-.card.timeless:not(.wild) {
+.hb-card.hb-timeless:not(.hb-wild) {
   width: 11em;
   height: 8.75em;
 }
 
-.card.wild {
+.hb-card.hb-wild {
   transform: rotateY(180deg);
 }
 
-.cardface {
+.hb-cardface {
   position: absolute;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
 }
 
-.cardface.back {
-  @apply bg-gray-700;
+.hb-cardface.hb-back {
+  @apply hb-bg-gray-700;
   background-image: url(img/wild.jpg);
   background-size: cover;
   background-repeat: no-repeat;
@@ -140,31 +140,31 @@
 }
 
 /* z-index needed for drag-and-drop ghost images */
-.cardface.front {
+.hb-cardface.hb-front {
   z-index: 1;
 }
-.card.wild .cardface.back {
+.hb-card.hb-wild .hb-cardface.hb-back {
   z-index: 2;
 }
 
-.wildletter {
-  @apply text-blue-100;
+.hb-wildletter {
+  @apply hb-text-blue-100;
   font-size: 7em;
   line-height: 150%;
   font-family: "Bodoni Moda", serif;
   text-shadow: -2px 2px theme("colors.blue.400"), 1px -1px theme("colors.blue.700"), 0 0 4px #0008;
 }
 
-.card .letter {
+.hb-card .hb-letter {
   width: 100%;
 }
 
-.card.timeless .letter {
+.hb-card.hb-timeless .hb-letter {
   margin-top: 0;
   width: 56.5%;
 }
 
-.card .benefits {
+.hb-card .hb-benefits {
   left: 0;
   right: 0;
   bottom: 0;
@@ -172,7 +172,7 @@
   overflow: hidden;
 }
 
-.card.timeless .benefits {
+.hb-card.hb-timeless .hb-benefits {
   top: 13%;
   bottom: 0;
   left: unset;
@@ -181,34 +181,34 @@
   height: unset;
 }
 
-.card-starter .cardface.front {
-  @apply bg-gray-500;
+.hb-card-starter .hb-cardface.hb-front {
+  @apply hb-bg-gray-500;
   background-image: url(img/starter.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-.card-starter .letter {
-  @apply text-yellow-500;
+.hb-card-starter .hb-letter {
+  @apply hb-text-yellow-500;
   margin-top: 18.6%;
   font-size: 4.625em;
   font-family: "Bodoni Moda", serif;
   text-shadow: -1px 1px white, 1px -1px black, 0 0 4px black;
 }
 
-.card-adventure .cardface.front {
-  @apply bg-yellow-700;
+.hb-card-adventure .hb-cardface.hb-front {
+  @apply hb-bg-yellow-700;
   background-image: url(img/adventure.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-.card-adventure.timeless .cardface.front {
+.hb-card-adventure.hb-timeless .hb-cardface.hb-front {
   background-image: url(img/adventure-timeless.jpg);
 }
 
-.card-adventure .letter {
-  @apply text-yellow-400;
+.hb-card-adventure .hb-letter {
+  @apply hb-text-yellow-400;
   margin-top: 17.2%;
   margin-left: -2%;
   font-size: 4.875em;
@@ -216,30 +216,30 @@
   text-shadow: -2px 0px 8px theme("colors.red.500"), 2px 2px theme("colors.yellow.900");
 }
 
-.card-adventure .letter.letter-Q {
+.hb-card-adventure .hb-letter.hb-letter-Q {
   font-size: 4.15em;
 }
 
-.card-adventure .letter.letter-M,
-.card-adventure .letter.letter-N,
-.card-adventure .letter.letter-W {
+.hb-card-adventure .hb-letter.hb-letter-M,
+.hb-card-adventure .hb-letter.hb-letter-N,
+.hb-card-adventure .hb-letter.hb-letter-W {
   font-size: 4.5em;
   line-height: 108%;
 }
 
-.card-horror .cardface.front {
-  @apply bg-green-900;
+.hb-card-horror .hb-cardface.hb-front {
+  @apply hb-bg-green-900;
   background-image: url(img/horror.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-.card-horror.timeless .cardface.front {
+.hb-card-horror.hb-timeless .hb-cardface.hb-front {
   background-image: url(img/horror-timeless.jpg);
 }
 
-.card-horror .letter {
-  @apply text-green-400;
+.hb-card-horror .hb-letter {
+  @apply hb-text-green-400;
   font-size: 5.25em;
   margin-top: 17.2%;
   line-height: 80%;
@@ -247,49 +247,49 @@
   text-shadow: -2px 2px theme("colors.green.700"), 1px -1px theme("colors.green.200");
 }
 
-.card-horror .letter.letter-C,
-.card-horror .letter.letter-F,
-.card-horror .letter.letter-T,
-.card-horror .letter.letter-V {
+.hb-card-horror .hb-letter.hb-letter-C,
+.hb-card-horror .hb-letter.hb-letter-F,
+.hb-card-horror .hb-letter.hb-letter-T,
+.hb-card-horror .hb-letter.hb-letter-V {
   margin-top: 20%;
 }
 
-.card-horror .letter.letter-E {
+.hb-card-horror .hb-letter.hb-letter-E {
   margin-top: 18.6%;
 }
 
-.card-horror .letter.letter-I,
-.card-horror .letter.letter-R {
+.hb-card-horror .hb-letter.hb-letter-I,
+.hb-card-horror .hb-letter.hb-letter-R {
   margin-top: 21.5%;
 }
 
-.card-horror .letter.letter-J,
-.card-horror .letter.letter-Z {
+.hb-card-horror .hb-letter.hb-letter-J,
+.hb-card-horror .hb-letter.hb-letter-Z {
   margin-top: 14%;
 }
 
-.card-horror .letter.letter-Q {
+.hb-card-horror .hb-letter.hb-letter-Q {
   font-size: 4.8125em;
   margin-top: 21.5%;
 }
 
-.card-horror.timeless .letter {
+.hb-card-horror.hb-timeless .hb-letter {
   margin-top: 4%;
 }
 
-.card-romance .cardface.front {
-  @apply bg-red-800;
+.hb-card-romance .hb-cardface.hb-front {
+  @apply hb-bg-red-800;
   background-image: url(img/romance.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-.card-romance.timeless .cardface.front {
+.hb-card-romance.hb-timeless .hb-cardface.hb-front {
   background-image: url(img/romance-timeless.jpg);
 }
 
-.card-romance .letter {
-  @apply text-red-200;
+.hb-card-romance .hb-letter {
+  @apply hb-text-red-200;
   margin-top: 17%;
   margin-left: -5%;
   font-size: 4.75em;
@@ -297,76 +297,76 @@
   text-shadow: 1px 1px theme("colors.red.500");
 }
 
-.card-romance .letter.letter-G,
-.card-romance .letter.letter-Q,
-.card-romance .letter.letter-Y {
+.hb-card-romance .hb-letter.hb-letter-G,
+.hb-card-romance .hb-letter.hb-letter-Q,
+.hb-card-romance .hb-letter.hb-letter-Y {
   margin-top: 14%;
   font-size: 4.25em;
 }
 
-.card-romance .letter.letter-M {
+.hb-card-romance .hb-letter.hb-letter-M {
   margin-top: 22%;
   margin-left: -2%;
   font-size: 4em;
 }
 
-.card-romance .letter.letter-P {
+.hb-card-romance .hb-letter.hb-letter-P {
   margin-top: 14%;
 }
 
-.card-romance .letter.letter-V {
+.hb-card-romance .hb-letter.hb-letter-V {
   margin-top: 18%;
   margin-left: 0;
   font-size: 5em;
   font-family: "Merienda", cursive;
 }
 
-.card-romance .letter.letter-W {
+.hb-card-romance .hb-letter.hb-letter-W {
   margin-top: 18%;
   margin-left: -3%;
   font-size: 4.5em;
 }
 
-.card-romance.timeless .letter {
+.hb-card-romance.hb-timeless .hb-letter {
   margin-top: 4%;
 }
 
-.card-mystery .cardface.front {
-  @apply bg-blue-500;
+.hb-card-mystery .hb-cardface.hb-front {
+  @apply hb-bg-blue-500;
   background-image: url(img/mystery.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-.card-mystery.timeless .cardface.front {
+.hb-card-mystery.hb-timeless .hb-cardface.hb-front {
   background-image: url(img/mystery-timeless.jpg);
 }
 
-.card-mystery .letter {
-  @apply text-blue-800;
+.hb-card-mystery .hb-letter {
+  @apply hb-text-blue-800;
   margin-top: 15%;
   font-size: 5.25em;
   font-family: "New Rocker", serif;
   text-shadow: -1px 1px theme("colors.blue.100"), 1px -1px theme("colors.gray.900");
 }
 
-.card-mystery .letter.letter-J,
-.card-mystery .letter.letter-L,
-.card-mystery .letter.letter-Q {
+.hb-card-mystery .hb-letter.hb-letter-J,
+.hb-card-mystery .hb-letter.hb-letter-L,
+.hb-card-mystery .hb-letter.hb-letter-Q {
   font-size: 4.875em;
   margin-top: 12%;
 }
 
-.card-mystery .letter.letter-N {
+.hb-card-mystery .hb-letter.hb-letter-N {
   font-size: 4.875em;
   margin-top: 14%;
 }
 
-.card-mystery.timeless .letter {
+.hb-card-mystery.hb-timeless .hb-letter {
   margin-top: 1%;
 }
 
-.bookmark {
+.hb-bookmark {
   text-shadow: 1px 1px 1px rgb(0 0 0 / 50%);
   top: 0;
   left: 0.1875em;
@@ -374,13 +374,13 @@
   height: 4em;
 }
 
-.bookmark .icon {
+.hb-bookmark .hb-icon {
   margin-left: 0.125em;
   margin-bottom: 0.25em;
   font-size: 1.5em;
 }
 
-.timeless .bookmark {
+.hb-timeless .hb-bookmark {
   left: 0;
   top: unset;
   bottom: 0.1875em;
@@ -388,37 +388,37 @@
   height: 1.75em;
 }
 
-.timeless .bookmark .icon {
+.hb-timeless .hb-bookmark .hb-icon {
   margin-left: 0;
   margin-bottom: 0.125em;
 }
 
-.timeless .bookmark div:last-child {
-  @apply pl-1;
+.hb-timeless .hb-bookmark div:last-child {
+  @apply hb-pl-1;
   padding-top: 0.125em;
 }
 
-.card-adventure .bookmark {
+.hb-card-adventure .hb-bookmark {
   text-shadow: 1px 1px 1px rgb(255 255 255 / 50%);
 }
 
-.bookmark .star {
+.hb-bookmark .hb-star {
   margin-left: -0.125em;
 }
 
-.fade-enter-active,
-.fade-leave-active {
+.hb-fade-enter-active,
+.hb-fade-leave-active {
   transition: opacity 0.3s ease;
 }
 
-.fade-enter-from,
-.fade-leave-to {
+.hb-fade-enter-from,
+.hb-fade-leave-to {
   opacity: 0;
 }
 
 /* Player panels */
 
-.tailwind.panelbg {
+.hb-tailwind.hb-panelbg {
   margin: 0 -3px -5px -3px;
   clear: both;
   display: grid;
@@ -428,64 +428,64 @@
     / 110px auto 115px;
 }
 
-.panel-left {
+.hb-panel-left {
   grid-area: left;
 }
 
-.panel-right {
+.hb-panel-right {
   grid-area: right;
 }
 
-.panel-bottom {
+.hb-panel-bottom {
   grid-area: bottom;
 }
 
-.panel-ink {
+.hb-panel-ink {
   background: no-repeat url(img/panel-ink.png);
   height: 62px;
   padding: 0 3px 6px;
 }
 
-.panel-opt {
-  @apply rounded-full bg-white/75 text-black border-3 border-dashed border-gray-800 text-17 text-center font-bold shadow whitespace-nowrap;
+.hb-panel-opt {
+  @apply hb-rounded-full hb-bg-white/75 hb-text-black hb-border-3 hb-border-dashed hb-border-gray-800 hb-text-17 hb-text-center hb-font-bold hb-shadow hb-whitespace-nowrap;
   width: 45px;
   height: 45px;
   line-height: 39px;
 }
 
-.panel-signature {
+.hb-panel-signature {
   clear: both;
   min-height: 115px;
   margin-right: 100px;
 }
 
-.panel-novel {
+.hb-panel-novel {
   font-family: "Staatliches", serif;
 }
 
-.genreCounts div {
+.hb-genreCounts div {
   transition: width 0.3s ease-in;
 }
 
-.icon-left,
-.icon-right {
+.hb-icon-left,
+.hb-icon-right {
   width: 0.7em;
 }
 
-.hpopup .hgenre {
-  @apply rounded-lg px-2;
+.hb-popup .hb-genre {
+  @apply hb-rounded-lg hb-px-2;
 }
 
-.hpopup .hgenre .hicon {
-  @apply inline text-110;
+.hb-popup .hb-genre .hb-hicon {
+  @apply hb-inline hb-text-110;
   vertical-align: -3px;
 }
 
-.no-animation .button,
-.no-animation .card,
-.no-animation .cardholder,
-.no-animation .fade-enter-active,
-.no-animation .fade-leave-active,
-.no-animation .genreCounts div {
+.hb-no-animation .hb-button,
+.hb-no-animation .hb-card,
+.hb-no-animation .hb-cardholder,
+.hb-no-animation .hb-fade-enter-active,
+.hb-no-animation .hb-fade-leave-active,
+.hb-no-animation .hb-genreCounts div {
   transition: none !important;
 }

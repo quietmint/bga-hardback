@@ -1,56 +1,56 @@
 <template>
   <teleport :to="teleportTo">
-    <div class="tailwind panelbg">
-      <div class="panel-left text-center">
+    <div class="hb-tailwind hb-panelbg">
+      <div class="hb-panel-left hb-text-center">
         <div id="tut_firstPlayer"
              v-if="player.order == 1"
-             class="text-14 text-left text-shadow pl-1 pt-1"
+             class="hb-text-14 hb-text-left hb-text-shadow hb-pl-1 hb-pt-1"
              v-text="i18n('first')"></div>
-        <div class="panel-ink flex items-center text-18 font-bold">
+        <div class="hb-panel-ink hb-flex hb-items-center hb-text-18 hb-font-bold">
           <div :id="'tut_ink_p' + player.id"
-               class="flex-1"
+               class="hb-flex-1"
                :title="i18n('ink') + ': ' + player.ink">{{ player.ink }}</div>
           <div :id="'tut_remover_p' + player.id"
-               class="flex-1 text-black"
+               class="hb-flex-1 hb-text-black"
                :title="i18n('remover') + ': ' + player.remover">{{ player.remover }}</div>
         </div>
       </div>
 
-      <div class="panel-right flex flex-wrap gap-1 content-end justify-center text-18 font-bold text-center">
+      <div class="hb-panel-right hb-flex hb-flex-wrap hb-gap-1 hb-content-end hb-justify-center hb-text-18 hb-font-bold hb-text-center">
         <!-- Location Counts -->
         <div :id="'count_' + player.drawLocation"
-             :class="{ 'cursor-pointer': player.myself && drawCards.length > 0 }"
-             class="rounded-lg flex-2 whitespace-nowrap overflow-hidden bg-black/70 p-0.5"
+             :class="{ 'hb-cursor-pointer': player.myself && drawCards.length > 0 }"
+             class="hb-rounded-lg hb-flex-2 hb-whitespace-nowrap hb-overflow-hidden hb-bg-black/70 hb-p-0.5"
              @click="player.myself && drawCards.length > 0 && clickView('draw')"
              :title="i18n('drawLocation') + ': ' + drawCards.length">
           <Icon icon="drawLocation"
-                class="inline text-20" /> {{ drawCards.length }}
+                class="hb-inline hb-text-20" /> {{ drawCards.length }}
         </div>
         <div :id="'count_' + player.handLocation"
-             class="rounded-lg flex-2 whitespace-nowrap overflow-hidden bg-black/70 p-0.5"
-             :class="{ 'cursor-pointer': player.myself && handCards.length > 0 }"
+             class="hb-rounded-lg hb-flex-2 hb-whitespace-nowrap hb-overflow-hidden hb-bg-black/70 hb-p-0.5"
+             :class="{ 'hb-cursor-pointer': player.myself && handCards.length > 0 }"
              @click="player.myself && handCards.length > 0 && clickView('hand')"
              :title="i18n('handLocation') + ': ' + handCards.length">
           <Icon icon="handLocation"
-                class="inline text-20" /> {{ handCards.length }}
+                class="hb-inline hb-text-20" /> {{ handCards.length }}
         </div>
         <div :id="'count_' + player.tableauLocation"
-             class="rounded-lg flex-2 whitespace-nowrap overflow-hidden bg-black/70 p-0.5"
+             class="hb-rounded-lg hb-flex-2 hb-whitespace-nowrap hb-overflow-hidden hb-bg-black/70 hb-p-0.5"
              :title="i18n('tableauLocation') + ': ' + tableauCards.length">
           <Icon icon="tableauLocation"
-                class="inline text-20" /> {{ tableauCards.length }}
+                class="hb-inline hb-text-20" /> {{ tableauCards.length }}
         </div>
         <div :id="'count_' + player.discardLocation"
-             :class="{ 'cursor-pointer': player.myself && discardCards.length > 0 }"
-             class="rounded-lg flex-2 whitespace-nowrap overflow-hidden bg-black/70 p-0.5"
+             :class="{ 'hb-cursor-pointer': player.myself && discardCards.length > 0 }"
+             class="hb-rounded-lg hb-flex-2 hb-whitespace-nowrap hb-overflow-hidden hb-bg-black/70 hb-p-0.5"
              @click="player.myself && discardCards.length > 0 && clickView('discard')"
              :title="i18n('discardLocation') + ': ' + discardCards.length">
           <Icon icon="discardLocation"
-                class="inline text-20" /> {{ discardCards.length }}
+                class="hb-inline hb-text-20" /> {{ discardCards.length }}
         </div>
       </div>
 
-      <div class="panel-bottom">
+      <div class="hb-panel-bottom">
         <HAwardAdvert :id="player.id"
                       :award="player.award"
                       :advert="player.advert" />
@@ -79,7 +79,7 @@ export default {
   },
 
   mounted() {
-    document.getElementById("overall_player_board_" + this.player.id).classList.add(this.player.colorName);
+    document.getElementById("overall_player_board_" + this.player.id).classList.add("hb-" + this.player.colorName);
   },
 
   computed: {

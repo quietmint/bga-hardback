@@ -3,7 +3,7 @@
        @pointerleave="hide"
        ref="holder">
     <div v-if="visible"
-         class="absolute z-top"
+         class="hb-absolute hb-z-top"
          :style="{ marginTop: top, marginLeft: left }"
          ref="tip">
       <slot name="tip" />

@@ -1,16 +1,16 @@
 <template>
   <div :id="'tut_genreCounts_p' + id"
-       class="mt-1 text-15 cursor-pointer"
+       class="hb-mt-1 hb-text-15 hb-cursor-pointer"
        @click="click">
 
     <!-- Collapsed -->
     <div v-if="collapsed"
-         class="genreCounts flex grow whitespace-nowrap text-center h-6 leading-6">
+         class="hb-genreCounts hb-flex hb-grow hb-whitespace-nowrap hb-text-center hb-h-6 hb-leading-6">
       <div v-for="gc in counts"
            :key="gc.genre"
            :style="{ width: gc.percent + '%' }"
            :class="gc.class">
-        <Icon class="inline text-16"
+        <Icon class="hb-inline hb-text-16"
               :icon="gc.genre" />{{ gc.count }}
       </div>
     </div>
@@ -19,11 +19,11 @@
     <div v-if="!collapsed"
          v-for="gc in counts"
          :key="gc.genre"
-         class="px-2 py-1 flex h-6"
+         class="hb-px-2 hb-py-1 hb-flex hb-h-6"
          :class="gc.class">
-      <Icon class="text-16 mr-1"
+      <Icon class="hb-text-16 hb-mr-1"
             :icon="gc.genre" /> {{ i18n(gc.genre) }}
-      <div class="grow text-right">{{ gc.count }} / {{ gc.total }} ({{ gc.percentDisplay }}%)</div>
+      <div class="hb-grow hb-text-right">{{ gc.count }} / {{ gc.total }} ({{ gc.percentDisplay }}%)</div>
     </div>
 
   </div>

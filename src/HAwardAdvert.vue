@@ -3,27 +3,27 @@
   <div v-if="options.awards"
        :id="'tut_award_p' + id"
        @click="click('award')"
-       :class="visible == 'award' ? 'rounded-t-lg bg-black/70' : 'rounded-lg bg-white/70 text-black'"
-       class="flex mt-1 mx-1 p-1 text-15 font-bold cursor-pointer">
-    <div class="w-1/3">{{ i18n('award') }}:</div>
+       :class="visible == 'award' ? 'hb-rounded-t-lg hb-bg-black/70' : 'hb-rounded-lg hb-bg-white/70 hb-text-black'"
+       class="hb-flex hb-mt-1 hb-mx-1 hb-p-1 hb-text-15 hb-font-bold hb-cursor-pointer">
+    <div class="hb-w-1/3">{{ i18n('award') }}:</div>
     <div v-if="award"
-         class="w-2/3">
+         class="hb-w-2/3">
       {{ award || 0 }}-NO-BREAK-
       <Icon icon="star"
-            class="inline text-16" /> ({{ i18n('awardTable', { length: awardLength }) }})
+            class="hb-inline hb-text-16" /> ({{ i18n('awardTable', { length: awardLength }) }})
     </div>
     <div v-if="!award"
-         class="w-2/3">--</div>
+         class="hb-w-2/3">--</div>
   </div>
   <div v-if="visible == 'award'"
-       class="mx-1 rounded-b-lg overflow-hidden text-15">
+       class="hb-mx-1 hb-rounded-b-lg hb-overflow-hidden hb-text-15">
     <div v-for="(points, length) in refs.awards"
          :key="letters"
-         :class="{ 'font-bold': award == points }"
-         class="pl-1/3 h-6 leading-6 bg-white/70 text-black">
+         :class="{ 'hb-font-bold': award == points }"
+         class="hb-pl-1/3 hb-h-6 hb-leading-6 hb-bg-white/70 hb-text-black">
       {{ points }}-NO-BREAK-
       <Icon icon="star"
-            class="inline text-16" /> ({{ i18n('awardTable', { length }) }})
+            class="hb-inline hb-text-16" /> ({{ i18n('awardTable', { length }) }})
     </div>
   </div>
 
@@ -31,26 +31,26 @@
   <div v-if="options.adverts"
        :id="'tut_doctor_p' + id"
        @click="click('advert')"
-       :class="visible == 'advert' ? 'rounded-t-lg bg-black/70' : 'rounded-lg bg-white/70 text-black'"
-       class="flex mt-1 mx-1 p-1 text-15 font-bold cursor-pointer">
-    <div class="w-1/3">{{ i18n('advert') }}:</div>
+       :class="visible == 'advert' ? 'hb-rounded-t-lg hb-bg-black/70' : 'hb-rounded-lg hb-bg-white/70 hb-text-black'"
+       class="hb-flex hb-mt-1 hb-mx-1 hb-p-1 hb-text-15 hb-font-bold hb-cursor-pointer">
+    <div class="hb-w-1/3">{{ i18n('advert') }}:</div>
     <div v-if="advert"
-         class="w-2/3">{{ advert }}-NO-BREAK-
+         class="hb-w-2/3">{{ advert }}-NO-BREAK-
       <Icon icon="star"
-            class="inline text-16" /> ({{ advertCoins }}¢)
+            class="hb-inline hb-text-16" /> ({{ advertCoins }}¢)
     </div>
     <div v-if="!advert"
-         class="w-2/3">--</div>
+         class="hb-w-2/3">--</div>
   </div>
   <div v-if="visible == 'advert'"
-       class="mx-1 rounded-b-lg overflow-hidden text-15">
+       class="hb-mx-1 hb-rounded-b-lg hb-overflow-hidden hb-text-15">
     <div v-for="(points, coins) in refs.adverts"
          :key="key"
-         :class="{ 'font-bold': advert == points }"
-         class="pl-1/3 h-6 leading-6 bg-white/70 text-black">
+         :class="{ 'hb-font-bold': advert == points }"
+         class="hb-pl-1/3 hb-h-6 hb-leading-6 hb-bg-white/70 hb-text-black">
       {{ points }}-NO-BREAK-
       <Icon icon="star"
-            class="inline text-16" /> ({{ coins }}¢)
+            class="hb-inline hb-text-16" /> ({{ coins }}¢)
     </div>
   </div>
 </template>

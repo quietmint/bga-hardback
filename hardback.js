@@ -27,7 +27,7 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
         console.error("Unsupported browser", navigator.userAgent);
         var msg = _("Your outdated browser is not supported");
         dojo.style("browser-error", "display", "block");
-        $("browser-error").innerHTML = "<div>" + msg + "</div>" + '<div class="ua" title="User-Agent">' + navigator.userAgent + "</div>" + '<div id="errorAbandon" class="bgabutton bgabutton_blue" onclick="$(\'ingame_menu_abandon\').click();return false">' + _("Abandon the game (no penalty)") + "</div>";
+        $("browser-error").innerHTML = "<div>" + msg + "</div>" + '<div class="hb-ua" title="User-Agent">' + navigator.userAgent + "</div>" + '<div id="errorAbandon" class="bgabutton bgabutton_blue" onclick="$(\'ingame_menu_abandon\').click();return false">' + _("Abandon the game (no penalty)") + "</div>";
         return;
       }
 
@@ -236,9 +236,10 @@ define(["dojo", "dojo/_base/declare", "dojo/on", "ebg/core/gamegui", "ebg/counte
           dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         }
         dojo.toggleClass(document.documentElement, "dark", dark);
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
       } else if (id == HConstants.PREF_CARD_SIZE) {
-        dojo.removeClass("HGame", "cardsize-1 cardsize-2 cardsize-3 cardsize-4 cardsize-5 cardsize-6 cardsize-7");
-        dojo.addClass("HGame", "cardsize-" + value);
+        dojo.removeClass("HGame", "hb-cardsize-1 hb-cardsize-2 hb-cardsize-3 hb-cardsize-4 hb-cardsize-5 hb-cardsize-6 hb-cardsize-7");
+        dojo.addClass("HGame", "hb-cardsize-" + value);
       }
       this.vue && this.vue.onPrefChange(id, value);
     },

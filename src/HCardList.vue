@@ -1,13 +1,13 @@
 <template>
   <div :id="'cardlist_' + location"
-       class="cardlist flex flex-wrap items-center justify-center">
+       class="hb-cardlist hb-flex hb-flex-wrap hb-items-center hb-justify-center">
     <transition-group :css="false">
       <HCard v-for="card in cards"
              :key="card.id"
              :card="card" />
     </transition-group>
     <div v-if="cards.length == 0"
-         class="py-4 text-center"
+         class="hb-py-4 hb-text-center"
          v-text="emptyMessage"></div>
   </div>
 </template>

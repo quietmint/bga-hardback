@@ -1,4 +1,4 @@
-svg.inline {
+svg.hb-inline {
   vertical-align: -3px;
 }
 
@@ -14,21 +14,21 @@ svg.inline {
   line-height: 28px;
 }
 
-.hdefine {
-  @apply flex flex-wrap;
+.hb-define {
+  @apply hb-flex hb-flex-wrap;
 }
 
-a.hdictionarylink {
-  @apply rounded-lg px-2 m-1 whitespace-nowrap text-blue-600 bg-black/10 dark:bg-white/10;
+a.hb-dictionarylink {
+  @apply hb-rounded-lg hb-px-2 hb-m-1 hb-whitespace-nowrap hb-text-blue-600 hb-bg-black/10 dark:hb-bg-white/10;
 }
 
-.hicon {
+.hb-icon {
   font-size: 1.3em;
   vertical-align: -0.25em;
   padding-right: 1px;
 }
 
-.hgenre {
+.hb-genre {
   display: inline-block;
   white-space: nowrap;
   font-weight: bold;
@@ -39,37 +39,37 @@ a.hdictionarylink {
   line-height: 1.3em;
 }
 
-.hgenre.starter,
-.hgenre.⚫ {
+.hb-genre.starter,
+.hb-genre.⚫ {
   background-color: theme("colors.gray.600");
   color: theme("colors.gray.100");
 }
 
-.hgenre.adventure,
-.hgenre.🧭 {
+.hb-genre.adventure,
+.hb-genre.🧭 {
   background-color: theme("colors.yellow.500");
   color: theme("colors.yellow.900");
 }
 
-.hgenre.horror,
-.hgenre.💀 {
+.hb-genre.horror,
+.hb-genre.💀 {
   background-color: theme("colors.green.700");
   color: theme("colors.green.100");
 }
 
-.hgenre.mystery,
-.hgenre.🔎 {
+.hb-genre.mystery,
+.hb-genre.🔎 {
   background-color: theme("colors.blue.700");
   color: theme("colors.blue.100");
 }
 
-.hgenre.romance,
-.hgenre.❤️ {
+.hb-genre.romance,
+.hb-genre.❤️ {
   background-color: theme("colors.red.700");
   color: theme("colors.red.100");
 }
 
-.haward {
+.hb-award {
   width: 230px;
   height: 169px;
   margin-top: 5px;
@@ -80,27 +80,27 @@ a.hdictionarylink {
   box-shadow: 2px 2px 4px rgb(0 0 0 / 50%);
 }
 
-.haward.length7 {
+.hb-award.hb-length7 {
   background-image: url(img/award7.jpg);
 }
 
-.haward.length8 {
+.hb-award.hb-length8 {
   background-image: url(img/award8.jpg);
 }
 
-.haward.length9 {
+.hb-award.hb-length9 {
   background-image: url(img/award9.jpg);
 }
 
-.haward.length10 {
+.hb-award.hb-length10 {
   background-image: url(img/award10.jpg);
 }
 
-.haward.length11 {
+.hb-award.hb-length11 {
   background-image: url(img/award11.jpg);
 }
 
-.haward.length12 {
+.hb-award.hb-length12 {
   background-image: url(img/award12.jpg);
 }
 
@@ -155,56 +155,56 @@ a.hdictionarylink {
   text-shadow: 0 0 2px white, 1px 1px rgb(255 255 255 / 50%);
 }
 
-.playername.red {
+.playername.hb-red {
   color: theme("colors.red.700");
 }
 
-.playername.green {
+.playername.hb-green {
   color: theme("colors.green.700");
 }
 
-.playername.blue {
+.playername.hb-blue {
   color: theme("colors.blue.700");
 }
 
-.playername.yellow {
+.playername.hb-yellow {
   color: theme("colors.yellow.600");
 }
 
-.playername.purple {
+.playername.hb-purple {
   color: theme("colors.purple.700");
 }
 
-.playername.black {
+.playername.hb-black {
   color: black;
 }
 
-.player-board.red .player-name a,
-.player-board.yellow .player-name a {
+.player-board.hb-red .player-name a,
+.player-board.hb-yellow .player-name a {
   text-shadow: 0 0 2px black, 1px 1px rgb(0 0 0 / 50%);
 }
 
-.player-board.red {
+.player-board.hb-red {
   background-image: url(img/book-red.png);
 }
 
-.player-board.green {
+.player-board.hb-green {
   background-image: url(img/book-green.png);
 }
 
-.player-board.blue {
+.player-board.hb-blue {
   background-image: url(img/book-blue.png);
 }
 
-.player-board.yellow {
+.player-board.hb-yellow {
   background-image: url(img/book-yellow.png);
 }
 
-.player-board.purple {
+.player-board.hb-purple {
   background-image: url(img/book-purple.png);
 }
 
-.player-board.black {
+.player-board.hb-black {
   background-image: url(img/penny.png);
   background-position: top right;
   background-size: 100px;
