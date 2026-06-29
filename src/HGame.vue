@@ -992,14 +992,14 @@ export default {
         for (const k in args) {
           let v = args[k];
           if (k.startsWith("icon")) {
-            const html = getIcon(v.toLowerCase().trim(), "hicon");
+            const html = getIcon(v.toLowerCase().trim(), "hb-icon");
             if (html) {
               v = html;
             } else if (v != "¢") {
               v = ` ${this.i18n(v)}`;
             }
           } else if (k.startsWith("genre")) {
-            const html = getIcon(v.toLowerCase().trim(), "hicon");
+            const html = getIcon(v.toLowerCase().trim(), "hb-icon");
             v = `<span class="hb-genre ${v}">${html ? html : v}`;
           } else if (k.startsWith("letter")) {
             v = `${v}</span>`;

@@ -137,7 +137,9 @@ html.dark {
   }
 
   .hb-tailwind .hb-title {
-    text-shadow: 0 0 3px rgb(0 0 0 / 50%), 0.5px 0.5px rgb(0 0 0 / 50%);
+    text-shadow:
+      0 0 3px rgb(0 0 0 / 50%),
+      0.5px 0.5px rgb(0 0 0 / 50%);
   }
 
   .statstable th {
@@ -162,5 +164,12 @@ html.dark {
 
   .playername.hb-purple {
     color: theme("colors.purple.500");
+  }
+
+  .chatlog .playername {
+    text-shadow:
+      0 0 black,
+      0 0 2px black,
+      1px 1px rgb(0 0 0 / 50%) !important;
   }
 }
