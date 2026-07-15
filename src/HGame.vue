@@ -20,7 +20,7 @@
 
     <!-- Icons -->
     <div class="hb-hidden">
-      <Icon :id="'icon_' + key"
+      <Icon :id="'hbicon_' + key"
             v-for="(icon, key) in icons"
             :key="key"
             :icon="icon" />
@@ -251,9 +251,9 @@ const getRect = (el, calculateMargin = false) => {
   return output;
 };
 const getIcon = (key, cssClass) => {
-  const el = document.getElementById("icon_" + key);
+  const el = document.getElementById("hbicon_" + key);
   if (el) {
-    return el.outerHTML.replace(/ id=.*? /, ` class="icon-${key} ${cssClass}" `);
+    return el.outerHTML.replace(/ id=.*? /, ` class="hb-icon-${key} ${cssClass}" `);
   }
 };
 const playerRegExp = new RegExp('">(.*)</span>');
@@ -551,7 +551,14 @@ export default {
       if (this.gamedatas.refs.i18n[msg]) {
         msg = this.gamedatas.refs.i18n[msg];
       }
+      if (args) {
+        console.log('args.genre', args.genre);
+      }
       const argsWithIcons = args ? { ...this.icons105, ...args } : { ...this.icons105 };
+      if (args) {
+        console.log('argsWithIcons.genre', argsWithIcons.genre);
+        console.log('argsWithIcons.starter', argsWithIcons.starter);
+      }
       msg = this.game.format_string_recursive(window._(msg), argsWithIcons);
       return msg;
     },
@@ -982,7 +989,7 @@ export default {
         if (args.word) {
           const links = this.dictionaryLinks(args.word);
           if (links != null && links.length > 0) {
-            const openInNew = getIcon("openInNew", "inline");
+            const openInNew = getIcon("openInNew", "hb-inline");
             args.definitions = '<div class="hb-define">' + links.map((link) => `<a class="hb-dictionarylink" href="${link.url}" target="hb-define">${link.name} ${openInNew}</a>`).join(' ') + '</div>';
           } else {
             args.definitions = "";
@@ -1382,6 +1389,7 @@ export default {
           genre: card.genreName,
           letter: card.letter,
         };
+        console.log('keyboardPopup', this.keyboardPopup);
       } else if (action.action == "reset") {
         this.gamedatas.cards[card.id].wild = false;
         this.previewWord();

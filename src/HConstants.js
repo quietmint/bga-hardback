@@ -88,10 +88,6 @@ export default Object.freeze({
   LANG_FR: 3,
 
   // Game preferences
-  PREF_DARK_MODE: 101,
-  AUTOMATIC: 0,
-  LIGHT: 1,
-  DARK: 2,
   PREF_DRAG: 100,
   DRAG_ENABLED: 0,
   PREF_ANIMATION: 150,

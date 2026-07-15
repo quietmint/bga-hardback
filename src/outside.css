@@ -19,7 +19,7 @@ svg.hb-inline {
 }
 
 a.hb-dictionarylink {
-  @apply hb-rounded-lg hb-px-2 hb-m-1 hb-whitespace-nowrap hb-text-blue-600 hb-bg-black/10 dark:hb-bg-white/10;
+  @apply hb-rounded-lg hb-px-2 hb-mt-1 hb-mr-1 hb-whitespace-nowrap hb-text-blue-600 hb-bg-black/10 dark:hb-text-blue-300 dark:hb-bg-white/15;
 }
 
 .hb-icon {
@@ -161,27 +161,27 @@ a.hb-dictionarylink {
 }
 
 .playername.hb-red {
-  color: theme("colors.red.700");
+  @apply hb-text-red-700 dark:hb-text-red-500
 }
 
 .playername.hb-green {
-  color: theme("colors.green.700");
+  @apply hb-text-green-700 dark:hb-text-green-500
 }
 
 .playername.hb-blue {
-  color: theme("colors.blue.700");
+  @apply hb-text-blue-700 dark:hb-text-blue-500
 }
 
 .playername.hb-yellow {
-  color: theme("colors.yellow.600");
+  @apply hb-text-yellow-600 dark:hb-text-yellow-500
 }
 
 .playername.hb-purple {
-  color: theme("colors.purple.700");
+  @apply hb-text-purple-700 dark:hb-text-purple-500
 }
 
 .playername.hb-black {
-  color: black;
+  @apply hb-text-black dark:hb-text-white
 }
 
 .player-board.hb-red .player-name a,

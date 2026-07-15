@@ -77,25 +77,3 @@ textarea {
 .pagesection .wikicontent h3 {
   margin: 12px -12px;
 }
-
-.notouch-device a:hover,
-a:link,
-a:visited {
-  color: theme("colors.blue.600");
-}
-
-a.bgabutton {
-  color: white;
-}
-
-a.bgabutton_gray {
-  color: black;
-}
-
-a.chatwindowtitlelink {
-  color: white !important;
-}
-
-body.mobile_version.chatbar_ontop {
-  overflow: hidden;
-}

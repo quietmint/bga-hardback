@@ -1,20 +1,4 @@
 {
-    "101": {
-        "name": "Dark mode",
-        "needReload": false,
-        "values": [
-            {
-                "name": "Automatic (system default)"
-            },
-            {
-                "name": "Light"
-            },
-            {
-                "name": "Dark",
-                "cssPref": "dark"
-            }
-        ]
-    },
     "100": {
         "name": "Drag and drop",
         "needReload": false,
