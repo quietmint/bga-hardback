@@ -11,9 +11,9 @@ class WordMgr
             H_LANG_DE => 'Deutsch',
             H_LANG_FR => 'Français',
         ];
-        $lang = hardback::$instance->getGlobal(H_OPTION_LANG);
+        $lang = (int) hardback::$instance->getGameLanguage();
         $opt = $lang == H_LANG_EN ? H_OPTION_DICTIONARY : 120 + $lang;
-        $dict = hardback::$instance->getGlobal($opt);
+        $dict = hardback::$instance->bga->tableOptions->get($opt);
 
         $info = [
             'i18n' => ['dict'],
@@ -116,7 +116,7 @@ class WordMgr
 
     public static function isHistory(int $player_id, string $word): bool
     {
-        $unique = hardback::$instance->getGlobal(H_OPTION_UNIQUE);
+        $unique = hardback::$instance->bga->tableOptions->get(H_OPTION_UNIQUE);
         if ($unique == H_UNIQUE_PLAYER) {
             return hardback::$instance->getUniqueValueFromDB("SELECT 1 FROM word WHERE `word` = '$word' AND `player_id` = $player_id LIMIT 1") != null;
         } else if ($unique == H_UNIQUE_GAME) {

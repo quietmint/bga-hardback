@@ -17,7 +17,7 @@ class PlayerMgr
     public static function getMaxScore(): int
     {
         $max = PlayerMgr::getPlayerMaxScore();
-        if (hardback::$instance->getGlobal(H_OPTION_COOP) != H_NO) {
+        if (hardback::$instance->bga->tableOptions->get(H_OPTION_COOP) != H_NO) {
             $max = max($max, self::getPenny()->getScore());
         }
         return $max;
@@ -80,7 +80,7 @@ class PlayerMgr
         $accept = intval(hardback::$instance->getUniqueValueFromDB("SELECT COUNT(*) FROM player WHERE vote = 1"));
         $reject = intval(hardback::$instance->getUniqueValueFromDB("SELECT COUNT(*) FROM player WHERE vote = 0"));
         $max = self::getPlayerCount() - 1;
-        if (hardback::$instance->getGlobal(H_OPTION_VOTE) == H_VOTE_50) {
+        if (hardback::$instance->bga->tableOptions->get(H_OPTION_VOTE) == H_VOTE_50) {
             $majority = $max / 2;
             if ($accept >= $majority) {
                 // 50% accepts (includes ties)

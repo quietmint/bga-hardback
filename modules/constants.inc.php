@@ -94,9 +94,6 @@ define('H_STAT_COOP_POINTS_GENRE', 84);
 define('H_STAT_COOP_GENRE', 89);
 
 // Game options
-define('H_OPTION_GAME_MODE', 201);
-define('H_FRIENDLY_MODE', 1);
-
 define('H_OPTION_DICTIONARY', 100);
 define('H_OPTION_DICTIONARY_DE', 122);
 define('H_OPTION_DICTIONARY_FR', 123);
@@ -131,13 +128,9 @@ define('H_COOP_ROMANCE', 14);
 
 define('H_OPTION_OPEN', 171);
 
-define('H_OPTION_LANG', 207);
 define('H_LANG_EN', 1);
 define('H_LANG_DE', 2);
 define('H_LANG_FR', 3);
-
-define('H_OPTION_VERSION', 300);
-define('H_NEXT_MOVE_ID', 3);
 
 // Game preferences
 define('H_PREF_DRAG', 100);

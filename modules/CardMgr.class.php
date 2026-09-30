@@ -580,7 +580,7 @@ class CardMgr
                 $keep = false;
                 if ($skipWord) {
                     $keep = $card->isOrigin('timeless'); // keep already-played
-                } else if (hardback::$instance->getGlobal(H_OPTION_COOP) != H_NO) {
+                } else if (hardback::$instance->bga->tableOptions->get(H_OPTION_COOP) != H_NO) {
                     $keep = $owner == $playerId || $card->isOrigin('timeless'); // keep mine and already-played
                 } else {
                     $keep = $owner == $playerId; // keep mine
@@ -615,7 +615,7 @@ class CardMgr
 
     public static function canFlushOffer(): bool
     {
-        if (hardback::$instance->getGlobal(H_OPTION_COOP) != H_NO) {
+        if (hardback::$instance->bga->tableOptions->get(H_OPTION_COOP) != H_NO) {
             return false;
         }
 
