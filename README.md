@@ -10,11 +10,10 @@ This adaptation includes the following licensed material, used with permission. 
 
 - [Material Design Icons](https://pictogrammers.com/library/mdi/), licensed under [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-- Fonts licensed under the [SIL Open Font License](http://scripts.sil.org/OFL):
-  - [Big Shoulders Inline Text](https://fonts.google.com/specimen/Big+Shoulders+Inline+Text/about) by Patric King
+- Fonts licensed under [SIL Open Font License](http://scripts.sil.org/OFL):
+  - [Big Shoulders Inline](https://fonts.google.com/specimen/Big+Shoulders+Inline/about) by Patric King
   - [Bodoni Moda](https://fonts.google.com/specimen/Bodoni+Moda/about) by Owen Earl
   - [Finger Paint](https://fonts.google.com/specimen/Finger+Paint/about) by Carrois Apostrophe
-  - [Love Light](https://fonts.google.com/specimen/Love+Light/about) by Robert Leuschke
   - [Merienda](https://fonts.google.com/specimen/Merienda/about) by Eduardo Tunni
   - [New Rocker](https://fonts.google.com/specimen/New+Rocker/about) by Impallari Type
   - [Pacifico](https://fonts.google.com/specimen/Pacifico/about) by Vernon Adams, Jacques Le Bailly, Botjo Nikoltchev, Ani Petrova
